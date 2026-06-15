@@ -6,7 +6,7 @@ import { UserAccessLevel } from '@shared/types/authenticatedUser.type';
 
 export default class UserRepository {
   private static cpfIndexesCollection = database.collection('cpf');
-  private static usersCollection = database.collection('admins');
+  private static usersCollection = database.collection('users');
 
   static async saveUser(uid: string, data: RegisterUserDTO) {
     await database.runTransaction(async (tx) => {

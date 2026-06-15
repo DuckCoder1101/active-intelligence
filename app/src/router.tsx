@@ -1,11 +1,11 @@
-import { createRouter as createTanStackRouter } from '@tanstack/react-router'
+import { createRouter as createTanStackRouter } from '@tanstack/react-router';
 
-import { routeTree } from './routeTree.gen'
+import { routeTree } from './routeTree.gen';
 
-import type { AuthContextState } from '#/contexts/auth.context'
+import type { FirebaseTokenClaims } from '@t/session.type';
 
 export interface RouterContext {
-  auth: AuthContextState
+  sessionUser: FirebaseTokenClaims | null;
 }
 
 export function getRouter() {
@@ -15,19 +15,15 @@ export function getRouter() {
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
     context: {
-      auth: {
-        authUser: null,
-        profile: null,
-        loading: true,
-      },
+      sessionUser: null,
     } satisfies RouterContext,
-  })
+  });
 
-  return router
+  return router;
 }
 
 declare module '@tanstack/react-router' {
   interface Register {
-    router: ReturnType<typeof getRouter>
+    router: ReturnType<typeof getRouter>;
   }
 }

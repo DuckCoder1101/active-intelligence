@@ -1,47 +1,53 @@
-import { onAuthStateChanged } from 'firebase/auth';
+import { onIdTokenChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 
-import { auth } from '@utils/firebase';
 import UserService from '@services/user.service';
 import { AuthContext } from '@contexts/auth.context';
+import { useHandleError } from '@/hooks/useHandleError.util';
+import { auth } from '@/utils/firebase.util';
+import { createSession, deleteSession } from '@/server/session';
 
 import type { ReactNode } from 'react';
 import type { AuthContextState } from '@contexts/auth.context';
+import type { UserProfile } from '@/types/user.model';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const handleError = useHandleError();
+
   const [authState, setAuthState] = useState<AuthContextState>({
     authUser: null,
     profile: null,
-    loading: true,
+    isLoadingProfile: true,
+    isSessionReady: false,
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setAuthState((prev) => ({ ...prev, loading: true }));
-
-      if (!user) {
-        return setAuthState({
-          authUser: null,
-          profile: null,
-          loading: false,
-        });
-      }
+    const unsubscribe = onIdTokenChanged(auth, async (user) => {
+      let profile: UserProfile | null = null;
 
       try {
-        const profile = await UserService.getMe();
+        setAuthState((prev) => ({ ...prev, isLoadingProfile: true }));
 
-        setAuthState((prev) => ({
-          ...prev,
+        if (user) {
+          const idToken = await user.getIdToken();
+          await createSession({ data: { idToken } });
+          profile = await UserService.getMe();
+        } else {
+          await deleteSession();
+        }
+      } catch (err) {
+        handleError(err);
+      } finally {
+        setAuthState({
           authUser: user,
           profile,
-        }));
-      } catch (err) {
-      } finally {
-        setAuthState((prev) => ({ ...prev, loading: false }));
+          isLoadingProfile: false,
+          isSessionReady: true,
+        });
       }
     });
 

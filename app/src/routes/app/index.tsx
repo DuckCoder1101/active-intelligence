@@ -1,13 +1,7 @@
-import { auth } from '@utils/firebase';
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/app/')({
-  beforeLoad: async () => {
-    await auth.authStateReady();
-
-    if (!auth.currentUser) {
-      throw redirect({ to: '/auth/signin' });
-    }
+  beforeLoad: () => {
+    throw redirect({ to: '/app/client/dashboard' });
   },
-  component: () => <Outlet />,
 });

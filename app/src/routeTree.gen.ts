@@ -9,15 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
+import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
+import { Route as AppOrganizationRouteImport } from './routes/app/organization'
+import { Route as AppAdminRouteImport } from './routes/app/admin'
+import { Route as AppUserProfileRouteImport } from './routes/app/user/profile'
+import { Route as AppOrganizationOrganization_idRouteImport } from './routes/app/organization/$organization_id'
+import { Route as AppAdminDashboardRouteImport } from './routes/app/admin/dashboard'
 
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/app/',
-  path: '/app/',
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
 } as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
   id: '/auth/signup',
@@ -29,59 +41,146 @@ const AuthSigninRoute = AuthSigninRouteImport.update({
   path: '/auth/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthLogoutRoute = AuthLogoutRouteImport.update({
+  id: '/auth/logout',
+  path: '/auth/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/auth/forgot-password',
   path: '/auth/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppOrganizationRoute = AppOrganizationRouteImport.update({
+  id: '/organization',
+  path: '/organization',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUserProfileRoute = AppUserProfileRouteImport.update({
+  id: '/user/profile',
+  path: '/user/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrganizationOrganization_idRoute =
+  AppOrganizationOrganization_idRouteImport.update({
+    id: '/$organization_id',
+    path: '/$organization_id',
+    getParentRoute: () => AppOrganizationRoute,
+  } as any)
+const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppAdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/app': typeof AppRouteWithChildren
+  '/app/admin': typeof AppAdminRouteWithChildren
+  '/app/organization': typeof AppOrganizationRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/dashboard': typeof AppAdminDashboardRoute
+  '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
+  '/app/user/profile': typeof AppUserProfileRoute
 }
 export interface FileRoutesByTo {
+  '/app/admin': typeof AppAdminRouteWithChildren
+  '/app/organization': typeof AppOrganizationRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/app': typeof AppIndexRoute
+  '/app/admin/dashboard': typeof AppAdminDashboardRoute
+  '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
+  '/app/user/profile': typeof AppUserProfileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/app': typeof AppRouteWithChildren
+  '/app/admin': typeof AppAdminRouteWithChildren
+  '/app/organization': typeof AppOrganizationRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/dashboard': typeof AppAdminDashboardRoute
+  '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
+  '/app/user/profile': typeof AppUserProfileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/auth/forgot-password' | '/auth/signin' | '/auth/signup' | '/app/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/auth/forgot-password' | '/auth/signin' | '/auth/signup' | '/app'
-  id:
-    | '__root__'
+  fullPaths:
+    | '/app'
+    | '/app/admin'
+    | '/app/organization'
     | '/auth/forgot-password'
+    | '/auth/logout'
     | '/auth/signin'
     | '/auth/signup'
     | '/app/'
+    | '/app/admin/dashboard'
+    | '/app/organization/$organization_id'
+    | '/app/user/profile'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/app/admin'
+    | '/app/organization'
+    | '/auth/forgot-password'
+    | '/auth/logout'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/app'
+    | '/app/admin/dashboard'
+    | '/app/organization/$organization_id'
+    | '/app/user/profile'
+  id:
+    | '__root__'
+    | '/app'
+    | '/app/admin'
+    | '/app/organization'
+    | '/auth/forgot-password'
+    | '/auth/logout'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/app/'
+    | '/app/admin/dashboard'
+    | '/app/organization/$organization_id'
+    | '/app/user/profile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AppRoute: typeof AppRouteWithChildren
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
+  AuthLogoutRoute: typeof AuthLogoutRoute
   AuthSigninRoute: typeof AuthSigninRoute
   AuthSignupRoute: typeof AuthSignupRoute
-  AppIndexRoute: typeof AppIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/': {
       id: '/app/'
-      path: '/app'
+      path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AppRoute
     }
     '/auth/signup': {
       id: '/auth/signup'
@@ -97,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSigninRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/logout': {
+      id: '/auth/logout'
+      path: '/auth/logout'
+      fullPath: '/auth/logout'
+      preLoaderRoute: typeof AuthLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/forgot-password': {
       id: '/auth/forgot-password'
       path: '/auth/forgot-password'
@@ -104,14 +210,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/organization': {
+      id: '/app/organization'
+      path: '/organization'
+      fullPath: '/app/organization'
+      preLoaderRoute: typeof AppOrganizationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin': {
+      id: '/app/admin'
+      path: '/admin'
+      fullPath: '/app/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/user/profile': {
+      id: '/app/user/profile'
+      path: '/user/profile'
+      fullPath: '/app/user/profile'
+      preLoaderRoute: typeof AppUserProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/organization/$organization_id': {
+      id: '/app/organization/$organization_id'
+      path: '/$organization_id'
+      fullPath: '/app/organization/$organization_id'
+      preLoaderRoute: typeof AppOrganizationOrganization_idRouteImport
+      parentRoute: typeof AppOrganizationRoute
+    }
+    '/app/admin/dashboard': {
+      id: '/app/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/admin/dashboard'
+      preLoaderRoute: typeof AppAdminDashboardRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
   }
 }
 
+interface AppAdminRouteChildren {
+  AppAdminDashboardRoute: typeof AppAdminDashboardRoute
+}
+
+const AppAdminRouteChildren: AppAdminRouteChildren = {
+  AppAdminDashboardRoute: AppAdminDashboardRoute,
+}
+
+const AppAdminRouteWithChildren = AppAdminRoute._addFileChildren(
+  AppAdminRouteChildren,
+)
+
+interface AppOrganizationRouteChildren {
+  AppOrganizationOrganization_idRoute: typeof AppOrganizationOrganization_idRoute
+}
+
+const AppOrganizationRouteChildren: AppOrganizationRouteChildren = {
+  AppOrganizationOrganization_idRoute: AppOrganizationOrganization_idRoute,
+}
+
+const AppOrganizationRouteWithChildren = AppOrganizationRoute._addFileChildren(
+  AppOrganizationRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppAdminRoute: typeof AppAdminRouteWithChildren
+  AppOrganizationRoute: typeof AppOrganizationRouteWithChildren
+  AppIndexRoute: typeof AppIndexRoute
+  AppUserProfileRoute: typeof AppUserProfileRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAdminRoute: AppAdminRouteWithChildren,
+  AppOrganizationRoute: AppOrganizationRouteWithChildren,
+  AppIndexRoute: AppIndexRoute,
+  AppUserProfileRoute: AppUserProfileRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
+  AppRoute: AppRouteWithChildren,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthLogoutRoute: AuthLogoutRoute,
   AuthSigninRoute: AuthSigninRoute,
   AuthSignupRoute: AuthSignupRoute,
-  AppIndexRoute: AppIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,10 +1,13 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { useState } from 'react';
+import { createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdOutlineEmail } from 'react-icons/md';
 
-import { AuthLayout } from '@/components/auth/auth-layout';
-import { FormInput } from '@/components/form-input.component';
+import { AuthLayout } from '@/components/auth/auth-layout.component';
+import { FormInput } from '@/components/ui/form-input.component';
+import UserService from '@/services/user.service';
+import { useHandleError } from '@/hooks/useHandleError.util';
+import { getSessionUser } from '@/server/session';
 
 interface ForgotPasswordFormData {
   email: string;
@@ -12,11 +15,19 @@ interface ForgotPasswordFormData {
 
 export const Route = createFileRoute('/auth/forgot-password')({
   component: ForgotPasswordPage,
+  beforeLoad: async () => {
+    const sessionUser = await getSessionUser();
+    if (sessionUser) throw redirect({ to: '/app/user/profile' });
+  },
 });
 
 function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
-  const [sentTo, setSentTo] = useState('');
+  const [enableResent, setEnableResent] = useState(false);
+
+  const [email, setEmail] = useState('');
+
+  const handleError = useHandleError();
 
   const {
     register,
@@ -25,17 +36,32 @@ function ForgotPasswordPage() {
   } = useForm<ForgotPasswordFormData>();
 
   async function onSubmit(data: ForgotPasswordFormData) {
-    // TODO: call UserService.sendPasswordReset(data.email)
-    setSentTo(data.email);
-    setSent(true);
+    try {
+      await UserService.sendRecoverPasswordEmail(email);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setEmail(data.email);
+      setSent(true);
+    }
   }
+
+  // Cooldown
+  useEffect(() => {
+    if (!sent) return;
+
+    setEnableResent(false);
+
+    const timeout = setTimeout(() => setEnableResent(true), 30 * 1000);
+    return () => clearTimeout(timeout);
+  }, [sent]);
 
   if (sent) {
     return (
       <AuthLayout>
         <div className="flex flex-col items-center gap-4 py-2 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-surface">
-            <MdOutlineEmail className="text-primary" style={{ fontSize: 26 }} />
+            <MdOutlineEmail className="text-primary" size={26} />
           </div>
           <div>
             <p className="text-sm font-semibold text-text">
@@ -43,7 +69,7 @@ function ForgotPasswordPage() {
             </p>
             <p className="mt-1.5 text-[12px] leading-relaxed text-text-sub">
               Enviamos um link para redefinir sua senha para{' '}
-              <span className="font-semibold text-text">{sentTo}</span>.
+              <span className="font-semibold text-text">{email}</span>.
             </p>
           </div>
           <p className="text-[11px] text-text-muted">
@@ -51,7 +77,8 @@ function ForgotPasswordPage() {
             <button
               type="button"
               onClick={() => setSent(false)}
-              className="font-semibold text-primary hover:underline"
+              className="font-semibold text-primary hover:underline disabled:text-text-muted"
+              disabled={!enableResent}
             >
               Reenviar
             </button>

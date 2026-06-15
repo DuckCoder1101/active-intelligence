@@ -6,7 +6,8 @@ import type { UserProfile } from '@t/user.model';
 export interface AuthContextState {
   authUser: User | null;
   profile: UserProfile | null;
-  loading: boolean;
+  isLoadingProfile: boolean;
+  isSessionReady: boolean;
 }
 
 export const AuthContext = createContext<AuthContextState | null>(null);

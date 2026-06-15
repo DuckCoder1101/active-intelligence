@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Active Intelligence — Protótipo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --sid:#0D1B2A;--sid2:#1A2D3E;--acc:#2563EB;--acc2:#1D4ED8;
+  --pur:#7C3AED;--tl:#0891B2;
+  --bg:#EEF2F7;--card:#fff;--brd:#E2E8F0;
+  --tx:#0F172A;--t2:#475569;--t3:#94A3B8;
+  --gn:#059669;--yl:#D97706;--rd:#DC2626;--or:#EA580C;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--tx);font-size:14px;}
+.wf-badge{position:fixed;bottom:14px;right:14px;background:#0D1B2A;color:#475569;padding:5px 12px;border-radius:20px;font-size:10px;z-index:9999;pointer-events:none;}
+#app{display:flex;height:100vh;overflow:hidden;}
+.sb{width:242px;background:var(--sid);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.ma{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.ms{flex:1;overflow-y:auto;}
+.ct{padding:20px 24px;}
+.sb-logo{padding:17px 20px 13px;border-bottom:1px solid #1A2D3E;}
+.sb-tt{font-size:15px;font-weight:900;color:#F1F5F9;letter-spacing:-.3px;}
+.sb-tt span{color:var(--acc);}
+.sb-ss{font-size:9px;color:#334155;margin-top:2px;text-transform:uppercase;letter-spacing:1.2px;}
+.sg{padding:11px 0 2px;}
+.sg-l{padding:0 20px 5px;font-size:9px;color:#263A4D;text-transform:uppercase;letter-spacing:1px;font-weight:800;}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 20px;color:#64748B;cursor:pointer;border-left:3px solid transparent;font-size:12px;font-weight:500;transition:all .12s;}
+.ni:hover{background:var(--sid2);color:#CBD5E1;}
+.ni.on{background:var(--sid2);color:#F1F5F9;border-left-color:var(--acc);}
+.ni .ic{width:17px;text-align:center;font-size:14px;}
+.ni .bc{margin-left:auto;background:var(--rd);color:#fff;font-size:9px;font-weight:800;padding:1px 6px;border-radius:100px;}
+.sb-ft{padding:11px 16px;border-top:1px solid #1A2D3E;display:flex;align-items:center;gap:9px;margin-top:auto;}
+.av{width:30px;height:30px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;flex-shrink:0;}
+.an{font-size:11px;font-weight:700;color:#E2E8F0;}
+.ar{font-size:10px;color:#475569;}
+.lo{cursor:pointer;color:#475569;margin-left:auto;font-size:15px;}
+.lo:hover{color:#94A3B8;}
+.tb{background:#fff;border-bottom:1px solid var(--brd);padding:0 24px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.tb-t{font-size:14px;font-weight:800;}
+.tb-r{display:flex;align-items:center;gap:6px;}
+.btn{padding:6px 12px;border-radius:7px;font-size:12px;cursor:pointer;border:none;font-weight:600;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:all .12s;white-space:nowrap;}
+.bp{background:var(--acc);color:#fff;}.bp:hover{background:var(--acc2);}
+.bs{background:#fff;color:var(--tx);border:1px solid var(--brd);}.bs:hover{background:#F8FAFC;}
+.bg{background:transparent;color:var(--t2);}.bg:hover{background:#F1F5F9;}
+.bsm{padding:4px 9px;font-size:11px;}
+.bdn{background:#FEF2F2;color:var(--rd);border:1px solid #FECACA;}
+.bok{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;}
+.bfu{width:100%;justify-content:center;}
+.cd{background:var(--card);border:1px solid var(--brd);border-radius:10px;overflow:hidden;}
+.cd-h{padding:11px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;}
+.cd-t{font-size:12px;font-weight:800;}
+.cd-b{padding:15px;}
+.st{background:#fff;border:1px solid var(--brd);border-radius:10px;padding:14px 16px;}
+.st-l{font-size:9px;color:var(--t2);font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
+.st-v{font-size:22px;font-weight:900;line-height:1;}
+.st-d{font-size:11px;color:var(--gn);margin-top:4px;}
+.st-d.ng{color:var(--rd);}.st-d.nu{color:var(--t3);}
+.g{display:grid;gap:14px;}
+.g2{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr 1fr;}.g4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:8px 13px;background:#F8FAFC;color:var(--t2);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--brd);}
+td{padding:10px 13px;border-bottom:1px solid var(--brd);font-size:12px;}
+tr:last-child td{border-bottom:none;}tr:hover td{background:#FAFBFC;}
+.bd{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700;}
+.bgg{background:#DCFCE7;color:#166534;}.bgy{background:#FEF3C7;color:#92400E;}
+.bgr{background:#FEE2E2;color:#991B1B;}.bgb{background:#DBEAFE;color:#1E40AF;}
+.bggr{background:#F1F5F9;color:#475569;}.bgp{background:#EDE9FE;color:#5B21B6;}
+.bgt{background:#CFFAFE;color:#155E75;}
+.tabs{display:flex;border-bottom:2px solid var(--brd);margin-bottom:17px;overflow-x:auto;}
+.tab{padding:8px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--t2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s;white-space:nowrap;}
+.tab:hover{color:var(--tx);}.tab.on{color:var(--acc);border-bottom-color:var(--acc);}
+.fg{margin-bottom:12px;}
+.fl{display:block;font-size:9px;font-weight:800;color:var(--t2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
+.fi{width:100%;padding:7px 10px;border:1px solid var(--brd);border-radius:6px;font-size:12px;color:var(--tx);outline:none;background:#fff;font-family:inherit;}
+.fi:focus{border-color:var(--acc);}
+.fs{width:100%;padding:7px 10px;border:1px solid var(--brd);border-radius:6px;font-size:12px;color:var(--tx);outline:none;background:#fff;font-family:inherit;cursor:pointer;}
+.srch{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--brd);border-radius:7px;padding:6px 11px;}
+.srch input{border:none;outline:none;font-size:12px;background:transparent;flex:1;font-family:inherit;}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;}
+.modal{background:#fff;border-radius:12px;width:540px;max-height:85vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.18);}
+.mo-h{padding:15px 20px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;}
+.mo-t{font-size:14px;font-weight:800;}
+.mo-b{padding:20px;}.mo-f{padding:12px 20px;border-top:1px solid var(--brd);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:#fff;}
+.pw{background:#E2E8F0;border-radius:100px;height:4px;}
+.pf{height:4px;border-radius:100px;background:var(--acc);}
+.tgl{width:34px;height:19px;border-radius:100px;cursor:pointer;position:relative;flex-shrink:0;}
+.tgl.on{background:var(--acc);}.tgl.off{background:#CBD5E1;}
+.tgl-t{position:absolute;top:2.5px;width:14px;height:14px;background:#fff;border-radius:50%;transition:left .12s;}
+.tgl.on .tgl-t{left:17px;}.tgl.off .tgl-t{left:2.5px;}
+.kb{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;}
+.kc{min-width:215px;max-width:215px;background:#F1F5F9;border-radius:9px;padding:10px;}
+.kc-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.kc-t{font-size:11px;font-weight:800;display:flex;align-items:center;gap:5px;}
+.kcard{background:#fff;border:1px solid var(--brd);border-radius:7px;padding:8px 10px;margin-bottom:5px;cursor:pointer;}
+.kcard:hover{box-shadow:0 2px 6px rgba(0,0,0,.06);}
+.kcard-t{font-size:11px;font-weight:700;margin-bottom:5px;line-height:1.4;}
+.kcard-m{display:flex;align-items:center;justify-content:space-between;}
+.kb-add{width:100%;padding:6px;border:2px dashed #CBD5E1;border-radius:7px;background:transparent;color:var(--t3);font-size:11px;cursor:pointer;}
+.ps{display:flex;overflow-x:auto;gap:0;}
+.ps-c{flex:1;min-width:148px;}
+.ps-h{padding:9px 10px;border-top:3px solid;background:#F8FAFC;border-bottom:1px solid var(--brd);}
+.ps-hn{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;}
+.ps-hc{font-size:18px;font-weight:900;margin-top:2px;}
+.ps-b{padding:7px;background:#FCFCFC;min-height:180px;border-left:1px solid var(--brd);}
+.pcard{background:#fff;border:1px solid var(--brd);border-radius:7px;padding:8px 10px;margin-bottom:5px;cursor:pointer;border-left:3px solid;}
+.pcard:hover{box-shadow:0 2px 6px rgba(0,0,0,.05);}
+.pcard-n{font-size:11px;font-weight:800;margin-bottom:2px;}
+.pcard-p{font-size:10px;color:var(--t3);margin-bottom:4px;}
+.pcard-m{display:flex;align-items:center;justify-content:space-between;}
+.mb{background:#F8FAFC;border-radius:7px;padding:10px;}
+.mb-l{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;}
+.mb-v{font-size:17px;font-weight:900;margin:3px 0;}
+.mb-d{font-size:10px;}
+.al{border-radius:8px;padding:10px 13px;display:flex;align-items:flex-start;gap:9px;}
+.al-w{background:#FFFBEB;border:1px solid #FDE68A;}
+.al-i{background:#EFF6FF;border:1px solid #BFDBFE;}
+.al-s{background:#F0FDF4;border:1px solid #BBF7D0;}
+.tag{display:inline-flex;align-items:center;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;background:#F1F5F9;color:#475569;}
+.fx{display:flex;}.fxc{align-items:center;}.fxb{justify-content:space-between;}.fxe{justify-content:flex-end;}
+.g6{gap:6px;}.g8{gap:8px;}.g12{gap:12px;}.g14{gap:14px;}.g16{gap:16px;}
+.mb8{margin-bottom:8px;}.mb12{margin-bottom:12px;}.mb16{margin-bottom:16px;}.mb20{margin-bottom:20px;}
+.fw7{font-weight:700;}.fw8{font-weight:800;}.fw9{font-weight:900;}
+.f10{font-size:10px;}.f11{font-size:11px;}.f12{font-size:12px;}
+.tc2{color:var(--t2);}.tc3{color:var(--t3);}
+.w100{width:100%;}
+.dl-flow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:11px 15px;}
+.dl-n{background:#fff;border:1px solid var(--brd);border-radius:7px;padding:6px 11px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px;border-top:3px solid;}
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0D1B2A 0%,#1B3A5C 55%,#0D1B2A 100%);}
+.lcard{background:#fff;border-radius:14px;padding:36px;width:410px;box-shadow:0 24px 64px rgba(0,0,0,.35);}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px;}
+.ro{border:2px solid var(--brd);border-radius:9px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .12s;}
+.ro:hover{border-color:#93C5FD;}.ro.on{border-color:var(--acc);background:#EFF6FF;}
+.ro .ri{font-size:22px;margin-bottom:4px;}.ro .rl{font-size:12px;font-weight:700;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:2px;}
+</style></head><body>
+<div id="root"></div>
+<div class="wf-badge">⬡ Protótipo Low-Fi · Active Intelligence v0.1</div>
+<script>
+let S={screen:'login',lr:'admin',role:null,tab:'dashboard',ct:'geral',pt:'dashboard',modal:null};
+function set(p){Object.assign(S,p);draw();}window.set=set;
+const CL=[
+  {id:1,n:'Construtora Horizonte',tp:'Construtora',co:'João Almeida',pl:'Enterprise',st:'active',mrr:8900,leads:142,sales:12,prog:78,ci:'São Paulo'},
+  {id:2,n:'Loteadora São Paulo',tp:'Loteadora',co:'Maria Costa',pl:'Pro',st:'active',mrr:4500,leads:89,sales:7,prog:56,ci:'Campinas'},
+  {id:3,n:'Imobiliária Rio Branco',tp:'Imobiliária',co:'Carlos Mendes',pl:'Pro',st:'active',mrr:4500,leads:67,sales:5,prog:45,ci:'Santos'},
+  {id:4,n:'Grupo Habitare',tp:'Construtora',co:'Ana Ferreira',pl:'Basic',st:'pending',mrr:2200,leads:23,sales:2,prog:20,ci:'Ribeirão Preto'},
+  {id:5,n:'Prime Incorporações',tp:'Incorporadora',co:'Paulo Lima',pl:'Enterprise',st:'active',mrr:9800,leads:198,sales:18,prog:92,ci:'Campinas'},
+];
+const PR=[
+  {id:1,ci:1,n:'Residencial Parque Verde',tp:'Empreendimento',lo:'São Paulo, SP',un:120,px:'R$ 380k–520k'},
+  {id:2,ci:1,n:'Comercial Torre Business',tp:'Sala Comercial',lo:'Campinas, SP',un:80,px:'R$ 280k–410k'},
+  {id:3,ci:1,n:'Loteamento Horizonte I',tp:'Loteamento',lo:'Sorocaba, SP',un:200,px:'R$ 95k–180k'},
+];
+const CA=[
+  {id:1,ci:1,pi:1,n:'Parque Verde — Google Ads',ch:'Google Ads',bg:8000,sp:5600,leads:89},
+  {id:2,ci:1,pi:1,n:'Parque Verde — Meta Ads',ch:'Meta Ads',bg:6000,sp:4100,leads:53},
+  {id:3,ci:1,pi:2,n:'Torre Business — LinkedIn',ch:'LinkedIn Ads',bg:3000,sp:1800,leads:24},
+];
+const STG=['Lead','MQL','SQL','Qualificação','Proposta','Venda'];
+const SC={'Lead':'#64748B','MQL':'#3B82F6','SQL':'#8B5CF6','Qualificação':'#F59E0B','Proposta':'#F97316','Venda':'#10B981'};
+const PIPE=[
+  {n:'Grupo Vista',p:'Parque Verde',s:'Lead',v:'R$ 12k/mês',d:2,r:'Julia S.'},
+  {n:'Construtora XYZ',p:'Torre Business',s:'MQL',v:'R$ 9.5k/mês',d:5,r:'Marcos O.'},
+  {n:'Imob Prime',p:'Parque Verde',s:'MQL',v:'R$ 4.5k/mês',d:6,r:'Julia S.'},
+  {n:'Imob Sol',p:'Loteamento I',s:'SQL',v:'R$ 8.9k/mês',d:8,r:'Julia S.'},
+  {n:'Construt. Verde',p:'Parque Verde',s:'SQL',v:'R$ 4.5k/mês',d:9,r:'Marcos O.'},
+  {n:'Incorpor. Nova',p:'Loteamento I',s:'Qualificação',v:'R$ 15k/mês',d:12,r:'Roberto A.'},
+  {n:'Construtora Forte',p:'Torre Business',s:'Proposta',v:'R$ 22k/mês',d:18,r:'Roberto A.'},
+  {n:'Imobiliária Alfa',p:'Loteamento I',s:'Proposta',v:'R$ 6k/mês',d:15,r:'Julia S.'},
+  {n:'Loteadora ABC',p:'Parque Verde',s:'Venda',v:'R$ 18.5k/mês',d:25,r:'Julia S.'},
+  {n:'Empreend. Forte',p:'Torre Business',s:'Lead',v:'R$ 4.5k/mês',d:1,r:'Marcos O.'},
+];
+const LD=[
+  {n:'Diego Ramos',e:'diego@ramos.com',p:'Parque Verde',c:'Google Ads',s:'MQL',dt:'08/06',r:'Julia S.'},
+  {n:'Lúcia Barros',e:'lucia@barros.com',p:'Torre Business',c:'Meta Ads',s:'SQL',dt:'07/06',r:'Marcos O.'},
+  {n:'Roberto Nunes',e:'roberto@email.com',p:'Parque Verde',c:'Meta Ads',s:'Lead',dt:'09/06',r:'Julia S.'},
+  {n:'Andréa Lima',e:'andrea@email.com',p:'Loteamento I',c:'Google Ads',s:'Qualificação',dt:'05/06',r:'Roberto A.'},
+  {n:'Felipe Castro',e:'felipe@email.com',p:'Parque Verde',c:'Google Ads',s:'Proposta',dt:'02/06',r:'Roberto A.'},
+];
+const KB={
+  'Solicitada':[{t:'Landing page Parque Verde',c:'Construtora Horizonte',tp:'Criativo',dt:'10/06'},{t:'Relatório mensal Prime',c:'Prime Incorporações',tp:'Relatório',dt:'12/06'}],
+  'Em Andamento':[{t:'Otimização Google Ads Torre',c:'Construtora Horizonte',tp:'Mídia',dt:'08/06'},{t:'Criativos Instagram Stories',c:'Imob Rio Branco',tp:'Criativo',dt:'09/06'},{t:'Setup campanha LinkedIn',c:'Construtora Horizonte',tp:'Mídia',dt:'11/06'}],
+  'Pendente':[{t:'Aprovação briefing julho',c:'Loteadora SP',tp:'Atendimento',dt:'07/06'}],
+  'Atrasada':[{t:'Entrega vídeo Loteamento',c:'Prime Incorporações',tp:'Criativo',dt:'03/06'},{t:'Relatório semanal',c:'Construtora Horizonte',tp:'Relatório',dt:'05/06'}],
+  'Concluída':[{t:'Setup Meta Pixel',c:'Grupo Habitare',tp:'Técnico',dt:'01/06'},{t:'Relatório maio',c:'Construtora Horizonte',tp:'Relatório',dt:'31/05'}],
+};
+const SV=[{n:'Starter',p:'R$ 2.200/mês',d:'Gestão básica + relatório'},{n:'Pro',p:'R$ 4.500/mês',d:'Gestão completa + CRM'},{n:'Enterprise',p:'R$ 8.900+/mês',d:'Data Lake + IA + Full Service'}];
+const TM=[{n:'Roberto Alves',e:'roberto@active.com',r:'Administrador'},{n:'Júlia Santos',e:'julia@active.com',r:'Comercial'},{n:'Marcos Oliveira',e:'marcos@active.com',r:'Operacional'},{n:'Camila Torres',e:'camila@active.com',r:'Financeiro'}];
+const KCC={'Solicitada':'#64748B','Em Andamento':'#2563EB','Pendente':'#D97706','Atrasada':'#DC2626','Concluída':'#059669'};
+const KTC={Criativo:'bgp',Mídia:'bgb',Relatório:'bggr',Atendimento:'bgy',Técnico:'bgt'};
+const TPC={Construtora:'#2563EB',Loteadora:'#059669',Imobiliária:'#D97706',Incorporadora:'#7C3AED'};
+const PLC={Enterprise:'bgp',Pro:'bgb',Basic:'bgg'};
+const STC={active:'bgg',pending:'bgy',inactive:'bggr'};
+const STL={active:'Ativo',pending:'Pendente',inactive:'Inativo'};
+
+function draw(){document.getElementById('root').innerHTML=S.screen==='login'?loginPg():S.role==='admin'?adminApp():portalApp();}
+
+// ── LOGIN ──
+function loginPg(){return`<div class="lw"><div class="lcard">
+  <div style="text-align:center;margin-bottom:26px;">
+    <div style="font-size:21px;font-weight:900;letter-spacing:-.4px;">Active<span style="color:var(--acc);">Intelligence</span></div>
+    <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;margin-top:3px;">Data Lake · CRM · Inteligência Imobiliária</div>
+  </div>
+  <div class="fg"><div class="fl">Tipo de acesso</div>
+    <div class="rg">
+      <div class="ro ${S.lr==='admin'?'on':''}" onclick="set({lr:'admin'})"><div class="ri">🏢</div><div class="rl">Time Interno</div></div>
+      <div class="ro ${S.lr==='client'?'on':''}" onclick="set({lr:'client'})"><div class="ri">👤</div><div class="rl">Portal do Cliente</div></div>
+    </div>
+  </div>
+  <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" value="${S.lr==='admin'?'roberto@active.com':'joao@horizonteconstrutora.com.br'}"></div>
+  <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" value="••••••••"></div>
+  <button class="btn bp bfu" style="padding:10px;font-size:13px;" onclick="set({screen:'app',role:S.lr,tab:'dashboard',pt:'dashboard'})">Entrar na plataforma →</button>
+  <p style="text-align:center;margin-top:12px;font-size:11px;color:#94A3B8;">Esqueceu a senha? <a href="#" style="color:var(--acc);">Redefinir acesso</a></p>
+</div></div>`;}
+
+// ── ADMIN SHELL ──
+const ANAV=[
+  [{id:'dashboard',ic:'📊',l:'Dashboard'},{id:'clients',ic:'🏢',l:'Clientes'}],
+  [{id:'pipeline',ic:'🔄',l:'Pipeline CRM'},{id:'operacional',ic:'📌',l:'Operacional',badge:true},{id:'financeiro',ic:'💰',l:'Financeiro'},{id:'gestao',ic:'📋',l:'Gestão Comercial'}],
+  [{id:'integracoes',ic:'🔗',l:'Integrações'},{id:'settings',ic:'⚙️',l:'Configurações'}],
+];
+const ASEC=['Principal','Módulos','Sistema'];
+const AT={dashboard:'Dashboard',clients:'Clientes',client_detail:'Construtora Horizonte',pipeline:'Pipeline CRM',operacional:'Operacional',financeiro:'Financeiro',gestao:'Gestão Comercial',integracoes:'Integrações',settings:'Configurações'};
+function adminApp(){
+  const isD=S.tab==='client_detail';
+  return`<div id="app">
+  <aside class="sb">
+    <div class="sb-logo"><div class="sb-tt">Active<span>Intelligence</span></div><div class="sb-ss">Data Lake Platform</div></div>
+    ${ANAV.map((grp,i)=>`<div class="sg"><div class="sg-l">${ASEC[i]}</div>${grp.map(n=>`<div class="ni ${S.tab===n.id||S.tab==='client_detail'&&n.id==='clients'?'on':''}" onclick="set({tab:'${n.id}'})"><span class="ic">${n.ic}</span><span>${n.l}</span>${n.badge?'<span class="bc">2</span>':''}</div>`).join('')}</div>`).join('')}
+    <div class="sb-ft"><div class="av">RA</div><div><div class="an">Roberto Alves</div><div class="ar">Administrador</div></div><span class="lo" onclick="set({screen:'login',role:null})" title="Sair">⏏</span></div>
+  </aside>
+  <div class="ma">
+    <div class="tb">
+      <div class="fx fxc g8">
+        ${isD?`<button class="btn bg bsm" onclick="set({tab:'clients'})">← Clientes</button><span style="color:#E2E8F0;">│</span>`:''}
+        <span class="tb-t">${AT[S.tab]||''}</span>
+      </div>
+      <div class="tb-r"><button class="btn bg bsm">🔍</button><button class="btn bg bsm">🔔</button><div class="av" style="width:27px;height:27px;font-size:10px;">RA</div></div>
+    </div>
+    <div class="ms"><div class="ct">${aScr()}</div></div>
+  </div>
+  ${S.modal?mHtml():''}
+  </div>`;}
+function aScr(){switch(S.tab){case'dashboard':return aDash();case'clients':return aClients();case'client_detail':return aCDet();case'pipeline':return aPipe();case'operacional':return aOper();case'financeiro':return aFin();case'gestao':return aGest();case'integracoes':return aInteg();case'settings':return aSet();default:return aDash();}}
+// ── DASHBOARD ──
+function aDash(){
+  const bars=[32,38,35,42,44,48],bmax=48,ml=['Jan','Fev','Mar','Abr','Mai','Jun'];
+  return`
+  <div class="g g4 mb20">
+    ${[['MRR Atual','R$ 39.8k','↑ +18% vs. mês ant.'],['Clientes Ativos','18','↑ +2 este mês'],['Leads (Mês)','519','↑ +23% vs. mai'],['Vendas (Mês)','44','↑ +12% vs. mai']].map(([l,v,d])=>`<div class="st"><div class="st-l">${l}</div><div class="st-v">${v}</div><div class="st-d">${d}</div></div>`).join('')}
+  </div>
+  <div class="cd mb20">
+    <div class="cd-h"><span class="cd-t">🧠 Fluxo do Data Lake — Rastreabilidade de Ponta a Ponta</span><span class="f10 tc3">Nenhum dado sem origem — nenhuma venda sem vínculo</span></div>
+    <div class="dl-flow">
+      ${[['🏢','Cliente','#2563EB'],['→','',''],['🏗️','Produto / Oferta','#7C3AED'],['→','',''],['📣','Campanha','#F59E0B'],['→','',''],['📝','Formulário / Lead','#EA580C'],['→','',''],['🔄','Pipeline','#0891B2'],['→','',''],['✅','Venda','#059669']].map(([ic,lb,cl])=>lb?`<div class="dl-n" style="border-top-color:${cl};"><span>${ic}</span><span>${lb}</span></div>`:`<span style="color:var(--acc);font-size:17px;padding:0 1px;">→</span>`).join('')}
+    </div>
+    <div style="padding:5px 15px 11px;font-size:10px;color:var(--t3);">IDs encadeados garantem rastreabilidade total. Estrutura: Cliente ⇢ Produto ⇢ Campanha ⇢ Lead ⇢ Pipeline ⇢ Venda</div>
+  </div>
+  <div class="g mb20" style="grid-template-columns:2fr 1fr 1fr;gap:14px;">
+    <div class="cd">
+      <div class="cd-h"><span class="cd-t">MRR — 2025</span><span class="f10 tc3">Jan–Jun</span></div>
+      <div class="cd-b" style="padding-bottom:8px;">
+        <div style="display:flex;align-items:flex-end;gap:9px;height:125px;">
+          ${bars.map((v,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><span style="font-size:9px;color:var(--t3);">${v}k</span><div style="width:100%;height:${Math.round(v/bmax*90)}px;background:var(--acc);border-radius:4px 4px 0 0;opacity:.82;"></div><span style="font-size:9px;color:var(--t3);">${ml[i]}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="cd">
+      <div class="cd-h"><span class="cd-t">Pipeline</span></div>
+      <div class="cd-b" style="padding:10px;">
+        ${STG.map(s=>{const n=PIPE.filter(p=>p.s===s).length;return`<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;"><div style="width:7px;height:7px;border-radius:50%;background:${SC[s]};flex-shrink:0;"></div><span style="font-size:11px;flex:1;">${s}</span><div class="pw" style="flex:2;"><div class="pf" style="width:${n/PIPE.length*100}%;background:${SC[s]};"></div></div><span style="font-size:11px;font-weight:800;min-width:14px;text-align:right;">${n}</span></div>`;}).join('')}
+        <div style="margin-top:7px;padding-top:7px;border-top:1px solid var(--brd);font-size:10px;color:var(--t3);">${PIPE.length} oportunidades</div>
+      </div>
+    </div>
+    <div class="cd">
+      <div class="cd-h"><span class="cd-t">Planos</span></div>
+      <div class="cd-b" style="padding:10px;">
+        ${[['Enterprise','#7C3AED',6],['Pro','#2563EB',8],['Basic','#059669',4]].map(([n,c,v])=>`<div style="margin-bottom:11px;"><div class="fx fxb fxc" style="margin-bottom:4px;"><span style="font-size:11px;display:flex;align-items:center;gap:5px;"><span style="width:7px;height:7px;border-radius:50%;background:${c};display:inline-block;"></span>${n}</span><strong style="font-size:11px;">${v}</strong></div><div class="pw"><div class="pf" style="width:${v/18*100}%;background:${c};"></div></div></div>`).join('')}
+        <div style="padding-top:7px;border-top:1px solid var(--brd);font-size:10px;color:var(--t3);">Churn mês: <span style="color:var(--rd);font-weight:800;">1</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="g g2">
+    <div class="cd">
+      <div class="cd-h"><span class="cd-t">📌 Tarefas Atrasadas</span><span class="bd bgr">2</span></div>
+      ${KB['Atrasada'].map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid #F8FAFC;"><div style="width:6px;height:6px;border-radius:50%;background:var(--rd);flex-shrink:0;"></div><div style="flex:1;"><div class="fw8 f11">${t.t}</div><div class="f10 tc3">${t.c}</div></div><span class="tag">${t.tp}</span><span style="font-size:10px;color:var(--rd);font-weight:700;">Atrasada</span></div>`).join('')}
+    </div>
+    <div class="cd">
+      <div class="cd-h"><span class="cd-t">💰 Financeiro — Junho</span><button class="btn bg bsm" onclick="set({tab:'financeiro'})">Ver tudo</button></div>
+      <div class="cd-b" style="padding:10px 16px;">
+        ${[['Receita Total','R$ 39.800','gn'],['Gastos Operacionais','R$ 8.200','rd'],['Inadimplência','R$ 2.200','rd'],['Lucro Líquido','R$ 29.400','gn']].map(([l,v,t])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F8FAFC;"><span class="f12 tc2">${l}</span><span style="font-size:12px;font-weight:800;color:${t==='gn'?'var(--gn)':'var(--rd)'};">${v}</span></div>`).join('')}
+      </div>
+    </div>
+  </div>`;}
+
+// ── CLIENTS ──
+function aClients(){return`
+  <div class="fx fxb fxc mb16 g8">
+    <div class="srch" style="flex:1;max-width:260px;"><span class="tc3">🔍</span><input type="text" placeholder="Buscar clientes..."></div>
+    <div class="fx g8">
+      <select class="fs" style="width:auto;font-size:12px;padding:5px 10px;"><option>Todos os planos</option><option>Enterprise</option><option>Pro</option><option>Basic</option></select>
+      <select class="fs" style="width:auto;font-size:12px;padding:5px 10px;"><option>Todos os tipos</option><option>Construtora</option><option>Loteadora</option><option>Imobiliária</option></select>
+      <button class="btn bp" onclick="set({modal:'add_client'})">+ Novo Cliente</button>
+    </div>
+  </div>
+  <div class="cd"><div class="tw"><table>
+    <thead><tr><th>Cliente</th><th>Tipo</th><th>Contato</th><th>Plano</th><th>MRR</th><th>Leads</th><th>Vendas</th><th>Progresso</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>${CL.map(c=>`<tr>
+      <td><div class="fw8 f12">${c.n}</div><div class="f10 tc3">${c.ci}</div></td>
+      <td><span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:${TPC[c.tp]}18;color:${TPC[c.tp]};">${c.tp}</span></td>
+      <td class="tc2 f11">${c.co}</td>
+      <td><span class="bd ${PLC[c.pl]}">${c.pl}</span></td>
+      <td class="fw8 f12">R$ ${(c.mrr/1000).toFixed(1)}k</td>
+      <td class="fw8 f12">${c.leads}</td>
+      <td style="font-weight:800;color:var(--gn);font-size:12px;">${c.sales}</td>
+      <td style="min-width:95px;"><div class="fx fxc g7"><div class="pw" style="flex:1;"><div class="pf" style="width:${c.prog}%;"></div></div><span style="font-size:10px;color:var(--t2);min-width:24px;">${c.prog}%</span></div></td>
+      <td><span class="bd ${STC[c.st]}">${STL[c.st]}</span></td>
+      <td><div class="fx g6"><button class="btn bs bsm" onclick="set({tab:'client_detail',ct:'geral'})">Abrir</button><button class="btn bg bsm">✏️</button></div></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;}
+
+// ── CLIENT DETAIL ──
+function aCDet(){
+  const CT=[['geral','📊 Visão Geral'],['produtos','🏗️ Produtos'],['campanhas','📣 Campanhas'],['pipeline','🔄 Pipeline & Leads'],['operacional','📌 Operacional'],['financeiro','💰 Financeiro'],['contratos','📄 Contratos']];
+  return`
+  <div class="cd mb16"><div class="cd-b">
+    <div class="fx fxc g14">
+      <div class="av" style="width:42px;height:42px;font-size:15px;background:#2563EB;">CH</div>
+      <div><div style="font-size:15px;font-weight:900;">Construtora Horizonte</div><div class="tc2 f11">João Almeida · joao@horizonte.com.br · (11) 99999-0001 · São Paulo, SP</div></div>
+      <div class="fx g8" style="margin-left:auto;flex-wrap:wrap;"><span class="bd bgp">Enterprise</span><span class="bd bgg">Ativo</span><span style="font-size:11px;font-weight:800;color:var(--gn);padding:2px 8px;background:#F0FDF4;border-radius:6px;">MRR R$ 8.900</span><button class="btn bs bsm">✏️ Editar</button></div>
+    </div>
+  </div></div>
+  <div class="tabs">${CT.map(([id,lb])=>`<div class="tab ${S.ct===id?'on':''}" onclick="set({ct:'${id}'})">${lb}</div>`).join('')}</div>
+  ${S.ct==='geral'?ctGeral():S.ct==='produtos'?ctProds():S.ct==='campanhas'?ctCamps():S.ct==='pipeline'?ctPipeline():S.ct==='operacional'?ctOper():S.ct==='financeiro'?ctFin():ctConts()}`;}
+
+function ctGeral(){return`
+  <div class="g g4 mb16">
+    ${[['Leads (Mês)','142','↑ +31%'],['CPL Médio','R$ 98','↓ ótimo'],['Taxa Conv.','8,5%','↑ +1.2pp'],['Vendas','12','↑ +3']].map(([l,v,d])=>`<div class="st"><div class="st-l">${l}</div><div class="st-v">${v}</div><div class="st-d">${d}</div></div>`).join('')}
+  </div>
+  <div class="g g2 mb16">
+    <div class="cd"><div class="cd-h"><span class="cd-t">Campanhas Ativas</span></div><div class="cd-b" style="padding:10px;">
+      ${CA.map(c=>`<div style="display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid #F8FAFC;"><div style="width:6px;height:6px;border-radius:50%;background:var(--gn);flex-shrink:0;"></div><div style="flex:1;"><div class="f11 fw8">${c.n}</div><div class="f10 tc3">${c.leads} leads · ${c.ch}</div></div><div class="pw" style="flex:1;"><div class="pf" style="width:${Math.round(c.sp/c.bg*100)}%;"></div></div><span class="f10 tc2">R$ ${(c.sp/1000).toFixed(1)}k/R$ ${(c.bg/1000)}k</span></div>`).join('')}
+    </div></div>
+    <div class="cd"><div class="cd-h"><span class="cd-t">Funil de Conversão</span></div><div class="cd-b" style="padding:10px;">
+      ${[['Lead',142,'#64748B'],['MQL',98,'#3B82F6'],['SQL',61,'#8B5CF6'],['Qualificação',38,'#F59E0B'],['Proposta',22,'#F97316'],['Venda',12,'#059669']].map(([s,n,c])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="font-size:10px;font-weight:700;width:70px;color:${c};">${s}</span><div style="flex:1;background:${c}18;border-radius:100px;height:13px;overflow:hidden;"><div style="height:100%;width:${n/142*100}%;background:${c};opacity:.8;border-radius:100px;"></div></div><span style="font-size:11px;font-weight:900;min-width:24px;text-align:right;">${n}</span></div>`).join('')}
+    </div></div>
+  </div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">Produtos em Campanha</span></div><div class="cd-b" style="padding:10px;display:flex;gap:10px;">
+    ${PR.map(p=>`<div style="flex:1;padding:10px;background:#F8FAFC;border-radius:8px;border:1px solid var(--brd);"><div class="fw8 f12">${p.n}</div><div class="f10 tc3 mb8">${p.tp} · ${p.lo} · ${p.un} un.</div><div style="font-size:11px;color:var(--acc);font-weight:700;">${p.px}</div><div class="f10 tc3" style="margin-top:4px;">${CA.filter(c=>c.pi===p.id).reduce((s,c)=>s+c.leads,0)} leads este mês</div></div>`).join('')}
+  </div></div>`;}
+
+function ctProds(){return`
+  <div class="fx fxe mb16"><button class="btn bp" onclick="set({modal:'add_product'})">+ Novo Produto</button></div>
+  <div class="cd"><div class="tw"><table>
+    <thead><tr><th>Produto / Oferta</th><th>Tipo</th><th>Localização</th><th>Unidades</th><th>Faixa de Preço</th><th>Campanhas</th><th>Leads</th><th>Status</th><th></th></tr></thead>
+    <tbody>${PR.map(p=>`<tr>
+      <td class="fw8 f12">${p.n}</td><td><span class="tag">${p.tp}</span></td><td class="tc2 f11">${p.lo}</td><td class="tc2 f11">${p.un}</td>
+      <td style="font-weight:700;color:var(--acc);font-size:12px;">${p.px}</td>
+      <td class="fw8 f12">${CA.filter(c=>c.pi===p.id).length}</td>
+      <td class="fw8" style="color:var(--gn);font-size:12px;">${CA.filter(c=>c.pi===p.id).reduce((s,c)=>s+c.leads,0)}</td>
+      <td><span class="bd bgg">Ativo</span></td>
+      <td><div class="fx g6"><button class="btn bs bsm">Ver</button><button class="btn bg bsm">✏️</button></div></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;}
+
+function ctCamps(){return`
+  <div class="fx fxe mb16 g8"><button class="btn bs" onclick="set({modal:'link_ads'})">🔗 Vincular conta</button><button class="btn bp" onclick="set({modal:'add_campaign'})">+ Nova Campanha</button></div>
+  <div class="cd"><div class="tw"><table>
+    <thead><tr><th>Campanha</th><th>Canal</th><th>Produto</th><th>Verba</th><th>Gasto</th><th>Leads</th><th>CPL</th><th>Status</th><th></th></tr></thead>
+    <tbody>${CA.map(c=>{const pr=PR.find(p=>p.id===c.pi);const cpl='R$ '+Math.round(c.sp/c.leads);const pct=Math.round(c.sp/c.bg*100);return`<tr>
+      <td class="fw8 f12">${c.n}</td><td><span class="tag">${c.ch}</span></td><td class="tc2 f11">${pr?pr.n:'—'}</td>
+      <td class="tc2 f11">R$ ${(c.bg/1000).toFixed(1)}k</td>
+      <td><div class="fw8 f11">R$ ${(c.sp/1000).toFixed(1)}k <span class="tc3">(${pct}%)</span></div><div class="pw" style="margin-top:3px;"><div class="pf" style="width:${pct}%;"></div></div></td>
+      <td class="fw8 f12">${c.leads}</td><td style="font-weight:800;color:var(--gn);font-size:12px;">${cpl}</td>
+      <td><span class="bd bgg">Ativa</span></td><td><div class="fx g6"><button class="btn bs bsm">Ver</button><button class="btn bg bsm">✏️</button></div></td>
+    </tr>`;}).join('')}</tbody>
+  </table></div></div>`;}
+
+function ctPipeline(){return`
+  <div class="fx fxb fxc mb16">
+    <div class="fx g6 f11">${STG.map(s=>{const n=LD.filter(l=>l.s===s).length;return`<span style="padding:3px 8px;border-radius:6px;background:${SC[s]}18;color:${SC[s]};font-weight:800;border:1px solid ${SC[s]}30;">${s} (${n})</span>`;}).join('')}</div>
+    <button class="btn bp bsm" onclick="set({modal:'add_lead'})">+ Novo Lead</button>
+  </div>
+  <div class="cd mb16"><div class="tw"><table>
+    <thead><tr><th>Lead / Contato</th><th>Produto</th><th>Campanha</th><th>Etapa</th><th>Data</th><th>Responsável</th><th></th></tr></thead>
+    <tbody>${LD.map(l=>`<tr>
+      <td><div class="fw8 f12">${l.n}</div><div class="f10 tc3">${l.e}</div></td>
+      <td class="tc2 f11">${l.p}</td><td><span class="tag">${l.c}</span></td>
+      <td><span style="padding:2px 8px;border-radius:100px;font-size:10px;font-weight:800;background:${SC[l.s]}18;color:${SC[l.s]};">${l.s}</span></td>
+      <td class="tc3 f10">${l.dt}</td><td class="tc2 f11">${l.r}</td>
+      <td><div class="fx g6"><button class="btn bs bsm">Ver</button><button class="btn bg bsm">→</button></div></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">Funil Detalhado — Atribuição por Etapa</span></div><div class="cd-b" style="padding:11px;">
+    ${STG.map((s,i)=>{const ws=[100,79,48,30,17,9];return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;"><span style="font-size:11px;font-weight:700;width:78px;color:${SC[s]};">${s}</span><div style="flex:1;background:${SC[s]}15;border-radius:100px;height:16px;overflow:hidden;"><div style="height:100%;width:${ws[i]}%;background:${SC[s]};opacity:.75;border-radius:100px;"></div></div><span style="font-size:12px;font-weight:900;min-width:28px;text-align:right;">${[5,4,3,2,2,1][i]}</span><span class="f10 tc3" style="min-width:30px;">${ws[i]}%</span></div>`;}).join('')}
+  </div></div>`;}
+
+function ctOper(){const cols={'Solicitada':KB['Solicitada'].filter(t=>t.c==='Construtora Horizonte'),'Em Andamento':KB['Em Andamento'].filter(t=>t.c==='Construtora Horizonte'),'Concluída':KB['Concluída'].filter(t=>t.c==='Construtora Horizonte')};return kboard(cols);}
+
+function ctFin(){return`
+  <div class="g g3 mb16">
+    ${[['MRR','R$ 8.900','Plano Enterprise'],['Próx. Venc.','15/07/2025','Aguardando'],['Situação','Em dia','0 dias atraso']].map(([l,v,s])=>`<div class="st"><div class="st-l">${l}</div><div class="st-v" style="font-size:18px;">${v}</div><div class="st-d nu f11">${s}</div></div>`).join('')}
+  </div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">Histórico de Pagamentos</span></div><div class="tw"><table>
+    <thead><tr><th>Competência</th><th>Descrição</th><th>Valor</th><th>Vencimento</th><th>Pagamento</th><th>Status</th></tr></thead>
+    <tbody>${[['Jun/2025','Plano Enterprise','R$ 8.900','15/06','—','p'],['Mai/2025','Plano Enterprise','R$ 8.900','15/05','13/05','ok'],['Abr/2025','Plano Enterprise','R$ 8.900','15/04','12/04','ok'],['Mar/2025','Enterprise + Setup','R$ 11.400','15/03','15/03','ok']].map(([cm,d,v,vc,pg,s])=>`<tr><td class="tc2 f11">${cm}</td><td class="fw7 f12">${d}</td><td class="fw8 f12">${v}</td><td class="tc2 f11">${vc}</td><td class="tc2 f11">${pg}</td><td><span class="bd ${s==='ok'?'bgg':'bgy'}">${s==='ok'?'Pago':'Pendente'}</span></td></tr>`).join('')}</tbody>
+  </table></div></div>`;}
+
+function ctConts(){const docs=[['Contrato de Prestação de Serviços','Contrato','01/01/2025','Assinado'],['Proposta Plano Enterprise — Jan 2025','Proposta','28/12/2024','Assinado'],['Adendo — Data Lake','Adendo','01/03/2025','Assinado'],['Proposta Expansão Q3 2025','Proposta','20/06/2025','Pendente']];return`
+  <div class="fx fxe mb16 g8"><button class="btn bs" onclick="set({modal:'new_contract'})">📄 Contrato</button><button class="btn bp" onclick="set({modal:'new_proposal'})">📋 Proposta</button></div>
+  <div class="cd"><div class="tw"><table>
+    <thead><tr><th>Documento</th><th>Tipo</th><th>Data</th><th>Status</th><th></th></tr></thead>
+    <tbody>${docs.map(([t,tp,d,s])=>`<tr><td class="fw8 f12">${t}</td><td><span class="tag">${tp}</span></td><td class="tc2 f11">${d}</td><td><span class="bd ${s==='Assinado'?'bgg':'bgy'}">${s}</span></td><td><div class="fx g6"><button class="btn bs bsm">👁️</button><button class="btn bg bsm">⬇️</button></div></td></tr>`).join('')}</tbody>
+  </table></div></div>`;}
+// ── KANBAN HELPER ──
+function kboard(cols){return`<div class="kb">${Object.entries(cols).map(([col,cards])=>`<div class="kc"><div class="kc-h"><div class="kc-t"><div style="width:7px;height:7px;border-radius:50%;background:${KCC[col]||'#64748B'};"></div>${col}</div><span class="f10 tc3">${cards.length}</span></div>${cards.map(c=>`<div class="kcard"><div class="kcard-t">${c.t}</div><div class="kcard-m"><span class="bd ${KTC[c.tp]||'bggr'}" style="font-size:9px;">${c.tp}</span><span class="f10 tc3">📅 ${c.dt}</span></div>${c.c?`<div class="f10 tc3" style="margin-top:4px;border-top:1px solid #F1F5F9;padding-top:4px;">${c.c}</div>`:''}</div>`).join('')}<button class="kb-add">+ Adicionar</button></div>`).join('')}</div>`;}
+
+// ── PIPELINE CRM ──
+function aPipe(){
+  const byS={};STG.forEach(s=>{byS[s]=PIPE.filter(p=>p.s===s);});
+  return`
+  <div class="fx fxb fxc mb16">
+    <div class="fx g6 f11">${STG.map(s=>`<span style="padding:3px 8px;border-radius:6px;background:${SC[s]}18;color:${SC[s]};font-weight:800;border:1px solid ${SC[s]}28;">${s} · ${byS[s].length}</span>`).join('')}</div>
+    <button class="btn bp bsm" onclick="set({modal:'add_opp'})">+ Nova Oportunidade</button>
+  </div>
+  <div class="ps mb20">
+    ${STG.map(s=>`<div class="ps-c"><div class="ps-h" style="border-top-color:${SC[s]};"><div class="ps-hn" style="color:${SC[s]};">${s}</div><div class="ps-hc">${byS[s].length}</div></div><div class="ps-b">${byS[s].map(p=>`<div class="pcard" style="border-left-color:${SC[p.s]};"><div class="pcard-n">${p.n}</div><div class="pcard-p">${p.p}</div><div class="pcard-m"><span style="font-size:10px;font-weight:800;color:var(--gn);">${p.v}</span><span class="f10 tc3">${p.r}</span></div><div class="f10 tc3" style="margin-top:3px;">${p.d} dias</div></div>`).join('')}</div></div>`).join('')}
+  </div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">Todas as Oportunidades</span><span class="tc3 f11">${PIPE.length} total</span></div><div class="tw"><table>
+    <thead><tr><th>Empresa Prospect</th><th>Produto</th><th>Etapa</th><th>Valor/Mês</th><th>Dias</th><th>Responsável</th><th></th></tr></thead>
+    <tbody>${PIPE.map(p=>`<tr>
+      <td class="fw8 f12">${p.n}</td><td class="tc2 f11">${p.p}</td>
+      <td><span style="padding:2px 8px;border-radius:100px;font-size:10px;font-weight:800;background:${SC[p.s]}18;color:${SC[p.s]};">${p.s}</span></td>
+      <td style="font-weight:800;color:var(--gn);font-size:12px;">${p.v}</td><td class="tc2 f11">${p.d}d</td><td class="tc2 f11">${p.r}</td>
+      <td><div class="fx g6"><button class="btn bs bsm">Ver</button><button class="btn bg bsm">→</button></div></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;}
+
+// ── OPERACIONAL ──
+function aOper(){return`
+  <div class="fx fxb fxc mb16">
+    <div class="fx g6">${Object.entries(KB).map(([c,cards])=>`<span style="font-size:11px;padding:3px 8px;border-radius:6px;background:${c==='Atrasada'?'#FEE2E2':c==='Concluída'?'#DCFCE7':'#F1F5F9'};color:${c==='Atrasada'?'var(--rd)':c==='Concluída'?'var(--gn)':'var(--t2)'};font-weight:700;">${c} (${cards.length})</span>`).join('')}</div>
+    <button class="btn bp bsm" onclick="set({modal:'add_task'})">+ Nova Tarefa</button>
+  </div>${kboard(KB)}`;}
+
+// ── FINANCEIRO ──
+function aFin(){return`
+  <div class="g g4 mb20">${[['Receita (Mês)','R$ 39.800',''],['A Receber','R$ 12.400','2 pendentes'],['Inadimplência','R$ 2.200','1 cliente'],['Lucro Líquido','R$ 29.400','']].map(([l,v,s])=>`<div class="st"><div class="st-l">${l}</div><div class="st-v">${v}</div><div class="st-d ${l.includes('Inad')?'ng':'nu'}">${s}</div></div>`).join('')}</div>
+  <div class="g g2 mb20">
+    <div class="cd"><div class="cd-h"><span class="cd-t">Contas a Receber</span><span class="bd bgy">2 pendentes</span></div><div class="tw"><table>
+      <thead><tr><th>Cliente</th><th>Descrição</th><th>Valor</th><th>Venc.</th><th>Status</th><th></th></tr></thead>
+      <tbody>${[['Construtora Horizonte','Enterprise Jun','R$ 8.900','15/06','p'],['Grupo Habitare','Basic Jun','R$ 2.200','10/06','l'],['Loteadora SP','Pro Mai','R$ 4.500','10/05','ok'],['Imob Rio Branco','Pro Jun','R$ 4.500','10/06','ok']].map(([c,d,v,vc,s])=>`<tr><td class="fw8 f11">${c}</td><td class="tc2 f11">${d}</td><td class="fw8 f12">${v}</td><td class="tc2 f11">${vc}</td><td><span class="bd ${s==='ok'?'bgg':s==='p'?'bgy':'bgr'}">${s==='ok'?'Pago':s==='p'?'Pendente':'Atrasado'}</span></td><td><button class="btn bg bsm">✉️</button></td></tr>`).join('')}</tbody>
+    </table></div></div>
+    <div class="cd"><div class="cd-h"><span class="cd-t">DRE — Junho 2025</span></div><div class="cd-b" style="padding:10px 16px;">
+      ${[['(+) Receita Bruta','R$ 39.800','gn'],['(−) Impostos','R$ 1.990','rd'],['(=) Receita Líquida','R$ 37.810','gn'],['(−) Custo de Serviço','R$ 4.100','rd'],['(−) Pessoal','R$ 8.200','rd'],['(=) EBITDA','R$ 25.510','gn'],['(−) Desp. Adm.','R$ 2.400','rd'],['(=) Lucro Líquido','R$ 23.110','gn']].map(([l,v,t])=>`<div style="display:flex;justify-content:space-between;padding:${l.includes('=')?'7px 4px':'5px 0'};border-bottom:1px solid #F8FAFC;${l.includes('=')?'background:#F8FAFC;border-radius:4px;margin:2px 0;':''}"><span style="font-size:11px;${l.includes('=')?'font-weight:800;':'color:var(--t2);'}">${l}</span><span style="font-size:12px;font-weight:${l.includes('=')?'900':'700'};color:${t==='gn'?'var(--gn)':'var(--rd)'};">${v}</span></div>`).join('')}
+    </div></div>
+  </div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">Fluxo de Caixa — Semanal</span></div><div class="cd-b" style="padding:11px 16px;">
+    <div style="display:flex;align-items:flex-end;gap:14px;height:85px;padding:0 4px;">
+      ${[{l:'01–07',r:10,g:6},{l:'08–14',r:12,g:7},{l:'15–21',r:9,g:5},{l:'22–28',r:8,g:4},{l:'29–30',r:2,g:2}].map(w=>`<div style="flex:1;display:flex;align-items:flex-end;gap:4px;height:100%;"><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-size:8px;color:var(--gn);font-weight:800;">${w.r}k</span><div style="width:100%;height:${w.r*5}px;background:var(--gn);border-radius:3px 3px 0 0;opacity:.7;"></div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-size:8px;color:var(--rd);font-weight:800;">${w.g}k</span><div style="width:100%;height:${w.g*5}px;background:var(--rd);border-radius:3px 3px 0 0;opacity:.7;"></div></div></div>`).join('')}
+    </div>
+    <div class="fx g8" style="margin-top:7px;"><span class="f10 fx fxc g6"><span style="width:8px;height:8px;background:var(--gn);border-radius:2px;opacity:.7;display:inline-block;"></span>Entrada</span><span class="f10 fx fxc g6"><span style="width:8px;height:8px;background:var(--rd);border-radius:2px;opacity:.7;display:inline-block;"></span>Saída</span></div>
+  </div></div>`;}
+
+// ── GESTÃO ──
+function aGest(){return`
+  <div class="g g2 mb20">
+    <div class="cd"><div class="cd-h"><span class="cd-t">📋 Propostas Recentes</span><button class="btn bp bsm" onclick="set({modal:'new_proposal'})">+ Nova</button></div><div class="tw"><table>
+      <thead><tr><th>Prospect</th><th>Plano</th><th>Valor/Mês</th><th>Validade</th><th>Status</th><th></th></tr></thead>
+      <tbody>${[['Construtora Forte','Enterprise','R$ 22k','25/06','p'],['Imob Sol','Pro','R$ 6k','22/06','p'],['Grupo Norte','Pro','R$ 4.5k','17/06','l'],['Empreend. Alfa','Basic','R$ 2.2k','12/06','w']].map(([p,pl,v,vl,s])=>`<tr><td class="fw8 f12">${p}</td><td><span class="tag">${pl}</span></td><td style="font-weight:800;color:var(--gn);font-size:12px;">${v}</td><td class="tc2 f11">${vl}</td><td><span class="bd ${s==='w'?'bgg':s==='p'?'bgy':'bgr'}">${s==='w'?'Ganho':s==='p'?'Aguardando':'Perdido'}</span></td><td><button class="btn bg bsm">👁️</button></td></tr>`).join('')}</tbody>
+    </table></div></div>
+    <div class="cd"><div class="cd-h"><span class="cd-t">📄 Contratos Ativos</span><button class="btn bp bsm" onclick="set({modal:'new_contract'})">+ Novo</button></div>
+      ${CL.filter(c=>c.st==='active').map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid #F8FAFC;"><div style="flex:1;"><div class="fw8 f12">${c.n}</div><div class="f10 tc3">Plano ${c.pl} · R$ ${(c.mrr/1000).toFixed(1)}k/mês · Jan/2025</div></div><span class="bd bgg">Ativo</span><button class="btn bg bsm">📄</button></div>`).join('')}
+    </div>
+  </div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">📈 Oportunidades de Upsell</span><span class="bd bgp" style="font-size:9px;">IA · Baseado em Dados</span></div><div class="cd-b" style="padding:10px;">
+    ${[['Loteadora São Paulo','Pro → Enterprise','Volume crescendo 60%. Expansão de campanhas recomendada.','R$ +4.400/mês'],['Imobiliária Rio Branco','Pro + Tráfego Dedicado','Conversão abaixo da média. Gestão dedicada pode dobrar CPL.','R$ +2.000/mês'],['Grupo Habitare','Basic → Pro','Sazonalidade jul/ago detectada. Alta janela de leads.','R$ +2.300/mês']].map(([c,mv,r,v])=>`<div style="background:#F8FAFC;border:1px solid var(--brd);border-radius:8px;padding:10px;margin-bottom:8px;display:flex;align-items:center;gap:13px;"><div style="flex:1;"><div class="fw8 f12">${c}</div><div style="font-size:10px;color:var(--acc);font-weight:700;margin:2px 0;">${mv}</div><div style="font-size:11px;color:var(--t2);">${r}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:14px;font-weight:900;color:var(--gn);">${v}</div><button class="btn bp bsm" style="margin-top:5px;">Criar proposta</button></div></div>`).join('')}
+  </div></div>`;}
+
+// ── INTEGRAÇÕES ──
+function aInteg(){return`
+  <div class="al al-i mb20 f11"><span>ℹ️</span><div>Conecte contas de anúncios e CRMs para importar dados automaticamente. Todo lead de qualquer canal vai direto ao Data Lake.</div></div>
+  <div class="g g3 mb20">
+    ${[{n:'Meta Ads',ic:'f',bg:'#EFF6FF',ct:3,ds:'Facebook & Instagram'},{n:'Google Ads',ic:'G',bg:'#FEFCE8',ct:4,ds:'Search, Display & YouTube'},{n:'LinkedIn Ads',ic:'in',bg:'#EFF6FF',ct:1,ds:'B2B Campaigns'},{n:'RD Station',ic:'RD',bg:'#F0FDF4',ct:2,ds:'CRM & Automação'},{n:'HubSpot',ic:'HS',bg:'#FFF7ED',ct:0,ds:'CRM Externo'},{n:'Zap Imóveis',ic:'Z',bg:'#F0FDF4',ct:1,ds:'Portal Imobiliário'}].map(int=>`<div class="cd"><div class="cd-b"><div class="fx fxc g10"><div style="width:38px;height:38px;background:${int.bg};border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#374151;flex-shrink:0;">${int.ic}</div><div style="flex:1;"><div class="fw8 f12">${int.n}</div><div class="f10 tc3">${int.ds}</div></div><div style="text-align:right;"><span class="bd ${int.ct>0?'bgg':'bggr'}">${int.ct>0?int.ct+' contas':'Não conectado'}</span><div style="margin-top:5px;"><button class="btn ${int.ct>0?'bs':'bp'} bsm">${int.ct>0?'Gerenciar':'Conectar'}</button></div></div></div></div></div>`).join('')}
+  </div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">⚡ Automações Ativas</span></div><div class="cd-b" style="padding:10px 16px;">
+    ${[['Facebook Lead Ads → Lead no sistema','Ativo','3 clientes','10 min atrás'],['Google Ads → Atualizar campanha','Ativo','5 clientes','1h atrás'],['WhatsApp → Qualificação de lead','Ativo','2 clientes','25 min atrás'],['Zap Imóveis → Lead + Campanha','Config.','1 cliente','—']].map(([n,s,sc,l])=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F8FAFC;"><div style="width:6px;height:6px;border-radius:50%;background:${s==='Ativo'?'var(--gn)':'var(--yl)'};flex-shrink:0;"></div><div style="flex:1;"><div class="fw7 f12">${n}</div><div class="f10 tc3">${sc} · ${l}</div></div><span class="bd ${s==='Ativo'?'bgg':'bgy'}">${s}</span><button class="btn bg bsm">⚙️</button></div>`).join('')}
+  </div></div>`;}
+
+// ── SETTINGS ──
+function aSet(){return`
+  <div class="g g2 g16">
+    <div>
+      <div class="cd mb16"><div class="cd-h"><span class="cd-t">🏢 Dados da Empresa</span></div><div class="cd-b">
+        ${[['Razão Social','Active Intelligence Ltda.'],['CNPJ','00.000.000/0001-00'],['Endereço','Av. Paulista, 1000 — SP'],['Site','www.activeintelligence.com.br']].map(([l,v])=>`<div class="fg" style="margin-bottom:10px;"><label class="fl">${l}</label><input class="fi" value="${v}"></div>`).join('')}
+        <button class="btn bp bsm">Salvar</button>
+      </div></div>
+      <div class="cd"><div class="cd-h"><span class="cd-t">👥 Equipe</span><button class="btn bp bsm" onclick="set({modal:'invite'})">+ Convidar</button></div>
+        ${TM.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid #F8FAFC;"><div class="av" style="width:28px;height:28px;font-size:10px;background:#2563EB;">${m.n.split(' ').map(x=>x[0]).join('').slice(0,2)}</div><div style="flex:1;"><div class="fw7 f12">${m.n}</div><div class="f10 tc3">${m.e}</div></div><span class="bd bggr">${m.r}</span><span class="bd bgg">Ativo</span><button class="btn bg bsm">✏️</button></div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="cd mb16"><div class="cd-h"><span class="cd-t">📦 Planos de Serviço</span><button class="btn bp bsm">+ Novo</button></div>
+        ${SV.map(s=>`<div style="padding:10px 16px;border-bottom:1px solid #F8FAFC;"><div class="fx fxb fxc"><div class="fw8 f12">${s.n}</div><div class="fx fxc g8"><span style="font-weight:800;color:var(--gn);font-size:12px;">${s.p}</span><span class="bd bgg">Ativo</span><button class="btn bg bsm">✏️</button></div></div><div class="f11 tc3">${s.d}</div></div>`).join('')}
+      </div>
+      <div class="cd"><div class="cd-h"><span class="cd-t">🔔 Notificações</span></div><div class="cd-b" style="padding:9px 16px;">
+        ${[['Novo Lead Captado','Alertar equipe',true],['Pipeline Atualizado','Ao mover oportunidade',true],['Tarefa Atrasada','Alertar responsável',true],['Pagamento Recebido','Confirmar por e-mail',false]].map(([t,d,on])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F8FAFC;"><div><div class="fw7 f12">${t}</div><div class="f10 tc3">${d}</div></div><div class="tgl ${on?'on':'off'}"><div class="tgl-t"></div></div></div>`).join('')}
+        <div style="margin-top:12px;"><button class="btn bp bsm">Salvar configurações</button></div>
+      </div></div>
+    </div>
+  </div>`;}
+// ── PORTAL DO CLIENTE ──
+const PNAV=[{id:'dashboard',ic:'📊',l:'Dashboard'},{id:'pipeline',ic:'🔄',l:'Meu Pipeline'},{id:'campanhas',ic:'📣',l:'Campanhas'},{id:'plano',ic:'📋',l:'Plano Ativo'},{id:'ads',ic:'📡',l:'Central de Anúncios'}];
+const PT={dashboard:'Visão Geral',pipeline:'Meu Pipeline de Vendas',campanhas:'Campanhas & Resultados',plano:'Plano Ativo & Solicitações',ads:'Central de Anúncios'};
+function portalApp(){return`<div id="app">
+  <aside class="sb">
+    <div class="sb-logo"><div class="sb-tt">Active<span>Intelligence</span></div><div class="sb-ss">Portal do Cliente</div></div>
+    <nav>${PNAV.map(n=>`<div class="ni ${S.pt===n.id?'on':''}" onclick="set({pt:'${n.id}'})"><span class="ic">${n.ic}</span><span>${n.l}</span></div>`).join('')}</nav>
+    <div class="sb-ft"><div class="av" style="background:#7C3AED;">JA</div><div><div class="an">João Almeida</div><div class="ar">Construtora Horizonte</div></div><span class="lo" onclick="set({screen:'login',role:null})" title="Sair">⏏</span></div>
+  </aside>
+  <div class="ma">
+    <div class="tb"><span class="tb-t">${PT[S.pt]||''}</span><div class="tb-r"><button class="btn bg bsm">🔔</button><div class="av" style="width:27px;height:27px;font-size:10px;background:#7C3AED;">JA</div></div></div>
+    <div class="ms"><div class="ct">${pScr()}</div></div>
+  </div>
+  ${S.modal?mHtml():''}
+  </div>`;}
+function pScr(){switch(S.pt){case'dashboard':return pDash();case'pipeline':return pPipe();case'campanhas':return pCamps();case'plano':return pPlano();case'ads':return pAds();default:return pDash();}}
+
+function pDash(){return`
+  <div class="g g4 mb20">${[['Leads (Mês)','142','↑ +31%'],['Investimento','R$ 17.7k','de R$ 20k planejados'],['Taxa Conv.','8,5%','↑ +1.2pp'],['Vendas','12','↑ +3 vs. mai']].map(([l,v,d])=>`<div class="st"><div class="st-l">${l}</div><div class="st-v">${v}</div><div class="st-d">${d}</div></div>`).join('')}</div>
+  <div class="g mb20" style="grid-template-columns:2fr 1fr;gap:14px;">
+    <div class="cd"><div class="cd-h"><span class="cd-t">Leads por Semana — Junho</span><div class="fx fxc g8 f11"><span style="color:var(--acc);font-weight:700;">● Google</span><span style="color:#7C3AED;font-weight:700;">● Meta</span></div></div><div class="cd-b" style="padding-bottom:8px;">
+      <div style="display:flex;align-items:flex-end;gap:10px;height:115px;">
+        ${[{l:'01–07',g:28,m:18},{l:'08–14',g:35,m:24},{l:'15–21',g:22,m:16},{l:'22–28',g:31,m:21}].map(w=>`<div style="flex:1;display:flex;align-items:flex-end;gap:4px;height:100%;"><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-size:9px;color:var(--acc);">${w.g}</span><div style="width:100%;height:${Math.round(w.g/35*82)}px;background:var(--acc);border-radius:3px 3px 0 0;opacity:.8;"></div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-size:9px;color:#7C3AED;">${w.m}</span><div style="width:100%;height:${Math.round(w.m/35*82)}px;background:#7C3AED;border-radius:3px 3px 0 0;opacity:.8;"></div></div></div>`).join('')}
+      </div>
+    </div></div>
+    <div class="cd"><div class="cd-h"><span class="cd-t">Funil</span></div><div class="cd-b" style="padding:10px;">
+      ${[['Lead',142,'#64748B'],['MQL',98,'#3B82F6'],['SQL',61,'#8B5CF6'],['Qualificação',38,'#F59E0B'],['Proposta',22,'#F97316'],['Venda',12,'#059669']].map(([s,n,c])=>`<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;"><span style="font-size:10px;font-weight:700;width:65px;color:${c};">${s}</span><div style="flex:1;background:${c}18;border-radius:100px;height:12px;overflow:hidden;"><div style="height:100%;width:${n/142*100}%;background:${c};opacity:.8;border-radius:100px;"></div></div><span style="font-size:11px;font-weight:900;min-width:24px;text-align:right;">${n}</span></div>`).join('')}
+    </div></div>
+  </div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">📌 Atividades em Andamento</span></div>
+    ${KB['Em Andamento'].map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid #F8FAFC;"><div style="width:6px;height:6px;border-radius:50%;background:var(--acc);flex-shrink:0;"></div><div style="flex:1;"><div class="fw8 f12">${t.t}</div></div><span class="tag">${t.tp}</span><span class="bd bgb">Em Andamento</span></div>`).join('')}
+  </div>`;}
+
+function pPipe(){return`
+  <div class="g g5 mb16 g8">${[['Lead',142,'#64748B'],['MQL',98,'#3B82F6'],['Proposta',22,'#F97316'],['Venda',12,'#059669'],['Total',274,'#7C3AED']].map(([s,n,c])=>`<div style="text-align:center;padding:11px 8px;background:${c}10;border-radius:9px;border:2px solid ${c}28;"><div style="font-size:10px;font-weight:700;color:${c};margin-bottom:3px;">${s}</div><div style="font-size:20px;font-weight:900;color:${c};">${n}</div></div>`).join('')}</div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">Leads & Oportunidades — Junho 2025</span></div><div class="tw"><table>
+    <thead><tr><th>Lead / Contato</th><th>Produto</th><th>Campanha de Origem</th><th>Etapa</th><th>Data</th><th>Responsável Active</th></tr></thead>
+    <tbody>${LD.map(l=>`<tr><td><div class="fw8 f12">${l.n}</div><div class="f10 tc3">${l.e}</div></td><td class="tc2 f11">${l.p}</td><td><span class="tag">${l.c}</span></td><td><span style="padding:2px 8px;border-radius:100px;font-size:10px;font-weight:800;background:${SC[l.s]}18;color:${SC[l.s]};">${l.s}</span></td><td class="tc3 f10">${l.dt}</td><td class="tc2 f11">${l.r}</td></tr>`).join('')}</tbody>
+  </table></div></div>`;}
+
+function pCamps(){return`
+  <div class="g g3 mb20">${[['Total Investido','R$ 17.700','de R$ 20k planejados'],['Total de Leads','166','↑ +23% vs. mai'],['CPL Médio','R$ 106','↓ -12% — ótimo']].map(([l,v,d])=>`<div class="st"><div class="st-l">${l}</div><div class="st-v">${v}</div><div class="st-d">${d}</div></div>`).join('')}</div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">Campanhas Ativas — Junho 2025</span></div><div class="tw"><table>
+    <thead><tr><th>Campanha</th><th>Canal</th><th>Produto</th><th>Verba</th><th>Gasto</th><th>Leads</th><th>CPL</th><th>Status</th></tr></thead>
+    <tbody>${CA.map(c=>{const pr=PR.find(p=>p.id===c.pi);const cpl='R$ '+Math.round(c.sp/c.leads);const pct=Math.round(c.sp/c.bg*100);return`<tr><td class="fw8 f12">${c.n}</td><td><span class="tag">${c.ch}</span></td><td class="tc2 f11">${pr?pr.n:'—'}</td><td class="tc2 f11">R$ ${(c.bg/1000).toFixed(1)}k</td><td><div class="fw8 f11">R$ ${(c.sp/1000).toFixed(1)}k (${pct}%)</div><div class="pw" style="margin-top:3px;"><div class="pf" style="width:${pct}%;"></div></div></td><td class="fw8 f12">${c.leads}</td><td style="font-weight:800;color:var(--gn);font-size:12px;">${cpl}</td><td><span class="bd bgg">Ativa</span></td></tr>`;}).join('')}</tbody>
+  </table></div></div>`;}
+
+function pPlano(){return`
+  <div class="cd mb16"><div class="cd-b"><div class="g g2 g16">
+    <div>
+      <div class="st-l mb8">Plano Atual</div>
+      <div style="font-size:20px;font-weight:900;color:var(--acc);">Enterprise</div>
+      <div class="tc2 f12" style="margin-top:3px;">Vigência: Jan/2025 – Jan/2026</div>
+      <div style="margin-top:11px;"><div class="st-l mb8">Recursos Incluídos</div>
+        ${['Gestão completa Meta + Google + LinkedIn','Data Lake proprietário com rastreabilidade total','Pipeline CRM com leads e oportunidades','Relatórios automatizados mensais','Suporte prioritário + reunião mensal','Benchmarking de mercado regional'].map(r=>`<div style="display:flex;align-items:center;gap:7px;padding:4px 0;"><span style="color:var(--gn);font-weight:800;">✓</span><span class="f12">${r}</span></div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="st-l mb8">Status Financeiro</div>
+      <div class="al al-s" style="margin-bottom:11px;"><span>✅</span><div><div class="fw8 f12" style="color:#166534;">Contrato em dia</div><div class="f10 tc3 mb8">Próx. venc: 15/07/2025 · R$ 8.900</div></div></div>
+      <div class="st-l mb8">Solicitar Upgrade / Demanda</div>
+      <div class="fx g8" style="flex-direction:column;">
+        <button class="btn bp bfu" onclick="set({modal:'upsell'})">⬆️ Solicitar Upgrade de Plano</button>
+        <button class="btn bs bfu" onclick="set({modal:'demanda'})">➕ Solicitar Nova Demanda</button>
+      </div>
+    </div>
+  </div></div></div>
+  <div class="cd"><div class="cd-h"><span class="cd-t">Histórico de Solicitações</span></div><div class="tw"><table>
+    <thead><tr><th>Solicitação</th><th>Tipo</th><th>Data</th><th>Status</th></tr></thead>
+    <tbody>${[['Adicionar campanha LinkedIn Ads','Nova Demanda','01/03/2025','Concluído'],['Upgrade para Enterprise','Upsell','28/12/2024','Concluído'],['Benchmarking mercado regional','Nova Demanda','10/05/2025','Em andamento']].map(([s,t,d,st])=>`<tr><td class="fw8 f12">${s}</td><td><span class="tag">${t}</span></td><td class="tc2 f11">${d}</td><td><span class="bd ${st==='Concluído'?'bgg':'bgy'}">${st}</span></td></tr>`).join('')}</tbody>
+  </table></div></div>`;}
+
+function pAds(){
+  const plts=[{n:'Google Ads',ic:'G',bg:'#FEFCE8',cl:'#2563EB',st:'Conectado',met:[['Impressões','48.240','↑ +12%'],['Cliques','2.310','↑ +8%'],['CPC','R$ 1,42','↓ -5%'],['Conversões','89','↑ +23%']]},{n:'Meta Ads',ic:'f',bg:'#EFF6FF',cl:'#7C3AED',st:'Conectado',met:[['Alcance','92.100','↑ +18%'],['Cliques','3.840','↑ +15%'],['CPM','R$ 12,40','↓ -3%'],['Leads','77','↑ +31%']]},{n:'LinkedIn Ads',ic:'in',bg:'#EFF6FF',cl:'#0A66C2',st:'Conectado',met:[['Impressões','12.400','↑ +8%'],['Cliques','380','↑ +5%'],['CPC','R$ 4,73','→ 0%'],['Leads','24','↑ +4%']]}];
+  return`
+  <div class="g g3 mb16">${plts.map(p=>`<div class="cd"><div class="cd-h"><div class="fx fxc g8"><div style="width:30px;height:30px;background:${p.bg};border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#374151;">${p.ic}</div><div><div class="fw8 f12">${p.n}</div><div class="f10 tc3">Construtora Horizonte</div></div></div><span class="bd bgg">${p.st}</span></div><div class="cd-b" style="padding:10px;"><div class="g g2 g8">${p.met.map(([l,v,d])=>`<div class="mb"><div class="mb-l">${l}</div><div class="mb-v">${v}</div><div class="mb-d" style="color:${d.includes('↑')?'var(--gn)':d.includes('↓')?'var(--rd)':'var(--t3)'};">${d}</div></div>`).join('')}</div></div></div>`).join('')}</div>
+  <div class="cd" style="border:2px dashed #CBD5E1;background:#F8FAFC;"><div class="cd-b"><div class="fx fxc g14"><span style="font-size:26px;">➕</span><div><div class="fw8 f12">Adicionar Conta de Anúncios</div><div class="f11 tc2">Conecte mais contas para centralizar métricas no Data Lake</div></div><div class="fx g8" style="margin-left:auto;"><button class="btn bs bsm">+ Google Ads</button><button class="btn bs bsm">+ Meta Ads</button><button class="btn bs bsm">+ LinkedIn Ads</button></div></div></div></div>`;}
+
+// ── MODALS ──
+function mHtml(){
+  const M={
+    add_client:{t:'+ Novo Cliente',b:`<div class="g g2 g12">${[['Razão Social','Ex: Construtora XYZ','text'],['Contato','Nome do responsável','text'],['E-mail','email@empresa.com','email'],['Telefone','(11) 99999-0000','text'],['Cidade','Cidade','text']].map(([l,p,t])=>`<div class="fg" style="margin:0;"><label class="fl">${l}</label><input class="fi" type="${t}" placeholder="${p}"></div>`).join('')}<div class="fg" style="margin:0;"><label class="fl">Tipo</label><select class="fs"><option>Construtora</option><option>Loteadora</option><option>Imobiliária</option><option>Incorporadora</option></select></div><div class="fg" style="margin:0;"><label class="fl">Plano</label><select class="fs"><option>Basic</option><option>Pro</option><option>Enterprise</option></select></div></div>`},
+    add_product:{t:'+ Novo Produto / Oferta',b:`<div class="fg"><label class="fl">Nome</label><input class="fi" placeholder="Ex: Residencial Parque Verde"></div><div class="g g2 g12"><div class="fg" style="margin:0;"><label class="fl">Tipo</label><select class="fs"><option>Empreendimento</option><option>Loteamento</option><option>Sala Comercial</option><option>Portfólio</option></select></div><div class="fg" style="margin:0;"><label class="fl">Localização</label><input class="fi" placeholder="Cidade, Estado"></div><div class="fg" style="margin:0;"><label class="fl">Unidades</label><input class="fi" type="number"></div><div class="fg" style="margin:0;"><label class="fl">Faixa de Preço</label><input class="fi" placeholder="R$ 200k–400k"></div></div>`},
+    add_campaign:{t:'+ Nova Campanha',b:`<div class="fg"><label class="fl">Nome da Campanha</label><input class="fi" placeholder="Ex: Parque Verde — Google Ads Jun"></div><div class="g g2 g12"><div class="fg" style="margin:0;"><label class="fl">Canal</label><select class="fs"><option>Google Ads</option><option>Meta Ads</option><option>LinkedIn Ads</option><option>TikTok Ads</option></select></div><div class="fg" style="margin:0;"><label class="fl">Produto</label><select class="fs">${PR.map(p=>`<option>${p.n}</option>`).join('')}</select></div><div class="fg" style="margin:0;"><label class="fl">Verba (R$)</label><input class="fi" type="number" placeholder="0"></div><div class="fg" style="margin:0;"><label class="fl">Objetivo</label><select class="fs"><option>Leads</option><option>Conversão</option><option>Reconhecimento</option></select></div></div>`},
+    add_lead:{t:'+ Novo Lead',b:`<div class="fg"><label class="fl">Nome</label><input class="fi" placeholder="Nome completo"></div><div class="g g2 g12"><div class="fg" style="margin:0;"><label class="fl">E-mail</label><input class="fi" type="email"></div><div class="fg" style="margin:0;"><label class="fl">Telefone</label><input class="fi" placeholder="(11) 99999-0000"></div><div class="fg" style="margin:0;"><label class="fl">Produto de Interesse</label><select class="fs">${PR.map(p=>`<option>${p.n}</option>`).join('')}</select></div><div class="fg" style="margin:0;"><label class="fl">Campanha</label><select class="fs">${CA.map(c=>`<option>${c.n}</option>`).join('')}</select></div><div class="fg" style="margin:0;"><label class="fl">Etapa</label><select class="fs">${STG.map(s=>`<option>${s}</option>`).join('')}</select></div><div class="fg" style="margin:0;"><label class="fl">Responsável</label><select class="fs"><option>Roberto A.</option><option>Julia S.</option><option>Marcos O.</option></select></div></div>`},
+    add_opp:{t:'+ Nova Oportunidade',b:`<div class="fg"><label class="fl">Empresa Prospect</label><input class="fi" placeholder="Nome da empresa"></div><div class="g g2 g12"><div class="fg" style="margin:0;"><label class="fl">Produto</label><select class="fs">${PR.map(p=>`<option>${p.n}</option>`).join('')}</select></div><div class="fg" style="margin:0;"><label class="fl">Valor Estimado/Mês</label><input class="fi" placeholder="R$ 0/mês"></div><div class="fg" style="margin:0;"><label class="fl">Etapa</label><select class="fs">${STG.map(s=>`<option>${s}</option>`).join('')}</select></div><div class="fg" style="margin:0;"><label class="fl">Responsável</label><select class="fs"><option>Roberto A.</option><option>Julia S.</option><option>Marcos O.</option></select></div></div>`},
+    add_task:{t:'+ Nova Tarefa',b:`<div class="fg"><label class="fl">Título</label><input class="fi" placeholder="Ex: Editar Reels do Empreendimento"></div><div class="g g2 g12"><div class="fg" style="margin:0;"><label class="fl">Cliente</label><select class="fs">${CL.map(c=>`<option>${c.n}</option>`).join('')}</select></div><div class="fg" style="margin:0;"><label class="fl">Tipo</label><select class="fs"><option>Criativo</option><option>Mídia</option><option>Relatório</option><option>Atendimento</option><option>Técnico</option></select></div><div class="fg" style="margin:0;"><label class="fl">Data Limite</label><input class="fi" type="date"></div><div class="fg" style="margin:0;"><label class="fl">Responsável</label><select class="fs"><option>Roberto A.</option><option>Julia S.</option><option>Marcos O.</option></select></div></div>`},
+    new_proposal:{t:'📋 Nova Proposta',b:`<div class="fg"><label class="fl">Prospect</label><input class="fi" placeholder="Nome da empresa"></div><div class="fg"><label class="fl">Plano</label><select class="fs">${SV.map(s=>`<option>${s.n} — ${s.p}</option>`).join('')}</select></div><div class="g g2 g12"><div class="fg" style="margin:0;"><label class="fl">Validade</label><input class="fi" type="date"></div><div class="fg" style="margin:0;"><label class="fl">Desconto</label><input class="fi" placeholder="0%"></div></div><div class="fg" style="margin-top:10px;"><label class="fl">Observações</label><textarea class="fi" rows="3" placeholder="Condições especiais..."></textarea></div>`},
+    new_contract:{t:'📄 Novo Contrato',b:`<div class="fg"><label class="fl">Cliente</label><select class="fs">${CL.map(c=>`<option>${c.n}</option>`).join('')}</select></div><div class="fg"><label class="fl">Tipo</label><select class="fs"><option>Contrato de Prestação de Serviços</option><option>Adendo</option><option>Termo de Encerramento</option></select></div><div class="g g2 g12"><div class="fg" style="margin:0;"><label class="fl">Início</label><input class="fi" type="date"></div><div class="fg" style="margin:0;"><label class="fl">Duração</label><select class="fs"><option>6 meses</option><option>12 meses</option><option>24 meses</option></select></div></div><div class="fg" style="margin-top:10px;"><label class="fl">Serviços</label>${SV.map(s=>`<label style="display:flex;align-items:center;gap:7px;padding:5px 0;font-size:12px;cursor:pointer;"><input type="checkbox"> ${s.n} — ${s.p}</label>`).join('')}</div>`},
+    link_ads:{t:'🔗 Vincular Conta de Anúncios',b:`<div class="fg"><label class="fl">Plataforma</label><select class="fs"><option>Google Ads</option><option>Meta Ads</option><option>LinkedIn Ads</option></select></div><div class="fg"><label class="fl">ID da Conta</label><input class="fi" placeholder="Ex: 123-456-7890"></div><div class="fg"><label class="fl">Produto Relacionado</label><select class="fs">${PR.map(p=>`<option>${p.n}</option>`).join('')}</select></div><div class="al al-i f11"><span>ℹ️</span><span>Após vincular, dados serão importados automaticamente para o Data Lake.</span></div>`},
+    invite:{t:'✉️ Convidar Membro',b:`<div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" placeholder="novo@active.com"></div><div class="fg"><label class="fl">Função</label><select class="fs"><option>Administrador</option><option>Comercial</option><option>Operacional</option><option>Financeiro</option></select></div><div class="al al-i f11"><span>ℹ️</span><span>Um e-mail com link de acesso será enviado automaticamente.</span></div>`},
+    upsell:{t:'⬆️ Solicitar Upgrade',b:`<div class="al al-i mb12 f11"><span>ℹ️</span><div>Você está no plano <strong>Enterprise</strong>. Selecione os serviços adicionais desejados.</div></div><div class="fg"><label class="fl">Serviços de Interesse</label>${SV.map(s=>`<label style="display:flex;align-items:center;gap:7px;padding:5px 0;font-size:12px;cursor:pointer;"><input type="checkbox"> ${s.n}</label>`).join('')}</div><div class="fg"><label class="fl">Observações</label><textarea class="fi" rows="3" placeholder="Descreva o que você precisa..."></textarea></div>`},
+    demanda:{t:'➕ Nova Demanda',b:`<div class="fg"><label class="fl">Título</label><input class="fi" placeholder="Ex: Nova landing page para empreendimento"></div><div class="fg"><label class="fl">Tipo</label><select class="fs"><option>Criativo</option><option>Campanha</option><option>Relatório</option><option>Integração</option><option>Outro</option></select></div><div class="fg"><label class="fl">Descrição Detalhada</label><textarea class="fi" rows="4" placeholder="Descreva com o máximo de detalhes..."></textarea></div><div class="fg"><label class="fl">Prazo Desejado</label><input class="fi" type="date"></div>`},
+  };
+  const m=M[S.modal];if(!m)return'';
+  return`<div class="mo" onclick="if(event.target===this)set({modal:null})"><div class="modal"><div class="mo-h"><span class="mo-t">${m.t}</span><button class="btn bg bsm" onclick="set({modal:null})">✕</button></div><div class="mo-b">${m.b}</div><div class="mo-f"><button class="btn bs" onclick="set({modal:null})">Cancelar</button><button class="btn bp" onclick="set({modal:null})">Salvar</button></div></div></div>`;}
+
+draw();
+</script></body></html>

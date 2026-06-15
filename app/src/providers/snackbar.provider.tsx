@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { Snackbar } from '@components/snackbar.component';
+import { Snackbar } from '@/components/layout/snackbar.component';
 import { SnackbarContext } from '@contexts/snackbar.context';
 
 import type { ReactNode } from 'react';

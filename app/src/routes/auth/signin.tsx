@@ -1,16 +1,22 @@
-import { useState } from 'react';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
+import { FirebaseError } from 'firebase/app';
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { FaGoogle } from 'react-icons/fa';
 
-import { AuthLayout } from '@components/auth/auth-layout';
-import { FormInput } from '@components/form-input.component';
-import { PasswordInput } from '@components/password-input.component';
-import { Spinner } from '@components/spinner.component';
+import { AuthLayout } from '@/components/auth/auth-layout.component';
+import { FormInput } from '@/components/ui/form-input.component';
+import { PasswordInput } from '@/components/ui/password-input.component';
+import { Spinner } from '@/components/ui/spinner.component';
 import UserService from '@services/user.service';
-import { FirebaseError } from 'firebase/app';
-
-import { useHandleError } from '@utils/handleError';
+import { useHandleError } from '@/hooks/useHandleError.util';
+import { useAuth } from '@/contexts/auth.context';
+import { getSessionUser } from '@/server/session';
 
 interface SignInFormData {
   email: string;
@@ -19,11 +25,23 @@ interface SignInFormData {
 
 export const Route = createFileRoute('/auth/signin')({
   component: SignInPage,
+  beforeLoad: async () => {
+    const sessionUser = await getSessionUser();
+    if (sessionUser) throw redirect({ to: '/app/user/profile' });
+  },
 });
 
 function SignInPage() {
   const handleError = useHandleError();
+  const navigate = useNavigate();
+  const { authUser, isSessionReady } = useAuth();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    if (isSessionReady && authUser) {
+      navigate({ to: '/app/user/profile' });
+    }
+  }, [authUser, isSessionReady, navigate]);
 
   const {
     register,
@@ -40,7 +58,7 @@ function SignInPage() {
         error instanceof FirebaseError &&
         (error.code === 'auth/invalid-credential' ||
           error.code === 'auth/wrong-password' ||
-          error.code === 'auth/user-c-found')
+          error.code === 'auth/user-not-found')
       ) {
         setError('email', { message: ' ' });
         setError('password', { message: 'E-mail ou senha incorretos.' });

@@ -1,15 +1,23 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { useEffect } from 'react';
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from '@tanstack/react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 import { FunctionsError } from 'firebase/functions';
 
-import { AuthLayout } from '@components/auth/auth-layout';
-import { FormInput } from '@components/form-input.component';
-import { PasswordInput } from '@components/password-input.component';
-import { Spinner } from '@components/spinner.component';
+import { AuthLayout } from '@/components/auth/auth-layout.component';
+import { FormInput } from '@/components/ui/form-input.component';
+import { PasswordInput } from '@/components/ui/password-input.component';
+import { Spinner } from '@/components/ui/spinner.component';
 import UserService from '@services/user.service';
-import { loadFielErrors } from '@/utils/loadFieldErrors';
-import { useHandleError } from '@utils/handleError';
+import { loadFielErrors } from '@/utils/loadFieldErrors.util';
+import { useHandleError } from '@/hooks/useHandleError.util';
+import { useAuth } from '@/contexts/auth.context';
+import { getSessionUser } from '@/server/session';
 
 interface SignUpFormData {
   name: string;
@@ -21,10 +29,23 @@ interface SignUpFormData {
 
 export const Route = createFileRoute('/auth/signup')({
   component: SignUpPage,
+  beforeLoad: async () => {
+    const sessionUser = await getSessionUser();
+    if (sessionUser) throw redirect({ to: '/app/user/profile' });
+  },
 });
 
 function SignUpPage() {
   const handleError = useHandleError();
+  const navigate = useNavigate();
+  const { authUser, isSessionReady } = useAuth();
+
+  useEffect(() => {
+    if (isSessionReady && authUser) {
+      navigate({ to: '/app/user/profile' });
+    }
+  }, [authUser, isSessionReady, navigate]);
+
   const {
     register,
     handleSubmit,
