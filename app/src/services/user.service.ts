@@ -13,7 +13,7 @@ import { auth, functions } from '@/utils/firebase.util';
 
 import type { User } from 'firebase/auth';
 import type { UserProfile } from '@t/user.model';
-import type { RegisterUserDTO } from '@t/user.dto';
+import type { CompleteAccountDTO } from '@t/user.dto';
 
 export default class UserService {
   private static getMeCallable = httpsCallable<void, UserProfile>(
@@ -21,18 +21,18 @@ export default class UserService {
     'getMeHandler',
   );
 
-  private static registerAccountCallable = httpsCallable<
-    RegisterUserDTO,
+  private static completeAccountCallable = httpsCallable<
+    CompleteAccountDTO,
     string
-  >(functions, 'registerAccountHandler');
+  >(functions, 'completeAccountHandler');
 
   static async getMe(): Promise<UserProfile> {
     const result = await this.getMeCallable();
     return result.data;
   }
 
-  static async registerAccount(formData: RegisterUserDTO): Promise<User> {
-    const result = await this.registerAccountCallable(formData);
+  static async completeAccount(formData: CompleteAccountDTO): Promise<User> {
+    const result = await this.completeAccountCallable(formData);
     const customToken = result.data;
     const credential = await signInWithCustomToken(auth, customToken);
     return credential.user;

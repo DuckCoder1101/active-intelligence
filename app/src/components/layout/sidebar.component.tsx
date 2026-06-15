@@ -3,7 +3,7 @@ import { MdOutlineLogout } from 'react-icons/md';
 
 import { useAuth } from '@/contexts/auth.context';
 import UserService from '@/services/user.service';
-import { NAVBAR_ITEMS } from '@/constants/navbar-items.const';
+import { SIDEBAR_ITEMS } from '@/constants/sidebar-items.const';
 import { useHandleError } from '@/hooks/useHandleError.util';
 
 function getInitials(name: string) {
@@ -35,13 +35,13 @@ export function Sidebar() {
           Active<span className="text-primary">Intelligence</span>
         </div>
         <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[1.2px] text-[#334155]">
-          Data Lake Platform
+          Inteligência imobiliária
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 py-1">
-        {NAVBAR_ITEMS.map((section) => (
+        {SIDEBAR_ITEMS.map((section) => (
           <div key={section.label} className="pt-3 pb-0.5">
             <div className="px-5 pb-1.5 text-[9px] font-black uppercase tracking-[1px] text-[#263a4d]">
               {section.label}

@@ -8,7 +8,8 @@ import { auth } from '@/utils/firebase.util';
 import { createSession, deleteSession } from '@/server/session';
 
 import type { ReactNode } from 'react';
-import type { AuthContextState } from '@contexts/auth.context';
+import type { AuthContextState, AuthUser } from '@contexts/auth.context';
+import type { CustomClaims } from '@t/session.type';
 import type { UserProfile } from '@/types/user.model';
 
 interface AuthProviderProps {
@@ -27,15 +28,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
+      let authUser: AuthUser | null = null;
       let profile: UserProfile | null = null;
 
       try {
         setAuthState((prev) => ({ ...prev, isLoadingProfile: true }));
 
         if (user) {
-          const idToken = await user.getIdToken();
-          await createSession({ data: { idToken } });
-          profile = await UserService.getMe();
+          const idTokenResult = await user.getIdTokenResult();
+          const claims = idTokenResult.claims as unknown as CustomClaims;
+          authUser = { ...user, claims };
+
+          await createSession({ data: { idToken: idTokenResult.token } });
+
+          if (claims.complete) {
+            profile = await UserService.getMe();
+          }
         } else {
           await deleteSession();
         }
@@ -43,7 +51,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         handleError(err);
       } finally {
         setAuthState({
-          authUser: user,
+          authUser,
           profile,
           isLoadingProfile: false,
           isSessionReady: true,

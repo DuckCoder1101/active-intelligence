@@ -1,14 +1,14 @@
 import { database, FieldValue } from '@shared/firebase';
-import { UserProfileDTO, RegisterUserDTO } from '../types/admin.dtos';
+import { UserProfileDTO, RegisterUserDTO } from '../types/user.dtos';
 import { HttpsError } from 'firebase-functions/https';
-import { UserDocument } from '../types/admin.document';
+import { UserDocument } from '../types/user.document';
 import { UserAccessLevel } from '@shared/types/authenticatedUser.type';
 
 export default class UserRepository {
   private static cpfIndexesCollection = database.collection('cpf');
   private static usersCollection = database.collection('users');
 
-  static async saveUser(uid: string, data: RegisterUserDTO) {
+  static async saveUser(uid: string, email: string, data: RegisterUserDTO) {
     await database.runTransaction(async (tx) => {
       const adminRef = this.usersCollection.doc(uid);
       const cpfRef = this.cpfIndexesCollection.doc(data.cpf);
@@ -20,8 +20,9 @@ export default class UserRepository {
       tx.set(adminRef, {
         uid,
         name: data.name,
-        email: data.email,
+        email: email,
         cpf: data.cpf,
+        phone: data.phone,
         createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
       });

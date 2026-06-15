@@ -10,14 +10,7 @@ export function getAuthenticatedUser(req: CallableRequest): AuthenticatedUser {
   }
 
   const token = req.auth.token;
-  const accessLevel = token['accessLevel'] as UserAccessLevel | undefined;
-
-  if (!accessLevel) {
-    throw new HttpsError(
-      'permission-denied',
-      'Faltando header de permissão. Por favor contate os desenvolvedores!',
-    );
-  }
+  const accessLevel = (token['accessLevel'] as UserAccessLevel) ?? 'client';
 
   return {
     uid: req.auth.uid,

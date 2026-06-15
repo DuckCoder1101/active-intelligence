@@ -11,10 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AppIndexRouteImport } from './routes/app/index'
-import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
+import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppAdminRouteImport } from './routes/app/admin'
 import { Route as AppUserProfileRouteImport } from './routes/app/user/profile'
@@ -31,11 +31,6 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const AuthSignupRoute = AuthSignupRouteImport.update({
-  id: '/auth/signup',
-  path: '/auth/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthSigninRoute = AuthSigninRouteImport.update({
   id: '/auth/signin',
   path: '/auth/signin',
@@ -49,6 +44,11 @@ const AuthLogoutRoute = AuthLogoutRouteImport.update({
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/auth/forgot-password',
   path: '/auth/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCompleteAccountRoute = AuthCompleteAccountRouteImport.update({
+  id: '/auth/complete-account',
+  path: '/auth/complete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppOrganizationRoute = AppOrganizationRouteImport.update({
@@ -82,10 +82,10 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/app/admin': typeof AppAdminRouteWithChildren
   '/app/organization': typeof AppOrganizationRouteWithChildren
+  '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/auth/signup': typeof AuthSignupRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
@@ -94,10 +94,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRouteWithChildren
   '/app/organization': typeof AppOrganizationRouteWithChildren
+  '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/auth/signup': typeof AuthSignupRoute
   '/app': typeof AppIndexRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
@@ -108,10 +108,10 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/app/admin': typeof AppAdminRouteWithChildren
   '/app/organization': typeof AppOrganizationRouteWithChildren
+  '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/auth/signup': typeof AuthSignupRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
@@ -123,10 +123,10 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/admin'
     | '/app/organization'
+    | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/auth/signup'
     | '/app/'
     | '/app/admin/dashboard'
     | '/app/organization/$organization_id'
@@ -135,10 +135,10 @@ export interface FileRouteTypes {
   to:
     | '/app/admin'
     | '/app/organization'
+    | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/auth/signup'
     | '/app'
     | '/app/admin/dashboard'
     | '/app/organization/$organization_id'
@@ -148,10 +148,10 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/admin'
     | '/app/organization'
+    | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/auth/signup'
     | '/app/'
     | '/app/admin/dashboard'
     | '/app/organization/$organization_id'
@@ -160,10 +160,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
+  AuthCompleteAccountRoute: typeof AuthCompleteAccountRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthSigninRoute: typeof AuthSigninRoute
-  AuthSignupRoute: typeof AuthSignupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -181,13 +181,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
-    }
-    '/auth/signup': {
-      id: '/auth/signup'
-      path: '/auth/signup'
-      fullPath: '/auth/signup'
-      preLoaderRoute: typeof AuthSignupRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/auth/signin': {
       id: '/auth/signin'
@@ -208,6 +201,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/forgot-password'
       fullPath: '/auth/forgot-password'
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/complete-account': {
+      id: '/auth/complete-account'
+      path: '/auth/complete-account'
+      fullPath: '/auth/complete-account'
+      preLoaderRoute: typeof AuthCompleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/organization': {
@@ -290,10 +290,10 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
+  AuthCompleteAccountRoute: AuthCompleteAccountRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLogoutRoute: AuthLogoutRoute,
   AuthSigninRoute: AuthSigninRoute,
-  AuthSignupRoute: AuthSignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,10 +1,11 @@
 import z from 'zod';
-import { HttpsError, onCall } from 'firebase-functions/https';
+import { HttpsError } from 'firebase-functions/https';
 
 import UserSchema from '../data/user.schema';
 import UserRepository from '../repositories/user.repository';
+import { onCallHandler } from '@shared/utils/onCallHandler';
 
-export const updateUserAccessLevel = onCall(async (req) => {
+export const updateUserAccessLevel = onCallHandler(async (req) => {
   const { success, data, error } = UserSchema.updateAccessLevelSchema.safeParse(
     req.data,
   );

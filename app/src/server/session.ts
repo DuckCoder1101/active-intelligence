@@ -1,11 +1,16 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getCookie, setCookie, deleteCookie } from '@tanstack/react-start/server';
+import {
+  getCookie,
+  setCookie,
+  deleteCookie,
+} from '@tanstack/react-start/server';
 
 import { adminAuth } from '@/server/firebase-admin.server';
 import type { FirebaseTokenClaims } from '@t/session.type';
 
 const SESSION_COOKIE = 'session';
 const SESSION_MAX_AGE_SECONDS = 14 * 24 * 60 * 60;
+
 const isDev = import.meta.env['VITE_IS_DEV'] === 'true';
 
 export const getSessionUser = createServerFn({ method: 'GET' }).handler(
@@ -18,7 +23,10 @@ export const getSessionUser = createServerFn({ method: 'GET' }).handler(
       return {
         uid: decoded.uid,
         email: decoded.email!,
-        accessLevel: (decoded['accessLevel'] ?? 'client') as FirebaseTokenClaims['accessLevel'],
+        complete: decoded['complete'] as FirebaseTokenClaims['complete'],
+        accessLevel: decoded[
+          'accessLevel'
+        ] as FirebaseTokenClaims['accessLevel'],
       };
     } catch {
       return null;
@@ -42,15 +50,17 @@ export const createSession = createServerFn({ method: 'POST' })
     });
   });
 
-export const deleteSession = createServerFn({ method: 'POST' }).handler(async () => {
-  const cookie = getCookie(SESSION_COOKIE);
+export const deleteSession = createServerFn({ method: 'POST' }).handler(
+  async () => {
+    const cookie = getCookie(SESSION_COOKIE);
 
-  if (cookie) {
-    try {
-      const decoded = await adminAuth.verifySessionCookie(cookie);
-      await adminAuth.revokeRefreshTokens(decoded.sub);
-    } catch {}
-  }
+    if (cookie) {
+      try {
+        const decoded = await adminAuth.verifySessionCookie(cookie);
+        await adminAuth.revokeRefreshTokens(decoded.sub);
+      } catch {}
+    }
 
-  deleteCookie(SESSION_COOKIE, { path: '/' });
-});
+    deleteCookie(SESSION_COOKIE, { path: '/' });
+  },
+);

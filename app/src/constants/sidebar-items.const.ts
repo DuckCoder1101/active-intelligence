@@ -5,49 +5,59 @@ import {
   MdOutlinePushPin,
   MdOutlineAccountBalance,
   MdOutlineBarChart,
-  MdOutlineHub,
   MdOutlineSettings,
 } from 'react-icons/md';
 
 import type { NavSection } from '@/types/navbar-item.type';
 
-export const NAVBAR_ITEMS: NavSection[] = [
+export const SIDEBAR_ITEMS: NavSection[] = [
   {
     label: 'Principal',
     items: [
-      { to: '/app/dashboard', label: 'Dashboard', icon: MdOutlineDashboard },
-      { to: '/app/clients', label: 'Clientes', icon: MdOutlineBusiness },
+      {
+        to: '/app/admin/dashboard',
+        label: 'Dashboard',
+        icon: MdOutlineDashboard,
+      },
+      {
+        to: '/app/admin/clients',
+        label: 'Clientes',
+        icon: MdOutlineBusiness,
+      },
     ],
   },
   {
     label: 'Módulos',
     items: [
       {
-        to: '/app/pipeline',
+        to: '/app/admin/pipeline',
         label: 'Pipeline CRM',
         icon: MdOutlineAccountTree,
       },
       {
-        to: '/app/operacional',
+        to: '/app/admin/operational',
         label: 'Operacional',
         icon: MdOutlinePushPin,
         badge: 2,
       },
       {
-        to: '/app/financeiro',
+        to: '/app/admin/finances',
         label: 'Financeiro',
         icon: MdOutlineAccountBalance,
       },
-      { to: '/app/gestao', label: 'Gestão Comercial', icon: MdOutlineBarChart },
+      {
+        to: '/app/gestao',
+        label: 'Gestão Comercial',
+        icon: MdOutlineBarChart,
+      },
     ],
   },
   {
     label: 'Sistema',
     items: [
-      { to: '/app/integracoes', label: 'Integrações', icon: MdOutlineHub },
       {
-        to: '/app/configuracoes',
-        label: 'Configurações',
+        to: '/app/admin/settings',
+        label: 'Configurações do painel',
         icon: MdOutlineSettings,
       },
     ],

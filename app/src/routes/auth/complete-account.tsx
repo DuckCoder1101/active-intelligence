@@ -1,73 +1,69 @@
 import { useEffect } from 'react';
-import {
-  createFileRoute,
-  Link,
-  redirect,
-  useNavigate,
-} from '@tanstack/react-router';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 import { FunctionsError } from 'firebase/functions';
 
 import { AuthLayout } from '@/components/auth/auth-layout.component';
 import { FormInput } from '@/components/ui/form-input.component';
-import { PasswordInput } from '@/components/ui/password-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
+
 import UserService from '@services/user.service';
+
 import { loadFielErrors } from '@/utils/loadFieldErrors.util';
-import { useHandleError } from '@/hooks/useHandleError.util';
+
 import { useAuth } from '@/contexts/auth.context';
+
+import { useHandleError } from '@/hooks/useHandleError.util';
+
 import { getSessionUser } from '@/server/session';
+import type { CompleteAccountDTO } from '@/types/user.dto';
 
-interface SignUpFormData {
-  name: string;
-  email: string;
-  cpf: string;
-  password: string;
-  confirmPassword: string;
-}
-
-export const Route = createFileRoute('/auth/signup')({
+export const Route = createFileRoute('/auth/complete-account')({
   component: SignUpPage,
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
-    if (sessionUser) throw redirect({ to: '/app/user/profile' });
+    if (!sessionUser) throw redirect({ to: '/auth/signin' });
+    return {
+      sessionUser,
+    };
   },
 });
 
 function SignUpPage() {
   const handleError = useHandleError();
   const navigate = useNavigate();
-  const { authUser, isSessionReady } = useAuth();
+
+  const { authUser, profile, isSessionReady } = useAuth();
 
   useEffect(() => {
-    if (isSessionReady && authUser) {
+    if (isSessionReady && authUser && profile) {
       navigate({ to: '/app/user/profile' });
     }
-  }, [authUser, isSessionReady, navigate]);
+  }, [authUser, profile, isSessionReady, navigate]);
 
   const {
     register,
     handleSubmit,
-    watch,
     control,
     formState: { errors, isSubmitting },
     setError,
-  } = useForm<SignUpFormData>();
+  } = useForm<CompleteAccountDTO>();
 
-  const password = watch('password');
-
-  async function onSubmit(data: SignUpFormData) {
+  const onSubmit = async (data: CompleteAccountDTO) => {
     try {
-      await UserService.registerAccount(data);
+      await UserService.completeAccount(data);
     } catch (error) {
+      console.log(error);
       if (error instanceof FunctionsError && error.details) {
         loadFielErrors(error.details, setError);
       } else {
         handleError(error);
       }
     }
-  }
+  };
+
+  if (!authUser) return;
 
   return (
     <AuthLayout>
@@ -88,21 +84,6 @@ function SignUpPage() {
           })}
         />
 
-        <FormInput
-          label="E-mail"
-          type="email"
-          placeholder="seu@email.com"
-          autoComplete="email"
-          error={errors.email?.message}
-          {...register('email', {
-            required: 'E-mail obrigatório',
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: 'E-mail inválido',
-            },
-          })}
-        />
-
         <Controller
           name="cpf"
           control={control}
@@ -120,27 +101,20 @@ function SignUpPage() {
           )}
         />
 
-        <PasswordInput
-          label="Senha"
-          placeholder="••••••••"
-          autoComplete="new-password"
-          error={errors.password?.message}
-          {...register('password', {
-            required: 'Senha obrigatória',
-            minLength: { value: 8, message: 'Mínimo de 8 caracteres' },
-          })}
-        />
-
-        <PasswordInput
-          label="Confirmar senha"
-          placeholder="••••••••"
-          autoComplete="new-password"
-          error={errors.confirmPassword?.message}
-          {...register('confirmPassword', {
-            required: 'Confirme sua senha',
-            validate: (value) =>
-              value === password || 'As senhas não coincidem',
-          })}
+        <Controller
+          name="phone"
+          control={control}
+          render={({ field }) => (
+            <FormInput
+              as={IMaskInput}
+              mask="(00) 00000-0000"
+              label="Celular"
+              type="tel"
+              placeholder="(00) 00000-0000"
+              error={errors.phone?.message}
+              {...field}
+            />
+          )}
         />
 
         <button
@@ -149,25 +123,15 @@ function SignUpPage() {
           className="mt-1 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
         >
           {!isSubmitting ? (
-            <>Cadastrar-se</>
+            <>Concluir cadastro</>
           ) : (
             <span className="flex items-center justify-center gap-2">
               <Spinner size={16} />
-              Criando conta...
+              Registrando informações...
             </span>
           )}
         </button>
       </form>
-
-      <p className="mt-5 text-center text-[11px] text-text-muted">
-        Já tem uma conta?{' '}
-        <Link
-          to="/auth/signin"
-          className="font-semibold text-primary hover:underline"
-        >
-          Entrar
-        </Link>
-      </p>
     </AuthLayout>
   );
 }

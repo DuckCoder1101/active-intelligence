@@ -6,7 +6,10 @@ export const Route = createFileRoute('/app')({
   component: () => <Outlet />,
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
+
     if (!sessionUser) throw redirect({ to: '/auth/signin' });
+    if (!sessionUser.complete) throw redirect({ to: '/auth/complete-account' });
+
     return { sessionUser };
   },
 });
