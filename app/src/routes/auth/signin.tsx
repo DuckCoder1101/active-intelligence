@@ -169,16 +169,6 @@ function SignInPage() {
           </>
         )}
       </button>
-
-      <p className="mt-5 text-center text-[11px] text-text-muted">
-        Não tem uma conta?
-        <Link
-          to="/auth/signup"
-          className="font-semibold text-primary hover:underline ml-2"
-        >
-          Criar conta
-        </Link>
-      </p>
     </AuthLayout>
   );
 }

@@ -15,6 +15,7 @@ import appCss from '../styles.css?url';
 
 import type { RouterContext } from '../router';
 import { FaSearch } from 'react-icons/fa';
+import { ThemeProvider } from '@/providers/theme.provider';
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
@@ -65,7 +66,9 @@ function RootComponent() {
   return (
     <SnackbarProvider>
       <AuthProvider>
-        <Outlet />
+        <ThemeProvider>
+          <Outlet />
+        </ThemeProvider>
       </AuthProvider>
     </SnackbarProvider>
   );
