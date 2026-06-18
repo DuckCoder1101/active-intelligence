@@ -2,6 +2,9 @@
   "buckets": [
     {
       "id": "activeimob-crm.appspot.com"
+    },
+    {
+      "id": "activeimob-74a7d.firebasestorage.app"
     }
   ]
 }

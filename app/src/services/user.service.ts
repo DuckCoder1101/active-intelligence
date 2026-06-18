@@ -8,8 +8,9 @@ import {
   sendEmailVerification,
   signOut,
 } from 'firebase/auth';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-import { auth, functions } from '@/utils/firebase.util';
+import { auth, functions, storage } from '@/utils/firebase.util';
 
 import type { User } from 'firebase/auth';
 import type { UserProfile } from '@t/user.model';
@@ -62,5 +63,20 @@ export default class UserService {
 
   static async signout(): Promise<void> {
     await signOut(auth);
+  }
+
+  static async getProfilePhotoUrl(uid: string): Promise<string | null> {
+    try {
+      const photoRef = ref(storage, `users/${uid}/profile`);
+      return await getDownloadURL(photoRef);
+    } catch {
+      return null;
+    }
+  }
+
+  static async updateProfilePhoto(uid: string, file: File): Promise<string> {
+    const photoRef = ref(storage, `users/${uid}/profile`);
+    await uploadBytes(photoRef, file);
+    return await getDownloadURL(photoRef);
   }
 }

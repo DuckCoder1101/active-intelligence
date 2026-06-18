@@ -9,7 +9,6 @@ import {
   MdOutlineCreditCard,
   MdOutlinePsychology,
   MdOutlineApps,
-  MdOutlineOpenInNew,
   MdOutlineSettings,
   MdOutlineGroup,
 } from 'react-icons/md';
@@ -98,12 +97,6 @@ export const ADMIN_MODULES: Section[] = [
         label: 'Catálogo',
         description: 'Produtos, planos e playbooks.',
         to: '/app/admin/catalog',
-      },
-      {
-        icon: MdOutlineOpenInNew,
-        label: 'Portal do Cliente',
-        description: 'Área externa para clientes.',
-        soon: true,
       },
     ],
   },
