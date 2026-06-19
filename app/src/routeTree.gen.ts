@@ -15,6 +15,7 @@ import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
+import { Route as AppUserRouteImport } from './routes/app/user'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppAdminRouteImport } from './routes/app/admin'
 import { Route as AppUserProfileRouteImport } from './routes/app/user/profile'
@@ -51,6 +52,11 @@ const AuthCompleteAccountRoute = AuthCompleteAccountRouteImport.update({
   path: '/auth/complete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppUserRoute = AppUserRouteImport.update({
+  id: '/user',
+  path: '/user',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppOrganizationRoute = AppOrganizationRouteImport.update({
   id: '/organization',
   path: '/organization',
@@ -62,9 +68,9 @@ const AppAdminRoute = AppAdminRouteImport.update({
   getParentRoute: () => AppRoute,
 } as any)
 const AppUserProfileRoute = AppUserProfileRouteImport.update({
-  id: '/user/profile',
-  path: '/user/profile',
-  getParentRoute: () => AppRoute,
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppUserRoute,
 } as any)
 const AppOrganizationOrganization_idRoute =
   AppOrganizationOrganization_idRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/app/admin': typeof AppAdminRouteWithChildren
   '/app/organization': typeof AppOrganizationRouteWithChildren
+  '/app/user': typeof AppUserRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRouteWithChildren
   '/app/organization': typeof AppOrganizationRouteWithChildren
+  '/app/user': typeof AppUserRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/app/admin': typeof AppAdminRouteWithChildren
   '/app/organization': typeof AppOrganizationRouteWithChildren
+  '/app/user': typeof AppUserRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/admin'
     | '/app/organization'
+    | '/app/user'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
   to:
     | '/app/admin'
     | '/app/organization'
+    | '/app/user'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/admin'
     | '/app/organization'
+    | '/app/user'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
@@ -210,6 +222,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCompleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/user': {
+      id: '/app/user'
+      path: '/user'
+      fullPath: '/app/user'
+      preLoaderRoute: typeof AppUserRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/organization': {
       id: '/app/organization'
       path: '/organization'
@@ -226,10 +245,10 @@ declare module '@tanstack/react-router' {
     }
     '/app/user/profile': {
       id: '/app/user/profile'
-      path: '/user/profile'
+      path: '/profile'
       fullPath: '/app/user/profile'
       preLoaderRoute: typeof AppUserProfileRouteImport
-      parentRoute: typeof AppRoute
+      parentRoute: typeof AppUserRoute
     }
     '/app/organization/$organization_id': {
       id: '/app/organization/$organization_id'
@@ -272,18 +291,29 @@ const AppOrganizationRouteWithChildren = AppOrganizationRoute._addFileChildren(
   AppOrganizationRouteChildren,
 )
 
+interface AppUserRouteChildren {
+  AppUserProfileRoute: typeof AppUserProfileRoute
+}
+
+const AppUserRouteChildren: AppUserRouteChildren = {
+  AppUserProfileRoute: AppUserProfileRoute,
+}
+
+const AppUserRouteWithChildren =
+  AppUserRoute._addFileChildren(AppUserRouteChildren)
+
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRouteWithChildren
   AppOrganizationRoute: typeof AppOrganizationRouteWithChildren
+  AppUserRoute: typeof AppUserRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
-  AppUserProfileRoute: typeof AppUserProfileRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRouteWithChildren,
   AppOrganizationRoute: AppOrganizationRouteWithChildren,
+  AppUserRoute: AppUserRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
-  AppUserProfileRoute: AppUserProfileRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
