@@ -10,7 +10,7 @@ import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser';
 export const completeAccountHandler = onCallHandler(async (req) => {
   const { uid, email } = getAuthenticatedUser(req);
 
-  const { success, data, error } = UserSchema.registerUserSchema.safeParse(
+  const { success, data, error } = UserSchema.registerSchema.safeParse(
     req.data,
   );
 
@@ -28,7 +28,7 @@ export const completeAccountHandler = onCallHandler(async (req) => {
   }
 
   await Promise.all([
-    UserRepository.saveUser(uid, email, data),
+    UserRepository.save(uid, email, data),
     auth.setCustomUserClaims(uid, {
       accessLevel: 'client',
       complete: true,

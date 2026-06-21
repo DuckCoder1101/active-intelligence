@@ -10,6 +10,7 @@ import { useHandleError } from '@/hooks/useHandleError.util';
 import UserService from '@/services/user.service';
 import { useTheme } from '@/contexts/theme.context';
 import { useNavigate } from '@tanstack/react-router';
+import { Breadcrumb } from '@/components/ui/breadcrumb.component';
 
 export function Topbar() {
   const handleError = useHandleError();
@@ -28,13 +29,17 @@ export function Topbar() {
 
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-6 py-3">
-      <div className="flex items-center gap-2">
-        <div className="flex h-7.5 w-7.5 items-center justify-center rounded-lg bg-orange">
-          <MdOutlineDiamond size={16} className="text-white" />
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7.5 w-7.5 items-center justify-center rounded-lg bg-orange">
+            <MdOutlineDiamond size={16} className="text-white" />
+          </div>
+          <span className="text-[15px] font-black tracking-tight text-text">
+            Active <span className="text-orange">OS</span>
+          </span>
         </div>
-        <span className="text-[15px] font-black tracking-tight text-text">
-          Active <span className="text-orange">OS</span>
-        </span>
+        <div className="h-4 w-px bg-border" />
+        <Breadcrumb />
       </div>
 
       <div className="flex items-center gap-2">

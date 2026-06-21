@@ -5,11 +5,14 @@ import {
   MdOutlineCameraAlt,
   MdOutlineDiamond,
   MdOutlineGridView,
+  MdOutlineBusiness,
 } from 'react-icons/md';
+
+import { useMyCompanies } from '@/hooks/useMyCompanies';
+import { Spinner } from '@/components/ui/spinner.component';
 
 import { useAuth } from '@/contexts/auth.context';
 import { FormInput } from '@/components/ui/form-input.component';
-import { Spinner } from '@/components/ui/spinner.component';
 import UserService from '@/services/user.service';
 import { useHandleError } from '@/hooks/useHandleError.util';
 
@@ -25,6 +28,8 @@ type PersonalInfoFields = {
 function UserProfile() {
   const { profile, isLoadingProfile } = useAuth();
   const handleError = useHandleError();
+  const { companies: myCompanies, isLoading: isLoadingCompanies } =
+    useMyCompanies();
 
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isLoadingPhoto, setIsLoadingPhoto] = useState(true);
@@ -239,23 +244,45 @@ function UserProfile() {
           </form>
         </div>
 
-        {/* Dashboards */}
+        {/* Companies */}
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="mb-4">
             <h2 className="text-[16px] font-bold text-text sm:text-[18px]">
               Meus Painéis
             </h2>
             <span className="text-[11px] text-text-muted sm:text-[12px]">
-              Painéis e módulos aos quais você tem acesso.
+              Empresas e painéis aos quais você tem acesso.
             </span>
           </div>
-          {/* TODO: Load user dashboards list from Firestore and render as cards */}
-          <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border py-8">
-            <MdOutlineGridView size={26} className="text-text-muted" />
-            <p className="text-[13px] text-text-muted">
-              Nenhum painel encontrado.
-            </p>
-          </div>
+
+          {isLoadingCompanies ? (
+            <div className="flex items-center justify-center py-8">
+              <Spinner className="text-orange" />
+            </div>
+          ) : myCompanies.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border py-8">
+              <MdOutlineGridView size={26} className="text-text-muted" />
+              <p className="text-[13px] text-text-muted">
+                Nenhum painel encontrado.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {myCompanies.map((company) => (
+                <div
+                  key={company.companyId}
+                  className="flex items-center gap-3.5 rounded-lg border border-border bg-bg px-4 py-3 transition-colors hover:border-primary/30"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <MdOutlineBusiness size={18} className="text-primary" />
+                  </div>
+                  <p className="text-[14px] font-semibold text-text">
+                    {company.displayName}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

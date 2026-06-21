@@ -5,7 +5,7 @@ import UserRepository from '../repositories/user.repository';
 
 export const getMeHandler = onCallHandler(async (req) => {
   const { uid, accessLevel } = getAuthenticatedUser(req);
-  const profile = await UserRepository.getUserProfile(uid, accessLevel);
+  const profile = await UserRepository.getProfile(uid, accessLevel);
 
   return profile;
 });

@@ -19,8 +19,9 @@ import { Route as AppUserRouteImport } from './routes/app/user'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppAdminRouteImport } from './routes/app/admin'
 import { Route as AppUserProfileRouteImport } from './routes/app/user/profile'
-import { Route as AppOrganizationOrganization_idRouteImport } from './routes/app/organization/$organization_id'
+import { Route as AppCompanyCompany_idRouteImport } from './routes/app/company/$company_id'
 import { Route as AppAdminDashboardRouteImport } from './routes/app/admin/dashboard'
+import { Route as AppAdminCompaniesRouteImport } from './routes/app/admin/companies'
 
 const AppRoute = AppRouteImport.update({
   id: '/app',
@@ -72,58 +73,65 @@ const AppUserProfileRoute = AppUserProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppUserRoute,
 } as any)
-const AppOrganizationOrganization_idRoute =
-  AppOrganizationOrganization_idRouteImport.update({
-    id: '/$organization_id',
-    path: '/$organization_id',
-    getParentRoute: () => AppOrganizationRoute,
-  } as any)
+const AppCompanyCompany_idRoute = AppCompanyCompany_idRouteImport.update({
+  id: '/company/$company_id',
+  path: '/company/$company_id',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminCompaniesRoute = AppAdminCompaniesRouteImport.update({
+  id: '/companies',
+  path: '/companies',
   getParentRoute: () => AppAdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/app/admin': typeof AppAdminRouteWithChildren
-  '/app/organization': typeof AppOrganizationRouteWithChildren
+  '/app/organization': typeof AppOrganizationRoute
   '/app/user': typeof AppUserRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/companies': typeof AppAdminCompaniesRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
-  '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
+  '/app/company/$company_id': typeof AppCompanyCompany_idRoute
   '/app/user/profile': typeof AppUserProfileRoute
 }
 export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRouteWithChildren
-  '/app/organization': typeof AppOrganizationRouteWithChildren
+  '/app/organization': typeof AppOrganizationRoute
   '/app/user': typeof AppUserRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/app': typeof AppIndexRoute
+  '/app/admin/companies': typeof AppAdminCompaniesRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
-  '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
+  '/app/company/$company_id': typeof AppCompanyCompany_idRoute
   '/app/user/profile': typeof AppUserProfileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/app': typeof AppRouteWithChildren
   '/app/admin': typeof AppAdminRouteWithChildren
-  '/app/organization': typeof AppOrganizationRouteWithChildren
+  '/app/organization': typeof AppOrganizationRoute
   '/app/user': typeof AppUserRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/companies': typeof AppAdminCompaniesRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
-  '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
+  '/app/company/$company_id': typeof AppCompanyCompany_idRoute
   '/app/user/profile': typeof AppUserProfileRoute
 }
 export interface FileRouteTypes {
@@ -138,8 +146,9 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/signin'
     | '/app/'
+    | '/app/admin/companies'
     | '/app/admin/dashboard'
-    | '/app/organization/$organization_id'
+    | '/app/company/$company_id'
     | '/app/user/profile'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -151,8 +160,9 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/signin'
     | '/app'
+    | '/app/admin/companies'
     | '/app/admin/dashboard'
-    | '/app/organization/$organization_id'
+    | '/app/company/$company_id'
     | '/app/user/profile'
   id:
     | '__root__'
@@ -165,8 +175,9 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/signin'
     | '/app/'
+    | '/app/admin/companies'
     | '/app/admin/dashboard'
-    | '/app/organization/$organization_id'
+    | '/app/company/$company_id'
     | '/app/user/profile'
   fileRoutesById: FileRoutesById
 }
@@ -250,12 +261,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUserProfileRouteImport
       parentRoute: typeof AppUserRoute
     }
-    '/app/organization/$organization_id': {
-      id: '/app/organization/$organization_id'
-      path: '/$organization_id'
-      fullPath: '/app/organization/$organization_id'
-      preLoaderRoute: typeof AppOrganizationOrganization_idRouteImport
-      parentRoute: typeof AppOrganizationRoute
+    '/app/company/$company_id': {
+      id: '/app/company/$company_id'
+      path: '/company/$company_id'
+      fullPath: '/app/company/$company_id'
+      preLoaderRoute: typeof AppCompanyCompany_idRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/admin/dashboard': {
       id: '/app/admin/dashboard'
@@ -264,31 +275,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminDashboardRouteImport
       parentRoute: typeof AppAdminRoute
     }
+    '/app/admin/companies': {
+      id: '/app/admin/companies'
+      path: '/companies'
+      fullPath: '/app/admin/companies'
+      preLoaderRoute: typeof AppAdminCompaniesRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
   }
 }
 
 interface AppAdminRouteChildren {
+  AppAdminCompaniesRoute: typeof AppAdminCompaniesRoute
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
 }
 
 const AppAdminRouteChildren: AppAdminRouteChildren = {
+  AppAdminCompaniesRoute: AppAdminCompaniesRoute,
   AppAdminDashboardRoute: AppAdminDashboardRoute,
 }
 
 const AppAdminRouteWithChildren = AppAdminRoute._addFileChildren(
   AppAdminRouteChildren,
-)
-
-interface AppOrganizationRouteChildren {
-  AppOrganizationOrganization_idRoute: typeof AppOrganizationOrganization_idRoute
-}
-
-const AppOrganizationRouteChildren: AppOrganizationRouteChildren = {
-  AppOrganizationOrganization_idRoute: AppOrganizationOrganization_idRoute,
-}
-
-const AppOrganizationRouteWithChildren = AppOrganizationRoute._addFileChildren(
-  AppOrganizationRouteChildren,
 )
 
 interface AppUserRouteChildren {
@@ -304,16 +312,18 @@ const AppUserRouteWithChildren =
 
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRouteWithChildren
-  AppOrganizationRoute: typeof AppOrganizationRouteWithChildren
+  AppOrganizationRoute: typeof AppOrganizationRoute
   AppUserRoute: typeof AppUserRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
+  AppCompanyCompany_idRoute: typeof AppCompanyCompany_idRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRouteWithChildren,
-  AppOrganizationRoute: AppOrganizationRouteWithChildren,
+  AppOrganizationRoute: AppOrganizationRoute,
   AppUserRoute: AppUserRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
+  AppCompanyCompany_idRoute: AppCompanyCompany_idRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
