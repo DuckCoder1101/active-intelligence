@@ -1,6 +1,5 @@
 import { httpsCallable } from 'firebase/functions';
 import {
-  signInWithCustomToken,
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
@@ -13,8 +12,8 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, functions, storage } from '@/utils/firebase.util';
 
 import type { User } from 'firebase/auth';
-import type { UserProfile } from '@t/user.model';
-import type { CompleteAccountDTO } from '@t/user.dto';
+import type { UserProfile } from '@/models/user.model';
+import type { CompleteAccountDTO } from '@/types/dtos/user.dto';
 
 export default class UserService {
   private static getMeCallable = httpsCallable<void, UserProfile>(
@@ -24,7 +23,7 @@ export default class UserService {
 
   private static completeAccountCallable = httpsCallable<
     CompleteAccountDTO,
-    string
+    void
   >(functions, 'completeAccountHandler');
 
   static async getMe(): Promise<UserProfile> {
@@ -33,10 +32,9 @@ export default class UserService {
   }
 
   static async completeAccount(formData: CompleteAccountDTO): Promise<User> {
-    const result = await this.completeAccountCallable(formData);
-    const customToken = result.data;
-    const credential = await signInWithCustomToken(auth, customToken);
-    return credential.user;
+    await this.completeAccountCallable(formData);
+    await auth.currentUser!.getIdToken(true);
+    return auth.currentUser!;
   }
 
   static async signinWithCredentials(

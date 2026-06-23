@@ -4,11 +4,12 @@ import {
   MdChevronRight,
   MdOutlineBusiness,
 } from 'react-icons/md';
+import { useNavigate } from '@tanstack/react-router';
 
 import { Badge } from '@/components/ui/badge.component';
 import { Spinner } from '@/components/ui/spinner.component';
 
-import type { Company } from '@t/company.model';
+import type { Company } from '@/models/company.model';
 import { formatPhone } from '@/formatters/formatPhone';
 
 interface CompaniesTableProps {
@@ -26,6 +27,8 @@ export function CompaniesTable({
   onEdit,
   onDelete,
 }: CompaniesTableProps) {
+  const navigate = useNavigate();
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -105,7 +108,18 @@ export function CompaniesTable({
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-center gap-2">
-                    <button className="text-text-muted transition-colors hover:text-text">
+                    <button
+                      onClick={() =>
+                        navigate({
+                          to: '/app/admin/clients/$client_id',
+                          params: {
+                            client_id: company.companyId,
+                          },
+                        })
+                      }
+                      title="Ver ficha"
+                      className="text-text-muted transition-colors hover:text-text"
+                    >
                       <MdChevronRight size={18} />
                     </button>
                     <button

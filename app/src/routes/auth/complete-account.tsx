@@ -17,7 +17,7 @@ import { useAuth } from '@/contexts/auth.context';
 import { useHandleError } from '@/hooks/useHandleError.util';
 
 import { getSessionUser } from '@/server/session';
-import type { CompleteAccountDTO } from '@/types/user.dto';
+import type { CompleteAccountDTO } from '@/types/dtos/user.dto';
 
 export const Route = createFileRoute('/auth/complete-account')({
   component: SignUpPage,

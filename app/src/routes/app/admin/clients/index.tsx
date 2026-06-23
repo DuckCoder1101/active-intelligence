@@ -3,13 +3,13 @@ import { createFileRoute } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { FormInput } from '@/components/ui/form-input.component';
-import { CompaniesTable } from '@/components/admin/companies/companies-table.component';
-import { CompanyModal } from '@/components/admin/companies/company-modal.component';
+import { CompaniesTable } from '@/components/admin/clients/table.component';
+import { CompanyModal } from '@/components/admin/clients/modal.component';
 import { useCompanies } from '@/hooks/useCompanies';
 
-import type { Company } from '@t/company.model';
+import type { Company } from '@/models/company.model';
 
-export const Route = createFileRoute('/app/admin/companies')({
+export const Route = createFileRoute('/app/admin/clients/')({
   component: AdminCompanies,
 });
 

@@ -5,45 +5,20 @@ import { IMaskInput } from 'react-imask';
 import { Modal } from '@/components/ui/modal.component';
 import { Tabs } from '@/components/ui/tabs.component';
 import { FormInput } from '@/components/ui/form-input.component';
-import { CompanyMembersTab } from '@/components/admin/companies/company-members-tab.component';
+import { CompanyMembersTab } from './client/members-tab.component';
+
 import CompanyService from '@/services/company.service';
+
 import { useHandleError } from '@/hooks/useHandleError.util';
 import { useSnackbar } from '@/contexts/snackbar.context';
+import { deepClean } from '@/utils/deepClean.util';
+import { firstTabWithError } from '@/utils/firstTabWithError.util';
 
 import type { DefaultValues, FieldErrors } from 'react-hook-form';
-import type { Company, SaveCompanyDTO } from '@t/company.model';
+import type { Company, SaveCompanyDTO } from '@/models/company.model';
+import { BRAZILIAN_STATES } from '@/constants/brazilian-states.const';
 
 const FORM_ID = 'company-form';
-
-const BRAZILIAN_STATES = [
-  'AC',
-  'AL',
-  'AP',
-  'AM',
-  'BA',
-  'CE',
-  'DF',
-  'ES',
-  'GO',
-  'MA',
-  'MT',
-  'MS',
-  'MG',
-  'PA',
-  'PB',
-  'PR',
-  'PE',
-  'PI',
-  'RJ',
-  'RN',
-  'RS',
-  'RO',
-  'RR',
-  'SC',
-  'SP',
-  'SE',
-  'TO',
-];
 
 const defaultValues: DefaultValues<SaveCompanyDTO> = {
   companyStage: 'comercial',
@@ -51,38 +26,11 @@ const defaultValues: DefaultValues<SaveCompanyDTO> = {
   location: { state: 'SP' },
 };
 
-function deepClean<T>(value: T): T | undefined {
-  if (value === null || value === undefined) return undefined;
-  if (typeof value === 'number' && isNaN(value)) return undefined;
-  if (typeof value !== 'object' || Array.isArray(value)) return value;
-  const result: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
-    const cleaned = deepClean(v);
-    if (cleaned !== undefined) result[k] = cleaned;
-  }
-  return (Object.keys(result).length > 0 ? result : undefined) as T;
-}
-
-function firstTabWithError(errors: FieldErrors<SaveCompanyDTO>): string | null {
-  if (
-    errors.displayName ||
-    errors.legalInformation ||
-    errors.contact ||
-    errors.companyStage
-  )
-    return 'empresa';
-  if (errors.business) return 'mercado';
-  if (errors.location) return 'localizacao';
-  if (errors.social) return 'redes';
-  if (errors.extra) return 'observacoes';
-  return null;
-}
-
-type CompanyModalProps = {
+interface CompanyModalProps {
   company?: Company | null;
   onClose: () => void;
   onSaved: () => void;
-};
+}
 
 export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
   const [activeTab, setActiveTab] = useState('empresa');
@@ -151,7 +99,18 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
   };
 
   const onError = (errs: FieldErrors<SaveCompanyDTO>) => {
-    const tab = firstTabWithError(errs);
+    const tab = firstTabWithError({
+      empresa: !!(
+        errs.displayName ||
+        errs.legalInformation ||
+        errs.contact ||
+        errs.companyStage
+      ),
+      mercado: !!errs.business,
+      localizacao: !!errs.location,
+      redes: !!errs.social,
+      observacoes: !!errs.extra,
+    });
     if (tab) setActiveTab(tab);
   };
 

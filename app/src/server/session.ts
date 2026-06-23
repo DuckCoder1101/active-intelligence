@@ -11,7 +11,7 @@ import type { FirebaseTokenClaims } from '@t/session.type';
 const SESSION_COOKIE = 'session';
 const SESSION_MAX_AGE_SECONDS = 14 * 24 * 60 * 60;
 
-const isDev = import.meta.env['VITE_IS_DEV'] === 'true';
+const isDev = process.env['NODE_ENV'] !== 'production';
 
 export const getSessionUser = createServerFn({ method: 'GET' }).handler(
   async (): Promise<FirebaseTokenClaims | null> => {

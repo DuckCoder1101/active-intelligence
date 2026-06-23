@@ -2,7 +2,12 @@ import { httpsCallable } from 'firebase/functions';
 
 import { functions } from '@/utils/firebase.util';
 
-import type { Company, CompanyResume, SaveCompanyDTO } from '@t/company.model';
+import type {
+  Company,
+  CompanyResume,
+  SaveCompanyDTO,
+} from '@/models/company.model';
+import type { AuditLogModel } from '@/models/audit.model';
 
 export default class CompanyService {
   private static listCompaniesCallable = httpsCallable<void, Company[]>(
@@ -15,6 +20,11 @@ export default class CompanyService {
     'getMyCompaniesHandler',
   );
 
+  private static getCompanyCallable = httpsCallable<
+    { companyId: string },
+    Company
+  >(functions, 'getCompanyHandler');
+
   private static saveCompanyCallable = httpsCallable<SaveCompanyDTO, boolean>(
     functions,
     'saveCompanyHandler',
@@ -24,6 +34,11 @@ export default class CompanyService {
     { companyId: string },
     boolean
   >(functions, 'deleteCompanyHandler');
+
+  private static listAuditLogsCallable = httpsCallable<
+    { companyId: string },
+    AuditLogModel[]
+  >(functions, 'listAuditLogsHandler');
 
   static async listCompanies(): Promise<Company[]> {
     const result = await this.listCompaniesCallable();
@@ -35,11 +50,21 @@ export default class CompanyService {
     return result.data;
   }
 
+  static async getCompany(companyId: string): Promise<Company> {
+    const result = await this.getCompanyCallable({ companyId });
+    return result.data;
+  }
+
   static async saveCompany(data: SaveCompanyDTO): Promise<void> {
     await this.saveCompanyCallable(data);
   }
 
   static async deleteCompany(companyId: string): Promise<void> {
     await this.deleteCompanyCallable({ companyId });
+  }
+
+  static async listAuditLogs(companyId: string): Promise<AuditLogModel[]> {
+    const result = await this.listAuditLogsCallable({ companyId });
+    return result.data;
   }
 }

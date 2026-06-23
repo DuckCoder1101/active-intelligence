@@ -1,4 +1,4 @@
-import type { UserAccessLevel } from '@t/user.model';
+import type { UserAccessLevel } from '@/models/user.model';
 
 export interface CustomClaims {
   accessLevel?: UserAccessLevel;

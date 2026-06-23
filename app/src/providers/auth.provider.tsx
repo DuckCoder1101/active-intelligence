@@ -10,7 +10,7 @@ import { createSession, deleteSession } from '@/server/session';
 import type { ReactNode } from 'react';
 import type { AuthContextState, AuthUser } from '@contexts/auth.context';
 import type { CustomClaims } from '@t/session.type';
-import type { UserProfile } from '@/types/user.model';
+import type { UserProfile } from '@/models/user.model';
 
 interface AuthProviderProps {
   children: ReactNode;

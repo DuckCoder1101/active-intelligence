@@ -34,7 +34,4 @@ export const completeAccountHandler = onCallHandler(async (req) => {
       complete: true,
     }),
   ]);
-
-  const token = await auth.createCustomToken(uid);
-  return token;
 });

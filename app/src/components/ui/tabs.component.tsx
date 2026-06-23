@@ -4,6 +4,7 @@ export type Tab = {
   id: string;
   label: string;
   hasError?: boolean;
+  icon?: React.ElementType;
 };
 
 type TabsProps = {
@@ -21,12 +22,13 @@ export function Tabs({ tabs, active, onChange }: TabsProps) {
           type="button"
           onClick={() => onChange(tab.id)}
           className={[
-            'relative rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors',
+            'relative flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors',
             active === tab.id
               ? 'bg-card text-text shadow-sm'
               : 'text-text-muted hover:text-text-sub',
           ].join(' ')}
         >
+          {tab.icon && <tab.icon size={14} />}
           {tab.label}
           {tab.hasError && (
             <MdError

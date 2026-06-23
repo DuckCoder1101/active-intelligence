@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import CompanyService from '@/services/company.service';
 import { useHandleError } from '@/hooks/useHandleError.util';
 
-import type { Company } from '@t/company.model';
+import type { Company } from '@/models/company.model';
 
 export function useCompanies() {
   const [companies, setCompanies] = useState<Company[]>([]);

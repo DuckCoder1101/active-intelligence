@@ -24,7 +24,7 @@ export const ADMIN_MODULES: Section[] = [
         icon: MdOutlinePeople,
         label: 'Clientes',
         description: 'Base completa de cada cliente.',
-        to: '/app/admin/companies',
+        to: '/app/admin/clients',
       },
       {
         icon: MdOutlineViewKanban,

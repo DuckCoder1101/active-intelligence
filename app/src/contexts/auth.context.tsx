@@ -2,7 +2,7 @@ import type { User } from 'firebase/auth';
 import { createContext, useContext } from 'react';
 
 import type { CustomClaims } from '@t/session.type';
-import type { UserProfile } from '@t/user.model';
+import type { UserProfile } from '@/models/user.model';
 
 export type AuthUser = User & { claims: CustomClaims };
 
