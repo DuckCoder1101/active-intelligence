@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { FirebaseError } from 'firebase/app';
 import {
   createFileRoute,
@@ -7,7 +7,6 @@ import {
   useNavigate,
 } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { FaGoogle } from 'react-icons/fa';
 
 import { AuthLayout } from '@/components/auth/auth-layout.component';
 import { FormInput } from '@/components/ui/form-input.component';
@@ -35,7 +34,6 @@ function SignInPage() {
   const handleError = useHandleError();
   const navigate = useNavigate();
   const { claims: authUser, isSessionReady } = useAuth();
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   useEffect(() => {
     if (isSessionReady && authUser) {
@@ -65,25 +63,6 @@ function SignInPage() {
       } else {
         handleError(error);
       }
-    }
-  }
-
-  async function onGoogleSignIn() {
-    setIsGoogleLoading(true);
-
-    try {
-      await UserService.signinWithGoogle();
-    } catch (error) {
-      if (
-        error instanceof FirebaseError &&
-        (error.code === 'auth/popup-closed-by-user' ||
-          error.code === 'auth/cancelled-popup-request')
-      ) {
-        return;
-      }
-      handleError(error);
-    } finally {
-      setIsGoogleLoading(false);
     }
   }
 
@@ -131,7 +110,6 @@ function SignInPage() {
 
         <button
           type="submit"
-          disabled={isGoogleLoading}
           className="mt-1 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
         >
           {!isSubmitting ? (
@@ -144,31 +122,6 @@ function SignInPage() {
           )}
         </button>
       </form>
-
-      <div className="my-4 flex items-center gap-3">
-        <div className="h-px flex-1 bg-border" />
-        <span className="text-[11px] text-text-muted">ou</span>
-        <div className="h-px flex-1 bg-border" />
-      </div>
-
-      <button
-        type="button"
-        onClick={onGoogleSignIn}
-        disabled={isGoogleLoading || isSubmitting}
-        className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-border bg-card py-2.5 text-sm font-medium text-text transition-colors hover:bg-bg disabled:opacity-60"
-      >
-        {!isGoogleLoading ? (
-          <>
-            <FaGoogle />
-            Entrar com Google
-          </>
-        ) : (
-          <>
-            <Spinner size={16} />
-            Entrando...
-          </>
-        )}
-      </button>
     </AuthLayout>
   );
 }

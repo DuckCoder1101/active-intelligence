@@ -1,8 +1,6 @@
 import { httpsCallable } from 'firebase/functions';
 import {
   signInWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
   sendPasswordResetEmail,
   signOut,
 } from 'firebase/auth';
@@ -105,12 +103,6 @@ export default class UserService {
     password: string,
   ): Promise<User> {
     const credential = await signInWithEmailAndPassword(auth, email, password);
-    return credential.user;
-  }
-
-  static async signinWithGoogle(): Promise<User> {
-    const provider = new GoogleAuthProvider();
-    const credential = await signInWithPopup(auth, provider);
     return credential.user;
   }
 
