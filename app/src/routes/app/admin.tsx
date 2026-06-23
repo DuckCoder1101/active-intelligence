@@ -1,10 +1,15 @@
 import { Topbar } from '@/components/layout/topbar.component';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
+
+import type { RouteAccessLevel } from '@/types/route-access.type';
+
+const ACCESS: RouteAccessLevel = { minAccessLevel: 'admin' };
 
 export const Route = createFileRoute('/app/admin')({
   beforeLoad: ({ context }) => {
-    if (context.sessionUser.accessLevel !== 'admin') {
-      throw redirect({ to: '/app/user/profile' });
+    if (!checkRouteAccess(context.sessionUser, ACCESS)) {
+      throw redirect({ to: '/app/unauthorized' });
     }
   },
   component: AdminComponent,

@@ -1,8 +1,8 @@
 import z from 'zod';
 import { HttpsError } from 'firebase-functions/https';
 
-import { onCallHandler } from '@shared/utils/onCallHandler';
-import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser';
+import { onCallHandler } from '@shared/utils/onCallHandler.util';
+import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser.util';
 import MembershipSchema from '../data/membership.schema';
 import { MembershipService } from '../services/membership.service';
 import UserRepository from '../../user/repositories/user.repository';
@@ -14,7 +14,9 @@ export const saveMemberHandler = onCallHandler(async (req) => {
     throw new HttpsError('permission-denied', 'Acesso negado!');
   }
 
-  const { success, data, error } = MembershipSchema.saveMemberSchema.safeParse(req.data);
+  const { success, data, error } = MembershipSchema.saveMemberSchema.safeParse(
+    req.data,
+  );
 
   if (!success) {
     throw new HttpsError(
@@ -27,7 +29,10 @@ export const saveMemberHandler = onCallHandler(async (req) => {
   const uid = await UserRepository.findUidByCpf(data.cpf);
 
   if (!uid) {
-    throw new HttpsError('not-found', 'Nenhum usuário encontrado com este CPF!');
+    throw new HttpsError(
+      'not-found',
+      'Nenhum usuário encontrado com este CPF!',
+    );
   }
 
   await MembershipService.saveMembership(

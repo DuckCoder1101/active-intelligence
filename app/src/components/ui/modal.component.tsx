@@ -11,6 +11,7 @@ type ModalProps = {
   /** Renderiza footer padrão com Cancelar + Salvar vinculado ao formId */
   formId?: string;
   isSaving?: boolean;
+  saveDisabled?: boolean;
   saveLabel?: string;
   /** Footer customizado — use quando o padrão não atender */
   footer?: React.ReactNode;
@@ -23,6 +24,7 @@ export function Modal({
   width = 'max-w-2xl',
   formId,
   isSaving,
+  saveDisabled,
   saveLabel = 'Salvar',
   footer,
 }: ModalProps) {
@@ -46,7 +48,7 @@ export function Modal({
       <button
         form={formId}
         type="submit"
-        disabled={isSaving}
+        disabled={isSaving || saveDisabled}
         className="flex items-center gap-2 rounded-xl bg-orange px-5 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
       >
         {isSaving && <Spinner size={12} />}

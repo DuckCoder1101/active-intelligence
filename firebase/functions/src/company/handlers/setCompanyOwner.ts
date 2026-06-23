@@ -1,10 +1,15 @@
 import z from 'zod';
 import { HttpsError } from 'firebase-functions/https';
 
-import { onCallHandler } from '@shared/utils/onCallHandler';
-import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser';
+import { onCallHandler } from '@shared/utils/onCallHandler.util';
 import { MembershipService } from '../../membership/services/membership.service';
 import { Role } from '../../membership/enums/role.enum';
+import { requireAccess } from '@shared/utils/requireAccess.util';
+
+const ACCESS = {
+  minAccessLevel: 'admin' as const,
+  permissions: ['manage-clients' as const],
+};
 
 const setCompanyOwnerSchema = z.object({
   uid: z.string().min(1),
@@ -12,11 +17,7 @@ const setCompanyOwnerSchema = z.object({
 });
 
 export const setCompanyOwnerHandler = onCallHandler(async (req) => {
-  const { uid: actorUid, accessLevel } = getAuthenticatedUser(req);
-
-  if (accessLevel !== 'admin') {
-    throw new HttpsError('permission-denied', 'Acesso negado!');
-  }
+  const { uid: actorUid } = requireAccess(req, ACCESS);
 
   const { success, data, error } = setCompanyOwnerSchema.safeParse(req.data);
 
@@ -32,6 +33,5 @@ export const setCompanyOwnerHandler = onCallHandler(async (req) => {
     { ...data, role: Role.owner },
     actorUid,
   );
-
   return true;
 });

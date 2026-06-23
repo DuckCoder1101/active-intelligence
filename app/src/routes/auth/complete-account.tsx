@@ -34,7 +34,7 @@ function SignUpPage() {
   const handleError = useHandleError();
   const navigate = useNavigate();
 
-  const { authUser, profile, isSessionReady } = useAuth();
+  const { claims: authUser, profile, isSessionReady } = useAuth();
 
   useEffect(() => {
     if (isSessionReady && authUser && profile) {

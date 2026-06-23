@@ -1,10 +1,10 @@
 import { HttpsError } from 'firebase-functions/https';
 import type { ZodError } from 'zod';
 
-import { onCallHandler } from '@shared/utils/onCallHandler';
-import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser';
+import { onCallHandler } from '@shared/utils/onCallHandler.util';
 import CompanySchema from '../data/company.schema';
 import { CompanyRepository } from '../repositories/company.repository';
+import { requireAccess } from '@shared/utils/requireAccess.util';
 
 const FIELD_LABELS: Record<string, string> = {
   displayName: 'Nome de exibição',
@@ -42,14 +42,17 @@ function formatZodErrors(error: ZodError): string {
     .join('\n');
 }
 
+const ACCESS = {
+  minAccessLevel: 'admin' as const,
+  permissions: ['manage-clients' as const],
+};
+
 export const saveCompanyHandler = onCallHandler(async (req) => {
-  const { accessLevel } = getAuthenticatedUser(req);
+  requireAccess(req, ACCESS);
 
-  if (accessLevel !== 'admin') {
-    throw new HttpsError('permission-denied', 'Acesso negado!');
-  }
-
-  const { success, data, error } = CompanySchema.registerSchema.safeParse(req.data);
+  const { success, data, error } = CompanySchema.registerSchema.safeParse(
+    req.data,
+  );
 
   if (!success) {
     throw new HttpsError('invalid-argument', formatZodErrors(error));

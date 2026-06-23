@@ -1,8 +1,7 @@
 import type { UserAccessLevel } from '@/models/user.model';
 import type { AdminPermission } from '@/types/permissions.type';
 
-export interface CustomClaims {
-  accessLevel?: UserAccessLevel;
-  complete?: boolean;
+export interface RouteAccessLevel {
+  minAccessLevel: UserAccessLevel;
   permissions?: AdminPermission[];
 }

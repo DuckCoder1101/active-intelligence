@@ -1,20 +1,21 @@
 import z from 'zod';
 import { HttpsError } from 'firebase-functions/https';
 
-import { onCallHandler } from '@shared/utils/onCallHandler';
-import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser';
+import { onCallHandler } from '@shared/utils/onCallHandler.util';
 import { database } from '@shared/firebase';
 import { CompanyAuditDocument } from '../types/company-audit.document';
 import UserRepository from '../../user/repositories/user.repository';
+import { requireAccess } from '@shared/utils/requireAccess.util';
+
+const ACCESS = {
+  minAccessLevel: 'admin' as const,
+  permissions: ['manage-clients' as const],
+};
 
 const schema = z.object({ companyId: z.string().min(1) });
 
 export const listAuditLogsHandler = onCallHandler(async (req) => {
-  const { accessLevel } = getAuthenticatedUser(req);
-
-  if (accessLevel !== 'admin') {
-    throw new HttpsError('permission-denied', 'Acesso negado!');
-  }
+  requireAccess(req, ACCESS);
 
   const { success, data } = schema.safeParse(req.data);
 

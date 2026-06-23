@@ -15,6 +15,8 @@ import { useAuth } from '@/contexts/auth.context';
 import { FormInput } from '@/components/ui/form-input.component';
 import UserService from '@/services/user.service';
 import { useHandleError } from '@/hooks/useHandleError.util';
+import { useSnackbar } from '@/contexts/snackbar.context';
+import { formatAccessLevel } from '@/formatters/formatAccessLevel';
 
 export const Route = createFileRoute('/app/user/profile')({
   component: UserProfile,
@@ -28,12 +30,14 @@ type PersonalInfoFields = {
 function UserProfile() {
   const { profile, isLoadingProfile } = useAuth();
   const handleError = useHandleError();
+  const { pushSnackbar } = useSnackbar();
   const { companies: myCompanies, isLoading: isLoadingCompanies } =
     useMyCompanies();
 
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isLoadingPhoto, setIsLoadingPhoto] = useState(true);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -71,8 +75,21 @@ function UserProfile() {
     }
   };
 
-  const onSubmitPersonalInfo = (_data: PersonalInfoFields) => {
-    // TODO: Implement save - call UserService to update name and phone in Firestore
+  const onSubmitPersonalInfo = async (data: PersonalInfoFields) => {
+    if (!profile?.uid) return;
+    setIsSaving(true);
+    try {
+      await UserService.updateUser({
+        targetUid: profile.uid,
+        name: data.name,
+        phone: data.phone || undefined,
+      });
+      pushSnackbar({ type: 'success', message: 'Perfil atualizado!' });
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const initials = profile?.name
@@ -157,13 +174,16 @@ function UserProfile() {
               {profile?.email ?? '—'}
             </p>
             <span className="mt-2 inline-block rounded-full bg-orange/10 px-2.5 py-0.5 text-[11px] font-bold text-orange">
-              {profile?.accessLevel === 'admin' ? 'Administrador' : 'Cliente'}
+              {profile?.accessLevel
+                ? formatAccessLevel(profile.accessLevel)
+                : 'Usuário'}
             </span>
           </div>
         </div>
 
         {/* Admin access banner */}
-        {profile?.accessLevel === 'admin' && (
+        {(profile?.accessLevel === 'admin' ||
+          profile?.accessLevel === 'owner') && (
           <div className="flex items-center justify-between gap-4 rounded-xl border border-orange/20 bg-orange/5 p-5">
             <div className="flex items-center gap-3.5">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange/10">
@@ -233,11 +253,12 @@ function UserProfile() {
               />
             </div>
             <div className="flex justify-end pt-1">
-              {/* TODO: Add loading state and call UserService to persist name and phone changes */}
               <button
                 type="submit"
-                className="rounded-lg bg-orange px-5 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80"
+                disabled={isSaving}
+                className="flex items-center gap-2 rounded-lg bg-orange px-5 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-60"
               >
+                {isSaving && <Spinner size={13} />}
                 Salvar alterações
               </button>
             </div>

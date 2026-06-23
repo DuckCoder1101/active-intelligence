@@ -51,6 +51,13 @@ export const BROADCRUMB_ROUTE_MAP: {
     ],
   },
   {
+    test: (p) => p.startsWith('/app/admin/users'),
+    crumbs: [
+      { label: 'Dashboard', to: '/app/admin/dashboard' },
+      { label: 'Clientes' },
+    ],
+  },
+  {
     test: (p) => p.startsWith('/app/company/'),
     crumbs: [
       { label: 'Painel', to: '/app/admin/clients' },

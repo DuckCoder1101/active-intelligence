@@ -2,3 +2,8 @@ export * from './handlers/completeAccount';
 export * from './handlers/getMe';
 export * from './handlers/updateUserAccessLevel';
 export * from './handlers/getMyCompanies';
+export * from './handlers/listUsers';
+export * from './handlers/deleteUser';
+export * from './handlers/updateUser';
+export * from './handlers/updateUserPermissions';
+export * from './handlers/inviteUser';

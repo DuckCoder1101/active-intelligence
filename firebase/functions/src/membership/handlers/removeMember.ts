@@ -1,8 +1,8 @@
 import z from 'zod';
 import { HttpsError } from 'firebase-functions/https';
 
-import { onCallHandler } from '@shared/utils/onCallHandler';
-import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser';
+import { onCallHandler } from '@shared/utils/onCallHandler.util';
+import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser.util';
 import MembershipSchema from '../data/membership.schema';
 import { MembershipService } from '../services/membership.service';
 
@@ -13,7 +13,8 @@ export const removeMemberHandler = onCallHandler(async (req) => {
     throw new HttpsError('permission-denied', 'Acesso negado!');
   }
 
-  const { success, data, error } = MembershipSchema.removeMemberSchema.safeParse(req.data);
+  const { success, data, error } =
+    MembershipSchema.removeMemberSchema.safeParse(req.data);
 
   if (!success) {
     throw new HttpsError(

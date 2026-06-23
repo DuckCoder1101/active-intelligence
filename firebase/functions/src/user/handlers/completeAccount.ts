@@ -3,14 +3,14 @@ import { HttpsError } from 'firebase-functions/https';
 
 import UserRepository from '../repositories/user.repository';
 import UserSchema from '../data/user.schema';
-import { onCallHandler } from '@shared/utils/onCallHandler';
+import { onCallHandler } from '@shared/utils/onCallHandler.util';
 import { auth } from '@shared/firebase';
-import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser';
+import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser.util';
 
 export const completeAccountHandler = onCallHandler(async (req) => {
   const { uid, email } = getAuthenticatedUser(req);
 
-  const { success, data, error } = UserSchema.registerSchema.safeParse(
+  const { success, data, error } = UserSchema.registerUserSchema.safeParse(
     req.data,
   );
 
@@ -29,9 +29,13 @@ export const completeAccountHandler = onCallHandler(async (req) => {
 
   await Promise.all([
     UserRepository.save(uid, email, data),
+    auth.updateUser(uid, {
+      emailVerified: true,
+    }),
     auth.setCustomUserClaims(uid, {
-      accessLevel: 'client',
+      accessLevel: 'user',
       complete: true,
+      permissions: [],
     }),
   ]);
 });

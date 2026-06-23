@@ -1,8 +1,8 @@
 import z from 'zod';
 import { HttpsError } from 'firebase-functions/https';
 
-import { onCallHandler } from '@shared/utils/onCallHandler';
-import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser';
+import { onCallHandler } from '@shared/utils/onCallHandler.util';
+import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser.util';
 import { MembershipRepository } from '../repositories/membership.repository';
 
 const schema = z.object({

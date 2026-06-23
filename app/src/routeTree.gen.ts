@@ -16,10 +16,12 @@ import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
 import { Route as AppUserRouteImport } from './routes/app/user'
+import { Route as AppUnauthorizedRouteImport } from './routes/app/unauthorized'
 import { Route as AppOrganizationRouteImport } from './routes/app/organization'
 import { Route as AppAdminRouteImport } from './routes/app/admin'
 import { Route as AppUserProfileRouteImport } from './routes/app/user/profile'
 import { Route as AppAdminDashboardRouteImport } from './routes/app/admin/dashboard'
+import { Route as AppAdminUsersIndexRouteImport } from './routes/app/admin/users/index'
 import { Route as AppAdminClientsIndexRouteImport } from './routes/app/admin/clients/index'
 import { Route as AppAdminClientsClient_idRouteImport } from './routes/app/admin/clients/$client_id'
 
@@ -58,6 +60,11 @@ const AppUserRoute = AppUserRouteImport.update({
   path: '/user',
   getParentRoute: () => AppRoute,
 } as any)
+const AppUnauthorizedRoute = AppUnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppOrganizationRoute = AppOrganizationRouteImport.update({
   id: '/organization',
   path: '/organization',
@@ -78,6 +85,11 @@ const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppAdminRoute,
 } as any)
+const AppAdminUsersIndexRoute = AppAdminUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AppAdminRoute,
+} as any)
 const AppAdminClientsIndexRoute = AppAdminClientsIndexRouteImport.update({
   id: '/clients/',
   path: '/clients/',
@@ -94,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/app/admin': typeof AppAdminRouteWithChildren
   '/app/organization': typeof AppOrganizationRoute
+  '/app/unauthorized': typeof AppUnauthorizedRoute
   '/app/user': typeof AppUserRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -104,10 +117,12 @@ export interface FileRoutesByFullPath {
   '/app/user/profile': typeof AppUserProfileRoute
   '/app/admin/clients/$client_id': typeof AppAdminClientsClient_idRoute
   '/app/admin/clients/': typeof AppAdminClientsIndexRoute
+  '/app/admin/users/': typeof AppAdminUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRouteWithChildren
   '/app/organization': typeof AppOrganizationRoute
+  '/app/unauthorized': typeof AppUnauthorizedRoute
   '/app/user': typeof AppUserRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -118,12 +133,14 @@ export interface FileRoutesByTo {
   '/app/user/profile': typeof AppUserProfileRoute
   '/app/admin/clients/$client_id': typeof AppAdminClientsClient_idRoute
   '/app/admin/clients': typeof AppAdminClientsIndexRoute
+  '/app/admin/users': typeof AppAdminUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/app': typeof AppRouteWithChildren
   '/app/admin': typeof AppAdminRouteWithChildren
   '/app/organization': typeof AppOrganizationRoute
+  '/app/unauthorized': typeof AppUnauthorizedRoute
   '/app/user': typeof AppUserRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -134,6 +151,7 @@ export interface FileRoutesById {
   '/app/user/profile': typeof AppUserProfileRoute
   '/app/admin/clients/$client_id': typeof AppAdminClientsClient_idRoute
   '/app/admin/clients/': typeof AppAdminClientsIndexRoute
+  '/app/admin/users/': typeof AppAdminUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +159,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/admin'
     | '/app/organization'
+    | '/app/unauthorized'
     | '/app/user'
     | '/auth/complete-account'
     | '/auth/forgot-password'
@@ -151,10 +170,12 @@ export interface FileRouteTypes {
     | '/app/user/profile'
     | '/app/admin/clients/$client_id'
     | '/app/admin/clients/'
+    | '/app/admin/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/app/admin'
     | '/app/organization'
+    | '/app/unauthorized'
     | '/app/user'
     | '/auth/complete-account'
     | '/auth/forgot-password'
@@ -165,11 +186,13 @@ export interface FileRouteTypes {
     | '/app/user/profile'
     | '/app/admin/clients/$client_id'
     | '/app/admin/clients'
+    | '/app/admin/users'
   id:
     | '__root__'
     | '/app'
     | '/app/admin'
     | '/app/organization'
+    | '/app/unauthorized'
     | '/app/user'
     | '/auth/complete-account'
     | '/auth/forgot-password'
@@ -180,6 +203,7 @@ export interface FileRouteTypes {
     | '/app/user/profile'
     | '/app/admin/clients/$client_id'
     | '/app/admin/clients/'
+    | '/app/admin/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -241,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUserRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/unauthorized': {
+      id: '/app/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/app/unauthorized'
+      preLoaderRoute: typeof AppUnauthorizedRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/organization': {
       id: '/app/organization'
       path: '/organization'
@@ -269,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminDashboardRouteImport
       parentRoute: typeof AppAdminRoute
     }
+    '/app/admin/users/': {
+      id: '/app/admin/users/'
+      path: '/users'
+      fullPath: '/app/admin/users/'
+      preLoaderRoute: typeof AppAdminUsersIndexRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
     '/app/admin/clients/': {
       id: '/app/admin/clients/'
       path: '/clients'
@@ -290,12 +328,14 @@ interface AppAdminRouteChildren {
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
   AppAdminClientsClient_idRoute: typeof AppAdminClientsClient_idRoute
   AppAdminClientsIndexRoute: typeof AppAdminClientsIndexRoute
+  AppAdminUsersIndexRoute: typeof AppAdminUsersIndexRoute
 }
 
 const AppAdminRouteChildren: AppAdminRouteChildren = {
   AppAdminDashboardRoute: AppAdminDashboardRoute,
   AppAdminClientsClient_idRoute: AppAdminClientsClient_idRoute,
   AppAdminClientsIndexRoute: AppAdminClientsIndexRoute,
+  AppAdminUsersIndexRoute: AppAdminUsersIndexRoute,
 }
 
 const AppAdminRouteWithChildren = AppAdminRoute._addFileChildren(
@@ -316,6 +356,7 @@ const AppUserRouteWithChildren =
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRouteWithChildren
   AppOrganizationRoute: typeof AppOrganizationRoute
+  AppUnauthorizedRoute: typeof AppUnauthorizedRoute
   AppUserRoute: typeof AppUserRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
 }
@@ -323,6 +364,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRouteWithChildren,
   AppOrganizationRoute: AppOrganizationRoute,
+  AppUnauthorizedRoute: AppUnauthorizedRoute,
   AppUserRoute: AppUserRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
 }

@@ -2,10 +2,10 @@ import { createRouter as createTanStackRouter } from '@tanstack/react-router';
 
 import { routeTree } from './routeTree.gen';
 
-import type { FirebaseTokenClaims } from '@t/session.type';
+import type { CustomClaims } from '@t/session.type';
 
 export interface RouterContext {
-  sessionUser: FirebaseTokenClaims | null;
+  sessionUser: CustomClaims | null;
 }
 
 export function getRouter() {

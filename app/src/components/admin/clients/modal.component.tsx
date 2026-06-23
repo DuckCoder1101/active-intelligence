@@ -22,8 +22,12 @@ const FORM_ID = 'company-form';
 
 const defaultValues: DefaultValues<SaveCompanyDTO> = {
   companyStage: 'comercial',
-  business: { businessSector: 'imobiliaria' },
-  location: { state: 'SP' },
+  business: {
+    businessSector: 'imobiliaria',
+  },
+  location: {
+    state: 'SP',
+  },
 };
 
 interface CompanyModalProps {

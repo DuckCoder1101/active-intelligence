@@ -8,7 +8,7 @@ import { auth } from '@/utils/firebase.util';
 import { createSession, deleteSession } from '@/server/session';
 
 import type { ReactNode } from 'react';
-import type { AuthContextState, AuthUser } from '@contexts/auth.context';
+import type { AuthContextState } from '@contexts/auth.context';
 import type { CustomClaims } from '@t/session.type';
 import type { UserProfile } from '@/models/user.model';
 
@@ -20,7 +20,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const handleError = useHandleError();
 
   const [authState, setAuthState] = useState<AuthContextState>({
-    authUser: null,
+    claims: null,
     profile: null,
     isLoadingProfile: true,
     isSessionReady: false,
@@ -28,7 +28,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
-      let authUser: AuthUser | null = null;
+      let claims: CustomClaims | null = null;
       let profile: UserProfile | null = null;
 
       try {
@@ -36,10 +36,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         if (user) {
           const idTokenResult = await user.getIdTokenResult();
-          const claims = idTokenResult.claims as unknown as CustomClaims;
-          authUser = { ...user, claims };
+          claims = idTokenResult.claims as CustomClaims;
 
-          await createSession({ data: { idToken: idTokenResult.token } });
+          await createSession({
+            data: {
+              idToken: idTokenResult.token,
+            },
+          });
 
           if (claims.complete) {
             profile = await UserService.getMe();
@@ -51,7 +54,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         handleError(err);
       } finally {
         setAuthState({
-          authUser,
+          claims,
           profile,
           isLoadingProfile: false,
           isSessionReady: true,

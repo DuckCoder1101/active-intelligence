@@ -1,9 +1,13 @@
 import z from 'zod';
 
 import UserSchema from '../data/user.schema';
-import { UserAccessLevel } from '@shared/types/authenticatedUser.type';
+import {
+  AdminPermission,
+  UserAccessLevel,
+} from '@shared/types/accessLevel.type';
 
-export type RegisterUserDTO = z.infer<typeof UserSchema.registerSchema>;
+export type RegisterUserDTO = z.infer<typeof UserSchema.registerUserSchema>;
+export type UpdateUserDTO = z.infer<typeof UserSchema.updateUserSchema>;
 
 export interface UserProfileDTO {
   uid: string;
@@ -15,6 +19,7 @@ export interface UserProfileDTO {
   cpf: string;
 
   accessLevel: UserAccessLevel;
+  permissions: AdminPermission[];
 
   createdAt: number;
   updatedAt: number;

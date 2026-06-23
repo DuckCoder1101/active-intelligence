@@ -34,7 +34,7 @@ export const Route = createFileRoute('/auth/signin')({
 function SignInPage() {
   const handleError = useHandleError();
   const navigate = useNavigate();
-  const { authUser, isSessionReady } = useAuth();
+  const { claims: authUser, isSessionReady } = useAuth();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   useEffect(() => {

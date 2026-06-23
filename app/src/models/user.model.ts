@@ -1,4 +1,6 @@
-export type UserAccessLevel = 'client' | 'admin';
+import type { AdminPermission } from '@/types/permissions.type';
+
+export type UserAccessLevel = 'owner' | 'admin' | 'user';
 
 export interface UserProfile {
   uid: string;
@@ -10,6 +12,7 @@ export interface UserProfile {
   cpf: string;
 
   accessLevel: UserAccessLevel;
+  permissions: AdminPermission[];
 
   createdAt: number;
   updatedAt: number;

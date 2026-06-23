@@ -4,12 +4,21 @@ import { useAuth } from '@/contexts/auth.context';
 import { ADMIN_MODULES } from '@/constants/admin-modules.const';
 import { ModuleCard } from '@/components/admin/dashboard/module-card.component';
 
+import type { AdminModule } from '@/types/admin-module.type';
+
 export const Route = createFileRoute('/app/admin/dashboard')({
   component: AdminDashboard,
 });
 
 function AdminDashboard() {
   const { profile } = useAuth();
+  const isOwner = profile?.accessLevel === 'owner';
+  const userPermissions = profile?.permissions ?? [];
+
+  const isDisabled = (mod: AdminModule) => {
+    if (isOwner || !mod.permission) return false;
+    return !userPermissions.includes(mod.permission);
+  };
 
   return (
     <>
@@ -40,7 +49,11 @@ function AdminDashboard() {
             </div>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
               {section.modules.map((mod) => (
-                <ModuleCard key={mod.label} module={mod} />
+                <ModuleCard
+                  key={mod.label}
+                  module={mod}
+                  disabled={isDisabled(mod)}
+                />
               ))}
             </div>
           </div>

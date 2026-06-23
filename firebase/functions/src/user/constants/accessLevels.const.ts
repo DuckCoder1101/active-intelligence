@@ -1,6 +1,7 @@
-import { UserAccessLevel } from '@shared/types/authenticatedUser.type';
+import { UserAccessLevel } from '@shared/types/accessLevel.type';
 
 export const AccessLevels = [
+  'owner',
   'admin',
-  'client',
+  'user',
 ] as const satisfies UserAccessLevel[];

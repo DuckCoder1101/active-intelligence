@@ -1,15 +1,25 @@
 import { useState, useMemo } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { FormInput } from '@/components/ui/form-input.component';
+import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal.component';
 import { CompaniesTable } from '@/components/admin/clients/table.component';
 import { CompanyModal } from '@/components/admin/clients/modal.component';
 import { useCompanies } from '@/hooks/useCompanies';
+import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
 import type { Company } from '@/models/company.model';
+import type { RouteAccessLevel } from '@/types/route-access.type';
+
+const ACCESS: RouteAccessLevel = { minAccessLevel: 'admin', permissions: ['manage-clients'] };
 
 export const Route = createFileRoute('/app/admin/clients/')({
+  beforeLoad: ({ context }) => {
+    if (!checkRouteAccess(context.sessionUser, ACCESS)) {
+      throw redirect({ to: '/app/unauthorized' });
+    }
+  },
   component: AdminCompanies,
 });
 
@@ -18,6 +28,7 @@ function AdminCompanies() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+  const [deletingCompany, setDeletingCompany] = useState<Company | null>(null);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return companies;
@@ -43,6 +54,12 @@ function AdminCompanies() {
   const handleSaved = () => {
     handleClose();
     refresh();
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingCompany) return;
+    await remove(deletingCompany.companyId);
+    setDeletingCompany(null);
   };
 
   return (
@@ -84,15 +101,29 @@ function AdminCompanies() {
         isLoading={isLoading}
         deletingId={deletingId}
         onEdit={handleEdit}
-        onDelete={remove}
+        onDelete={(companyId) => {
+          const company = companies.find((c) => c.companyId === companyId);
+          if (company) setDeletingCompany(company);
+        }}
       />
 
-      {/* Modal */}
+      {/* Edit modal */}
       {showModal && (
         <CompanyModal
           company={editingCompany}
           onClose={handleClose}
           onSaved={handleSaved}
+        />
+      )}
+
+      {/* Delete confirmation */}
+      {deletingCompany && (
+        <ConfirmDeleteModal
+          title="Excluir cliente"
+          description={`Tem certeza que deseja excluir "${deletingCompany.displayName}"? Esta ação não pode ser desfeita.`}
+          isDeleting={deletingId === deletingCompany.companyId}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeletingCompany(null)}
         />
       )}
     </>
