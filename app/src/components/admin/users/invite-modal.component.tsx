@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Modal } from '@/components/ui/modal.component';
+import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import UserService from '@/services/user.service';
 import { useHandleError } from '@/hooks/useHandleError.util';

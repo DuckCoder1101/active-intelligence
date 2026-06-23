@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 import { MdLockReset } from 'react-icons/md';
 
-import { Modal } from '@/components/ui/modal.component';
+import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
@@ -46,7 +46,8 @@ export function UserModal({ targetUser, onClose, onSaved }: UserModalProps) {
 
   const [isSaving, setIsSaving] = useState(false);
   const [isSendingReset, setIsSendingReset] = useState(false);
-  const [selectedLevel, setSelectedLevel] = useState<UserAccessLevel>(targetLevel);
+  const [selectedLevel, setSelectedLevel] =
+    useState<UserAccessLevel>(targetLevel);
   const [localPermissions, setLocalPermissions] = useState<AdminPermission[]>(
     targetLevel === 'owner'
       ? ADMIN_PERMISSIONS_META.map((p) => p.key)
@@ -68,7 +69,8 @@ export function UserModal({ targetUser, onClose, onSaved }: UserModalProps) {
     },
   });
 
-  const permissionsReadOnly = callerLevel !== 'owner' || targetLevel === 'owner';
+  const permissionsReadOnly =
+    callerLevel !== 'owner' || targetLevel === 'owner';
 
   const levelChanged = selectedLevel !== targetLevel;
   const permissionsChanged =
@@ -102,7 +104,10 @@ export function UserModal({ targetUser, onClose, onSaved }: UserModalProps) {
       if (permissionsChanged) {
         tasks.push({
           type: 'permissions',
-          promise: UserService.updatePermissions(targetUser.uid, localPermissions),
+          promise: UserService.updatePermissions(
+            targetUser.uid,
+            localPermissions,
+          ),
         });
       }
 
@@ -220,7 +225,9 @@ export function UserModal({ targetUser, onClose, onSaved }: UserModalProps) {
           </label>
           <select
             value={selectedLevel}
-            onChange={(e) => setSelectedLevel(e.target.value as UserAccessLevel)}
+            onChange={(e) =>
+              setSelectedLevel(e.target.value as UserAccessLevel)
+            }
             disabled={callerLevel !== 'owner' || targetLevel === 'owner'}
             className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-text outline-none transition-colors focus:border-primary disabled:opacity-60"
           >
@@ -275,7 +282,8 @@ export function UserModal({ targetUser, onClose, onSaved }: UserModalProps) {
                           checked={checked}
                           disabled={permissionsReadOnly}
                           onChange={() =>
-                            !permissionsReadOnly && handleTogglePermission(p.key)
+                            !permissionsReadOnly &&
+                            handleTogglePermission(p.key)
                           }
                           className="accent-orange"
                         />

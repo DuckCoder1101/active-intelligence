@@ -3,7 +3,7 @@ import { MdEdit, MdDelete, MdOutlinePeople } from 'react-icons/md';
 import { Badge } from '@/components/ui/badge.component';
 import { Spinner } from '@/components/ui/spinner.component';
 
-import type { UserProfile } from '@/models/user.model';
+import type { UserProfile, UserAccessLevel } from '@/models/user.model';
 import { formatPhone } from '@/formatters/formatPhone';
 import { formatAccessLevel } from '@/formatters/formatAccessLevel';
 
@@ -11,6 +11,8 @@ interface UsersTableProps {
   users: UserProfile[];
   isLoading: boolean;
   deletingId: string | null;
+  callerUid: string;
+  callerLevel: UserAccessLevel;
   onEdit: (user: UserProfile) => void;
   onDelete: (uid: string) => void;
 }
@@ -19,6 +21,8 @@ export function UsersTable({
   users,
   isLoading,
   deletingId,
+  callerUid,
+  callerLevel,
   onEdit,
   onDelete,
 }: UsersTableProps) {
@@ -41,6 +45,8 @@ export function UsersTable({
     );
   }
 
+  const canDelete = callerLevel === 'owner';
+
   return (
     <div className="overflow-x-auto rounded-xl border border-border">
       <table className="w-full">
@@ -62,64 +68,80 @@ export function UsersTable({
           </tr>
         </thead>
         <tbody className="divide-y divide-border bg-card">
-          {users.map((user) => (
-            <tr key={user.uid} className="transition-colors hover:bg-bg/40">
-              <td className="px-4 py-3">
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-semibold text-text">
-                    {user.name}
+          {users.map((user) => {
+            const deleteDisabled =
+              deletingId === user.uid ||
+              user.uid === callerUid ||
+              user.accessLevel === 'owner';
+
+            const deleteTitle =
+              user.uid === callerUid
+                ? 'Você não pode excluir sua própria conta'
+                : user.accessLevel === 'owner'
+                  ? 'Não é possível excluir um owner'
+                  : 'Excluir';
+
+            return (
+              <tr key={user.uid} className="transition-colors hover:bg-bg/40">
+                <td className="px-4 py-3">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[13px] font-semibold text-text">
+                      {user.name}
+                    </span>
+                    <span className="text-[12px] text-text-muted">
+                      {user.email}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <span className="text-[13px] text-text-sub">{user.cpf}</span>
+                </td>
+                <td className="px-4 py-3">
+                  <span className="text-[13px] text-text-sub">
+                    {user.phone ? formatPhone(user.phone) : '—'}
                   </span>
-                  <span className="text-[12px] text-text-muted">
-                    {user.email}
-                  </span>
-                </div>
-              </td>
-              <td className="px-4 py-3">
-                <span className="text-[13px] text-text-sub">{user.cpf}</span>
-              </td>
-              <td className="px-4 py-3">
-                <span className="text-[13px] text-text-sub">
-                  {user.phone ? formatPhone(user.phone) : '—'}
-                </span>
-              </td>
-              <td className="px-4 py-3">
-                <Badge
-                  variant={
-                    user.accessLevel === 'owner'
-                      ? 'purple'
-                      : user.accessLevel === 'admin'
-                        ? 'orange'
-                        : 'default'
-                  }
-                >
-                  {formatAccessLevel(user.accessLevel)}
-                </Badge>
-              </td>
-              <td className="px-4 py-3">
-                <div className="flex items-center justify-center gap-2">
-                  <button
-                    onClick={() => onEdit(user)}
-                    className="text-text-muted transition-colors hover:text-text"
-                    title="Editar"
+                </td>
+                <td className="px-4 py-3">
+                  <Badge
+                    variant={
+                      user.accessLevel === 'owner'
+                        ? 'purple'
+                        : user.accessLevel === 'admin'
+                          ? 'orange'
+                          : 'default'
+                    }
                   >
-                    <MdEdit size={16} />
-                  </button>
-                  <button
-                    onClick={() => onDelete(user.uid)}
-                    disabled={deletingId === user.uid}
-                    className="text-text-muted transition-colors hover:text-danger disabled:opacity-50"
-                    title="Excluir"
-                  >
-                    {deletingId === user.uid ? (
-                      <Spinner size={14} />
-                    ) : (
-                      <MdDelete size={16} />
+                    {formatAccessLevel(user.accessLevel)}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => onEdit(user)}
+                      className="text-text-muted transition-colors hover:text-text"
+                      title="Editar"
+                    >
+                      <MdEdit size={16} />
+                    </button>
+                    {canDelete && (
+                      <button
+                        onClick={() => onDelete(user.uid)}
+                        disabled={deleteDisabled}
+                        title={deleteTitle}
+                        className="text-text-muted transition-colors hover:text-danger disabled:cursor-not-allowed disabled:opacity-30"
+                      >
+                        {deletingId === user.uid ? (
+                          <Spinner size={14} />
+                        ) : (
+                          <MdDelete size={16} />
+                        )}
+                      </button>
                     )}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

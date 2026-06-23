@@ -3,11 +3,12 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { FormInput } from '@/components/ui/form-input.component';
-import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal.component';
+import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { UsersTable } from '@/components/admin/users/table.component';
 import { UserModal } from '@/components/admin/users/info-modal.component';
 import { InviteUserModal } from '@/components/admin/users/invite-modal.component';
 import { useUsers } from '@/hooks/useUsers';
+import { useAuth } from '@/contexts/auth.context';
 import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
 import type { UserProfile } from '@/models/user.model';
@@ -28,6 +29,7 @@ export const Route = createFileRoute('/app/admin/users/')({
 });
 
 function AdminUsers() {
+  const { profile } = useAuth();
   const { users, isLoading, deletingId, remove, patchUser } = useUsers();
 
   const [search, setSearch] = useState('');
@@ -93,6 +95,8 @@ function AdminUsers() {
         users={filtered}
         isLoading={isLoading}
         deletingId={deletingId}
+        callerUid={profile?.uid ?? ''}
+        callerLevel={profile?.accessLevel ?? 'user'}
         onEdit={setEditingUser}
         onDelete={(uid) => {
           const user = users.find((u) => u.uid === uid);

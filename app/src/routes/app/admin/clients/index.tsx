@@ -3,7 +3,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { FormInput } from '@/components/ui/form-input.component';
-import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal.component';
+import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { CompaniesTable } from '@/components/admin/clients/table.component';
 import { CompanyModal } from '@/components/admin/clients/modal.component';
 import { useCompanies } from '@/hooks/useCompanies';
@@ -12,7 +12,10 @@ import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 import type { Company } from '@/models/company.model';
 import type { RouteAccessLevel } from '@/types/route-access.type';
 
-const ACCESS: RouteAccessLevel = { minAccessLevel: 'admin', permissions: ['manage-clients'] };
+const ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+  permissions: ['manage-clients'],
+};
 
 export const Route = createFileRoute('/app/admin/clients/')({
   beforeLoad: ({ context }) => {

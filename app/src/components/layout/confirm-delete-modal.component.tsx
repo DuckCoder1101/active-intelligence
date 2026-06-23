@@ -24,10 +24,12 @@ export function ConfirmDeleteModal({
         onClick={onCancel}
       />
       <div className="relative z-10 w-full max-w-sm rounded-2xl bg-card p-6 shadow-2xl">
-        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-danger/10">
-          <MdWarning size={20} className="text-danger" />
+        <div className="mb-1 flex items-center gap-2.5">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-danger/10">
+            <MdWarning size={16} className="text-danger" />
+          </div>
+          <h2 className="text-[15px] font-bold text-text">{title}</h2>
         </div>
-        <h2 className="mb-1 text-[15px] font-bold text-text">{title}</h2>
         <p className="mb-6 text-[13px] text-text-sub">{description}</p>
         <div className="flex justify-end gap-3">
           <button

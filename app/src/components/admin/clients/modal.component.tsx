@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 
-import { Modal } from '@/components/ui/modal.component';
+import { Modal } from '@/components/layout/modal.component';
 import { Tabs } from '@/components/ui/tabs.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { CompanyMembersTab } from './client/members-tab.component';
