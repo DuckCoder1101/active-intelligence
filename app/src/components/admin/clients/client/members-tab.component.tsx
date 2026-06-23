@@ -4,6 +4,7 @@ import { MdAdd, MdPersonRemove, MdStar } from 'react-icons/md';
 
 import MembershipService from '@/services/membership.service';
 import { Spinner } from '@/components/ui/spinner.component';
+import { FormSelect } from '@/components/ui/form-select.component';
 import { useHandleError } from '@/hooks/useHandleError.util';
 import { useSnackbar } from '@/contexts/snackbar.context';
 
@@ -120,15 +121,16 @@ export function CompanyMembersTab({ companyId }: Props) {
             type="tel"
             className="min-w-0 flex-1 rounded-lg border border-border bg-bg px-3 py-2 text-[13px] text-text placeholder:text-text-muted outline-none focus:border-orange focus:ring-1 focus:ring-orange"
           />
-          <select
+          <FormSelect
             value={newRole}
-            onChange={(e) => setNewRole(e.target.value as MemberRole)}
-            className="rounded-lg border border-border bg-bg px-2 py-2 text-[13px] text-text outline-none focus:border-orange focus:ring-1 focus:ring-orange"
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setNewRole(e.target.value as MemberRole)
+            }
           >
             <option value="viewer">Viewer</option>
             <option value="editor">Editor</option>
             <option value="owner">Owner</option>
-          </select>
+          </FormSelect>
           <button
             type="button"
             disabled={newCpf.replace(/\D/g, '').length !== 11 || isAdding}

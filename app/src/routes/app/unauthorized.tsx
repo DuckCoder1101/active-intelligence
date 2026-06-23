@@ -20,10 +20,10 @@ function UnauthorizedComponent() {
         </p>
       </div>
       <Link
-        to="/app/admin/dashboard"
+        to="/app/user/profile"
         className="mt-2 rounded-xl bg-orange px-5 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80"
       >
-        Voltar ao painel
+        Voltar ao perfil
       </Link>
     </div>
   );

@@ -5,6 +5,7 @@ import { MdLockReset } from 'react-icons/md';
 
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { FormSelect } from '@/components/ui/form-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
 
@@ -219,23 +220,18 @@ export function UserModal({ targetUser, onClose, onSaved }: UserModalProps) {
       </form>
 
       <div className="mt-6 space-y-5 border-t border-border pt-5">
-        <div>
-          <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.5px] text-text-sub">
-            Nível de acesso
-          </label>
-          <select
-            value={selectedLevel}
-            onChange={(e) =>
-              setSelectedLevel(e.target.value as UserAccessLevel)
-            }
-            disabled={callerLevel !== 'owner' || targetLevel === 'owner'}
-            className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-text outline-none transition-colors focus:border-primary disabled:opacity-60"
-          >
-            <option value="user">Usuário</option>
-            <option value="admin">Administrador</option>
-            <option value="owner">Proprietário</option>
-          </select>
-        </div>
+        <FormSelect
+          label="Nível de acesso"
+          value={selectedLevel}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setSelectedLevel(e.target.value as UserAccessLevel)
+          }
+          disabled={callerLevel !== 'owner' || targetLevel === 'owner'}
+        >
+          <option value="user">Usuário</option>
+          <option value="admin">Administrador</option>
+          <option value="owner">Proprietário</option>
+        </FormSelect>
 
         <div>
           <div className="mb-3 flex items-center justify-between">
