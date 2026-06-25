@@ -30,12 +30,12 @@ export interface Company {
     tradeName?: string;
     documentNumber: string;
   };
-  contact?: {
-    email?: string;
-    phone?: string;
+  contact: {
+    email: string;
+    phone: string;
   };
-  business: {
-    businessSector: BusinessSector;
+  business?: {
+    businessSector?: BusinessSector;
     customSegment?: string;
     cnae?: string;
     revenueRange?: RevenueRange;
@@ -43,8 +43,8 @@ export interface Company {
     quantityOfBrokers?: number;
   };
   location: {
-    address: string;
-    number: string;
+    address?: string;
+    number?: string;
     complement?: string;
     neighborhood?: string;
     city: string;
@@ -66,18 +66,18 @@ export interface Company {
 export interface SaveCompanyDTO {
   companyId?: string;
   displayName: string;
-  companyStage: CompanyStage;
+  companyStage?: CompanyStage;
   legalInformation: {
     legalName?: string;
     tradeName?: string;
     documentNumber: string;
   };
-  contact?: {
-    email?: string;
-    phone?: string;
+  contact: {
+    email: string;
+    phone: string;
   };
-  business: {
-    businessSector: BusinessSector;
+  business?: {
+    businessSector?: BusinessSector;
     customSegment?: string;
     cnae?: string;
     revenueRange?: RevenueRange;
@@ -85,8 +85,8 @@ export interface SaveCompanyDTO {
     quantityOfBrokers?: number;
   };
   location: {
-    address: string;
-    number: string;
+    address?: string;
+    number?: string;
     complement?: string;
     neighborhood?: string;
     city: string;

@@ -1,15 +1,14 @@
 import { useState, useMemo } from 'react';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { AdminPageContainer } from '@/routes/app/admin';
 import { MdAdd } from 'react-icons/md';
 
 import { FormInput } from '@/components/ui/form-input.component';
-import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { CompaniesTable } from '@/components/admin/clients/table.component';
 import { CompanyModal } from '@/components/admin/clients/modal.component';
 import { useCompanies } from '@/hooks/useCompanies';
 import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
-import type { Company } from '@/models/company.model';
 import type { RouteAccessLevel } from '@/types/route-access.type';
 
 const ACCESS: RouteAccessLevel = {
@@ -27,11 +26,9 @@ export const Route = createFileRoute('/app/admin/clients/')({
 });
 
 function AdminCompanies() {
-  const { companies, isLoading, deletingId, remove, refresh } = useCompanies();
+  const { companies, isLoading, refresh } = useCompanies();
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
-  const [deletingCompany, setDeletingCompany] = useState<Company | null>(null);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return companies;
@@ -44,30 +41,14 @@ function AdminCompanies() {
     );
   }, [companies, search]);
 
-  const handleEdit = (company: Company) => {
-    setEditingCompany(company);
-    setShowModal(true);
-  };
-
-  const handleClose = () => {
-    setShowModal(false);
-    setEditingCompany(null);
-  };
-
   const handleSaved = () => {
-    handleClose();
+    setShowModal(false);
     refresh();
   };
 
-  const handleDeleteConfirm = async () => {
-    if (!deletingCompany) return;
-    await remove(deletingCompany.companyId);
-    setDeletingCompany(null);
-  };
-
   return (
-    <>
-      {/* Header */}
+    <AdminPageContainer>
+      <>
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-text sm:text-4xl">
@@ -86,7 +67,6 @@ function AdminCompanies() {
         </button>
       </div>
 
-      {/* Search */}
       <div className="mb-4">
         <FormInput
           label=""
@@ -98,37 +78,15 @@ function AdminCompanies() {
         />
       </div>
 
-      {/* Table */}
-      <CompaniesTable
-        companies={filtered}
-        isLoading={isLoading}
-        deletingId={deletingId}
-        onEdit={handleEdit}
-        onDelete={(companyId) => {
-          const company = companies.find((c) => c.companyId === companyId);
-          if (company) setDeletingCompany(company);
-        }}
-      />
+      <CompaniesTable companies={filtered} isLoading={isLoading} />
 
-      {/* Edit modal */}
       {showModal && (
         <CompanyModal
-          company={editingCompany}
-          onClose={handleClose}
+          onClose={() => setShowModal(false)}
           onSaved={handleSaved}
         />
       )}
-
-      {/* Delete confirmation */}
-      {deletingCompany && (
-        <ConfirmDeleteModal
-          title="Excluir cliente"
-          description={`Tem certeza que deseja excluir "${deletingCompany.displayName}"? Esta ação não pode ser desfeita.`}
-          isDeleting={deletingId === deletingCompany.companyId}
-          onConfirm={handleDeleteConfirm}
-          onCancel={() => setDeletingCompany(null)}
-        />
-      )}
-    </>
+      </>
+    </AdminPageContainer>
   );
 }

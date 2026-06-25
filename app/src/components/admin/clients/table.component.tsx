@@ -1,9 +1,4 @@
-import {
-  MdEdit,
-  MdDelete,
-  MdChevronRight,
-  MdOutlineBusiness,
-} from 'react-icons/md';
+import { MdOutlineBusiness } from 'react-icons/md';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Badge } from '@/components/ui/badge.component';
@@ -15,18 +10,9 @@ import { formatPhone } from '@/formatters/formatPhone';
 interface CompaniesTableProps {
   companies: Company[];
   isLoading: boolean;
-  deletingId: string | null;
-  onEdit: (company: Company) => void;
-  onDelete: (companyId: string) => void;
 }
 
-export function CompaniesTable({
-  companies,
-  isLoading,
-  deletingId,
-  onEdit,
-  onDelete,
-}: CompaniesTableProps) {
+export function CompaniesTable({ companies, isLoading }: CompaniesTableProps) {
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -53,13 +39,10 @@ export function CompaniesTable({
       <table className="w-full">
         <thead>
           <tr className="border-b border-border bg-bg/60">
-            {['Nome', 'CNPJ', 'Contato', 'Estágio', 'Ações'].map((col) => (
+            {['Nome', 'CNPJ', 'Contato', 'Estágio'].map((col) => (
               <th
                 key={col}
-                className={[
-                  'px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-text-sub',
-                  col === 'Ações' ? 'text-center' : 'text-left',
-                ].join(' ')}
+                className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-text-sub"
               >
                 {col}
               </th>
@@ -67,85 +50,50 @@ export function CompaniesTable({
           </tr>
         </thead>
         <tbody className="divide-y divide-border bg-card">
-          {companies.map((company) => {
-            return (
-              <tr
-                key={company.companyId}
-                className="transition-colors hover:bg-bg/40"
-              >
-                <td className="px-4 py-3">
-                  <span className="text-[13px] font-semibold text-text">
-                    {company.displayName}
+          {companies.map((company) => (
+            <tr
+              key={company.companyId}
+              onClick={() =>
+                navigate({
+                  to: '/app/admin/clients/$client_id',
+                  params: { client_id: company.companyId },
+                })
+              }
+              className="cursor-pointer transition-colors hover:bg-bg/40"
+            >
+              <td className="px-4 py-3">
+                <span className="text-[13px] font-semibold text-text">
+                  {company.displayName}
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                <span className="text-[13px] text-text-sub">
+                  {company.legalInformation.documentNumber}
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[12px] text-text-sub">
+                    {company.contact?.email ?? '—'}
                   </span>
-                </td>
-                <td className="px-4 py-3">
-                  <span className="text-[13px] text-text-sub">
-                    {company.legalInformation.documentNumber}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-[12px] text-text-sub">
-                      {company.contact?.email ?? '—'}
+                  {company.contact?.phone && (
+                    <span className="text-[12px] text-text-muted">
+                      {formatPhone(company.contact.phone)}
                     </span>
-                    {company.contact?.phone && (
-                      <span className="text-[12px] text-text-muted">
-                        {formatPhone(company.contact.phone)}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <Badge
-                    variant={
-                      company.companyStage === 'operacional'
-                        ? 'orange'
-                        : 'default'
-                    }
-                  >
-                    {company.companyStage}
-                  </Badge>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-center gap-2">
-                    <button
-                      onClick={() =>
-                        navigate({
-                          to: '/app/admin/clients/$client_id',
-                          params: {
-                            client_id: company.companyId,
-                          },
-                        })
-                      }
-                      title="Ver ficha"
-                      className="text-text-muted transition-colors hover:text-text"
-                    >
-                      <MdChevronRight size={18} />
-                    </button>
-                    <button
-                      onClick={() => onEdit(company)}
-                      className="text-text-muted transition-colors hover:text-text"
-                      title="Editar"
-                    >
-                      <MdEdit size={16} />
-                    </button>
-                    <button
-                      onClick={() => onDelete(company.companyId)}
-                      disabled={deletingId === company.companyId}
-                      className="text-text-muted transition-colors hover:text-danger disabled:opacity-50"
-                      title="Excluir"
-                    >
-                      {deletingId === company.companyId ? (
-                        <Spinner size={14} />
-                      ) : (
-                        <MdDelete size={16} />
-                      )}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+                  )}
+                </div>
+              </td>
+              <td className="px-4 py-3">
+                <Badge
+                  variant={
+                    company.companyStage === 'operacional' ? 'orange' : 'default'
+                  }
+                >
+                  {company.companyStage}
+                </Badge>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

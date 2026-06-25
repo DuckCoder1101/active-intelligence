@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { AdminPageContainer } from '@/routes/app/admin';
 import { MdAdd } from 'react-icons/md';
 
 import { FormInput } from '@/components/ui/form-input.component';
@@ -8,7 +9,6 @@ import { UsersTable } from '@/components/admin/users/table.component';
 import { UserModal } from '@/components/admin/users/info-modal.component';
 import { InviteUserModal } from '@/components/admin/users/invite-modal.component';
 import { useUsers } from '@/hooks/useUsers';
-import { useAuth } from '@/contexts/auth.context';
 import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
 import type { UserProfile } from '@/models/user.model';
@@ -29,7 +29,6 @@ export const Route = createFileRoute('/app/admin/users/')({
 });
 
 function AdminUsers() {
-  const { profile } = useAuth();
   const { users, isLoading, deletingId, remove, patchUser } = useUsers();
 
   const [search, setSearch] = useState('');
@@ -48,6 +47,13 @@ function AdminUsers() {
     );
   }, [users, search]);
 
+  const handleDeleteFromModal = () => {
+    if (!editingUser) return;
+    const user = editingUser;
+    setEditingUser(null);
+    setDeletingUser(user);
+  };
+
   const handleDeleteConfirm = async () => {
     if (!deletingUser) return;
     await remove(deletingUser.uid);
@@ -61,7 +67,8 @@ function AdminUsers() {
   };
 
   return (
-    <>
+    <AdminPageContainer>
+      <>
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-text sm:text-4xl">
@@ -94,14 +101,7 @@ function AdminUsers() {
       <UsersTable
         users={filtered}
         isLoading={isLoading}
-        deletingId={deletingId}
-        callerUid={profile?.uid ?? ''}
-        callerLevel={profile?.accessLevel ?? 'user'}
         onEdit={setEditingUser}
-        onDelete={(uid) => {
-          const user = users.find((u) => u.uid === uid);
-          if (user) setDeletingUser(user);
-        }}
       />
 
       {showInvite && <InviteUserModal onClose={() => setShowInvite(false)} />}
@@ -111,6 +111,7 @@ function AdminUsers() {
           targetUser={editingUser}
           onClose={() => setEditingUser(null)}
           onSaved={handleSaved}
+          onDelete={handleDeleteFromModal}
         />
       )}
 
@@ -123,6 +124,7 @@ function AdminUsers() {
           onCancel={() => setDeletingUser(null)}
         />
       )}
-    </>
+      </>
+    </AdminPageContainer>
   );
 }

@@ -5,3 +5,5 @@ setGlobalOptions({ maxInstances: 10 });
 export * from './user';
 export * from './company';
 export * from './membership';
+export * from './task';
+export * from './kanban';

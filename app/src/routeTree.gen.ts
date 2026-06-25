@@ -22,6 +22,7 @@ import { Route as AppAdminRouteImport } from './routes/app/admin'
 import { Route as AppUserProfileRouteImport } from './routes/app/user/profile'
 import { Route as AppAdminDashboardRouteImport } from './routes/app/admin/dashboard'
 import { Route as AppAdminUsersIndexRouteImport } from './routes/app/admin/users/index'
+import { Route as AppAdminProjectsIndexRouteImport } from './routes/app/admin/projects/index'
 import { Route as AppAdminClientsIndexRouteImport } from './routes/app/admin/clients/index'
 import { Route as AppAdminClientsClient_idRouteImport } from './routes/app/admin/clients/$client_id'
 
@@ -90,6 +91,11 @@ const AppAdminUsersIndexRoute = AppAdminUsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => AppAdminRoute,
 } as any)
+const AppAdminProjectsIndexRoute = AppAdminProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => AppAdminRoute,
+} as any)
 const AppAdminClientsIndexRoute = AppAdminClientsIndexRouteImport.update({
   id: '/clients/',
   path: '/clients/',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/app/user/profile': typeof AppUserProfileRoute
   '/app/admin/clients/$client_id': typeof AppAdminClientsClient_idRoute
   '/app/admin/clients/': typeof AppAdminClientsIndexRoute
+  '/app/admin/projects/': typeof AppAdminProjectsIndexRoute
   '/app/admin/users/': typeof AppAdminUsersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/app/user/profile': typeof AppUserProfileRoute
   '/app/admin/clients/$client_id': typeof AppAdminClientsClient_idRoute
   '/app/admin/clients': typeof AppAdminClientsIndexRoute
+  '/app/admin/projects': typeof AppAdminProjectsIndexRoute
   '/app/admin/users': typeof AppAdminUsersIndexRoute
 }
 export interface FileRoutesById {
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/app/user/profile': typeof AppUserProfileRoute
   '/app/admin/clients/$client_id': typeof AppAdminClientsClient_idRoute
   '/app/admin/clients/': typeof AppAdminClientsIndexRoute
+  '/app/admin/projects/': typeof AppAdminProjectsIndexRoute
   '/app/admin/users/': typeof AppAdminUsersIndexRoute
 }
 export interface FileRouteTypes {
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/app/user/profile'
     | '/app/admin/clients/$client_id'
     | '/app/admin/clients/'
+    | '/app/admin/projects/'
     | '/app/admin/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/app/user/profile'
     | '/app/admin/clients/$client_id'
     | '/app/admin/clients'
+    | '/app/admin/projects'
     | '/app/admin/users'
   id:
     | '__root__'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/app/user/profile'
     | '/app/admin/clients/$client_id'
     | '/app/admin/clients/'
+    | '/app/admin/projects/'
     | '/app/admin/users/'
   fileRoutesById: FileRoutesById
 }
@@ -307,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminUsersIndexRouteImport
       parentRoute: typeof AppAdminRoute
     }
+    '/app/admin/projects/': {
+      id: '/app/admin/projects/'
+      path: '/projects'
+      fullPath: '/app/admin/projects/'
+      preLoaderRoute: typeof AppAdminProjectsIndexRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
     '/app/admin/clients/': {
       id: '/app/admin/clients/'
       path: '/clients'
@@ -328,6 +347,7 @@ interface AppAdminRouteChildren {
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
   AppAdminClientsClient_idRoute: typeof AppAdminClientsClient_idRoute
   AppAdminClientsIndexRoute: typeof AppAdminClientsIndexRoute
+  AppAdminProjectsIndexRoute: typeof AppAdminProjectsIndexRoute
   AppAdminUsersIndexRoute: typeof AppAdminUsersIndexRoute
 }
 
@@ -335,6 +355,7 @@ const AppAdminRouteChildren: AppAdminRouteChildren = {
   AppAdminDashboardRoute: AppAdminDashboardRoute,
   AppAdminClientsClient_idRoute: AppAdminClientsClient_idRoute,
   AppAdminClientsIndexRoute: AppAdminClientsIndexRoute,
+  AppAdminProjectsIndexRoute: AppAdminProjectsIndexRoute,
   AppAdminUsersIndexRoute: AppAdminUsersIndexRoute,
 }
 

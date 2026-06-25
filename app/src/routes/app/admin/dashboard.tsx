@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { AdminPageContainer } from '@/routes/app/admin';
 
 import { useAuth } from '@/contexts/auth.context';
 import { ADMIN_MODULES } from '@/constants/admin-modules.const';
@@ -21,7 +22,8 @@ function AdminDashboard() {
   };
 
   return (
-    <>
+    <AdminPageContainer>
+      <>
       {/* Hero */}
       <div className="mb-8 text-center sm:mb-12">
         <h1 className="text-2xl font-black tracking-tight text-text sm:text-4xl">
@@ -59,6 +61,7 @@ function AdminDashboard() {
           </div>
         ))}
       </div>
-    </>
+      </>
+    </AdminPageContainer>
   );
 }

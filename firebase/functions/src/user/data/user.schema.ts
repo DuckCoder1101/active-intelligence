@@ -16,9 +16,9 @@ export default class UserSchema {
 
     phone: z
       .string()
-      .transform((v) => v.replace(/\D/g, ''))
-      .refine(checkPhone, 'Celular inválido!')
-      .optional(),
+      .nullish()
+      .transform((v) => (v ? v.replace(/\D/g, '') : undefined))
+      .refine((v) => v === undefined || checkPhone(v), 'Celular inválido!'),
   });
 
   static updateAccessLevelSchema = z.object({
@@ -28,12 +28,12 @@ export default class UserSchema {
 
   static updateUserSchema = z.object({
     targetUid: z.string().min(1),
-    name: z.string().trim().min(3, 'Nome muito curto!').optional(),
+    name: z.string().trim().min(3, 'Nome muito curto!').nullish().transform((v) => v ?? undefined),
     phone: z
       .string()
-      .transform((v) => v.replace(/\D/g, ''))
-      .refine(checkPhone, 'Celular inválido!')
-      .optional(),
+      .nullish()
+      .transform((v) => (v ? v.replace(/\D/g, '') : undefined))
+      .refine((v) => v === undefined || checkPhone(v), 'Celular inválido!'),
   });
 
   static deleteUserSchema = z.object({

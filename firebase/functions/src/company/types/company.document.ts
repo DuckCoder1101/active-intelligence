@@ -17,13 +17,13 @@ export interface CompanyDocument {
 
   companyStage: CompanyStage;
 
-  contact?: {
-    email?: string;
-    phone?: string;
+  contact: {
+    email: string;
+    phone: string;
   };
 
-  business: {
-    businessSector: BusinessSector;
+  business?: {
+    businessSector?: BusinessSector;
     customSegment?: string;
     cnae?: string;
     revenueRange?: RevenueRange;
@@ -32,8 +32,8 @@ export interface CompanyDocument {
   };
 
   location: {
-    address: string;
-    number: string;
+    address?: string;
+    number?: string;
     complement?: string;
     neighborhood?: string;
     city: string;

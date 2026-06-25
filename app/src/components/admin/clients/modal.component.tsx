@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
+import { MdDelete } from 'react-icons/md';
 
 import { Modal } from '@/components/layout/modal.component';
 import { Tabs } from '@/components/ui/tabs.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { Spinner } from '@/components/ui/spinner.component';
 import { CompanyMembersTab } from './client/members-tab.component';
 
 import CompanyService from '@/services/company.service';
+import UserService from '@/services/user.service';
 
 import { useHandleError } from '@/hooks/useHandleError.util';
 import { useSnackbar } from '@/contexts/snackbar.context';
-import { deepClean } from '@/utils/deepClean.util';
 import { firstTabWithError } from '@/utils/firstTabWithError.util';
 
 import type { DefaultValues, FieldErrors } from 'react-hook-form';
@@ -20,7 +22,12 @@ import { BRAZILIAN_STATES } from '@/constants/brazilian-states.const';
 
 const FORM_ID = 'company-form';
 
-const defaultValues: DefaultValues<SaveCompanyDTO> = {
+type CompanyFormValues = Omit<SaveCompanyDTO, 'business'> & {
+  ownerEmail?: string;
+  business: NonNullable<SaveCompanyDTO['business']>;
+};
+
+const defaultValues: DefaultValues<CompanyFormValues> = {
   companyStage: 'comercial',
   business: {
     businessSector: 'imobiliaria',
@@ -34,9 +41,15 @@ interface CompanyModalProps {
   company?: Company | null;
   onClose: () => void;
   onSaved: () => void;
+  onDelete?: () => void;
 }
 
-export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
+export function CompanyModal({
+  company,
+  onClose,
+  onSaved,
+  onDelete,
+}: CompanyModalProps) {
   const [activeTab, setActiveTab] = useState('empresa');
   const [isSaving, setIsSaving] = useState(false);
   const handleError = useHandleError();
@@ -50,7 +63,7 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<SaveCompanyDTO>({ defaultValues });
+  } = useForm<CompanyFormValues>({ defaultValues });
 
   const businessSector = watch('business.businessSector');
 
@@ -65,19 +78,21 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
     reset(company ?? defaultValues);
   }, [company, reset]);
 
-  const onSubmit = async (raw: SaveCompanyDTO) => {
-    const data = deepClean({
+  const onSubmit = async ({
+    ownerEmail,
+    business: biz,
+    ...raw
+  }: CompanyFormValues) => {
+    const data = {
       ...raw,
       business: {
-        ...raw.business,
+        ...biz,
         customSegment:
-          raw.business.businessSector === 'outro'
-            ? raw.business.customSegment || undefined
+          biz.businessSector === 'outro'
+            ? biz.customSegment || undefined
             : undefined,
-        revenueRange: raw.business.revenueRange || undefined,
+        revenueRange: biz.revenueRange || undefined,
       },
-      contact:
-        raw.contact?.email || raw.contact?.phone ? raw.contact : undefined,
       social:
         raw.social?.websiteUrl ||
         raw.social?.instagramUsername ||
@@ -85,11 +100,18 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
           ? raw.social
           : undefined,
       extra: raw.extra?.observations ? raw.extra : undefined,
-    }) as SaveCompanyDTO;
+    } as SaveCompanyDTO;
 
     setIsSaving(true);
     try {
       await CompanyService.saveCompany(data);
+      if (!company && ownerEmail) {
+        try {
+          await UserService.inviteUser(ownerEmail);
+        } catch (err) {
+          handleError(err);
+        }
+      }
       pushSnackbar({
         type: 'success',
         message: company ? 'Empresa atualizada!' : 'Empresa cadastrada!',
@@ -102,7 +124,7 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
     }
   };
 
-  const onError = (errs: FieldErrors<SaveCompanyDTO>) => {
+  const onError = (errs: FieldErrors<CompanyFormValues>) => {
     const tab = firstTabWithError({
       empresa: !!(
         errs.displayName ||
@@ -114,6 +136,7 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
       localizacao: !!errs.location,
       redes: !!errs.social,
       observacoes: !!errs.extra,
+      ...(!company ? { convite: !!errs.ownerEmail } : {}),
     });
     if (tab) setActiveTab(tab);
   };
@@ -129,6 +152,7 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
     localizacao: !!errors.location,
     redes: !!errors.social,
     observacoes: !!errors.extra,
+    convite: !!errors.ownerEmail,
   };
 
   const TABS = [
@@ -145,15 +169,49 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
       label: 'Observações',
       hasError: tabErrors.observacoes,
     },
-    ...(company ? [{ id: 'membros', label: 'Membros' }] : []),
+    ...(company
+      ? [{ id: 'membros', label: 'Membros' }]
+      : [{ id: 'convite', label: 'Convite', hasError: tabErrors.convite }]),
   ];
+
+  const footer = (
+    <div className="flex items-center gap-3">
+      {company && onDelete && (
+        <button
+          type="button"
+          onClick={onDelete}
+          className="flex items-center gap-1.5 rounded-xl border border-danger/30 px-4 py-2 text-[13px] font-semibold text-danger transition-colors hover:bg-danger/10"
+        >
+          <MdDelete size={16} />
+          Excluir
+        </button>
+      )}
+      <div className="ml-auto flex gap-3">
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-lg px-5 py-2 text-[13px] font-semibold text-text-sub transition-colors hover:bg-bg"
+        >
+          Cancelar
+        </button>
+        <button
+          form={FORM_ID}
+          type="submit"
+          disabled={isSaving}
+          className="flex items-center gap-2 rounded-xl bg-orange px-5 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+        >
+          {isSaving && <Spinner size={12} />}
+          Salvar
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <Modal
       title={company ? 'Editar empresa' : 'Novo cliente'}
       onClose={onClose}
-      formId={FORM_ID}
-      isSaving={isSaving}
+      footer={footer}
     >
       <div className="mb-5">
         <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
@@ -206,14 +264,22 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
           />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormInput
-              label="E-mail principal"
+              label="E-mail *"
               type="email"
               placeholder="email@empresa.com"
-              {...register('contact.email')}
+              error={errors.contact?.email?.message}
+              {...register('contact.email', {
+                required: 'E-mail obrigatório',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'E-mail inválido',
+                },
+              })}
             />
             <Controller
               name="contact.phone"
               control={control}
+              rules={{ required: 'Telefone obrigatório' }}
               render={({ field }) => (
                 <FormInput
                   as={IMaskInput}
@@ -221,7 +287,7 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
                     { mask: '(00) 0000-0000' },
                     { mask: '(00) 00000-0000' },
                   ]}
-                  label="Telefone"
+                  label="Telefone *"
                   type="tel"
                   placeholder="(00) 00000-0000"
                   error={errors.contact?.phone?.message}
@@ -321,21 +387,15 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="sm:col-span-2">
               <FormInput
-                label="Endereço *"
+                label="Endereço"
                 placeholder="Rua, Avenida..."
-                error={errors.location?.address?.message}
-                {...register('location.address', {
-                  required: 'Endereço obrigatório',
-                })}
+                {...register('location.address')}
               />
             </div>
             <FormInput
-              label="Número *"
+              label="Número"
               placeholder="000"
-              error={errors.location?.number?.message}
-              {...register('location.number', {
-                required: 'Número obrigatório',
-              })}
+              {...register('location.number')}
             />
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -424,6 +484,29 @@ export function CompanyModal({ company, onClose, onSaved }: CompanyModalProps) {
             {...register('extra.observations')}
           />
         </div>
+
+        {/* Convite — somente cadastro */}
+        {!company && (
+          <div className={activeTab === 'convite' ? 'space-y-4' : 'hidden'}>
+            <p className="text-[13px] text-text-sub">
+              O responsável receberá um convite por e-mail para acessar o
+              sistema como owner desta empresa.
+            </p>
+            <FormInput
+              label="E-mail do responsável *"
+              type="email"
+              placeholder="responsavel@empresa.com"
+              error={errors.ownerEmail?.message}
+              {...register('ownerEmail', {
+                required: 'E-mail do responsável obrigatório',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'E-mail inválido',
+                },
+              })}
+            />
+          </div>
+        )}
       </form>
 
       {/* Membros — somente edição, fora do form */}

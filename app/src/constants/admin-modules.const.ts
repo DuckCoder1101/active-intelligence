@@ -31,7 +31,7 @@ export const ADMIN_MODULES: Section[] = [
         icon: MdOutlineViewKanban,
         label: 'Projetos',
         description: 'Board com tarefas, prazos e equipe.',
-        soon: true,
+        to: '/app/admin/projects',
         permission: 'manage-projects',
       },
       {

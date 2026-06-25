@@ -17,11 +17,19 @@ export const Route = createFileRoute('/app/admin')({
 
 function AdminComponent() {
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
+    <div className="flex h-screen flex-col overflow-hidden bg-bg">
       <Topbar />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <Outlet />
       </main>
+    </div>
+  );
+}
+
+export function AdminPageContainer({ children }: { children: import('react').ReactNode }) {
+  return (
+    <div className="mx-auto w-full max-w-5xl overflow-y-auto px-4 py-8 sm:px-6 sm:py-12">
+      {children}
     </div>
   );
 }

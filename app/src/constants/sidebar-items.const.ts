@@ -6,6 +6,7 @@ import {
   MdOutlineAccountBalance,
   MdOutlineBarChart,
   MdOutlineSettings,
+  MdOutlineViewKanban,
 } from 'react-icons/md';
 
 import type { NavSection } from '@/types/navbar-item.type';
@@ -23,6 +24,11 @@ export const SIDEBAR_ITEMS: NavSection[] = [
         to: '/app/admin/clients',
         label: 'Clientes',
         icon: MdOutlineBusiness,
+      },
+      {
+        to: '/app/admin/projects',
+        label: 'Projetos',
+        icon: MdOutlineViewKanban,
       },
     ],
   },

@@ -169,7 +169,9 @@ export default class UserRepository {
       throw new HttpsError('not-found', 'Usuário não encontrado!');
     }
 
+    const existingClaims = (await auth.getUser(uid)).customClaims ?? {};
     await auth.setCustomUserClaims(uid, {
+      ...existingClaims,
       accessLevel: newAccessLevel,
       complete: true,
     });

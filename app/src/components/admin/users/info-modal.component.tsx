@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
-import { MdLockReset } from 'react-icons/md';
+import { MdLockReset, MdDelete } from 'react-icons/md';
 
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
@@ -32,6 +32,7 @@ interface UserModalProps {
   targetUser: UserProfile;
   onClose: () => void;
   onSaved: (updated: Partial<UserProfile>) => void;
+  onDelete?: () => void;
 }
 
 type SaveTask = {
@@ -39,7 +40,12 @@ type SaveTask = {
   promise: Promise<void>;
 };
 
-export function UserModal({ targetUser, onClose, onSaved }: UserModalProps) {
+export function UserModal({
+  targetUser,
+  onClose,
+  onSaved,
+  onDelete,
+}: UserModalProps) {
   const { profile } = useAuth();
 
   const callerLevel = profile?.accessLevel ?? 'user';
@@ -165,13 +171,50 @@ export function UserModal({ targetUser, onClose, onSaved }: UserModalProps) {
     }
   };
 
+  const canDelete =
+    onDelete &&
+    callerLevel === 'owner' &&
+    targetLevel !== 'owner' &&
+    targetUser.uid !== profile?.uid;
+
+  const footer = (
+    <div className="flex items-center gap-3">
+      {canDelete && (
+        <button
+          type="button"
+          onClick={onDelete}
+          className="flex items-center gap-1.5 rounded-xl border border-danger/30 px-4 py-2 text-[13px] font-semibold text-danger transition-colors hover:bg-danger/10"
+        >
+          <MdDelete size={16} />
+          Excluir
+        </button>
+      )}
+      <div className="ml-auto flex gap-3">
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-lg px-5 py-2 text-[13px] font-semibold text-text-sub transition-colors hover:bg-bg"
+        >
+          Cancelar
+        </button>
+        <button
+          form={FORM_ID}
+          type="submit"
+          disabled={isSaving || !hasChanges}
+          className="flex items-center gap-2 rounded-xl bg-orange px-5 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+        >
+          {isSaving && <Spinner size={12} />}
+          Salvar
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <Modal
       title="Editar usuário"
       onClose={onClose}
-      formId={FORM_ID}
-      isSaving={isSaving}
-      saveDisabled={!hasChanges}
+      footer={footer}
     >
       <form
         id={FORM_ID}
