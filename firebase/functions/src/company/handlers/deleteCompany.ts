@@ -1,5 +1,6 @@
 import z from 'zod';
 import { HttpsError } from 'firebase-functions/https';
+import { logger } from 'firebase-functions';
 
 import { onCallHandler } from '@shared/utils/onCallHandler.util';
 import { CompanyRepository } from '../repositories/company.repository';
@@ -26,6 +27,8 @@ export const deleteCompanyHandler = onCallHandler(async (req) => {
       z.treeifyError(error),
     );
   }
+
+  logger.info('deleteCompany', { companyId: data.companyId });
 
   await CompanyRepository.deleteCompany(data.companyId);
 

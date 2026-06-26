@@ -42,4 +42,37 @@ export default class TaskSchema {
     taskId: z.string().min(1, 'taskId obrigatório'),
     status: z.string().min(1, 'Status inválido'),
   });
+
+  static createClientTaskSchema = z.object({
+    title: z.string().min(1, 'Título obrigatório'),
+    description: z
+      .string()
+      .nullish()
+      .default('')
+      .transform((v) => v ?? ''),
+    type: z.enum(TASK_TYPES, { message: 'Tipo inválido' }),
+    dueDate: z.number().refine((v) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return v >= today.getTime();
+    }, 'A data de entrega não pode ser anterior ao dia atual'),
+    referenceLinks: z
+      .array(z.string().url('URL inválida'))
+      .nullish()
+      .default([])
+      .transform((v) => v ?? []),
+    referenceImages: z
+      .array(z.string())
+      .nullish()
+      .default([])
+      .transform((v) => v ?? []),
+    createdByName: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
+  });
+
+  static approveRejectSchema = z.object({
+    taskId: z.string().min(1, 'taskId obrigatório'),
+  });
 }

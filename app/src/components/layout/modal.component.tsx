@@ -38,18 +38,14 @@ export function Modal({
 
   const standardFooter = formId && (
     <div className="flex justify-end gap-3">
-      <button
-        type="button"
-        onClick={onClose}
-        className="rounded-lg px-5 py-2 text-[13px] font-semibold text-text-sub transition-colors hover:bg-bg"
-      >
+      <button type="button" onClick={onClose} className="btn-ghost">
         Cancelar
       </button>
       <button
         form={formId}
         type="submit"
         disabled={isSaving || saveDisabled}
-        className="flex items-center gap-2 rounded-xl bg-orange px-5 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+        className="btn-primary"
       >
         {isSaving && <Spinner size={12} />}
         {saveLabel}
@@ -60,11 +56,8 @@ export function Modal({
   const resolvedFooter = standardFooter ?? footer;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+    <div className="modal-overlay">
+      <div className="modal-backdrop" onClick={onClose} />
       <div
         className={`relative z-10 flex w-full ${width} max-h-[90vh] flex-col overflow-hidden rounded-2xl bg-card shadow-2xl`}
       >

@@ -1,8 +1,8 @@
-import { Timestamp } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/https';
 
-import { database, FieldValue } from '@shared/firebase';
-import { TaskDocument } from '../types/task.document';
+import { database } from '@shared/utils/firebase';
+import { TaskStatus, TaskDocument } from '../types/task.document';
 import { TaskDTO, SaveTaskDTO } from '../types/task.dto';
 
 function toDTO(id: string, data: TaskDocument): TaskDTO {
@@ -13,11 +13,14 @@ function toDTO(id: string, data: TaskDocument): TaskDTO {
     description: data.description,
     type: data.type,
     status: data.status,
+    approvalStatus: data.approvalStatus,
     dueDate: data.dueDate.toMillis(),
     createdBy: data.createdBy,
+    createdByName: data.createdByName,
     assignedTo: data.assignedTo ?? [],
     referenceLinks: data.referenceLinks ?? [],
     referenceImages: data.referenceImages ?? [],
+    hasMedia: data.hasMedia ?? false,
     createdAt: data.createdAt?.toMillis() ?? 0,
     updatedAt: data.updatedAt?.toMillis() ?? 0,
   };
@@ -33,13 +36,15 @@ export class TaskRepository {
     const ref = taskId ? this.col.doc(taskId) : this.col.doc();
     const isNew = !taskId;
 
+    const images = rest.referenceImages ?? [];
     const payload: Record<string, unknown> = {
       ...rest,
       createdBy,
       dueDate: Timestamp.fromMillis(dueDate),
       assignedTo: rest.assignedTo ?? [],
       referenceLinks: rest.referenceLinks ?? [],
-      referenceImages: rest.referenceImages ?? [],
+      referenceImages: images,
+      hasMedia: images.length > 0,
       updatedAt: FieldValue.serverTimestamp(),
     };
 
@@ -65,6 +70,14 @@ export class TaskRepository {
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
   }
 
+  static async listWithMedia(): Promise<TaskDTO[]> {
+    const snap = await this.col
+      .where('hasMedia', '==', true)
+      .orderBy('createdAt', 'asc')
+      .get();
+    return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
+  }
+
   static async updateStatus(taskId: string, status: string): Promise<void> {
     const ref = this.col.doc(taskId);
     const snap = await ref.get();
@@ -73,10 +86,96 @@ export class TaskRepository {
     await ref.update({ status, updatedAt: FieldValue.serverTimestamp() });
   }
 
-  static async delete(taskId: string): Promise<void> {
-    const snap = await this.col.doc(taskId).get();
+  static async delete(taskId: string): Promise<TaskDTO> {
+    const ref = this.col.doc(taskId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      throw new HttpsError('not-found', 'Tarefa não encontrada!');
+    }
+
+    const task = toDTO(taskId, snap.data() as TaskDocument);
+    await ref.delete();
+    return task;
+  }
+
+  static async clearMedia(taskId: string): Promise<void> {
+    await this.col.doc(taskId).update({
+      hasMedia: false,
+      referenceImages: [],
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  }
+
+  static async listByCompany(companyId: string): Promise<TaskDTO[]> {
+    const snap = await this.col
+      .where('companyId', '==', companyId)
+      .orderBy('dueDate', 'asc')
+      .get();
+    return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
+  }
+
+  static async listByCompanyAndMonth(
+    companyId: string,
+    year: number,
+    month: number,
+  ): Promise<TaskDTO[]> {
+    const start = Timestamp.fromDate(new Date(year, month, 1));
+    const end = Timestamp.fromDate(new Date(year, month + 1, 1));
+    const snap = await this.col
+      .where('companyId', '==', companyId)
+      .where('dueDate', '>=', start)
+      .where('dueDate', '<', end)
+      .orderBy('dueDate', 'asc')
+      .get();
+    return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
+  }
+
+  static async listPendingApproval(): Promise<TaskDTO[]> {
+    const snap = await this.col
+      .where('approvalStatus', '==', 'pending_approval')
+      .orderBy('dueDate', 'asc')
+      .get();
+    return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
+  }
+
+  static async updateImages(
+    taskId: string,
+    companyId: string,
+    images: string[],
+  ): Promise<void> {
+    const ref = this.col.doc(taskId);
+    const snap = await ref.get();
+    if (!snap.exists)
+      throw new HttpsError('not-found', 'Tarefa não encontrada.');
+
+    const data = snap.data() as TaskDocument;
+    if (data.companyId !== companyId) {
+      throw new HttpsError(
+        'permission-denied',
+        'Sem permissão para editar esta tarefa.',
+      );
+    }
+
+    await ref.update({
+      referenceImages: images,
+      hasMedia: images.length > 0,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  }
+
+  static async updateApprovalStatus(
+    taskId: string,
+    approvalStatus: TaskStatus,
+  ): Promise<TaskDTO> {
+    const ref = this.col.doc(taskId);
+    const snap = await ref.get();
     if (!snap.exists)
       throw new HttpsError('not-found', 'Tarefa não encontrada!');
-    await this.col.doc(taskId).delete();
+    await ref.update({
+      approvalStatus,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    const updated = await ref.get();
+    return toDTO(updated.id, updated.data() as TaskDocument);
   }
 }

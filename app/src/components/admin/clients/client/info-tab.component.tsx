@@ -21,10 +21,14 @@ import { useSnackbar } from '@/contexts/snackbar.context';
 
 import type { Company, SaveCompanyDTO } from '@/models/company.model';
 import { BRAZILIAN_STATES } from '@/constants/brazilian-states.const';
+import { formatDateLong } from '@/formatters/formatDate';
 
 const FORM_ID = 'client-info-form';
 
-type CompanyFormBusiness = Omit<NonNullable<SaveCompanyDTO['business']>, 'revenueRange'> & {
+type CompanyFormBusiness = Omit<
+  NonNullable<SaveCompanyDTO['business']>,
+  'revenueRange'
+> & {
   revenueRange: NonNullable<SaveCompanyDTO['business']>['revenueRange'] | '';
 };
 
@@ -50,11 +54,13 @@ function toFormValues(c: Company): CompanyFormValues {
     legalInformation: {
       legalName: c.legalInformation.legalName ?? '',
       tradeName: c.legalInformation.tradeName ?? '',
-      documentNumber: formatCNPJ(c.legalInformation.documentNumber.replace(/\D/g, '')),
+      documentNumber: formatCNPJ(
+        c.legalInformation.documentNumber.replace(/\D/g, ''),
+      ),
     },
     contact: {
-      email: c.contact?.email ?? '',
-      phone: c.contact?.phone ? formatPhone(c.contact.phone) : '',
+      email: c.contact.email,
+      phone: c.contact.phone ? formatPhone(c.contact.phone) : '',
     },
     business: {
       businessSector: c.business?.businessSector ?? 'imobiliaria',
@@ -81,15 +87,8 @@ function toFormValues(c: Company): CompanyFormValues {
     extra: {
       observations: c.extra?.observations ?? '',
     },
+    monthlyTaskLimit: c.monthlyTaskLimit,
   };
-}
-
-function formatDate(ts: number) {
-  return new Date(ts).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
 }
 
 function Section({
@@ -102,7 +101,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
+    <div className="card overflow-hidden">
       <div className="flex items-center gap-2 border-b border-border px-5 py-3">
         <Icon size={15} className="text-orange" />
         <p className="text-[13px] font-bold text-text">{title}</p>
@@ -149,6 +148,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
   const onSubmit = async ({ business: biz, ...raw }: CompanyFormValues) => {
     const data = {
       ...raw,
+      companyId: company.companyId,
       business: {
         ...biz,
         customSegment:
@@ -180,7 +180,11 @@ export function ClientInfoTab({ company, onSaved }: Props) {
 
   return (
     <div className="space-y-4 pb-20">
-      <form id={FORM_ID} onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        id={FORM_ID}
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-4"
+      >
         {/* Empresa */}
         <Section icon={MdOutlineBusiness} title="Empresa">
           <div className="space-y-4">
@@ -192,7 +196,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 required: 'Nome de exibição obrigatório',
               })}
             />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="form-grid">
               <FormInput
                 label="Razão social"
                 placeholder="Razão social"
@@ -226,7 +230,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 />
               )}
             />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="form-grid">
               <FormInput
                 label="E-mail *"
                 type="email"
@@ -261,7 +265,11 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 )}
               />
             </div>
-            <FormInput as="select" label="Estágio" {...register('companyStage')}>
+            <FormInput
+              as="select"
+              label="Estágio"
+              {...register('companyStage')}
+            >
               <option value="comercial">Comercial</option>
               <option value="operacional">Operacional</option>
             </FormInput>
@@ -271,7 +279,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
         {/* Mercado */}
         <Section icon={MdOutlineBarChart} title="Mercado">
           <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="form-grid">
               <FormInput
                 as="select"
                 label="Setor de atuação"
@@ -285,15 +293,19 @@ export function ClientInfoTab({ company, onSaved }: Props) {
               </FormInput>
               <FormInput
                 label="Segmento personalizado"
-                placeholder={businessSector === 'outro' ? 'Ex: Loteamentos' : '—'}
+                placeholder={
+                  businessSector === 'outro' ? 'Ex: Loteamentos' : '—'
+                }
                 disabled={businessSector !== 'outro'}
                 className={
-                  businessSector !== 'outro' ? 'cursor-not-allowed opacity-50' : ''
+                  businessSector !== 'outro'
+                    ? 'cursor-not-allowed opacity-50'
+                    : ''
                 }
                 {...register('business.customSegment')}
               />
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="form-grid">
               <Controller
                 name="business.cnae"
                 control={control}
@@ -324,14 +336,15 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 <option value="Above100M">Acima de R$ 100M</option>
               </FormInput>
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="form-grid">
               <FormInput
                 label="Nº de funcionários"
                 type="number"
                 min={0}
                 placeholder="0"
                 {...register('business.quantityOfEmployees', {
-                  setValueAs: (v) => (v === '' || v === null ? undefined : Number(v)),
+                  setValueAs: (v) =>
+                    v === '' || v === null ? undefined : Number(v),
                 })}
               />
               <FormInput
@@ -340,7 +353,8 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 min={0}
                 placeholder="0"
                 {...register('business.quantityOfBrokers', {
-                  setValueAs: (v) => (v === '' || v === null ? undefined : Number(v)),
+                  setValueAs: (v) =>
+                    v === '' || v === null ? undefined : Number(v),
                 })}
               />
             </div>
@@ -364,7 +378,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 {...register('location.number')}
               />
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="form-grid">
               <FormInput
                 label="Complemento"
                 placeholder="Apto, Sala..."
@@ -383,7 +397,8 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 rules={{
                   required: 'CEP obrigatório',
                   validate: (v) =>
-                    v.replace(/\D/g, '').length === 8 || 'CEP deve ter 8 dígitos',
+                    v.replace(/\D/g, '').length === 8 ||
+                    'CEP deve ter 8 dígitos',
                 }}
                 render={({ field }) => (
                   <FormInput
@@ -402,12 +417,16 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 label="Cidade *"
                 placeholder="Cidade"
                 error={errors.location?.city?.message}
-                {...register('location.city', { required: 'Cidade obrigatória' })}
+                {...register('location.city', {
+                  required: 'Cidade obrigatória',
+                })}
               />
               <FormInput
                 as="select"
                 label="Estado *"
-                {...register('location.state', { required: 'Estado obrigatório' })}
+                {...register('location.state', {
+                  required: 'Estado obrigatório',
+                })}
               >
                 {BRAZILIAN_STATES.map((s) => (
                   <option key={s} value={s}>
@@ -428,7 +447,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
               placeholder="https://www.empresa.com.br"
               {...register('social.websiteUrl')}
             />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="form-grid">
               <FormInput
                 label="Instagram"
                 placeholder="@usuario"
@@ -441,6 +460,23 @@ export function ClientInfoTab({ company, onSaved }: Props) {
               />
             </div>
           </div>
+        </Section>
+
+        {/* Plano */}
+        <Section icon={MdOutlineCalendarToday} title="Plano">
+          <div className="form-grid">
+            <FormInput
+              label="Limite mensal de tarefas"
+              type="number"
+              placeholder="Sem limite"
+              min="1"
+              {...register('monthlyTaskLimit', { valueAsNumber: true })}
+            />
+          </div>
+          <p className="mt-2 text-[11px] text-text-muted">
+            Deixe em branco para não aplicar limite. O contador é zerado no
+            início de cada mês.
+          </p>
         </Section>
 
         {/* Observações */}
@@ -456,7 +492,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
       </form>
 
       {/* Registro — somente leitura */}
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="card overflow-hidden">
         <div className="flex items-center gap-2 border-b border-border px-5 py-3">
           <MdOutlineCalendarToday size={15} className="text-orange" />
           <p className="text-[13px] font-bold text-text">Registro</p>
@@ -465,13 +501,13 @@ export function ClientInfoTab({ company, onSaved }: Props) {
           <div className="flex items-center justify-between gap-4 px-5 py-3.5">
             <span className="text-[12px] text-text-muted">Cadastrado em</span>
             <span className="text-right text-[13px] font-medium text-text">
-              {formatDate(company.createdAt)}
+              {formatDateLong(company.createdAt)}
             </span>
           </div>
           <div className="flex items-center justify-between gap-4 px-5 py-3.5">
             <span className="text-[12px] text-text-muted">Atualizado em</span>
             <span className="text-right text-[13px] font-medium text-text">
-              {formatDate(company.updatedAt)}
+              {formatDateLong(company.updatedAt)}
             </span>
           </div>
         </div>

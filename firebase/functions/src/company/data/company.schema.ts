@@ -72,5 +72,12 @@ export default class CompanySchema {
       })
       .nullish()
       .transform((v) => v ?? undefined),
+
+    monthlyTaskLimit: z
+      .number()
+      .int()
+      .positive()
+      .nullish()
+      .transform((v) => v ?? undefined),
   });
 }

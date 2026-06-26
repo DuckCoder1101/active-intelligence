@@ -4,5 +4,7 @@ export interface AuthenticatedUser {
   uid: string;
   email: string;
   accessLevel: UserAccessLevel;
-  permissions: AdminPermission[];
+  complete: boolean;
+  permissions?: AdminPermission[];
+  companyId?: string;
 }

@@ -1,5 +1,6 @@
 import z from 'zod';
 import { HttpsError } from 'firebase-functions/https';
+import { logger } from 'firebase-functions';
 
 import { onCallHandler } from '@shared/utils/onCallHandler.util';
 import { CompanyRepository } from '../repositories/company.repository';
@@ -20,6 +21,8 @@ export const getCompanyHandler = onCallHandler(async (req) => {
   if (!success) {
     throw new HttpsError('invalid-argument', 'companyId inválido!');
   }
+
+  logger.info('getCompany', { companyId: data.companyId });
 
   return CompanyRepository.getCompanyById(data.companyId);
 });

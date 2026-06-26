@@ -1,10 +1,46 @@
 rules_version = '2';
 
-// Craft rules based on data in your Firestore database
-// allow write: if firestore.get(
-//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
 service firebase.storage {
   match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return request.auth.token.accessLevel == 'admin'
+          || request.auth.token.accessLevel == 'owner';
+    }
+
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*')
+          && request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // Profile photos — users/{uid}/avatar
+    match /users/{uid}/avatar {
+      allow read: if isAuthenticated();
+
+      allow create, update: if isAuthenticated()
+                            && request.auth.uid == uid
+                            && isValidImage();
+
+      allow delete: if isAuthenticated()
+                    && request.auth.uid == uid;
+    }
+
+    match /client/{companyId}/tasks/{taskId}/images/{filename} {
+      allow read: if isAuthenticated()
+                  && (isAdmin() || request.auth.token.companyId == companyId);
+                  
+      allow create, update: if isAuthenticated()
+                            && (isAdmin() || request.auth.token.companyId == companyId)
+                            && isValidImage();
+
+      allow delete: if isAuthenticated()
+                    && (isAdmin() || request.auth.token.companyId == companyId);
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

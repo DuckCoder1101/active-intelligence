@@ -1,6 +1,8 @@
 import type { Task, TaskType } from '@/models/task.model';
 import { TASK_TYPE_LABELS } from '@/models/task.model';
 import type { CompanyResume } from '@/models/company.model';
+import { companyColor, companyInitials } from '@/utils/company-color.util';
+import { formatDateShort } from '@/formatters/formatDate';
 
 const TYPE_DOT: Record<TaskType, string> = {
   feed: 'bg-blue-500',
@@ -9,37 +11,6 @@ const TYPE_DOT: Record<TaskType, string> = {
   carrossel: 'bg-amber-400',
   campanha: 'bg-green-500',
 };
-
-const COMPANY_COLORS = [
-  'bg-blue-600',
-  'bg-emerald-600',
-  'bg-amber-500',
-  'bg-violet-600',
-  'bg-rose-500',
-  'bg-teal-600',
-  'bg-orange-500',
-  'bg-indigo-600',
-];
-
-function companyColor(id: string): string {
-  let h = 0;
-  for (const c of id) h = ((h << 5) - h + c.charCodeAt(0)) | 0;
-  return COMPANY_COLORS[Math.abs(h) % COMPANY_COLORS.length];
-}
-
-function companyInitials(name: string): string {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase();
-}
-
-function formatDueDate(ts: number): string {
-  const d = new Date(ts);
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-}
 
 interface TaskCardProps {
   task: Task;
@@ -81,7 +52,7 @@ export function TaskCard({ task, company, onClick, onDragStart }: TaskCardProps)
           </>
         )}
         <span className="shrink-0 text-[11px] text-text-muted">
-          {formatDueDate(task.dueDate)}
+          {formatDateShort(task.dueDate)}
         </span>
       </div>
     </div>

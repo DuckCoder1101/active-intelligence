@@ -9,7 +9,7 @@ export type AdminPermission =
   | 'manage-finance'
   | 'manage-intelligence'
   | 'manage-catalog'
-  | 'manage-users'
+  | 'manage-team'
   | 'manage-settings';
 
 export interface AdminPermissionMeta {

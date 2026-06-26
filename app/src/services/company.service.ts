@@ -4,7 +4,6 @@ import { functions } from '@/utils/firebase.util';
 
 import type {
   Company,
-  CompanyResume,
   SaveCompanyDTO,
 } from '@/models/company.model';
 import type { AuditLogModel } from '@/models/audit.model';
@@ -13,11 +12,6 @@ export default class CompanyService {
   private static listCompaniesCallable = httpsCallable<void, Company[]>(
     functions,
     'listCompaniesHandler',
-  );
-
-  private static getMyCompaniesCallable = httpsCallable<void, CompanyResume[]>(
-    functions,
-    'getMyCompaniesHandler',
   );
 
   private static getCompanyCallable = httpsCallable<
@@ -42,11 +36,6 @@ export default class CompanyService {
 
   static async listCompanies(): Promise<Company[]> {
     const result = await this.listCompaniesCallable();
-    return result.data;
-  }
-
-  static async getMyCompanies(): Promise<CompanyResume[]> {
-    const result = await this.getMyCompaniesCallable();
     return result.data;
   }
 

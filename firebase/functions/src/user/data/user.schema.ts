@@ -1,12 +1,9 @@
 import z from 'zod';
-
 import { checkCpf } from '../../shared/validations/checkCPF';
-import { AccessLevels } from '../constants/accessLevels.const';
 import { checkPhone } from '@shared/validations/checkPhone';
-import { ADMIN_PERMISSIONS } from '@shared/constants/permissions.const';
 
 export default class UserSchema {
-  static registerUserSchema = z.object({
+  static completeProfileSchema = z.object({
     name: z.string().trim().min(6, 'Nome muito curto!'),
 
     cpf: z
@@ -21,14 +18,9 @@ export default class UserSchema {
       .refine((v) => v === undefined || checkPhone(v), 'Celular inválido!'),
   });
 
-  static updateAccessLevelSchema = z.object({
-    targetUid: z.string().min(1),
-    newAccessLevel: z.enum(AccessLevels),
-  });
-
-  static updateUserSchema = z.object({
-    targetUid: z.string().min(1),
-    name: z.string().trim().min(3, 'Nome muito curto!').nullish().transform((v) => v ?? undefined),
+  static updateProfileSchema = z.object({
+    targetId: z.string().min(1, 'Target ID obrigatório'),
+    name: z.string().trim().min(2, 'Nome obrigatório'),
     phone: z
       .string()
       .nullish()
@@ -36,16 +28,12 @@ export default class UserSchema {
       .refine((v) => v === undefined || checkPhone(v), 'Celular inválido!'),
   });
 
-  static deleteUserSchema = z.object({
-    targetUid: z.string().min(1),
-  });
-
-  static updatePermissionsSchema = z.object({
-    targetUid: z.string().min(1),
-    permissions: z.array(z.enum(ADMIN_PERMISSIONS)),
+  static deleteAccountSchema = z.object({
+    targetId: z.string().min(2, 'Target ID obrigatório'),
   });
 
   static inviteUserSchema = z.object({
-    email: z.string().email('E-mail inválido!'),
+    email: z.email('E-mail inválido!'),
+    companyId: z.string().min(1, 'Empresa obrigatória'),
   });
 }

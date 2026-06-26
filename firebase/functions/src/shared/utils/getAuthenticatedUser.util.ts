@@ -1,7 +1,3 @@
-import {
-  AdminPermission,
-  UserAccessLevel,
-} from '@shared/types/accessLevel.type';
 import { AuthenticatedUser } from '@shared/types/authenticatedUser.type';
 import { CallableRequest, HttpsError } from 'firebase-functions/https';
 
@@ -11,13 +7,18 @@ export function getAuthenticatedUser(req: CallableRequest): AuthenticatedUser {
   }
 
   const token = req.auth.token;
-  const accessLevel = (token['accessLevel'] as UserAccessLevel) ?? 'user';
-  const permissions = (token['permissions'] ?? []) as AdminPermission[];
+  const accessLevel = token['accessLevel'] ?? 'user';
+  const complete = token['complete'] ?? false;
+
+  const permissions = token['permissions'] ?? undefined;
+  const companyId = token['companyId'] ?? undefined;
 
   return {
     uid: req.auth.uid,
     email: token.email!,
     accessLevel,
+    complete,
     permissions,
+    companyId,
   };
 }

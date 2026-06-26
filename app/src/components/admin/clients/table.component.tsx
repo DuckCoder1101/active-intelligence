@@ -55,7 +55,7 @@ export function CompaniesTable({ companies, isLoading }: CompaniesTableProps) {
               key={company.companyId}
               onClick={() =>
                 navigate({
-                  to: '/app/admin/clients/$client_id',
+                  to: '/admin/clients/$client_id',
                   params: { client_id: company.companyId },
                 })
               }
@@ -74,9 +74,9 @@ export function CompaniesTable({ companies, isLoading }: CompaniesTableProps) {
               <td className="px-4 py-3">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-[12px] text-text-sub">
-                    {company.contact?.email ?? '—'}
+                    {company.contact.email || '—'}
                   </span>
-                  {company.contact?.phone && (
+                  {company.contact.phone && (
                     <span className="text-[12px] text-text-muted">
                       {formatPhone(company.contact.phone)}
                     </span>
@@ -86,7 +86,9 @@ export function CompaniesTable({ companies, isLoading }: CompaniesTableProps) {
               <td className="px-4 py-3">
                 <Badge
                   variant={
-                    company.companyStage === 'operacional' ? 'orange' : 'default'
+                    company.companyStage === 'operacional'
+                      ? 'orange'
+                      : 'default'
                   }
                 >
                   {company.companyStage}

@@ -1,10 +1,11 @@
 import { HttpsError } from 'firebase-functions/https';
-import { database, FieldValue } from '@shared/firebase';
+import { database } from '@shared/utils/firebase';
 import {
   KanbanColumnDocument,
   DEFAULT_COLUMNS,
 } from '../types/kanban.document';
 import { KanbanColumnDTO, SaveColumnDTO } from '../types/kanban.dto';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export class KanbanRepository {
   private static col = database.collection('kanban_columns');
@@ -23,8 +24,11 @@ export class KanbanRepository {
           createdAt: FieldValue.serverTimestamp(),
         });
       }
+
       await batch.commit();
+
       const seeded = await this.col.orderBy('order', 'asc').get();
+
       return seeded.docs.map((doc) => {
         const data = doc.data() as KanbanColumnDocument;
         return {
@@ -105,6 +109,8 @@ export class KanbanRepository {
     batch.delete(this.col.doc(columnId));
     await batch.commit();
 
-    return { movedTo: taskSnap.size > 0 ? fallbackId : null };
+    return {
+      movedTo: taskSnap.size > 0 ? fallbackId : null,
+    };
   }
 }

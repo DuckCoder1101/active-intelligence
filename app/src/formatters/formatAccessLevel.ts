@@ -1,4 +1,4 @@
-import type { UserAccessLevel } from '@/models/user.model';
+import type { UserAccessLevel } from '@/types/access-level.type';
 
 const LABELS: Record<UserAccessLevel, string> = {
   owner: 'Proprietário',
@@ -6,6 +6,6 @@ const LABELS: Record<UserAccessLevel, string> = {
   user: 'Usuário',
 };
 
-export function formatAccessLevel(level: UserAccessLevel): string {
-  return LABELS[level] ?? 'Usuário';
+export function formatAccessLevel(level: string): string {
+  return (LABELS as Record<string, string>)[level] ?? level;
 }

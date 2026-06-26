@@ -1,16 +1,18 @@
 import { createContext, useContext } from 'react';
-
-import type { UserProfile } from '@/models/user.model';
-import type { CustomClaims } from '@t/session.type';
+import type { CustomClaims } from '@/types/custom-claims.type';
+import type { UserProfile } from '@/models/user-profile.model';
 
 export interface AuthContextState {
   claims: CustomClaims | null;
-  profile: UserProfile | null;
+  userProfile: UserProfile | null;
   isLoadingProfile: boolean;
-  isSessionReady: boolean;
 }
 
-export const AuthContext = createContext<AuthContextState | null>(null);
+export interface AuthContextType extends AuthContextState {
+  downloadUserProfile: () => void;
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function useAuth() {
   const ctx = useContext(AuthContext);

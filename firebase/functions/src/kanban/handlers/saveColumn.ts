@@ -1,4 +1,5 @@
 import { HttpsError } from 'firebase-functions/https';
+import { logger } from 'firebase-functions';
 import { onCallHandler } from '@shared/utils/onCallHandler.util';
 import { requireAccess } from '@shared/utils/requireAccess.util';
 import { KanbanRepository } from '../repositories/kanban.repository';
@@ -12,12 +13,15 @@ export const saveKanbanColumnHandler = onCallHandler(async (req) => {
   const { success, data, error } = KanbanSchema.saveColumnSchema.safeParse(
     req.data,
   );
+
   if (!success) {
     throw new HttpsError(
       'invalid-argument',
       error.issues.map((i) => i.message).join(', '),
     );
   }
+
+  logger.info('saveColumn', { action: data.columnId ? 'update' : 'create', columnId: data.columnId });
 
   return KanbanRepository.save(data);
 });

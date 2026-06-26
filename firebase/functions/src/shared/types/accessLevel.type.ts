@@ -1,5 +1,7 @@
 export type UserAccessLevel = 'owner' | 'admin' | 'user';
 
+export type AdminAccessLevel = 'owner' | 'admin';
+
 export type AdminPermission =
   | 'manage-clients'
   | 'manage-projects'
@@ -11,7 +13,7 @@ export type AdminPermission =
   | 'manage-finance'
   | 'manage-intelligence'
   | 'manage-catalog'
-  | 'manage-users'
+  | 'manage-team'
   | 'manage-settings';
 
 export interface BackendAccessLevel {

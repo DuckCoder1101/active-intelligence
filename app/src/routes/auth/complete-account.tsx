@@ -2,13 +2,13 @@ import { useEffect } from 'react';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
-import { FunctionsError } from 'firebase/functions';
+import { FunctionsError, httpsCallable } from 'firebase/functions';
 
 import { AuthLayout } from '@/components/auth/auth-layout.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 
-import UserService from '@services/user.service';
+import { auth, functions } from '@/utils/firebase.util';
 
 import { loadFielErrors } from '@/utils/loadFieldErrors.util';
 
@@ -19,14 +19,22 @@ import { useHandleError } from '@/hooks/useHandleError.util';
 import { getSessionUser } from '@/server/session';
 import type { CompleteAccountDTO } from '@/types/dtos/user.dto';
 
+const completeProfileCallable = httpsCallable<CompleteAccountDTO, void>(
+  functions,
+  'completeProfileHandler',
+);
+
+function getRedirectPath(accessLevel?: string): string {
+  if (accessLevel === 'user') return '/user/mycompany';
+  return '/admin/dashboard';
+}
+
 export const Route = createFileRoute('/auth/complete-account')({
   component: SignUpPage,
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
     if (!sessionUser) throw redirect({ to: '/auth/signin' });
-    return {
-      sessionUser,
-    };
+    return { sessionUser };
   },
 });
 
@@ -34,13 +42,13 @@ function SignUpPage() {
   const handleError = useHandleError();
   const navigate = useNavigate();
 
-  const { claims: authUser, profile, isSessionReady } = useAuth();
+  const { claims, userProfile: profile, isLoadingProfile } = useAuth();
 
   useEffect(() => {
-    if (isSessionReady && authUser && profile) {
-      navigate({ to: '/app/user/profile' });
+    if (!isLoadingProfile && claims && profile) {
+      navigate({ to: getRedirectPath(claims.accessLevel) });
     }
-  }, [authUser, profile, isSessionReady, navigate]);
+  }, [claims, profile, isLoadingProfile, navigate]);
 
   const {
     register,
@@ -52,9 +60,9 @@ function SignUpPage() {
 
   const onSubmit = async (data: CompleteAccountDTO) => {
     try {
-      await UserService.completeAccount(data);
+      await completeProfileCallable(data);
+      await auth.currentUser?.getIdToken(true);
     } catch (error) {
-      console.log(error);
       if (error instanceof FunctionsError && error.details) {
         loadFielErrors(error.details, setError);
       } else {
@@ -63,7 +71,7 @@ function SignUpPage() {
     }
   };
 
-  if (!authUser) return;
+  if (!claims) return null;
 
   return (
     <AuthLayout>
@@ -117,11 +125,7 @@ function SignUpPage() {
           )}
         />
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="mt-1 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
-        >
+        <button type="submit" disabled={isSubmitting} className="btn-auth">
           {!isSubmitting ? (
             <>Concluir cadastro</>
           ) : (

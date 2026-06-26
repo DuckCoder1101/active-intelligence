@@ -59,6 +59,11 @@ export interface Company {
   extra?: {
     observations?: string;
   };
+  monthlyTaskLimit?: number;
+  taskUsage?: {
+    yearMonth: string;
+    count: number;
+  };
   createdAt: number;
   updatedAt: number;
 }
@@ -101,4 +106,5 @@ export interface SaveCompanyDTO {
   extra?: {
     observations?: string;
   };
+  monthlyTaskLimit?: number;
 }

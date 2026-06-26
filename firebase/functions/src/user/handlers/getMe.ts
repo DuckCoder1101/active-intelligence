@@ -1,9 +1,18 @@
+import { logger } from 'firebase-functions';
+
 import { getAuthenticatedUser } from '@shared/utils/getAuthenticatedUser.util';
 import { onCallHandler } from '@shared/utils/onCallHandler.util';
-
-import UserRepository from '../repositories/user.repository';
+import CompanyUserRepository from '../../company-user/repository/company-user.repository';
+import AdminRepository from '../../admin/repositories/admin.repository';
 
 export const getMeHandler = onCallHandler(async (req) => {
-  const { uid, accessLevel, permissions } = getAuthenticatedUser(req);
-  return UserRepository.getProfile(uid, accessLevel, permissions);
+  const { uid, accessLevel } = getAuthenticatedUser(req);
+
+  logger.info('getMe', { uid, accessLevel });
+
+  if (accessLevel === 'user') {
+    return await CompanyUserRepository.getProfile(uid);
+  }
+
+  return AdminRepository.getProfile(uid);
 });

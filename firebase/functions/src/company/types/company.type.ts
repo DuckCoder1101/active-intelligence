@@ -13,6 +13,12 @@ export interface CompanyFullDTO extends Omit<
   updatedAt: number;
 }
 
+export interface CompanyTaskUsageDTO {
+  used: number;
+  limit: number | null;
+  yearMonth: string;
+}
+
 export interface CompanyResumeDTO {
   companyId: string;
   displayName: string;

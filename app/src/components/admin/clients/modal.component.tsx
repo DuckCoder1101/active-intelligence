@@ -10,6 +10,7 @@ import { Spinner } from '@/components/ui/spinner.component';
 import { CompanyMembersTab } from './client/members-tab.component';
 
 import CompanyService from '@/services/company.service';
+import AdminService from '@/services/admin.service';
 import UserService from '@/services/user.service';
 
 import { useHandleError } from '@/hooks/useHandleError.util';
@@ -85,6 +86,7 @@ export function CompanyModal({
   }: CompanyFormValues) => {
     const data = {
       ...raw,
+      companyId: company?.companyId,
       business: {
         ...biz,
         customSegment:
@@ -107,7 +109,8 @@ export function CompanyModal({
       await CompanyService.saveCompany(data);
       if (!company && ownerEmail) {
         try {
-          await UserService.inviteUser(ownerEmail);
+          await AdminService.inviteAdmin(ownerEmail);
+          await UserService.sendRecoverPasswordEmail(ownerEmail);
         } catch (err) {
           handleError(err);
         }
@@ -180,25 +183,21 @@ export function CompanyModal({
         <button
           type="button"
           onClick={onDelete}
-          className="flex items-center gap-1.5 rounded-xl border border-danger/30 px-4 py-2 text-[13px] font-semibold text-danger transition-colors hover:bg-danger/10"
+          className="btn-danger"
         >
           <MdDelete size={16} />
           Excluir
         </button>
       )}
       <div className="ml-auto flex gap-3">
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-lg px-5 py-2 text-[13px] font-semibold text-text-sub transition-colors hover:bg-bg"
-        >
+        <button type="button" onClick={onClose} className="btn-ghost">
           Cancelar
         </button>
         <button
           form={FORM_ID}
           type="submit"
           disabled={isSaving}
-          className="flex items-center gap-2 rounded-xl bg-orange px-5 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+          className="btn-primary"
         >
           {isSaving && <Spinner size={12} />}
           Salvar
@@ -228,7 +227,7 @@ export function CompanyModal({
               required: 'Nome de exibição obrigatório',
             })}
           />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="form-grid">
             <FormInput
               label="Razão social"
               placeholder="Razão social"
@@ -262,7 +261,7 @@ export function CompanyModal({
               />
             )}
           />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="form-grid">
             <FormInput
               label="E-mail *"
               type="email"
@@ -305,7 +304,7 @@ export function CompanyModal({
 
         {/* Mercado */}
         <div className={activeTab === 'mercado' ? 'space-y-4' : 'hidden'}>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="form-grid">
             <FormInput
               as="select"
               label="Setor de atuação"
@@ -329,7 +328,7 @@ export function CompanyModal({
               {...register('business.customSegment')}
             />
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="form-grid">
             <Controller
               name="business.cnae"
               control={control}
@@ -360,7 +359,7 @@ export function CompanyModal({
               <option value="Above100M">Acima de R$ 100M</option>
             </FormInput>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="form-grid">
             <FormInput
               label="Nº de funcionários"
               type="number"
@@ -398,7 +397,7 @@ export function CompanyModal({
               {...register('location.number')}
             />
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="form-grid">
             <FormInput
               label="Complemento"
               placeholder="Apto, Sala..."
@@ -483,6 +482,18 @@ export function CompanyModal({
             className="min-h-40 resize-none"
             {...register('extra.observations')}
           />
+          <div className="mt-4">
+            <FormInput
+              label="Limite mensal de tarefas (opcional)"
+              type="number"
+              placeholder="Sem limite"
+              min="1"
+              {...register('monthlyTaskLimit', { valueAsNumber: true })}
+            />
+            <p className="mt-1.5 text-[11px] text-text-muted">
+              Máximo de tarefas que o cliente pode criar por mês. Deixe em branco para ilimitado.
+            </p>
+          </div>
         </div>
 
         {/* Convite — somente cadastro */}

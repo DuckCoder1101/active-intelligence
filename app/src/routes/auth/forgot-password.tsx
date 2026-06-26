@@ -17,7 +17,7 @@ export const Route = createFileRoute('/auth/forgot-password')({
   component: ForgotPasswordPage,
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
-    if (sessionUser) throw redirect({ to: '/app/user/profile' });
+    if (sessionUser) throw redirect({ to: '/user/profile' });
   },
 });
 
@@ -123,11 +123,7 @@ function ForgotPasswordPage() {
           })}
         />
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="mt-1 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
-        >
+        <button type="submit" disabled={isSubmitting} className="btn-auth">
           {isSubmitting ? 'Enviando...' : 'Enviar link de redefinição'}
         </button>
       </form>

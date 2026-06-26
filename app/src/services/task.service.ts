@@ -2,7 +2,7 @@ import { httpsCallable } from 'firebase/functions';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import { functions, storage } from '@/utils/firebase.util';
-import type { Task, SaveTaskDTO } from '@/models/task.model';
+import type { Task, SaveTaskDTO, CreateClientTaskDTO, TaskUsage } from '@/models/task.model';
 
 export default class TaskService {
   private static listCallable = httpsCallable<void, Task[]>(
@@ -51,6 +51,65 @@ export default class TaskService {
 
   static async deleteTask(taskId: string): Promise<void> {
     await this.deleteCallable({ taskId });
+  }
+
+  private static createClientTaskCallable = httpsCallable<CreateClientTaskDTO, Task>(
+    functions,
+    'createClientTaskHandler',
+  );
+
+  private static listClientTasksCallable = httpsCallable<{ companyId?: string }, { tasks: Task[]; usage: TaskUsage }>(
+    functions,
+    'listClientTasksHandler',
+  );
+
+  private static updateClientTaskStatusCallable = httpsCallable<
+    { taskId: string; approvalStatus: string },
+    Task
+  >(functions, 'updateClientTaskStatusHandler');
+
+  private static listCalendarTasksCallable = httpsCallable<
+    { companyId?: string; year: number; month: number },
+    { tasks: Task[] }
+  >(functions, 'listCalendarTasksHandler');
+
+  private static listPendingApprovalCallable = httpsCallable<void, Task[]>(
+    functions,
+    'listPendingApprovalHandler',
+  );
+
+  static async createClientTask(data: CreateClientTaskDTO): Promise<Task> {
+    const r = await this.createClientTaskCallable(data);
+    return r.data;
+  }
+
+  static async listClientTasks(companyId?: string): Promise<{ tasks: Task[]; usage: TaskUsage }> {
+    const r = await this.listClientTasksCallable({ companyId });
+    return r.data;
+  }
+
+  static async updateClientTaskStatus(taskId: string, approvalStatus: string): Promise<Task> {
+    const r = await this.updateClientTaskStatusCallable({ taskId, approvalStatus });
+    return r.data;
+  }
+
+  static async listCalendarTasks(year: number, month: number, companyId?: string): Promise<Task[]> {
+    const r = await this.listCalendarTasksCallable({ year, month, companyId });
+    return r.data.tasks;
+  }
+
+  static async listPendingApproval(): Promise<Task[]> {
+    const r = await this.listPendingApprovalCallable();
+    return r.data;
+  }
+
+  private static updateClientTaskImagesCallable = httpsCallable<
+    { taskId: string; referenceImages: string[] },
+    { success: boolean }
+  >(functions, 'updateClientTaskImagesHandler');
+
+  static async updateClientTaskImages(taskId: string, referenceImages: string[]): Promise<void> {
+    await this.updateClientTaskImagesCallable({ taskId, referenceImages });
   }
 
   static async uploadImage(

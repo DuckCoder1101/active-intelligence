@@ -12,7 +12,7 @@ import { AuthLayout } from '@/components/auth/auth-layout.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { PasswordInput } from '@/components/ui/password-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
-import UserService from '@services/user.service';
+import UserService from '@/services/user.service';
 import { useHandleError } from '@/hooks/useHandleError.util';
 import { useAuth } from '@/contexts/auth.context';
 import { getSessionUser } from '@/server/session';
@@ -22,24 +22,34 @@ interface SignInFormData {
   password: string;
 }
 
+function getRedirectPath(accessLevel?: string): string {
+  if (accessLevel === 'user') return '/user/mycompany';
+  return '/admin/dashboard';
+}
+
 export const Route = createFileRoute('/auth/signin')({
   component: SignInPage,
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
-    if (sessionUser) throw redirect({ to: '/app/user/profile' });
+    if (sessionUser) {
+      const to = getRedirectPath(
+        (sessionUser as { accessLevel?: string }).accessLevel,
+      );
+      throw redirect({ to });
+    }
   },
 });
 
 function SignInPage() {
   const handleError = useHandleError();
   const navigate = useNavigate();
-  const { claims: authUser, isSessionReady } = useAuth();
+  const { claims } = useAuth();
 
   useEffect(() => {
-    if (isSessionReady && authUser) {
-      navigate({ to: '/app/user/profile' });
+    if (claims) {
+      navigate({ to: getRedirectPath(claims.accessLevel) });
     }
-  }, [authUser, isSessionReady, navigate]);
+  }, [claims, navigate]);
 
   const {
     register,
@@ -50,7 +60,7 @@ function SignInPage() {
 
   async function onSubmit(data: SignInFormData) {
     try {
-      await UserService.signinWithCredentials(data.email, data.password);
+      await UserService.signin(data.email, data.password);
     } catch (error) {
       if (
         error instanceof FirebaseError &&
@@ -108,10 +118,7 @@ function SignInPage() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="mt-1 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
-        >
+        <button type="submit" className="btn-auth">
           {!isSubmitting ? (
             <>Entrar</>
           ) : (

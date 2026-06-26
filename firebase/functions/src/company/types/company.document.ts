@@ -51,6 +51,12 @@ export interface CompanyDocument {
     observations?: string;
   };
 
+  monthlyTaskLimit?: number;
+  taskUsage?: {
+    yearMonth: string;
+    count: number;
+  };
+
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

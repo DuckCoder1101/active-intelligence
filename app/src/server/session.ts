@@ -6,7 +6,8 @@ import {
 } from '@tanstack/react-start/server';
 
 import { adminAuth } from '@/server/firebase-admin.server';
-import type { CustomClaims } from '@t/session.type';
+import type { CustomClaims } from '@/types/custom-claims.type';
+import type { AdminPermission } from '@/types/permissions.type';
 
 const SESSION_COOKIE = 'session';
 const SESSION_MAX_AGE_SECONDS = 14 * 24 * 60 * 60;
@@ -20,10 +21,19 @@ export const getSessionUser = createServerFn({ method: 'GET' }).handler(
 
     try {
       const decoded = await adminAuth.verifySessionCookie(cookie, true);
+      const accessLevel = decoded['accessLevel'] as CustomClaims['accessLevel'];
+      const complete = decoded['complete'] as boolean | undefined;
+      if (accessLevel === 'user') {
+        return {
+          accessLevel,
+          complete,
+          companyId: decoded['companyId'] as string | undefined,
+        };
+      }
       return {
-        complete: decoded['complete'] as CustomClaims['complete'],
-        accessLevel: decoded['accessLevel'] as CustomClaims['accessLevel'],
-        permissions: (decoded['permissions'] ?? []) as CustomClaims['permissions'],
+        accessLevel,
+        complete,
+        permissions: (decoded['permissions'] ?? []) as AdminPermission[],
       };
     } catch {
       return null;

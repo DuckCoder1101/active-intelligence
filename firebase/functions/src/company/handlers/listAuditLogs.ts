@@ -1,10 +1,11 @@
 import z from 'zod';
 import { HttpsError } from 'firebase-functions/https';
+import { logger } from 'firebase-functions';
 
 import { onCallHandler } from '@shared/utils/onCallHandler.util';
-import { database } from '@shared/firebase';
+import { database } from '@shared/utils/firebase';
 import { CompanyAuditDocument } from '../types/company-audit.document';
-import UserRepository from '../../user/repositories/user.repository';
+import AdminRepository from '../../admin/repositories/admin.repository';
 import { requireAccess } from '@shared/utils/requireAccess.util';
 
 const ACCESS = {
@@ -23,6 +24,8 @@ export const listAuditLogsHandler = onCallHandler(async (req) => {
     throw new HttpsError('invalid-argument', 'companyId inválido!');
   }
 
+  logger.info('listAuditLogs', { companyId: data.companyId });
+
   const snapshot = await database
     .collection('companies')
     .doc(data.companyId)
@@ -36,24 +39,39 @@ export const listAuditLogsHandler = onCallHandler(async (req) => {
     snapshot.docs.map(async (doc) => {
       const audit = doc.data() as CompanyAuditDocument;
 
-      const [actor, target] = await Promise.all([
-        UserRepository.getResumeByUid(audit.actorUid).catch(() => ({
-          uid: audit.actorUid,
-          name: '(desconhecido)',
-        })),
+      const [actorName, targetName] = await Promise.all([
+        audit.actorName
+          ? Promise.resolve(audit.actorName)
+          : AdminRepository.getResumeByUid(audit.actorUid)
+              .then((r) => r.name)
+              .catch((err) => {
+                logger.warn('listAuditLogs: falha ao resolver actor', {
+                  uid: audit.actorUid,
+                  err: String(err),
+                });
+                return '(desconhecido)';
+              }),
         audit.targetUid
-          ? UserRepository.getResumeByUid(audit.targetUid).catch(() => ({
-              uid: audit.targetUid!,
-              name: '(desconhecido)',
-            }))
+          ? AdminRepository.getResumeByUid(audit.targetUid)
+              .then((r) => r.name)
+              .catch((err) => {
+                logger.warn('listAuditLogs: falha ao resolver target', {
+                  uid: audit.targetUid,
+                  err: String(err),
+                });
+                return '(desconhecido)';
+              })
           : Promise.resolve(null),
       ]);
 
       return {
         id: doc.id,
         action: audit.action,
-        actorName: actor.name,
-        targetName: target?.name ?? null,
+        actorName,
+        targetName,
+        taskId: audit.taskId ?? null,
+        taskTitle: audit.taskTitle ?? null,
+        details: audit.details ?? null,
         createdAt: audit.createdAt.toMillis(),
       };
     }),

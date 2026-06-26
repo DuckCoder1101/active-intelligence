@@ -1,4 +1,5 @@
 import { HttpsError } from 'firebase-functions/https';
+import { logger } from 'firebase-functions';
 import type { ZodError } from 'zod';
 
 import { onCallHandler } from '@shared/utils/onCallHandler.util';
@@ -57,6 +58,8 @@ export const saveCompanyHandler = onCallHandler(async (req) => {
   if (!success) {
     throw new HttpsError('invalid-argument', formatZodErrors(error));
   }
+
+  logger.info('saveCompany', { action: data.companyId ? 'update' : 'create', companyId: data.companyId });
 
   await CompanyRepository.saveCompany(data);
 

@@ -1,9 +1,13 @@
 import { HttpsError } from 'firebase-functions/https';
+import { logger } from 'firebase-functions';
 
 import { onCallHandler } from '@shared/utils/onCallHandler.util';
 import { requireAccess } from '@shared/utils/requireAccess.util';
 import TaskSchema from '../data/task.schema';
 import { TaskRepository } from '../repositories/task.repository';
+import AdminRepository from '../../admin/repositories/admin.repository';
+import { AuditRepository } from '../../company/repositories/audit.repository';
+import { AuditAction } from '../../shared/enums/auditAction.enum';
 
 const ACCESS = { minAccessLevel: 'admin' as const };
 
@@ -39,6 +43,24 @@ export const saveTaskHandler = onCallHandler(async (req) => {
     data.assignedTo = [];
   }
 
+  const isUpdate = !!data.taskId;
+  logger.info('saveTask', { action: isUpdate ? 'update' : 'create', taskId: data.taskId });
+
   const task = await TaskRepository.save({ ...data, createdBy: caller.uid });
+
+  logger.info('saveTask: concluído', { taskId: task.taskId });
+
+  const actorName = await AdminRepository.getResumeByUid(caller.uid)
+    .then((r) => r.name)
+    .catch(() => '(admin)');
+
+  AuditRepository.log(task.companyId, {
+    action: isUpdate ? AuditAction.task_updated : AuditAction.task_created,
+    actorUid: caller.uid,
+    actorName,
+    taskId: task.taskId,
+    taskTitle: task.title,
+  });
+
   return task;
 });

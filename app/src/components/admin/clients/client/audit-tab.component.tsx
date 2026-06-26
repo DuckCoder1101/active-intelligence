@@ -4,6 +4,10 @@ import {
   MdEdit,
   MdPersonRemove,
   MdOutlineHistory,
+  MdOutlineAddTask,
+  MdOutlineEditNote,
+  MdOutlineSwapHoriz,
+  MdOutlineDashboard,
 } from 'react-icons/md';
 
 import CompanyService from '@/services/company.service';
@@ -11,23 +15,14 @@ import { Spinner } from '@/components/ui/spinner.component';
 import { useHandleError } from '@/hooks/useHandleError.util';
 
 import type { AuditLogModel, AuditAction } from '@/models/audit.model';
-
-function formatDateTime(ts: number): string {
-  return new Date(ts).toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
+import { formatDateLong } from '@/formatters/formatDate';
 
 const ACTION_META: Record<
   AuditAction,
   {
     icon: React.ElementType;
     iconClass: string;
-    description: (actor: string, target: string | null) => string;
+    description: (actor: string, target: string | null, log: AuditLogModel) => string;
   }
 > = {
   member_added: {
@@ -40,13 +35,37 @@ const ACTION_META: Record<
     icon: MdEdit,
     iconClass: 'text-orange bg-orange/10',
     description: (actor, target) =>
-      `${actor} atualizou o cargo de ${target ?? 'um membro'}`,
+      `${actor} atualizou o perfil de ${target ?? 'um membro'}`,
   },
   member_removed: {
     icon: MdPersonRemove,
     iconClass: 'text-danger bg-danger/10',
     description: (actor, target) =>
       `${actor} removeu ${target ?? 'um membro'} da empresa`,
+  },
+  task_created: {
+    icon: MdOutlineAddTask,
+    iconClass: 'text-blue-500 bg-blue-500/10',
+    description: (actor, _target, log) =>
+      `${actor} criou a tarefa "${log.taskTitle ?? 'sem título'}"`,
+  },
+  task_updated: {
+    icon: MdOutlineEditNote,
+    iconClass: 'text-orange bg-orange/10',
+    description: (actor, _target, log) =>
+      `${actor} editou a tarefa "${log.taskTitle ?? 'sem título'}"`,
+  },
+  task_status_changed: {
+    icon: MdOutlineSwapHoriz,
+    iconClass: 'text-purple-500 bg-purple-500/10',
+    description: (actor, _target, log) =>
+      `${actor} alterou o status de "${log.taskTitle ?? 'sem título'}"`,
+  },
+  task_column_moved: {
+    icon: MdOutlineDashboard,
+    iconClass: 'text-sky-500 bg-sky-500/10',
+    description: (actor, _target, log) =>
+      `${actor} moveu "${log.taskTitle ?? 'sem título'}" no kanban`,
   },
 };
 
@@ -105,10 +124,15 @@ export function ClientAuditTab({ companyId }: Props) {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[13px] text-text">
-                  {meta.description(log.actorName, log.targetName)}
+                  {meta.description(log.actorName, log.targetName, log)}
                 </p>
+                {log.details && (
+                  <p className="mt-0.5 text-[11px] font-medium text-text-sub">
+                    {log.details}
+                  </p>
+                )}
                 <p className="mt-0.5 text-[11px] text-text-muted">
-                  {formatDateTime(log.createdAt)}
+                  {formatDateLong(log.createdAt)}
                 </p>
               </div>
             </li>

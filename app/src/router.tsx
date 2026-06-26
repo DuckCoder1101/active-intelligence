@@ -2,7 +2,7 @@ import { createRouter as createTanStackRouter } from '@tanstack/react-router';
 
 import { routeTree } from './routeTree.gen';
 
-import type { CustomClaims } from '@t/session.type';
+import type { CustomClaims } from '@/types/custom-claims.type';
 
 export interface RouterContext {
   sessionUser: CustomClaims | null;

@@ -7,6 +7,7 @@ import {
   MdOutlineBarChart,
   MdOutlineSettings,
   MdOutlineViewKanban,
+  MdOutlineAdminPanelSettings,
 } from 'react-icons/md';
 
 import type { NavSection } from '@/types/navbar-item.type';
@@ -61,6 +62,11 @@ export const SIDEBAR_ITEMS: NavSection[] = [
   {
     label: 'Sistema',
     items: [
+      {
+        to: '/app/admin/team',
+        label: 'Administradores',
+        icon: MdOutlineAdminPanelSettings,
+      },
       {
         to: '/app/admin/settings',
         label: 'Configurações do painel',

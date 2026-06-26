@@ -11,6 +11,6 @@ export const ADMIN_PERMISSIONS: AdminPermission[] = [
   'manage-finance',
   'manage-intelligence',
   'manage-catalog',
-  'manage-users',
+  'manage-team',
   'manage-settings',
 ];

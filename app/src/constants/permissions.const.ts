@@ -19,6 +19,6 @@ export const ADMIN_PERMISSIONS_META: AdminPermissionMeta[] = [
     label: 'Catálogo',
     group: 'Inteligência & Catálogo',
   },
-  { key: 'manage-users', label: 'Usuários', group: 'Administração' },
+  { key: 'manage-team', label: 'Administradores', group: 'Administração' },
   { key: 'manage-settings', label: 'Configurações', group: 'Administração' },
 ];
