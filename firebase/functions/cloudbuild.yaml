@@ -12,7 +12,7 @@ steps:
   # Faz o deploy das Cloud Functions
   - name: 'node:22'
     entrypoint: npm
-    args: ['run', 'deploy'']
+    args: ['run', 'deploy']
 
 options:
   logging: CLOUD_LOGGING_ONLY
