@@ -23,6 +23,7 @@ export const getSessionUser = createServerFn({ method: 'GET' }).handler(
       const decoded = await adminAuth.verifySessionCookie(cookie, true);
       const accessLevel = decoded['accessLevel'] as CustomClaims['accessLevel'];
       const complete = decoded['complete'] as boolean | undefined;
+
       if (accessLevel === 'user') {
         return {
           accessLevel,

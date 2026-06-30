@@ -30,7 +30,7 @@ export const completeProfileHandler = onCallHandler(async (req) => {
 
   let saveAccountPromise: Promise<void>;
 
-  if (accessLevel == 'user') {
+  if (accessLevel === 'user') {
     if (!companyId) {
       throw new HttpsError(
         'invalid-argument',

@@ -36,7 +36,10 @@ export const inviteAdminHandler = onCallHandler(async (req) => {
       emailVerified: false,
     });
 
-    logger.info('inviteAdmin: usuário criado', { uid: userRecord.uid, email: data.email });
+    logger.info('inviteAdmin: usuário criado', {
+      uid: userRecord.uid,
+      email: data.email,
+    });
 
     await auth.setCustomUserClaims(userRecord.uid, {
       accessLevel: 'admin',

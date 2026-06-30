@@ -7,7 +7,7 @@
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "node scripts/deploy.js",
     "logs": "firebase functions:log",
     "emulators": "firebase emulators:start --project activeimob-74a7d --import=../emulators-data --export-on-exit=../emulators-data"
   },

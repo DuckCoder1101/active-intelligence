@@ -14,5 +14,5 @@ export const getMeHandler = onCallHandler(async (req) => {
     return await CompanyUserRepository.getProfile(uid);
   }
 
-  return AdminRepository.getProfile(uid);
+  return await AdminRepository.getProfile(uid);
 });
