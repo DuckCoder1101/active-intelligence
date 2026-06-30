@@ -9,28 +9,55 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as UserProfileRouteImport } from './routes/user/profile'
+import { Route as UserMycompanyRouteImport } from './routes/user/mycompany'
+import { Route as CompanyCompanyIdRouteImport } from './routes/company/$companyId'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
-import { Route as AppUserRouteImport } from './routes/app/user'
-import { Route as AppOrganizationRouteImport } from './routes/app/organization'
-import { Route as AppAdminRouteImport } from './routes/app/admin'
-import { Route as AppUserProfileRouteImport } from './routes/app/user/profile'
-import { Route as AppOrganizationOrganization_idRouteImport } from './routes/app/organization/$organization_id'
-import { Route as AppAdminDashboardRouteImport } from './routes/app/admin/dashboard'
+import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as CompanyCompanyIdIndexRouteImport } from './routes/company/$companyId/index'
+import { Route as AdminTeamIndexRouteImport } from './routes/admin/team/index'
+import { Route as AdminProjectsIndexRouteImport } from './routes/admin/projects/index'
+import { Route as AdminClientsIndexRouteImport } from './routes/admin/clients/index'
+import { Route as CompanyCompanyIdTeamRouteImport } from './routes/company/$companyId/team'
+import { Route as CompanyCompanyIdScheduleRouteImport } from './routes/company/$companyId/schedule'
+import { Route as CompanyCompanyIdAdAccountsRouteImport } from './routes/company/$companyId/ad-accounts'
+import { Route as AdminClientsClient_idRouteImport } from './routes/admin/clients/$client_id'
 
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
+const UnauthorizedRoute = UnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppIndexRoute = AppIndexRouteImport.update({
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserProfileRoute = UserProfileRouteImport.update({
+  id: '/user/profile',
+  path: '/user/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserMycompanyRoute = UserMycompanyRouteImport.update({
+  id: '/user/mycompany',
+  path: '/user/mycompany',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompanyCompanyIdRoute = CompanyCompanyIdRouteImport.update({
+  id: '/company/$companyId',
+  path: '/company/$companyId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSigninRoute = AuthSigninRouteImport.update({
   id: '/auth/signin',
@@ -52,147 +79,238 @@ const AuthCompleteAccountRoute = AuthCompleteAccountRouteImport.update({
   path: '/auth/complete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppUserRoute = AppUserRouteImport.update({
-  id: '/user',
-  path: '/user',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOrganizationRoute = AppOrganizationRouteImport.update({
-  id: '/organization',
-  path: '/organization',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminRoute = AppAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppUserProfileRoute = AppUserProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AppUserRoute,
-} as any)
-const AppOrganizationOrganization_idRoute =
-  AppOrganizationOrganization_idRouteImport.update({
-    id: '/$organization_id',
-    path: '/$organization_id',
-    getParentRoute: () => AppOrganizationRoute,
-  } as any)
-const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => AppAdminRoute,
+  getParentRoute: () => AdminRoute,
+} as any)
+const CompanyCompanyIdIndexRoute = CompanyCompanyIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CompanyCompanyIdRoute,
+} as any)
+const AdminTeamIndexRoute = AdminTeamIndexRouteImport.update({
+  id: '/team/',
+  path: '/team/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProjectsIndexRoute = AdminProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
+  id: '/clients/',
+  path: '/clients/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const CompanyCompanyIdTeamRoute = CompanyCompanyIdTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => CompanyCompanyIdRoute,
+} as any)
+const CompanyCompanyIdScheduleRoute =
+  CompanyCompanyIdScheduleRouteImport.update({
+    id: '/schedule',
+    path: '/schedule',
+    getParentRoute: () => CompanyCompanyIdRoute,
+  } as any)
+const CompanyCompanyIdAdAccountsRoute =
+  CompanyCompanyIdAdAccountsRouteImport.update({
+    id: '/ad-accounts',
+    path: '/ad-accounts',
+    getParentRoute: () => CompanyCompanyIdRoute,
+  } as any)
+const AdminClientsClient_idRoute = AdminClientsClient_idRouteImport.update({
+  id: '/clients/$client_id',
+  path: '/clients/$client_id',
+  getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/app': typeof AppRouteWithChildren
-  '/app/admin': typeof AppAdminRouteWithChildren
-  '/app/organization': typeof AppOrganizationRouteWithChildren
-  '/app/user': typeof AppUserRouteWithChildren
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/unauthorized': typeof UnauthorizedRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/app/': typeof AppIndexRoute
-  '/app/admin/dashboard': typeof AppAdminDashboardRoute
-  '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
-  '/app/user/profile': typeof AppUserProfileRoute
+  '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
+  '/user/mycompany': typeof UserMycompanyRoute
+  '/user/profile': typeof UserProfileRoute
+  '/admin/clients/$client_id': typeof AdminClientsClient_idRoute
+  '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
+  '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
+  '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
+  '/admin/clients/': typeof AdminClientsIndexRoute
+  '/admin/projects/': typeof AdminProjectsIndexRoute
+  '/admin/team/': typeof AdminTeamIndexRoute
+  '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/app/admin': typeof AppAdminRouteWithChildren
-  '/app/organization': typeof AppOrganizationRouteWithChildren
-  '/app/user': typeof AppUserRouteWithChildren
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/unauthorized': typeof UnauthorizedRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/app': typeof AppIndexRoute
-  '/app/admin/dashboard': typeof AppAdminDashboardRoute
-  '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
-  '/app/user/profile': typeof AppUserProfileRoute
+  '/user/mycompany': typeof UserMycompanyRoute
+  '/user/profile': typeof UserProfileRoute
+  '/admin/clients/$client_id': typeof AdminClientsClient_idRoute
+  '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
+  '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
+  '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
+  '/admin/clients': typeof AdminClientsIndexRoute
+  '/admin/projects': typeof AdminProjectsIndexRoute
+  '/admin/team': typeof AdminTeamIndexRoute
+  '/company/$companyId': typeof CompanyCompanyIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/app': typeof AppRouteWithChildren
-  '/app/admin': typeof AppAdminRouteWithChildren
-  '/app/organization': typeof AppOrganizationRouteWithChildren
-  '/app/user': typeof AppUserRouteWithChildren
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/unauthorized': typeof UnauthorizedRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/app/': typeof AppIndexRoute
-  '/app/admin/dashboard': typeof AppAdminDashboardRoute
-  '/app/organization/$organization_id': typeof AppOrganizationOrganization_idRoute
-  '/app/user/profile': typeof AppUserProfileRoute
+  '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
+  '/user/mycompany': typeof UserMycompanyRoute
+  '/user/profile': typeof UserProfileRoute
+  '/admin/clients/$client_id': typeof AdminClientsClient_idRoute
+  '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
+  '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
+  '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
+  '/admin/clients/': typeof AdminClientsIndexRoute
+  '/admin/projects/': typeof AdminProjectsIndexRoute
+  '/admin/team/': typeof AdminTeamIndexRoute
+  '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/app'
-    | '/app/admin'
-    | '/app/organization'
-    | '/app/user'
+    | '/'
+    | '/admin'
+    | '/unauthorized'
+    | '/admin/dashboard'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/app/'
-    | '/app/admin/dashboard'
-    | '/app/organization/$organization_id'
-    | '/app/user/profile'
+    | '/company/$companyId'
+    | '/user/mycompany'
+    | '/user/profile'
+    | '/admin/clients/$client_id'
+    | '/company/$companyId/ad-accounts'
+    | '/company/$companyId/schedule'
+    | '/company/$companyId/team'
+    | '/admin/clients/'
+    | '/admin/projects/'
+    | '/admin/team/'
+    | '/company/$companyId/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/app/admin'
-    | '/app/organization'
-    | '/app/user'
+    | '/'
+    | '/admin'
+    | '/unauthorized'
+    | '/admin/dashboard'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/app'
-    | '/app/admin/dashboard'
-    | '/app/organization/$organization_id'
-    | '/app/user/profile'
+    | '/user/mycompany'
+    | '/user/profile'
+    | '/admin/clients/$client_id'
+    | '/company/$companyId/ad-accounts'
+    | '/company/$companyId/schedule'
+    | '/company/$companyId/team'
+    | '/admin/clients'
+    | '/admin/projects'
+    | '/admin/team'
+    | '/company/$companyId'
   id:
     | '__root__'
-    | '/app'
-    | '/app/admin'
-    | '/app/organization'
-    | '/app/user'
+    | '/'
+    | '/admin'
+    | '/unauthorized'
+    | '/admin/dashboard'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/app/'
-    | '/app/admin/dashboard'
-    | '/app/organization/$organization_id'
-    | '/app/user/profile'
+    | '/company/$companyId'
+    | '/user/mycompany'
+    | '/user/profile'
+    | '/admin/clients/$client_id'
+    | '/company/$companyId/ad-accounts'
+    | '/company/$companyId/schedule'
+    | '/company/$companyId/team'
+    | '/admin/clients/'
+    | '/admin/projects/'
+    | '/admin/team/'
+    | '/company/$companyId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AppRoute: typeof AppRouteWithChildren
+  IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  UnauthorizedRoute: typeof UnauthorizedRoute
   AuthCompleteAccountRoute: typeof AuthCompleteAccountRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthSigninRoute: typeof AuthSigninRoute
+  CompanyCompanyIdRoute: typeof CompanyCompanyIdRouteWithChildren
+  UserMycompanyRoute: typeof UserMycompanyRoute
+  UserProfileRoute: typeof UserProfileRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/': {
-      id: '/app/'
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
       path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/profile': {
+      id: '/user/profile'
+      path: '/user/profile'
+      fullPath: '/user/profile'
+      preLoaderRoute: typeof UserProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/mycompany': {
+      id: '/user/mycompany'
+      path: '/user/mycompany'
+      fullPath: '/user/mycompany'
+      preLoaderRoute: typeof UserMycompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/company/$companyId': {
+      id: '/company/$companyId'
+      path: '/company/$companyId'
+      fullPath: '/company/$companyId'
+      preLoaderRoute: typeof CompanyCompanyIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/signin': {
       id: '/auth/signin'
@@ -222,108 +340,118 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCompleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/user': {
-      id: '/app/user'
-      path: '/user'
-      fullPath: '/app/user'
-      preLoaderRoute: typeof AppUserRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/organization': {
-      id: '/app/organization'
-      path: '/organization'
-      fullPath: '/app/organization'
-      preLoaderRoute: typeof AppOrganizationRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin': {
-      id: '/app/admin'
-      path: '/admin'
-      fullPath: '/app/admin'
-      preLoaderRoute: typeof AppAdminRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/user/profile': {
-      id: '/app/user/profile'
-      path: '/profile'
-      fullPath: '/app/user/profile'
-      preLoaderRoute: typeof AppUserProfileRouteImport
-      parentRoute: typeof AppUserRoute
-    }
-    '/app/organization/$organization_id': {
-      id: '/app/organization/$organization_id'
-      path: '/$organization_id'
-      fullPath: '/app/organization/$organization_id'
-      preLoaderRoute: typeof AppOrganizationOrganization_idRouteImport
-      parentRoute: typeof AppOrganizationRoute
-    }
-    '/app/admin/dashboard': {
-      id: '/app/admin/dashboard'
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
       path: '/dashboard'
-      fullPath: '/app/admin/dashboard'
-      preLoaderRoute: typeof AppAdminDashboardRouteImport
-      parentRoute: typeof AppAdminRoute
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/company/$companyId/': {
+      id: '/company/$companyId/'
+      path: '/'
+      fullPath: '/company/$companyId/'
+      preLoaderRoute: typeof CompanyCompanyIdIndexRouteImport
+      parentRoute: typeof CompanyCompanyIdRoute
+    }
+    '/admin/team/': {
+      id: '/admin/team/'
+      path: '/team'
+      fullPath: '/admin/team/'
+      preLoaderRoute: typeof AdminTeamIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/projects/': {
+      id: '/admin/projects/'
+      path: '/projects'
+      fullPath: '/admin/projects/'
+      preLoaderRoute: typeof AdminProjectsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/clients/': {
+      id: '/admin/clients/'
+      path: '/clients'
+      fullPath: '/admin/clients/'
+      preLoaderRoute: typeof AdminClientsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/company/$companyId/team': {
+      id: '/company/$companyId/team'
+      path: '/team'
+      fullPath: '/company/$companyId/team'
+      preLoaderRoute: typeof CompanyCompanyIdTeamRouteImport
+      parentRoute: typeof CompanyCompanyIdRoute
+    }
+    '/company/$companyId/schedule': {
+      id: '/company/$companyId/schedule'
+      path: '/schedule'
+      fullPath: '/company/$companyId/schedule'
+      preLoaderRoute: typeof CompanyCompanyIdScheduleRouteImport
+      parentRoute: typeof CompanyCompanyIdRoute
+    }
+    '/company/$companyId/ad-accounts': {
+      id: '/company/$companyId/ad-accounts'
+      path: '/ad-accounts'
+      fullPath: '/company/$companyId/ad-accounts'
+      preLoaderRoute: typeof CompanyCompanyIdAdAccountsRouteImport
+      parentRoute: typeof CompanyCompanyIdRoute
+    }
+    '/admin/clients/$client_id': {
+      id: '/admin/clients/$client_id'
+      path: '/clients/$client_id'
+      fullPath: '/admin/clients/$client_id'
+      preLoaderRoute: typeof AdminClientsClient_idRouteImport
+      parentRoute: typeof AdminRoute
     }
   }
 }
 
-interface AppAdminRouteChildren {
-  AppAdminDashboardRoute: typeof AppAdminDashboardRoute
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminClientsClient_idRoute: typeof AdminClientsClient_idRoute
+  AdminClientsIndexRoute: typeof AdminClientsIndexRoute
+  AdminProjectsIndexRoute: typeof AdminProjectsIndexRoute
+  AdminTeamIndexRoute: typeof AdminTeamIndexRoute
 }
 
-const AppAdminRouteChildren: AppAdminRouteChildren = {
-  AppAdminDashboardRoute: AppAdminDashboardRoute,
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminClientsClient_idRoute: AdminClientsClient_idRoute,
+  AdminClientsIndexRoute: AdminClientsIndexRoute,
+  AdminProjectsIndexRoute: AdminProjectsIndexRoute,
+  AdminTeamIndexRoute: AdminTeamIndexRoute,
 }
 
-const AppAdminRouteWithChildren = AppAdminRoute._addFileChildren(
-  AppAdminRouteChildren,
-)
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface AppOrganizationRouteChildren {
-  AppOrganizationOrganization_idRoute: typeof AppOrganizationOrganization_idRoute
+interface CompanyCompanyIdRouteChildren {
+  CompanyCompanyIdAdAccountsRoute: typeof CompanyCompanyIdAdAccountsRoute
+  CompanyCompanyIdScheduleRoute: typeof CompanyCompanyIdScheduleRoute
+  CompanyCompanyIdTeamRoute: typeof CompanyCompanyIdTeamRoute
+  CompanyCompanyIdIndexRoute: typeof CompanyCompanyIdIndexRoute
 }
 
-const AppOrganizationRouteChildren: AppOrganizationRouteChildren = {
-  AppOrganizationOrganization_idRoute: AppOrganizationOrganization_idRoute,
+const CompanyCompanyIdRouteChildren: CompanyCompanyIdRouteChildren = {
+  CompanyCompanyIdAdAccountsRoute: CompanyCompanyIdAdAccountsRoute,
+  CompanyCompanyIdScheduleRoute: CompanyCompanyIdScheduleRoute,
+  CompanyCompanyIdTeamRoute: CompanyCompanyIdTeamRoute,
+  CompanyCompanyIdIndexRoute: CompanyCompanyIdIndexRoute,
 }
 
-const AppOrganizationRouteWithChildren = AppOrganizationRoute._addFileChildren(
-  AppOrganizationRouteChildren,
-)
-
-interface AppUserRouteChildren {
-  AppUserProfileRoute: typeof AppUserProfileRoute
-}
-
-const AppUserRouteChildren: AppUserRouteChildren = {
-  AppUserProfileRoute: AppUserProfileRoute,
-}
-
-const AppUserRouteWithChildren =
-  AppUserRoute._addFileChildren(AppUserRouteChildren)
-
-interface AppRouteChildren {
-  AppAdminRoute: typeof AppAdminRouteWithChildren
-  AppOrganizationRoute: typeof AppOrganizationRouteWithChildren
-  AppUserRoute: typeof AppUserRouteWithChildren
-  AppIndexRoute: typeof AppIndexRoute
-}
-
-const AppRouteChildren: AppRouteChildren = {
-  AppAdminRoute: AppAdminRouteWithChildren,
-  AppOrganizationRoute: AppOrganizationRouteWithChildren,
-  AppUserRoute: AppUserRouteWithChildren,
-  AppIndexRoute: AppIndexRoute,
-}
-
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+const CompanyCompanyIdRouteWithChildren =
+  CompanyCompanyIdRoute._addFileChildren(CompanyCompanyIdRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  AppRoute: AppRouteWithChildren,
+  IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  UnauthorizedRoute: UnauthorizedRoute,
   AuthCompleteAccountRoute: AuthCompleteAccountRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLogoutRoute: AuthLogoutRoute,
   AuthSigninRoute: AuthSigninRoute,
+  CompanyCompanyIdRoute: CompanyCompanyIdRouteWithChildren,
+  UserMycompanyRoute: UserMycompanyRoute,
+  UserProfileRoute: UserProfileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

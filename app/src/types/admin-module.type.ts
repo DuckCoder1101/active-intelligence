@@ -1,4 +1,5 @@
 import type { ElementType } from 'react';
+import type { AdminPermission } from '@/types/permissions.type';
 
 export type AdminModule = {
   icon: ElementType;
@@ -6,6 +7,7 @@ export type AdminModule = {
   description: string;
   to?: string;
   soon?: boolean;
+  permission?: AdminPermission;
 };
 
 export type Section = {

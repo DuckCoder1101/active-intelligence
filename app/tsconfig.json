@@ -19,9 +19,10 @@
       "@routes/*": ["./src/routes/*"],
       "@services/*": ["./src/services/*"],
       "@t/*": ["./src/types/*"],
+      "@hooks/*": ["./src/hooks/*"],
       "@utils/*": ["./src/utils/*"]
     },
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022", "ES2024", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
 
     /* Bundler mode */

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { FirebaseError } from 'firebase/app';
 import {
   createFileRoute,
@@ -7,13 +7,12 @@ import {
   useNavigate,
 } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { FaGoogle } from 'react-icons/fa';
 
 import { AuthLayout } from '@/components/auth/auth-layout.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { PasswordInput } from '@/components/ui/password-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
-import UserService from '@services/user.service';
+import UserService from '@/services/user.service';
 import { useHandleError } from '@/hooks/useHandleError.util';
 import { useAuth } from '@/contexts/auth.context';
 import { getSessionUser } from '@/server/session';
@@ -23,25 +22,34 @@ interface SignInFormData {
   password: string;
 }
 
+function getRedirectPath(accessLevel?: string): string {
+  if (accessLevel === 'user') return '/user/mycompany';
+  return '/admin/dashboard';
+}
+
 export const Route = createFileRoute('/auth/signin')({
   component: SignInPage,
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
-    if (sessionUser) throw redirect({ to: '/app/user/profile' });
+    if (sessionUser) {
+      const to = getRedirectPath(
+        (sessionUser as { accessLevel?: string }).accessLevel,
+      );
+      throw redirect({ to });
+    }
   },
 });
 
 function SignInPage() {
   const handleError = useHandleError();
   const navigate = useNavigate();
-  const { authUser, isSessionReady } = useAuth();
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { claims } = useAuth();
 
   useEffect(() => {
-    if (isSessionReady && authUser) {
-      navigate({ to: '/app/user/profile' });
+    if (claims) {
+      navigate({ to: getRedirectPath(claims.accessLevel) });
     }
-  }, [authUser, isSessionReady, navigate]);
+  }, [claims, navigate]);
 
   const {
     register,
@@ -52,7 +60,7 @@ function SignInPage() {
 
   async function onSubmit(data: SignInFormData) {
     try {
-      await UserService.signinWithCredentials(data.email, data.password);
+      await UserService.signin(data.email, data.password);
     } catch (error) {
       if (
         error instanceof FirebaseError &&
@@ -65,25 +73,6 @@ function SignInPage() {
       } else {
         handleError(error);
       }
-    }
-  }
-
-  async function onGoogleSignIn() {
-    setIsGoogleLoading(true);
-
-    try {
-      await UserService.signinWithGoogle();
-    } catch (error) {
-      if (
-        error instanceof FirebaseError &&
-        (error.code === 'auth/popup-closed-by-user' ||
-          error.code === 'auth/cancelled-popup-request')
-      ) {
-        return;
-      }
-      handleError(error);
-    } finally {
-      setIsGoogleLoading(false);
     }
   }
 
@@ -129,11 +118,7 @@ function SignInPage() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={isGoogleLoading}
-          className="mt-1 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
-        >
+        <button type="submit" className="btn-auth">
           {!isSubmitting ? (
             <>Entrar</>
           ) : (
@@ -144,31 +129,6 @@ function SignInPage() {
           )}
         </button>
       </form>
-
-      <div className="my-4 flex items-center gap-3">
-        <div className="h-px flex-1 bg-border" />
-        <span className="text-[11px] text-text-muted">ou</span>
-        <div className="h-px flex-1 bg-border" />
-      </div>
-
-      <button
-        type="button"
-        onClick={onGoogleSignIn}
-        disabled={isGoogleLoading || isSubmitting}
-        className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-border bg-card py-2.5 text-sm font-medium text-text transition-colors hover:bg-bg disabled:opacity-60"
-      >
-        {!isGoogleLoading ? (
-          <>
-            <FaGoogle />
-            Entrar com Google
-          </>
-        ) : (
-          <>
-            <Spinner size={16} />
-            Entrando...
-          </>
-        )}
-      </button>
     </AuthLayout>
   );
 }

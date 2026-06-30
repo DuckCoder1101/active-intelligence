@@ -1,20 +1,24 @@
-import { httpsCallable } from 'firebase/functions';
 import {
-  signInWithCustomToken,
   signInWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
   sendPasswordResetEmail,
-  sendEmailVerification,
   signOut,
 } from 'firebase/auth';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage';
+import { httpsCallable } from 'firebase/functions';
 
 import { auth, functions, storage } from '@/utils/firebase.util';
 
-import type { User } from 'firebase/auth';
-import type { UserProfile } from '@t/user.model';
-import type { CompleteAccountDTO } from '@t/user.dto';
+import type {
+  CompleteAccountDTO,
+  DeleteAccountDTO,
+  UpdateAccountDTO,
+} from '@/types/dtos/user.dto';
+import type { UserProfile } from '@/models/user-profile.model';
 
 export default class UserService {
   private static getMeCallable = httpsCallable<void, UserProfile>(
@@ -24,59 +28,66 @@ export default class UserService {
 
   private static completeAccountCallable = httpsCallable<
     CompleteAccountDTO,
-    string
-  >(functions, 'completeAccountHandler');
+    void
+  >(functions, 'completeProfileHandler');
+
+  private static updateAccountCallable = httpsCallable<UpdateAccountDTO, void>(
+    functions,
+    'updateProfileHandler',
+  );
+
+  private static deleteAccountCallable = httpsCallable<DeleteAccountDTO, void>(
+    functions,
+    'deleteAccountHandler',
+  );
 
   static async getMe(): Promise<UserProfile> {
     const result = await this.getMeCallable();
     return result.data;
   }
 
-  static async completeAccount(formData: CompleteAccountDTO): Promise<User> {
-    const result = await this.completeAccountCallable(formData);
-    const customToken = result.data;
-    const credential = await signInWithCustomToken(auth, customToken);
-    return credential.user;
-  }
-
-  static async signinWithCredentials(
-    email: string,
-    password: string,
-  ): Promise<User> {
-    const credential = await signInWithEmailAndPassword(auth, email, password);
-    return credential.user;
-  }
-
-  static async signinWithGoogle(): Promise<User> {
-    const provider = new GoogleAuthProvider();
-    const credential = await signInWithPopup(auth, provider);
-    return credential.user;
+  static async signin(email: string, password: string): Promise<void> {
+    await signInWithEmailAndPassword(auth, email, password);
   }
 
   static async sendRecoverPasswordEmail(email: string): Promise<void> {
     await sendPasswordResetEmail(auth, email);
   }
 
-  static async sendVerificationEmail(): Promise<void> {
-    await sendEmailVerification(auth.currentUser!);
+  static async completeAccount(data: CompleteAccountDTO): Promise<void> {
+    await this.completeAccountCallable(data);
   }
 
   static async signout(): Promise<void> {
     await signOut(auth);
   }
 
-  static async getProfilePhotoUrl(uid: string): Promise<string | null> {
+  static async updateAccount(data: UpdateAccountDTO): Promise<void> {
+    await this.updateAccountCallable(data);
+  }
+
+  static async deleteAccount(data: DeleteAccountDTO): Promise<void> {
+    await this.deleteAccountCallable(data);
+  }
+
+  static async getAvatarUrl(uid: string): Promise<string | null> {
     try {
-      const photoRef = ref(storage, `users/${uid}/profile`);
+      const photoRef = ref(storage, `users/${uid}/avatar`);
       return await getDownloadURL(photoRef);
     } catch {
       return null;
     }
   }
 
-  static async updateProfilePhoto(uid: string, file: File): Promise<string> {
-    const photoRef = ref(storage, `users/${uid}/profile`);
+  static async updateAvatar(uid: string, file: File): Promise<string> {
+    const photoRef = ref(storage, `users/${uid}/avatar`);
+
     await uploadBytes(photoRef, file);
     return await getDownloadURL(photoRef);
+  }
+
+  static async deleteAvatar(uid: string): Promise<void> {
+    const photoRef = ref(storage, `users/${uid}/avatar`);
+    await deleteObject(photoRef);
   }
 }

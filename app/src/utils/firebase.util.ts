@@ -20,7 +20,7 @@ export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app);
 
-if (import.meta.env['VITE_IS_DEV']) {
+if (import.meta.env.DEV) {
   connectAuthEmulator(auth, 'http://localhost:9099');
   connectStorageEmulator(storage, 'localhost', 9199);
   connectFunctionsEmulator(functions, 'localhost', 5001);

@@ -11,6 +11,7 @@ interface SnackbarProviderProps {
 }
 
 const DURATION_MS = 4000;
+let nextId = 1;
 
 export function SnackbarProvider({ children }: SnackbarProviderProps) {
   const [messages, setMessages] = useState<SnackbarMessage[]>([]);
@@ -21,7 +22,7 @@ export function SnackbarProvider({ children }: SnackbarProviderProps) {
 
   const push = useCallback(
     (message: SnackbarMessage) => {
-      message.id = Date.now();
+      message.id = nextId++;
       setMessages((prev) => [...prev, message]);
       setTimeout(() => dismiss(message.id as number), DURATION_MS);
     },

@@ -1,34 +1,5 @@
 @import 'tailwindcss';
 
-/* ─── Inter Variable — self-hosted, latin + latin-ext (covers Portuguese) ─── */
-
-@font-face {
-  font-family: 'Inter Variable';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url('/fonts/inter-latin-ext-wght-normal.woff2')
-    format('woff2-variations');
-  unicode-range:
-    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
-    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
-    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-@font-face {
-  font-family: 'Inter Variable';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
-  unicode-range:
-    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
-    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
-    U+2215, U+FEFF, U+FFFD;
-}
-
-/* ─── Active Intelligence — Design Tokens ─────────────────────────────────── */
-
 @theme {
   /* Surfaces */
   --color-bg: var(--bg);
@@ -86,17 +57,17 @@
   --text-sub: #475569;
   --text-muted: #94a3b8;
 
-  --sidebar: #0d1b2a;
-  --sidebar-hover: #1a2d3e;
+  --sidebar: #1a1a1a;
+  --sidebar-hover: #404142;
 
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
   --primary-surface: #eff6ff;
 
   --success: #059669;
-  --warning: #d97706;
+  --warning: #ff6c00;
   --danger: #dc2626;
-  --orange: #ea580c;
+  --orange: #ff6c00;
   --purple: #7c3aed;
   --teal: #0891b2;
 }
@@ -104,25 +75,25 @@
 /* ─── Dark theme (.dark on <html>) ───────────────────────────────────────── */
 
 .dark {
-  --bg: #0f172a;
-  --card: #1e293b;
-  --border: #334155;
+  --bg: #2e2d2d;
+  --card: #262626;
+  --border: #1a1a1a;
 
   --text: #f1f5f9;
   --text-sub: #94a3b8;
   --text-muted: #475569;
 
-  --sidebar: #070e17;
-  --sidebar-hover: #0d1b2a;
+  --sidebar: #1a1a1a;
+  --sidebar-hover: #404142;
 
   --primary: #3b82f6;
   --primary-hover: #2563eb;
   --primary-surface: #1e3a5f;
 
   --success: #10b981;
-  --warning: #f59e0b;
+  --warning: #ff6c00;
   --danger: #f87171;
-  --orange: #fb923c;
+  --orange: #ff6c00;
   --purple: #a78bfa;
   --teal: #22d3ee;
 }
@@ -146,7 +117,6 @@ body {
   background-color: var(--bg);
   color: var(--text);
   font-family:
-    'Inter Variable',
     Inter,
     -apple-system,
     BlinkMacSystemFont,
@@ -156,4 +126,84 @@ body {
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+Link,
+a {
+  cursor: pointer;
+}
+
+button:disabled,
+Link:disabled {
+  cursor: auto;
+}
+
+/* ─── Reusable component classes ─────────────────────────────────────────── */
+
+@layer components {
+  /* ── Buttons ──────────────────────────────────────────────────────────── */
+
+  /* Primary CTA — filled orange */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-xl bg-orange px-5 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50;
+  }
+
+  /* Ghost / cancel — no border */
+  .btn-ghost {
+    @apply rounded-lg px-5 py-2 text-[13px] font-semibold text-text-sub transition-colors hover:bg-bg disabled:opacity-50;
+  }
+
+  /* Ghost with border — secondary action */
+  .btn-ghost-border {
+    @apply inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2 text-[13px] font-semibold text-text-sub transition-colors hover:bg-bg disabled:opacity-50;
+  }
+
+  /* Danger outlined — destructive secondary */
+  .btn-danger {
+    @apply inline-flex items-center gap-1.5 rounded-xl border border-danger/30 px-4 py-2 text-[13px] font-semibold text-danger transition-colors hover:bg-danger/10;
+  }
+
+  /* Danger filled — confirm delete */
+  .btn-delete {
+    @apply inline-flex items-center gap-2 rounded-xl bg-danger px-4 py-2 text-[13px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50;
+  }
+
+  /* Square icon button — topbar / toolbars */
+  .btn-icon {
+    @apply flex h-8 w-8 items-center justify-center rounded-lg border border-border text-text-sub transition-colors hover:bg-bg hover:text-text;
+  }
+
+  /* Full-width auth button */
+  .btn-auth {
+    @apply mt-1 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60;
+  }
+
+  /* ── Card ─────────────────────────────────────────────────────────────── */
+
+  .card {
+    @apply rounded-xl border border-border bg-card;
+  }
+
+  /* ── Modal ────────────────────────────────────────────────────────────── */
+
+  .modal-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+  }
+
+  .modal-backdrop {
+    @apply absolute inset-0 bg-black/50 backdrop-blur-sm;
+  }
+
+  /* ── Form helpers ─────────────────────────────────────────────────────── */
+
+  /* Small uppercase section label */
+  .form-label {
+    @apply text-[10px] font-bold uppercase tracking-[0.5px] text-text-sub;
+  }
+
+  /* Responsive 2-column form grid */
+  .form-grid {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+  }
 }

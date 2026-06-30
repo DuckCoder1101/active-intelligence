@@ -1,8 +1,10 @@
-export type UserAccessLevel = 'client' | 'admin';
+import { AdminPermission, UserAccessLevel } from './accessLevel.type';
 
 export interface AuthenticatedUser {
   uid: string;
   email: string;
-  phone?: string;
   accessLevel: UserAccessLevel;
+  complete: boolean;
+  permissions?: AdminPermission[];
+  companyId?: string;
 }

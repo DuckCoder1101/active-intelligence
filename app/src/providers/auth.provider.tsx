@@ -1,16 +1,20 @@
 import { onIdTokenChanged } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import UserService from '@services/user.service';
+
 import { AuthContext } from '@contexts/auth.context';
-import { useHandleError } from '@/hooks/useHandleError.util';
-import { auth } from '@/utils/firebase.util';
+
+import { useHandleError } from '@hooks/useHandleError.util';
+
 import { createSession, deleteSession } from '@/server/session';
 
+import { auth } from '@/utils/firebase.util';
+
 import type { ReactNode } from 'react';
-import type { AuthContextState, AuthUser } from '@contexts/auth.context';
-import type { CustomClaims } from '@t/session.type';
-import type { UserProfile } from '@/types/user.model';
+import type { AuthContextState } from '@contexts/auth.context';
+import type { CustomClaims } from '@/types/custom-claims.type';
+import type { UserProfile } from '@/models/user-profile.model';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -18,51 +22,61 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const handleError = useHandleError();
+  const handleErrorRef = useRef(handleError);
+  handleErrorRef.current = handleError;
 
   const [authState, setAuthState] = useState<AuthContextState>({
-    authUser: null,
-    profile: null,
+    claims: null,
+    userProfile: null,
     isLoadingProfile: true,
-    isSessionReady: false,
   });
+
+  const downloadUserProfile = useCallback(async () => {
+    let profile: UserProfile | null = null;
+
+    try {
+      setAuthState((prev) => ({ ...prev, isLoadingProfile: true }));
+
+      profile = await UserService.getMe();
+      profile.avatarUrl = await UserService.getAvatarUrl(profile.uid);
+    } catch (err) {
+      handleErrorRef.current(err);
+    } finally {
+      setAuthState((prev) => ({
+        ...prev,
+        isLoadingProfile: false,
+        userProfile: profile,
+      }));
+    }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
-      let authUser: AuthUser | null = null;
-      let profile: UserProfile | null = null;
+      let claims: CustomClaims | null = null;
 
-      try {
-        setAuthState((prev) => ({ ...prev, isLoadingProfile: true }));
+      if (!user) {
+        await deleteSession().catch(() => {});
+        return;
+      }
 
-        if (user) {
-          const idTokenResult = await user.getIdTokenResult();
-          const claims = idTokenResult.claims as unknown as CustomClaims;
-          authUser = { ...user, claims };
+      const idTokenResult = await user.getIdTokenResult();
+      claims = idTokenResult.claims as CustomClaims;
 
-          await createSession({ data: { idToken: idTokenResult.token } });
+      await createSession({ data: { idToken: idTokenResult.token } });
 
-          if (claims.complete) {
-            profile = await UserService.getMe();
-          }
-        } else {
-          await deleteSession();
-        }
-      } catch (err) {
-        handleError(err);
-      } finally {
-        setAuthState({
-          authUser,
-          profile,
-          isLoadingProfile: false,
-          isSessionReady: true,
-        });
+      setAuthState((prev) => ({ ...prev, claims }));
+
+      if (claims.complete) {
+        await downloadUserProfile();
       }
     });
 
     return unsubscribe;
-  }, []);
+  }, [downloadUserProfile]);
 
   return (
-    <AuthContext.Provider value={authState}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ ...authState, downloadUserProfile }}>
+      {children}
+    </AuthContext.Provider>
   );
 }

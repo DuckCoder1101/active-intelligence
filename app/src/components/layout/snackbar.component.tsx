@@ -21,7 +21,7 @@ export function Snackbar() {
           key={id}
           className={`${TYPE_CLASSES[type]} flex min-w-64 items-center justify-between gap-4 rounded-lg px-4 py-3 text-sm text-white shadow-lg`}
         >
-          <span>{message}</span>
+          <span className="whitespace-pre-line">{message}</span>
           <button
             onClick={() => dismiss(id!)}
             className="shrink-0 opacity-70 hover:opacity-100"

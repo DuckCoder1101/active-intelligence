@@ -18,7 +18,6 @@
         "*.local"
       ],
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
@@ -36,12 +35,21 @@
     "firestore": {
       "port": 8080
     },
+    "storage": {
+      "port": 9199
+    },
     "ui": {
       "enabled": true
     },
     "singleProjectMode": true
   },
   "auth": {
-    "providers": {}
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Active Imob",
+        "supportEmail": "activecompanycontato@gmail.com"
+      }
+    }
   }
 }
