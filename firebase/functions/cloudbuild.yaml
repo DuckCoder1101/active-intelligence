@@ -1,0 +1,20 @@
+steps:
+  # Instala as dependências
+  - name: 'node:22'
+    entrypoint: npm
+    args: ['ci']
+
+  # Compila o projeto (caso utilize TypeScript)
+  - name: 'node:22'
+    entrypoint: npm
+    args: ['run', 'build']
+
+  # Faz o deploy das Cloud Functions
+  - name: 'node:22'
+    entrypoint: npm
+    args: ['run', 'deploy'']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: '1800s'
