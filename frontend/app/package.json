@@ -1,16 +1,19 @@
 {
-  "name": "active-admin-portal",
+  "name": "active-client-portal",
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "test -f ../shared/sync.js && node ../shared/sync.js . || true",
     "dev": "vite dev --port 3000",
     "generate-routes": "tsr generate",
+    "prebuild": "test -f ../shared/sync.js && node ../shared/sync.js . || true",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check .",
+    "predeploy": "test -f ../shared/sync.js && node ../shared/sync.js . || true",
     "deploy": "vercel deploy"
   },
   "dependencies": {

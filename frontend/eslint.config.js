@@ -12,15 +12,15 @@ import importPlugin from 'eslint-plugin-import';
 export default tseslint.config(
   {
     ignores: [
-      'dist',
-      'coverage',
-      'node_modules',
-      'firebase-debug.log',
-      '*.config.js',
-      '*.config.ts',
-      '*.mjs',
+      '**/dist',
+      '**/coverage',
+      '**/node_modules',
+      '**/firebase-debug.log',
+      '**/*.config.js',
+      '**/*.config.ts',
+      '**/*.mjs',
       '**/*.js',
-      'api/**',
+      '**/api/**',
     ],
   },
 
