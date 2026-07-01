@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { useState } from 'react';
 
 import { UserSidebar } from '@/components/company/sidebar.component';
 import { CompanyTopbar } from '@/components/company/topbar.component';
@@ -17,14 +17,10 @@ export const Route = createFileRoute('/company/$companyId')({
       throw redirect({ to: '/auth/complete-account' });
     }
 
-    const isAdmin =
-      sessionUser.accessLevel === 'admin' ||
-      sessionUser.accessLevel === 'owner';
-    const isUser = sessionUser.accessLevel === 'user';
+    const hasCompanyAccess =
+      'companyId' in sessionUser && sessionUser.companyId === params.companyId;
 
-    const companyMatch = isUser && sessionUser.companyId !== params.companyId;
-
-    if ((!isAdmin && !isUser) || companyMatch) {
+    if (!hasCompanyAccess) {
       throw redirect({ to: '/unauthorized' });
     }
 

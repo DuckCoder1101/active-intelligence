@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
 import { MdClose, MdOutlineCalendarToday } from 'react-icons/md';
 
-import { Spinner } from '@/components/ui/spinner.component';
+import { ReferenceImages } from '@/components/tasks/reference-images.component';
+import { ReferenceLinks } from '@/components/tasks/reference-links.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { FormSelect } from '@/components/ui/form-select.component';
-import { ReferenceLinks } from '@/components/tasks/reference-links.component';
-import { ReferenceImages } from '@/components/tasks/reference-images.component';
-import { useSnackbar } from '@/contexts/snackbar.context';
-import { useHandleError } from '@/hooks/useHandleError.util';
+import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
+import { useSnackbar } from '@/contexts/snackbar.context';
 import { formatDateLong } from '@/formatters/formatDate';
-import TaskService from '@/services/task.service';
-
 import type {
   Task,
   CreateClientTaskDTO,
@@ -24,6 +21,7 @@ import {
   TASK_STATUS_LABELS,
   TASK_STATUS_COLORS,
 } from '@/models/task.model';
+import { useCreateClientTaskMutation } from '@/queries/task.queries';
 
 function toInputDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -47,9 +45,8 @@ export function ClientTaskModal({
   const companyId = (claims?.accessLevel === 'user' ? claims.companyId : undefined) ?? '';
   const authorName = profile?.name ?? '';
 
-  const [isSaving, setIsSaving] = useState(false);
   const { pushSnackbar } = useSnackbar();
-  const handleError = useHandleError();
+  const createTask = useCreateClientTaskMutation();
 
   const [title, setTitle] = useState(task?.title ?? '');
   const [description, setDescription] = useState(task?.description ?? '');
@@ -64,18 +61,18 @@ export function ClientTaskModal({
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {onClose();}
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const errs: Record<string, string> = {};
-    if (!title.trim()) errs.title = 'Título obrigatório';
-    if (!dueDateStr) errs.dueDate = 'Data de entrega obrigatória';
+    if (!title.trim()) {errs.title = 'Título obrigatório';}
+    if (!dueDateStr) {errs.dueDate = 'Data de entrega obrigatória';}
     setFieldErrors(errs);
-    if (Object.keys(errs).length > 0) return;
+    if (Object.keys(errs).length > 0) {return;}
 
     const [year, month, day] = dueDateStr.split('-').map(Number);
     const dueDate = new Date(year, month - 1, day, 12).getTime();
@@ -89,34 +86,19 @@ export function ClientTaskModal({
       createdByName: authorName || undefined,
     };
 
-    setIsSaving(true);
-    try {
-      // 1. Save task — backend returns real taskId
-      const created = await TaskService.createClientTask(dto);
-
-      // 2. Upload staged images using the real taskId
-      let finalTask = created;
-      if (pendingFiles.length > 0) {
-        const urls = await Promise.all(
-          pendingFiles.map((f) =>
-            TaskService.uploadImage(companyId, created.taskId, f),
-          ),
-        );
-        await TaskService.updateClientTaskImages(created.taskId, urls);
-        finalTask = { ...created, referenceImages: urls };
-      }
-
-      onCreated(finalTask);
-      pushSnackbar({
-        type: 'success',
-        message: 'Tarefa enviada para aprovação!',
-      });
-      onClose();
-    } catch (err) {
-      handleError(err);
-    } finally {
-      setIsSaving(false);
-    }
+    createTask.mutate(
+      { dto, companyId, pendingFiles },
+      {
+        onSuccess: (finalTask) => {
+          onCreated(finalTask);
+          pushSnackbar({
+            type: 'success',
+            message: 'Tarefa enviada para aprovação!',
+          });
+          onClose();
+        },
+      },
+    );
   };
 
   const status: TaskStatus = task?.approvalStatus ?? 'pending_approval';
@@ -125,7 +107,7 @@ export function ClientTaskModal({
     <div
       className="modal-overlay bg-black/50"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) {onClose();}
       }}
     >
       <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
@@ -213,7 +195,7 @@ export function ClientTaskModal({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setTitle(e.target.value);
                   if (fieldErrors.title)
-                    setFieldErrors((p) => ({ ...p, title: '' }));
+                    {setFieldErrors((p) => ({ ...p, title: '' }));}
                 }}
                 error={fieldErrors.title}
               />
@@ -240,7 +222,7 @@ export function ClientTaskModal({
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setDueDateStr(e.target.value);
                     if (fieldErrors.dueDate)
-                      setFieldErrors((p) => ({ ...p, dueDate: '' }));
+                      {setFieldErrors((p) => ({ ...p, dueDate: '' }));}
                   }}
                   error={fieldErrors.dueDate}
                 />
@@ -282,10 +264,10 @@ export function ClientTaskModal({
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={isSaving}
+              disabled={createTask.isPending}
               className="btn-primary"
             >
-              {isSaving && <Spinner size={13} />}
+              {createTask.isPending && <Spinner size={13} />}
               Enviar para aprovação
             </button>
           </div>

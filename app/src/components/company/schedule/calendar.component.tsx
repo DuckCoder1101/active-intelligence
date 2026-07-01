@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   MdChevronLeft,
   MdChevronRight,
@@ -7,16 +8,16 @@ import {
   MdOutlineCalendarToday,
 } from 'react-icons/md';
 
-import { useState } from 'react';
-import { formatDateShort } from '@/formatters/formatDate';
+import { ClientTaskModal } from './task-modal.component';
 
+import { formatDateShort } from '@/formatters/formatDate';
 import type { Task, TaskStatus } from '@/models/task.model';
 import {
   TASK_STATUS_LABELS,
   TASK_STATUS_COLORS,
   TASK_TYPE_LABELS,
 } from '@/models/task.model';
-import { ClientTaskModal } from './task-modal.component';
+
 
 const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 const MONTHS = [
@@ -50,7 +51,7 @@ function DayModal({ date, tasks, onNewTask, onTaskClick, onClose }: DayModalProp
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget) {onClose();} }}
     >
       <div className="flex w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
         {/* Header */}

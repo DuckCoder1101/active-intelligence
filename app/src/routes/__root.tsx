@@ -1,3 +1,7 @@
+import { AuthProvider } from '@providers/auth.provider';
+import { SnackbarProvider } from '@providers/snackbar.provider';
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
 import {
   HeadContent,
   Link,
@@ -6,15 +10,12 @@ import {
   createRootRouteWithContext,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
-import { TanStackDevtools } from '@tanstack/react-devtools';
-
-import { AuthProvider } from '@providers/auth.provider';
-import { SnackbarProvider } from '@providers/snackbar.provider';
-
-import appCss from '../styles.css?url';
+import { FaSearch } from 'react-icons/fa';
 
 import type { RouterContext } from '../router';
-import { FaSearch } from 'react-icons/fa';
+import appCss from '../styles.css?url';
+
+
 import { ThemeProvider } from '@/providers/theme.provider';
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -53,7 +54,7 @@ function NotFound() {
 
         <p className="text-text-sub text-sm">
           Que tal{' '}
-          <Link to="/admin/dashboard" className="underline">
+          <Link to="/user/mycompany" className="underline">
             voltar para o painel?
           </Link>
         </p>
@@ -88,6 +89,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             {
               name: 'Tanstack Router',
               render: <TanStackRouterDevtoolsPanel />,
+            },
+            {
+              name: 'Tanstack Query',
+              render: <ReactQueryDevtoolsPanel />,
             },
           ]}
         />

@@ -7,11 +7,10 @@ import {
   MdOutlineLightMode,
 } from 'react-icons/md';
 
+import { UserAvatar } from '@/components/ui/user-avatar.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useTheme } from '@/contexts/theme.context';
-import { useHandleError } from '@/hooks/useHandleError.util';
-import { UserAvatar } from '@/components/ui/user-avatar.component';
-import UserService from '@/services/user.service';
+import { useSignoutMutation } from '@/queries/user.queries';
 
 interface CompanyTopbarProps {
   onMenuClick: () => void;
@@ -20,16 +19,13 @@ interface CompanyTopbarProps {
 export function CompanyTopbar({ onMenuClick }: CompanyTopbarProps) {
   const { userProfile: profile } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const handleError = useHandleError();
   const navigate = useNavigate();
+  const signout = useSignoutMutation();
 
-  const handleLogout = async () => {
-    try {
-      await UserService.signout();
-      navigate({ to: '/auth/signin' });
-    } catch (err) {
-      handleError(err);
-    }
+  const handleLogout = () => {
+    signout.mutate(undefined, {
+      onSuccess: () => navigate({ to: '/auth/signin' }),
+    });
   };
 
   return (

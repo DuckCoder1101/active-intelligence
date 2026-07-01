@@ -1,33 +1,59 @@
-import { useState } from 'react';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+import { useState } from 'react';
 
-import { Spinner } from '@/components/ui/spinner.component';
 import { CompanyScheduleCalendar } from '@/components/company/schedule/calendar.component';
-import { useClientTasks } from '@/hooks/useClientTasks';
-import { useCalendarTasks } from '@/hooks/useCalendarTasks';
+import { Spinner } from '@/components/ui/spinner.component';
+import type { Task } from '@/models/task.model';
+import {
+  calendarTasksQueryOptions,
+  clientTasksQueryOptions,
+} from '@/queries/task.queries';
 
 export const Route = createFileRoute('/company/$companyId/schedule')({
+  loader: ({ context, params }) => {
+    const today = new Date();
+    return Promise.all([
+      context.queryClient.ensureQueryData(
+        calendarTasksQueryOptions(params.companyId, today.getFullYear(), today.getMonth()),
+      ),
+      context.queryClient.ensureQueryData(clientTasksQueryOptions(params.companyId)),
+    ]);
+  },
   component: CompanySchedule,
 });
 
 function CompanySchedule() {
   const { companyId } = Route.useParams();
+  const queryClient = useQueryClient();
 
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
 
-  const { usage } = useClientTasks(companyId);
-  const { tasks, isLoading, addTask } = useCalendarTasks(companyId, year, month);
+  const { data: clientData } = useQuery(clientTasksQueryOptions(companyId));
+  const usage = clientData?.usage ?? { used: 0, limit: null, yearMonth: '' };
+
+  const { data: tasks = [], isLoading } = useQuery({
+    ...calendarTasksQueryOptions(companyId, year, month),
+    placeholderData: keepPreviousData,
+  });
+
+  const addTask = (task: Task) => {
+    queryClient.setQueryData(
+      calendarTasksQueryOptions(companyId, year, month).queryKey,
+      (prev: Task[] | undefined) => (prev ? [...prev, task] : prev),
+    );
+  };
 
   const prevMonth = () => {
     if (month === 0) { setMonth(11); setYear((y) => y - 1); }
-    else setMonth((m) => m - 1);
+    else {setMonth((m) => m - 1);}
   };
 
   const nextMonth = () => {
     if (month === 11) { setMonth(0); setYear((y) => y + 1); }
-    else setMonth((m) => m + 1);
+    else {setMonth((m) => m + 1);}
   };
 
   return (

@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UserProfileRouteImport } from './routes/user/profile'
 import { Route as UserMycompanyRouteImport } from './routes/user/mycompany'
@@ -19,24 +18,14 @@ import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
-import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as CompanyCompanyIdIndexRouteImport } from './routes/company/$companyId/index'
-import { Route as AdminTeamIndexRouteImport } from './routes/admin/team/index'
-import { Route as AdminProjectsIndexRouteImport } from './routes/admin/projects/index'
-import { Route as AdminClientsIndexRouteImport } from './routes/admin/clients/index'
 import { Route as CompanyCompanyIdTeamRouteImport } from './routes/company/$companyId/team'
 import { Route as CompanyCompanyIdScheduleRouteImport } from './routes/company/$companyId/schedule'
 import { Route as CompanyCompanyIdAdAccountsRouteImport } from './routes/company/$companyId/ad-accounts'
-import { Route as AdminClientsClient_idRouteImport } from './routes/admin/clients/$client_id'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -79,30 +68,10 @@ const AuthCompleteAccountRoute = AuthCompleteAccountRouteImport.update({
   path: '/auth/complete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminDashboardRoute = AdminDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AdminRoute,
-} as any)
 const CompanyCompanyIdIndexRoute = CompanyCompanyIdIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => CompanyCompanyIdRoute,
-} as any)
-const AdminTeamIndexRoute = AdminTeamIndexRouteImport.update({
-  id: '/team/',
-  path: '/team/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminProjectsIndexRoute = AdminProjectsIndexRouteImport.update({
-  id: '/projects/',
-  path: '/projects/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
-  id: '/clients/',
-  path: '/clients/',
-  getParentRoute: () => AdminRoute,
 } as any)
 const CompanyCompanyIdTeamRoute = CompanyCompanyIdTeamRouteImport.update({
   id: '/team',
@@ -121,17 +90,10 @@ const CompanyCompanyIdAdAccountsRoute =
     path: '/ad-accounts',
     getParentRoute: () => CompanyCompanyIdRoute,
   } as any)
-const AdminClientsClient_idRoute = AdminClientsClient_idRouteImport.update({
-  id: '/clients/$client_id',
-  path: '/clients/$client_id',
-  getParentRoute: () => AdminRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
@@ -139,41 +101,29 @@ export interface FileRoutesByFullPath {
   '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
-  '/admin/clients/$client_id': typeof AdminClientsClient_idRoute
   '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
-  '/admin/clients/': typeof AdminClientsIndexRoute
-  '/admin/projects/': typeof AdminProjectsIndexRoute
-  '/admin/team/': typeof AdminTeamIndexRoute
   '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
-  '/admin/clients/$client_id': typeof AdminClientsClient_idRoute
   '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
-  '/admin/clients': typeof AdminClientsIndexRoute
-  '/admin/projects': typeof AdminProjectsIndexRoute
-  '/admin/team': typeof AdminTeamIndexRoute
   '/company/$companyId': typeof CompanyCompanyIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
@@ -181,22 +131,16 @@ export interface FileRoutesById {
   '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
-  '/admin/clients/$client_id': typeof AdminClientsClient_idRoute
   '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
-  '/admin/clients/': typeof AdminClientsIndexRoute
-  '/admin/projects/': typeof AdminProjectsIndexRoute
-  '/admin/team/': typeof AdminTeamIndexRoute
   '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/unauthorized'
-    | '/admin/dashboard'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
@@ -204,40 +148,28 @@ export interface FileRouteTypes {
     | '/company/$companyId'
     | '/user/mycompany'
     | '/user/profile'
-    | '/admin/clients/$client_id'
     | '/company/$companyId/ad-accounts'
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
-    | '/admin/clients/'
-    | '/admin/projects/'
-    | '/admin/team/'
     | '/company/$companyId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/unauthorized'
-    | '/admin/dashboard'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
     | '/user/mycompany'
     | '/user/profile'
-    | '/admin/clients/$client_id'
     | '/company/$companyId/ad-accounts'
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
-    | '/admin/clients'
-    | '/admin/projects'
-    | '/admin/team'
     | '/company/$companyId'
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/unauthorized'
-    | '/admin/dashboard'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
@@ -245,19 +177,14 @@ export interface FileRouteTypes {
     | '/company/$companyId'
     | '/user/mycompany'
     | '/user/profile'
-    | '/admin/clients/$client_id'
     | '/company/$companyId/ad-accounts'
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
-    | '/admin/clients/'
-    | '/admin/projects/'
-    | '/admin/team/'
     | '/company/$companyId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
   UnauthorizedRoute: typeof UnauthorizedRoute
   AuthCompleteAccountRoute: typeof AuthCompleteAccountRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
@@ -275,13 +202,6 @@ declare module '@tanstack/react-router' {
       path: '/unauthorized'
       fullPath: '/unauthorized'
       preLoaderRoute: typeof UnauthorizedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -340,40 +260,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCompleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
-      path: '/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/company/$companyId/': {
       id: '/company/$companyId/'
       path: '/'
       fullPath: '/company/$companyId/'
       preLoaderRoute: typeof CompanyCompanyIdIndexRouteImport
       parentRoute: typeof CompanyCompanyIdRoute
-    }
-    '/admin/team/': {
-      id: '/admin/team/'
-      path: '/team'
-      fullPath: '/admin/team/'
-      preLoaderRoute: typeof AdminTeamIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/projects/': {
-      id: '/admin/projects/'
-      path: '/projects'
-      fullPath: '/admin/projects/'
-      preLoaderRoute: typeof AdminProjectsIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/clients/': {
-      id: '/admin/clients/'
-      path: '/clients'
-      fullPath: '/admin/clients/'
-      preLoaderRoute: typeof AdminClientsIndexRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/company/$companyId/team': {
       id: '/company/$companyId/team'
@@ -396,33 +288,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyCompanyIdAdAccountsRouteImport
       parentRoute: typeof CompanyCompanyIdRoute
     }
-    '/admin/clients/$client_id': {
-      id: '/admin/clients/$client_id'
-      path: '/clients/$client_id'
-      fullPath: '/admin/clients/$client_id'
-      preLoaderRoute: typeof AdminClientsClient_idRouteImport
-      parentRoute: typeof AdminRoute
-    }
   }
 }
-
-interface AdminRouteChildren {
-  AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminClientsClient_idRoute: typeof AdminClientsClient_idRoute
-  AdminClientsIndexRoute: typeof AdminClientsIndexRoute
-  AdminProjectsIndexRoute: typeof AdminProjectsIndexRoute
-  AdminTeamIndexRoute: typeof AdminTeamIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminDashboardRoute: AdminDashboardRoute,
-  AdminClientsClient_idRoute: AdminClientsClient_idRoute,
-  AdminClientsIndexRoute: AdminClientsIndexRoute,
-  AdminProjectsIndexRoute: AdminProjectsIndexRoute,
-  AdminTeamIndexRoute: AdminTeamIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface CompanyCompanyIdRouteChildren {
   CompanyCompanyIdAdAccountsRoute: typeof CompanyCompanyIdAdAccountsRoute
@@ -443,7 +310,6 @@ const CompanyCompanyIdRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
   UnauthorizedRoute: UnauthorizedRoute,
   AuthCompleteAccountRoute: AuthCompleteAccountRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,

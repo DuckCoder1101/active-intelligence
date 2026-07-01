@@ -7,8 +7,8 @@
   },
   "functions": [
     {
-      "source": "functions",
-      "codebase": "default",
+      "source": "functions-admin",
+      "codebase": "admin",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
         "node_modules",
@@ -18,6 +18,93 @@
         "*.local"
       ],
       "predeploy": [
+        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "npm --prefix \"$RESOURCE_DIR\" install",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    },
+    {
+      "source": "functions-user",
+      "codebase": "user",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "npm --prefix \"$RESOURCE_DIR\" install",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    },
+    {
+      "source": "functions-company",
+      "codebase": "company",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "npm --prefix \"$RESOURCE_DIR\" install",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    },
+    {
+      "source": "functions-company-user",
+      "codebase": "company-user",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "npm --prefix \"$RESOURCE_DIR\" install",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    },
+    {
+      "source": "functions-task",
+      "codebase": "task",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "npm --prefix \"$RESOURCE_DIR\" install",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    },
+    {
+      "source": "functions-kanban",
+      "codebase": "kanban",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
