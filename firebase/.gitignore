@@ -70,4 +70,10 @@ node_modules/
 
 .emulators-data/
 
-scripts/
+# Credencial local, nunca deve ir para o repositório
+scripts/serviceAccount.json
+
+# Artefatos de build por codebase
+functions-*/lib/
+functions-*/vendor/
+packages/*/lib/

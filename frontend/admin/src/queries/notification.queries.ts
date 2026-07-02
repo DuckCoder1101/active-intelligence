@@ -1,0 +1,51 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import type { Notification } from '@/models/notification.model';
+import NotificationService from '@/services/notification.service';
+
+export const notificationKeys = {
+  all: ['notifications'] as const,
+  lists: () => [...notificationKeys.all, 'list'] as const,
+};
+
+const POLL_INTERVAL_MS = 30_000;
+
+export function useNotificationsQuery(enabled: boolean) {
+  return useQuery({
+    queryKey: notificationKeys.lists(),
+    queryFn: () => NotificationService.listNotifications(),
+    enabled,
+    refetchInterval: POLL_INTERVAL_MS,
+  });
+}
+
+export function useMarkNotificationReadMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (notificationId: string) =>
+      NotificationService.markNotificationRead(notificationId),
+    onMutate: async (notificationId) => {
+      await queryClient.cancelQueries({ queryKey: notificationKeys.lists() });
+
+      const previous = queryClient.getQueryData<Notification[]>(
+        notificationKeys.lists(),
+      );
+
+      queryClient.setQueryData<Notification[]>(
+        notificationKeys.lists(),
+        (old) =>
+          old?.map((n) =>
+            n.notificationId === notificationId ? { ...n, read: true } : n,
+          ),
+      );
+
+      return { previous };
+    },
+    onError: (_err, _notificationId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(notificationKeys.lists(), context.previous);
+      }
+    },
+  });
+}

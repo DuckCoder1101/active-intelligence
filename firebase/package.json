@@ -1,0 +1,20 @@
+{
+  "name": "firebase-tooling",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-all.js",
+    "lint": "eslint --ext .js,.ts .",
+    "emulators": "npm run build && firebase emulators:start --project activeimob-74a7d --import=./emulators-data --export-on-exit=./emulators-data",
+    "deploy": "npm run build && node scripts/deploy.js"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-tools": "^15.22.3",
+    "prettier": "^3.8.4",
+    "typescript": "^6.0.0"
+  }
+}
