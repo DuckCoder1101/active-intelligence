@@ -137,7 +137,7 @@ export class CompanyRepository {
         if (currentCount >= limit) {
           throw new HttpsError(
             'resource-exhausted',
-            `Limite mensal de ${limit} tarefas atingido. Para ampliar o seu plano, entre em contato com a equipe da Active ou aguarde o próximo mês.`,
+            `Limite mensal de ${limit} tarefas atingido. Para ampliar o seu plano, entre em contato com a equipe da Guará ou aguarde o próximo mês.`,
           );
         }
 

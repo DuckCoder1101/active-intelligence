@@ -15,7 +15,7 @@ function CompanyDashboard() {
       <div className="mb-10">
         <h1 className="text-3xl font-black tracking-tight text-text">
           Olá{firstName ? ', ' : ''}
-          <span className="text-orange">{firstName}</span>
+          {firstName}
         </h1>
         <p className="mt-1.5 text-[13px] text-text-sub">
           Bem-vindo ao seu portal. Aqui você acompanha tudo sobre a sua empresa.

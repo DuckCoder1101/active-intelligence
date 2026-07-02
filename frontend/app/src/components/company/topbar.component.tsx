@@ -40,13 +40,19 @@ export function CompanyTopbar({ onMenuClick }: CompanyTopbarProps) {
           <MdMenu size={20} />
         </button>
 
-        <div className="flex items-center gap-2">
-          <div className="flex h-6.5 w-6.5 items-center justify-center rounded-md bg-orange">
-            <MdOutlineDiamond size={13} className="text-white" />
-          </div>
-          <span className="text-[14px] font-black tracking-tight text-text">
-            Active <span className="text-orange">OS</span>
-          </span>
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => navigate({ to: '/' })}
+        >
+          <img
+            src={
+              theme === 'light'
+                ? '/icons/icon-text-dark.png'
+                : '/icons/icon-text.png'
+            }
+            alt="Ícone da Guará"
+            className="w-25 mx-5"
+          />
         </div>
 
         <div className="hidden h-4 w-px bg-border sm:block" />

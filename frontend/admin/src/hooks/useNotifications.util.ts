@@ -51,7 +51,7 @@ export function useNotifications() {
         'Notification' in window &&
         Notification.permission === 'granted'
       ) {
-        new Notification('Active OS', { body: notification.message });
+        new Notification('Guará', { body: notification.message });
       }
     }
   }, [canView, notifications]);

@@ -15,7 +15,6 @@ import { FaSearch } from 'react-icons/fa';
 import type { RouterContext } from '../router';
 import appCss from '../styles.css?url';
 
-
 import { ThemeProvider } from '@/providers/theme.provider';
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -29,10 +28,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Active Inteligence',
+        title: 'Guará',
       },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', href: '/icons/favicon.png' },
+    ],
   }),
   component: RootComponent,
   shellComponent: RootDocument,

@@ -40,14 +40,11 @@ function AdminDashboard() {
       {/* Hero */}
       <div className="mb-8 text-center sm:mb-12">
         <h1 className="text-2xl font-black tracking-tight text-text sm:text-4xl">
-          Bem-vindo ao{' '}
-          <span className="text-orange">
-            Active OS
-            {userProfile?.name ? `, ${userProfile.name.split(' ')[0]}` : ''}
-          </span>
+          Bem-vindo,
+          {userProfile?.name ? ` ${userProfile.name.split(' ')[0]}` : ''}
         </h1>
         <p className="mt-2 text-[13px] text-text-sub sm:text-[14px]">
-          Sistema operacional Active. Tudo conectado em um só lugar.
+          Sistema operacional Guará. Tudo conectado em um só lugar.
         </p>
       </div>
 
@@ -56,7 +53,7 @@ function AdminDashboard() {
         {ADMIN_MODULES.map((section) => (
           <div key={section.label}>
             <div className="mb-3 sm:mb-4">
-              <h2 className="text-[16px] font-bold text-text sm:text-[18px]">
+              <h2 className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
                 {section.label}
               </h2>
               <span className="text-[11px] text-text-muted sm:text-[12px]">

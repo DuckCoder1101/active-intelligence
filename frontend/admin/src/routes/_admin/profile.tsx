@@ -155,7 +155,7 @@ function UserProfile() {
 
             <div className="card p-5 sm:p-6">
               <div className="mb-5">
-                <h2 className="text-[16px] font-bold text-text sm:text-[18px]">
+                <h2 className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
                   Informações Pessoais
                 </h2>
                 <span className="text-[11px] text-text-muted sm:text-[12px]">

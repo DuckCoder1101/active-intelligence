@@ -36,7 +36,7 @@ export function Topbar() {
             <MdOutlineDiamond size={16} className="text-white" />
           </div>
           <span className="text-[15px] font-black tracking-tight text-text">
-            Active <span className="text-orange">OS</span>
+            Guará
           </span>
         </div>
         <div className="h-4 w-px bg-border" />

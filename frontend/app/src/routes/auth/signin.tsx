@@ -74,6 +74,13 @@ function SignInPage() {
         className="flex flex-col gap-4"
         noValidate
       >
+        <p className="text-white text-center text-lg">
+          Bem vindo ao seu portal! <br />
+          <span className="text-text-muted text-sm">
+            Faça login para acessar a sua conta.
+          </span>
+        </p>
+
         <FormInput
           label="E-mail"
           type="email"

@@ -3,8 +3,6 @@ import React from 'react';
 import {
   MdOutlineDashboard,
   MdOutlineCalendarMonth,
-  MdOutlineCampaign,
-  MdOutlineGroup,
   MdClose,
 } from 'react-icons/md';
 
@@ -32,18 +30,18 @@ const NAV_ITEMS: NavItem[] = [
     icon: MdOutlineCalendarMonth,
     exact: false,
   },
-  {
-    to: '/company/$companyId/ad-accounts',
-    label: 'Contas de anúncios',
-    icon: MdOutlineCampaign,
-    exact: false,
-  },
-  {
-    to: '/company/$companyId/team',
-    label: 'Equipe',
-    icon: MdOutlineGroup,
-    exact: false,
-  },
+  // {
+  //   to: '/company/$companyId/ad-accounts',
+  //   label: 'Contas de anúncios',
+  //   icon: MdOutlineCampaign,
+  //   exact: false,
+  // },
+  // {
+  //   to: '/company/$companyId/team',
+  //   label: 'Equipe',
+  //   icon: MdOutlineGroup,
+  //   exact: false,
+  // },
 ];
 
 interface UserSidebarProps {
@@ -82,10 +80,10 @@ export function UserSidebar({ companyId, isOpen, onClose }: UserSidebarProps) {
             params={{ companyId }}
             activeOptions={{ exact: item.exact }}
             onClick={onClose}
-            className="flex cursor-pointer items-center gap-2.5 border-l-[3px] border-transparent px-5 py-2.5 text-[12px] font-medium text-slate-500 transition-colors hover:bg-sidebar-hover hover:text-slate-300"
+            className="flex cursor-pointer items-center gap-2.5 border-l-[3px] border-transparent px-5 py-2.5 text-[12px] font-medium text-white transition-colors hover:bg-sidebar-hover"
             activeProps={{
               className:
-                'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-orange bg-sidebar-hover px-5 py-2.5 text-[12px] font-medium text-slate-100 transition-colors',
+                'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-orange bg-orange/15 px-5 py-2.5 text-[12px] font-medium text-slate-100 transition-colors',
             }}
           >
             <item.icon size={17} style={{ flexShrink: 0 }} />

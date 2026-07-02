@@ -4,15 +4,14 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="animate-fade-in flex min-h-screen items-stretch justify-center bg-linear-to-br from-sidebar via-navy to-sidebar md:items-center md:px-4 md:py-8">
-      <div className="animate-slide-up w-full rounded-2xl bg-card p-9 shadow-2xl md:max-w-102.5 md:p-6">
+    <div className="animate-fade-in flex min-h-screen items-stretch justify-center from-sidebar via-navy to-sidebar md:items-center md:px-4 md:py-8 bg-auth-image">
+      <div className="animate-slide-up w-full rounded-2xl bg-[#0c0c0cbd] p-9 shadow-2xl md:max-w-102.5 md:p-6">
         <div className="mb-7 text-center">
-          <h1 className="text-xl font-black tracking-tight text-text">
-            Active<span className="text-primary">Intelligence</span>
-          </h1>
-          <p className="mt-1.5 text-[9px] font-medium uppercase tracking-[1.2px] text-text-muted">
-            Inteligência Imobiliária
-          </p>
+          <img
+            src="/icons/icon-text.png"
+            alt="Ícone da Guará"
+            className="w-45 m-auto"
+          />
         </div>
         {children}
       </div>
