@@ -64,3 +64,25 @@ export type {
   InviteCompanyUserDTO,
   CompanyUserListDTO,
 } from './domain/company-user/company-user.dtos';
+
+// domain: kanban (usado por kanban e task)
+export { KanbanRepository } from './domain/kanban/kanban.repository';
+export type {
+  KanbanColumnDocument,
+} from './domain/kanban/kanban.document';
+export { DEFAULT_COLUMNS } from './domain/kanban/kanban.document';
+export type {
+  KanbanColumnDTO,
+  SaveColumnDTO,
+} from './domain/kanban/kanban.dtos';
+
+// domain: notification (usado por admin e task)
+export { default as NotificationRepository } from './domain/notification/notification.repository';
+export type {
+  NotificationDocument,
+  NotificationType,
+} from './domain/notification/notification.document';
+export type {
+  NotificationDTO,
+  NotifyAdminsDTO,
+} from './domain/notification/notification.dtos';

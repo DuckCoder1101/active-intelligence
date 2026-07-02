@@ -1,7 +1,20 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { MdLockOutline } from 'react-icons/md';
 
+import { getSessionUser } from '@/server/session';
+
+const APP_SIGNIN_URL = import.meta.env.VITE_APP_URL
+  ? `${import.meta.env.VITE_APP_URL}/auth/signin`
+  : undefined;
+
 export const Route = createFileRoute('/unauthorized')({
+  beforeLoad: async () => {
+    const sessionUser = await getSessionUser();
+
+    if (sessionUser?.accessLevel === 'user' && APP_SIGNIN_URL) {
+      throw redirect({ href: APP_SIGNIN_URL });
+    }
+  },
   component: UnauthorizedComponent,
 });
 

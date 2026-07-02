@@ -16,7 +16,7 @@ import {
   useUpdateAvatarMutation,
 } from '@/queries/user.queries';
 
-export const Route = createFileRoute('/user/profile')({
+export const Route = createFileRoute('/_admin/profile')({
   component: UserProfile,
 });
 

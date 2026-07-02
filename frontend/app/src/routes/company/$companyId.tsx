@@ -18,7 +18,11 @@ export const Route = createFileRoute('/company/$companyId')({
     }
 
     const hasCompanyAccess =
-      'companyId' in sessionUser && sessionUser.companyId === params.companyId;
+      ('companyId' in sessionUser &&
+        sessionUser.companyId === params.companyId) ||
+      (sessionUser.accessLevel === 'admin' &&
+        sessionUser.permissions?.includes('manage-clients')) ||
+      sessionUser.accessLevel === 'owner';
 
     if (!hasCompanyAccess) {
       throw redirect({ to: '/unauthorized' });

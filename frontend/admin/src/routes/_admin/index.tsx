@@ -1,12 +1,23 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 import { ModuleCard } from '@/components/dashboard/module-card.component';
-import { AdminPageContainer } from '@/components/layout/page-container.component';
+import { AdminPageContainer } from '@/components/ui/page-container.component';
 import { ADMIN_MODULES } from '@/constants/admin-modules.const';
 import { useAuth } from '@/contexts/auth.context';
 import type { AdminModule } from '@/types/admin-module.type';
+import type { RouteAccessLevel } from '@/types/route-access.type';
+import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
-export const Route = createFileRoute('/admin/dashboard')({
+const ROUTE_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+};
+
+export const Route = createFileRoute('/_admin/')({
+  beforeLoad: ({ context }) => {
+    if (!checkRouteAccess(context.sessionUser, ROUTE_ACCESS)) {
+      throw redirect({ to: '/unauthorized' });
+    }
+  },
   component: AdminDashboard,
 });
 

@@ -10,19 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as UserProfilecopyRouteImport } from './routes/user/profile copy'
-import { Route as UserProfileRouteImport } from './routes/user/profile'
+import { Route as AdminRouteImport } from './routes/_admin'
+import { Route as AdminIndexRouteImport } from './routes/_admin/index'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
-import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
-import { Route as AdminTeamIndexRouteImport } from './routes/admin/team/index'
-import { Route as AdminProjectsIndexRouteImport } from './routes/admin/projects/index'
-import { Route as AdminClientsIndexRouteImport } from './routes/admin/clients/index'
-import { Route as AdminClientsClient_idRouteImport } from './routes/admin/clients/$client_id'
+import { Route as AdminTeamRouteImport } from './routes/_admin/team'
+import { Route as AdminProjectsRouteImport } from './routes/_admin/projects'
+import { Route as AdminProfileRouteImport } from './routes/_admin/profile'
+import { Route as AdminCompaniesIndexRouteImport } from './routes/_admin/companies/index'
+import { Route as AdminCompaniesCompany_idRouteImport } from './routes/_admin/companies/$company_id'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -30,24 +28,13 @@ const UnauthorizedRoute = UnauthorizedRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+  id: '/_admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserProfilecopyRoute = UserProfilecopyRouteImport.update({
-  id: '/user/profile copy',
-  path: '/user/profile copy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserProfileRoute = UserProfileRouteImport.update({
-  id: '/user/profile',
-  path: '/user/profile',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AdminRoute,
 } as any)
 const AuthSigninRoute = AuthSigninRouteImport.update({
   id: '/auth/signin',
@@ -69,142 +56,124 @@ const AuthCompleteAccountRoute = AuthCompleteAccountRouteImport.update({
   path: '/auth/complete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminDashboardRoute = AdminDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AdminTeamRoute = AdminTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminTeamIndexRoute = AdminTeamIndexRouteImport.update({
-  id: '/team/',
-  path: '/team/',
+const AdminProjectsRoute = AdminProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminProjectsIndexRoute = AdminProjectsIndexRouteImport.update({
-  id: '/projects/',
-  path: '/projects/',
+const AdminProfileRoute = AdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
-  id: '/clients/',
-  path: '/clients/',
+const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
+  id: '/companies/',
+  path: '/companies/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminClientsClient_idRoute = AdminClientsClient_idRouteImport.update({
-  id: '/clients/$client_id',
-  path: '/clients/$client_id',
-  getParentRoute: () => AdminRoute,
-} as any)
+const AdminCompaniesCompany_idRoute =
+  AdminCompaniesCompany_idRouteImport.update({
+    id: '/companies/$company_id',
+    path: '/companies/$company_id',
+    getParentRoute: () => AdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/': typeof AdminIndexRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
+  '/profile': typeof AdminProfileRoute
+  '/projects': typeof AdminProjectsRoute
+  '/team': typeof AdminTeamRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/user/profile': typeof UserProfileRoute
-  '/user/profile copy': typeof UserProfilecopyRoute
-  '/admin/clients/$client_id': typeof AdminClientsClient_idRoute
-  '/admin/clients/': typeof AdminClientsIndexRoute
-  '/admin/projects/': typeof AdminProjectsIndexRoute
-  '/admin/team/': typeof AdminTeamIndexRoute
+  '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
+  '/companies/': typeof AdminCompaniesIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
+  '/profile': typeof AdminProfileRoute
+  '/projects': typeof AdminProjectsRoute
+  '/team': typeof AdminTeamRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/user/profile': typeof UserProfileRoute
-  '/user/profile copy': typeof UserProfilecopyRoute
-  '/admin/clients/$client_id': typeof AdminClientsClient_idRoute
-  '/admin/clients': typeof AdminClientsIndexRoute
-  '/admin/projects': typeof AdminProjectsIndexRoute
-  '/admin/team': typeof AdminTeamIndexRoute
+  '/': typeof AdminIndexRoute
+  '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
+  '/companies': typeof AdminCompaniesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/_admin': typeof AdminRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
+  '/_admin/profile': typeof AdminProfileRoute
+  '/_admin/projects': typeof AdminProjectsRoute
+  '/_admin/team': typeof AdminTeamRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/user/profile': typeof UserProfileRoute
-  '/user/profile copy': typeof UserProfilecopyRoute
-  '/admin/clients/$client_id': typeof AdminClientsClient_idRoute
-  '/admin/clients/': typeof AdminClientsIndexRoute
-  '/admin/projects/': typeof AdminProjectsIndexRoute
-  '/admin/team/': typeof AdminTeamIndexRoute
+  '/_admin/': typeof AdminIndexRoute
+  '/_admin/companies/$company_id': typeof AdminCompaniesCompany_idRoute
+  '/_admin/companies/': typeof AdminCompaniesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/unauthorized'
-    | '/admin/dashboard'
+    | '/profile'
+    | '/projects'
+    | '/team'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/user/profile'
-    | '/user/profile copy'
-    | '/admin/clients/$client_id'
-    | '/admin/clients/'
-    | '/admin/projects/'
-    | '/admin/team/'
+    | '/companies/$company_id'
+    | '/companies/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/admin'
     | '/unauthorized'
-    | '/admin/dashboard'
+    | '/profile'
+    | '/projects'
+    | '/team'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/user/profile'
-    | '/user/profile copy'
-    | '/admin/clients/$client_id'
-    | '/admin/clients'
-    | '/admin/projects'
-    | '/admin/team'
+    | '/'
+    | '/companies/$company_id'
+    | '/companies'
   id:
     | '__root__'
-    | '/'
-    | '/admin'
+    | '/_admin'
     | '/unauthorized'
-    | '/admin/dashboard'
+    | '/_admin/profile'
+    | '/_admin/projects'
+    | '/_admin/team'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/user/profile'
-    | '/user/profile copy'
-    | '/admin/clients/$client_id'
-    | '/admin/clients/'
-    | '/admin/projects/'
-    | '/admin/team/'
+    | '/_admin/'
+    | '/_admin/companies/$company_id'
+    | '/_admin/companies/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   UnauthorizedRoute: typeof UnauthorizedRoute
   AuthCompleteAccountRoute: typeof AuthCompleteAccountRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthSigninRoute: typeof AuthSigninRoute
-  UserProfileRoute: typeof UserProfileRoute
-  UserProfilecopyRoute: typeof UserProfilecopyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -216,33 +185,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnauthorizedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
+    '/_admin': {
+      id: '/_admin'
+      path: ''
+      fullPath: '/'
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_admin/': {
+      id: '/_admin/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user/profile copy': {
-      id: '/user/profile copy'
-      path: '/user/profile copy'
-      fullPath: '/user/profile copy'
-      preLoaderRoute: typeof UserProfilecopyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user/profile': {
-      id: '/user/profile'
-      path: '/user/profile'
-      fullPath: '/user/profile'
-      preLoaderRoute: typeof UserProfileRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/auth/signin': {
       id: '/auth/signin'
@@ -272,72 +227,71 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCompleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
-      path: '/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/team/': {
-      id: '/admin/team/'
+    '/_admin/team': {
+      id: '/_admin/team'
       path: '/team'
-      fullPath: '/admin/team/'
-      preLoaderRoute: typeof AdminTeamIndexRouteImport
+      fullPath: '/team'
+      preLoaderRoute: typeof AdminTeamRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/projects/': {
-      id: '/admin/projects/'
+    '/_admin/projects': {
+      id: '/_admin/projects'
       path: '/projects'
-      fullPath: '/admin/projects/'
-      preLoaderRoute: typeof AdminProjectsIndexRouteImport
+      fullPath: '/projects'
+      preLoaderRoute: typeof AdminProjectsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/clients/': {
-      id: '/admin/clients/'
-      path: '/clients'
-      fullPath: '/admin/clients/'
-      preLoaderRoute: typeof AdminClientsIndexRouteImport
+    '/_admin/profile': {
+      id: '/_admin/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AdminProfileRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/clients/$client_id': {
-      id: '/admin/clients/$client_id'
-      path: '/clients/$client_id'
-      fullPath: '/admin/clients/$client_id'
-      preLoaderRoute: typeof AdminClientsClient_idRouteImport
+    '/_admin/companies/': {
+      id: '/_admin/companies/'
+      path: '/companies'
+      fullPath: '/companies/'
+      preLoaderRoute: typeof AdminCompaniesIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/companies/$company_id': {
+      id: '/_admin/companies/$company_id'
+      path: '/companies/$company_id'
+      fullPath: '/companies/$company_id'
+      preLoaderRoute: typeof AdminCompaniesCompany_idRouteImport
       parentRoute: typeof AdminRoute
     }
   }
 }
 
 interface AdminRouteChildren {
-  AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminClientsClient_idRoute: typeof AdminClientsClient_idRoute
-  AdminClientsIndexRoute: typeof AdminClientsIndexRoute
-  AdminProjectsIndexRoute: typeof AdminProjectsIndexRoute
-  AdminTeamIndexRoute: typeof AdminTeamIndexRoute
+  AdminProfileRoute: typeof AdminProfileRoute
+  AdminProjectsRoute: typeof AdminProjectsRoute
+  AdminTeamRoute: typeof AdminTeamRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminCompaniesCompany_idRoute: typeof AdminCompaniesCompany_idRoute
+  AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminDashboardRoute: AdminDashboardRoute,
-  AdminClientsClient_idRoute: AdminClientsClient_idRoute,
-  AdminClientsIndexRoute: AdminClientsIndexRoute,
-  AdminProjectsIndexRoute: AdminProjectsIndexRoute,
-  AdminTeamIndexRoute: AdminTeamIndexRoute,
+  AdminProfileRoute: AdminProfileRoute,
+  AdminProjectsRoute: AdminProjectsRoute,
+  AdminTeamRoute: AdminTeamRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminCompaniesCompany_idRoute: AdminCompaniesCompany_idRoute,
+  AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   UnauthorizedRoute: UnauthorizedRoute,
   AuthCompleteAccountRoute: AuthCompleteAccountRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLogoutRoute: AuthLogoutRoute,
   AuthSigninRoute: AuthSigninRoute,
-  UserProfileRoute: UserProfileRoute,
-  UserProfilecopyRoute: UserProfilecopyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

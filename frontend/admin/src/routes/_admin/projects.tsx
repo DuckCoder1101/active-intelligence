@@ -31,11 +31,18 @@ import {
   tasksQueryOptions,
   useUpdateTaskStatusMutation,
 } from '@/queries/task.queries';
-import { isAdmin } from '@/utils/isAdmin.util';
+import type { RouteAccessLevel } from '@/types/route-access.type';
+import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
-export const Route = createFileRoute('/admin/projects/')({
+const ROUTE_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+  permissions: ['manage-projects'],
+};
+
+export const Route = createFileRoute('/_admin/projects')({
+  ssr: false,
   beforeLoad: ({ context }) => {
-    if (!isAdmin(context.sessionUser)) {
+    if (!checkRouteAccess(context.sessionUser, ROUTE_ACCESS)) {
       throw redirect({ to: '/unauthorized' });
     }
   },
@@ -254,6 +261,7 @@ function ProjectsKanbanPage() {
         <AdminCalendarView
           tasks={filtered}
           companies={companies}
+          columns={columns}
           onTaskClick={openTask}
         />
       )}
@@ -307,246 +315,251 @@ function ProjectsKanbanPage() {
 
           {/* Kanban board */}
           <div className="flex flex-1 overflow-hidden">
-              <div className="flex h-full gap-4 overflow-x-auto px-6 py-5">
-                {columns.map((col) => {
-                  const colTasks = tasksByColumn[col.columnId] ?? [];
-                  const isDragOver = dragOverColumnId === col.columnId;
+            <div className="flex h-full gap-4 overflow-x-auto px-6 py-5">
+              {columns.map((col) => {
+                const colTasks = tasksByColumn[col.columnId] ?? [];
+                const isDragOver = dragOverColumnId === col.columnId;
 
-                  return (
-                    <div
-                      key={col.columnId}
-                      className="flex w-64 shrink-0 flex-col overflow-hidden rounded-xl border border-border/50 bg-bg/30 p-2"
-                      onDragOver={(e) => {
-                        if (draggingColId) {
-                          return;
-                        }
-                        e.preventDefault();
-                        setDragOverColumnId(col.columnId);
-                      }}
-                      onDragLeave={(e) => {
-                        if (
-                          !e.currentTarget.contains(e.relatedTarget as Node)
-                        ) {
-                          setDragOverColumnId(null);
-                        }
-                      }}
-                      onDrop={() => {
-                        if (draggingColId) {
-                          return;
-                        }
-                        handleDrop(col.columnId);
-                      }}
-                      onDragEnd={() => {
-                        setDraggingColId(null);
-                        setDragOverColId(null);
-                        setDraggingId(null);
+                return (
+                  <div
+                    key={col.columnId}
+                    className="flex w-64 shrink-0 flex-col overflow-hidden rounded-xl border border-border/50 bg-bg/30 p-2"
+                    onDragOver={(e) => {
+                      if (draggingColId) {
+                        return;
+                      }
+                      e.preventDefault();
+                      setDragOverColumnId(col.columnId);
+                    }}
+                    onDragLeave={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget as Node)) {
                         setDragOverColumnId(null);
-                      }}
-                    >
-                      {/* Column header (draggable for owners) */}
-                      <div
-                        draggable={isOwner}
-                        onDragStart={
-                          isOwner
-                            ? (e) => {
-                                e.stopPropagation();
-                                e.dataTransfer.effectAllowed = 'move';
-                                setDraggingColId(col.columnId);
-                                setDraggingId(null);
-                                setDragOverColumnId(null);
+                      }
+                    }}
+                    onDrop={() => {
+                      if (draggingColId) {
+                        return;
+                      }
+                      handleDrop(col.columnId);
+                    }}
+                    onDragEnd={() => {
+                      setDraggingColId(null);
+                      setDragOverColId(null);
+                      setDraggingId(null);
+                      setDragOverColumnId(null);
+                    }}
+                  >
+                    {/* Column header (draggable for owners) */}
+                    <div
+                      draggable={isOwner}
+                      onDragStart={
+                        isOwner
+                          ? (e) => {
+                              e.stopPropagation();
+                              e.dataTransfer.effectAllowed = 'move';
+                              setDraggingColId(col.columnId);
+                              setDraggingId(null);
+                              setDragOverColumnId(null);
+                            }
+                          : undefined
+                      }
+                      onDragOver={
+                        isOwner
+                          ? (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (
+                                draggingColId &&
+                                draggingColId !== col.columnId
+                              ) {
+                                setDragOverColId(col.columnId);
                               }
-                            : undefined
-                        }
-                        onDragOver={
-                          isOwner
-                            ? (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (
-                                  draggingColId &&
-                                  draggingColId !== col.columnId
-                                ) {
-                                  setDragOverColId(col.columnId);
-                                }
-                              }
-                            : undefined
-                        }
-                        onDragLeave={
-                          isOwner
-                            ? (e) => {
-                                if (
-                                  !e.currentTarget.contains(
-                                    e.relatedTarget as Node,
-                                  )
-                                ) {
-                                  setDragOverColId(null);
-                                }
-                              }
-                            : undefined
-                        }
-                        onDrop={
-                          isOwner
-                            ? (e) => {
-                                e.stopPropagation();
-                                handleColumnDrop(col.columnId);
-                              }
-                            : undefined
-                        }
-                        onDragEnd={
-                          isOwner
-                            ? () => {
-                                setDraggingColId(null);
+                            }
+                          : undefined
+                      }
+                      onDragLeave={
+                        isOwner
+                          ? (e) => {
+                              if (
+                                !e.currentTarget.contains(
+                                  e.relatedTarget as Node,
+                                )
+                              ) {
                                 setDragOverColId(null);
                               }
-                            : undefined
-                        }
-                        className={`mb-2.5 flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors ${
-                          dragOverColId === col.columnId
-                            ? 'border-orange bg-orange/10'
-                            : draggingColId === col.columnId
-                              ? 'border-border/40 bg-bg/30 opacity-50'
-                              : isDragOver
-                                ? 'border-orange/40 bg-orange/5'
-                                : 'border-border bg-bg/60'
-                        } ${isOwner ? 'cursor-grab active:cursor-grabbing' : ''}`}
-                      >
-                        <span
-                          className="h-2.5 w-2.5 shrink-0 rounded-full"
-                          style={{ backgroundColor: col.color }}
-                        />
-                        <span className="flex-1 truncate text-[12px] font-bold text-text">
-                          {col.name}
-                        </span>
-                        <span className="shrink-0 rounded-full bg-border px-2 py-0.5 text-[10px] font-bold text-text-muted">
-                          {colTasks.length}
-                        </span>
-                        {isOwner && (
-                          <button
-                            type="button"
-                            title="Excluir quadro"
-                            onClick={(e) => {
+                            }
+                          : undefined
+                      }
+                      onDrop={
+                        isOwner
+                          ? (e) => {
                               e.stopPropagation();
-                              setDeletingColumnId(col.columnId);
-                            }}
-                            className="shrink-0 text-text-muted/50 transition-colors hover:text-danger"
-                          >
-                            <MdDeleteOutline size={14} />
-                          </button>
-                        )}
-                      </div>
+                              handleColumnDrop(col.columnId);
+                            }
+                          : undefined
+                      }
+                      onDragEnd={
+                        isOwner
+                          ? () => {
+                              setDraggingColId(null);
+                              setDragOverColId(null);
+                            }
+                          : undefined
+                      }
+                      className={`mb-2.5 flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors ${
+                        dragOverColId === col.columnId
+                          ? 'border-orange bg-orange/10'
+                          : draggingColId === col.columnId
+                            ? 'border-border/40 bg-bg/30 opacity-50'
+                            : isDragOver
+                              ? 'border-orange/40 bg-orange/5'
+                              : 'border-border bg-bg/60'
+                      } ${isOwner ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                    >
+                      <span
+                        className="h-2.5 w-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: col.color }}
+                      />
+                      <span className="flex-1 truncate text-[12px] font-bold text-text">
+                        {col.name}
+                      </span>
+                      <span className="shrink-0 rounded-full bg-border px-2 py-0.5 text-[10px] font-bold text-text-muted">
+                        {colTasks.length}
+                      </span>
+                      {isOwner && (
+                        <button
+                          type="button"
+                          title="Excluir quadro"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeletingColumnId(col.columnId);
+                          }}
+                          className="shrink-0 text-text-muted/50 transition-colors hover:text-danger"
+                        >
+                          <MdDeleteOutline size={14} />
+                        </button>
+                      )}
+                    </div>
 
-                      {/* Cards area — scrolls vertically */}
-                      <div
-                        className={`flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto rounded-xl p-1 transition-colors ${
-                          isDragOver ? 'bg-orange/5 ring-1 ring-orange/20' : ''
-                        }`}
-                      >
-                        {colTasks.map((task) => (
-                          <TaskCard
-                            key={task.taskId}
-                            task={task}
-                            company={companyMap[task.companyId]}
-                            onClick={() => openTask(task)}
-                            onDragStart={(e) => {
-                              e.dataTransfer.effectAllowed = 'move';
-                              setDraggingId(task.taskId);
-                            }}
-                          />
+                    {/* Cards area — scrolls vertically */}
+                    <div
+                      className={`flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto rounded-xl p-1 transition-colors ${
+                        isDragOver ? 'bg-orange/5 ring-1 ring-orange/20' : ''
+                      }`}
+                    >
+                      {colTasks.map((task) => (
+                        <TaskCard
+                          key={task.taskId}
+                          task={task}
+                          company={companyMap[task.companyId]}
+                          onClick={() => openTask(task)}
+                          onDragStart={(e) => {
+                            e.dataTransfer.effectAllowed = 'move';
+                            setDraggingId(task.taskId);
+                          }}
+                        />
+                      ))}
+                      {colTasks.length === 0 && !isDragOver && (
+                        <div className="flex min-h-30 items-center justify-center rounded-xl border border-dashed border-border/40">
+                          <p className="text-[11px] text-text-muted/50">
+                            Sem tarefas
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Add column (owner only) */}
+              {isOwner && (
+                <div className="flex w-64 shrink-0 flex-col">
+                  {showAddCol ? (
+                    <div className="rounded-xl border border-border bg-card p-3.5 shadow-sm">
+                      <p className="mb-3 text-[12px] font-bold text-text">
+                        Novo quadro
+                      </p>
+                      <input
+                        ref={newColInputRef}
+                        type="text"
+                        autoFocus
+                        value={newColName}
+                        onChange={(e) => setNewColName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSaveColumn();
+                          }
+                          if (e.key === 'Escape') {
+                            setShowAddCol(false);
+                            setNewColName('');
+                          }
+                        }}
+                        placeholder="Nome do quadro"
+                        className="mb-3 w-full rounded-md border border-border bg-bg px-3 py-2 text-[13px] text-text outline-none focus:border-orange"
+                      />
+                      {/* Color picker + swatches */}
+                      <div className="mb-3 flex flex-wrap items-center gap-1.5">
+                        <input
+                          type="color"
+                          title="Escolher cor"
+                          value={newColColor}
+                          onChange={(e) => setNewColColor(e.target.value)}
+                          className="h-6 w-6 shrink-0 cursor-pointer rounded-full border-none bg-transparent p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-none"
+                        />
+                        {COLUMN_COLOR_PRESETS.map((preset) => (
+                          <button
+                            key={preset.value}
+                            type="button"
+                            title={preset.label}
+                            onClick={() => setNewColColor(preset.value)}
+                            className="relative h-5 w-5 rounded-full transition-transform hover:scale-110"
+                            style={{ backgroundColor: preset.value }}
+                          >
+                            {newColColor === preset.value && (
+                              <MdCheck
+                                size={12}
+                                className="absolute inset-0 m-auto text-white"
+                              />
+                            )}
+                          </button>
                         ))}
-                        {colTasks.length === 0 && !isDragOver && (
-                          <div className="flex min-h-30 items-center justify-center rounded-xl border border-dashed border-border/40">
-                            <p className="text-[11px] text-text-muted/50">
-                              Sem tarefas
-                            </p>
-                          </div>
-                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowAddCol(false);
+                            setNewColName('');
+                          }}
+                          className="flex-1 rounded-lg border border-border py-1.5 text-[12px] text-text-sub transition-colors hover:bg-bg"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleSaveColumn}
+                          disabled={!newColName.trim() || addColumn.isPending}
+                          className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-orange py-1.5 text-[12px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+                        >
+                          {addColumn.isPending ? <Spinner size={12} /> : null}
+                          Criar
+                        </button>
                       </div>
                     </div>
-                  );
-                })}
-
-                {/* Add column (owner only) */}
-                {isOwner && (
-                  <div className="flex w-64 shrink-0 flex-col">
-                    {showAddCol ? (
-                      <div className="rounded-xl border border-border bg-card p-3.5 shadow-sm">
-                        <p className="mb-3 text-[12px] font-bold text-text">
-                          Novo quadro
-                        </p>
-                        <input
-                          ref={newColInputRef}
-                          type="text"
-                          autoFocus
-                          value={newColName}
-                          onChange={(e) => setNewColName(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              handleSaveColumn();
-                            }
-                            if (e.key === 'Escape') {
-                              setShowAddCol(false);
-                              setNewColName('');
-                            }
-                          }}
-                          placeholder="Nome do quadro"
-                          className="mb-3 w-full rounded-md border border-border bg-bg px-3 py-2 text-[13px] text-text outline-none focus:border-orange"
-                        />
-                        {/* Color swatches */}
-                        <div className="mb-3 flex flex-wrap gap-1.5">
-                          {COLUMN_COLOR_PRESETS.map((preset) => (
-                            <button
-                              key={preset.value}
-                              type="button"
-                              title={preset.label}
-                              onClick={() => setNewColColor(preset.value)}
-                              className="relative h-5 w-5 rounded-full transition-transform hover:scale-110"
-                              style={{ backgroundColor: preset.value }}
-                            >
-                              {newColColor === preset.value && (
-                                <MdCheck
-                                  size={12}
-                                  className="absolute inset-0 m-auto text-white"
-                                />
-                              )}
-                            </button>
-                          ))}
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowAddCol(false);
-                              setNewColName('');
-                            }}
-                            className="flex-1 rounded-lg border border-border py-1.5 text-[12px] text-text-sub transition-colors hover:bg-bg"
-                          >
-                            Cancelar
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleSaveColumn}
-                            disabled={!newColName.trim() || addColumn.isPending}
-                            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-orange py-1.5 text-[12px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
-                          >
-                            {addColumn.isPending ? <Spinner size={12} /> : null}
-                            Criar
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setShowAddCol(true)}
-                        className="flex items-center gap-2 rounded-xl border border-dashed border-border px-3 py-3 text-[12px] font-semibold text-text-muted transition-colors hover:border-orange/50 hover:text-orange"
-                      >
-                        <MdAdd size={16} />
-                        Novo quadro
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowAddCol(true)}
+                      className="flex items-center gap-2 rounded-xl border border-dashed border-border px-3 py-3 text-[12px] font-semibold text-text-muted transition-colors hover:border-orange/50 hover:text-orange"
+                    >
+                      <MdAdd size={16} />
+                      Novo quadro
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
+          </div>
         </div>
       )}
 

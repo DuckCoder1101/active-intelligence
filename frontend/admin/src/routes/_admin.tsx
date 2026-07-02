@@ -1,10 +1,15 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
-import { Topbar } from '@/components/projects/topbar.component';
+import { Topbar } from '@/components/layout/topbar.component';
 import { getSessionUser } from '@/server/session';
-import { isAdmin } from '@/utils/isAdmin.util';
+import type { RouteAccessLevel } from '@/types/route-access.type';
+import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
-export const Route = createFileRoute('/admin')({
+const ROUTE_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+};
+
+export const Route = createFileRoute('/_admin')({
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
 
@@ -16,7 +21,7 @@ export const Route = createFileRoute('/admin')({
       throw redirect({ to: '/auth/complete-account' });
     }
 
-    if (!isAdmin(sessionUser)) {
+    if (!checkRouteAccess(sessionUser, ROUTE_ACCESS)) {
       throw redirect({ to: '/unauthorized' });
     }
 

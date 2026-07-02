@@ -1,6 +1,8 @@
 import { AuthContext } from '@contexts/auth.context';
 import type { AuthContextState } from '@contexts/auth.context';
 import UserService from '@services/user.service';
+import { useNavigate } from '@tanstack/react-router';
+import { FirebaseError } from 'firebase/app';
 import { onIdTokenChanged } from 'firebase/auth';
 import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -17,22 +19,31 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const navigate = useNavigate();
   const [authState, setAuthState] = useState<AuthContextState>({
     claims: null,
     userProfile: null,
     isLoadingProfile: true,
   });
 
-  const downloadUserProfile = useCallback(async () => {
+  const downloadUserProfile = useCallback(async (claims?: CustomClaims) => {
     let profile: UserProfile | null = null;
 
-    try {
-      setAuthState((prev) => ({ ...prev, isLoadingProfile: true }));
+    setAuthState((prev) => ({
+      ...prev,
+      ...(claims !== undefined && { claims }),
+      isLoadingProfile: true,
+    }));
 
+    try {
       profile = await UserService.getMe();
       profile.avatarUrl = await UserService.getAvatarUrl(profile.uid);
     } catch (err) {
-      pushSnackbarViaBridge(mapFirebaseError(err));
+      if (err instanceof FirebaseError && err.code === 'functions/not-found') {
+        await navigate({ to: '/auth/complete-account' });
+      } else {
+        pushSnackbarViaBridge(mapFirebaseError(err));
+      }
     } finally {
       setAuthState((prev) => ({
         ...prev,
@@ -40,26 +51,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
         userProfile: profile,
       }));
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
-      let claims: CustomClaims | null = null;
-
       if (!user) {
         await deleteSession().catch(() => {});
         return;
       }
 
       const idTokenResult = await user.getIdTokenResult();
-      claims = idTokenResult.claims as CustomClaims;
+      const claims = idTokenResult.claims as CustomClaims;
 
       await createSession({ data: { idToken: idTokenResult.token } });
 
-      setAuthState((prev) => ({ ...prev, claims }));
-
       if (claims.complete) {
-        await downloadUserProfile();
+        await downloadUserProfile(claims);
+      } else {
+        setAuthState((prev) => ({ ...prev, claims }));
       }
     });
 

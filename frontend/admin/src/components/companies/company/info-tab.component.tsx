@@ -74,7 +74,7 @@ function toFormValues(c: Company): CompanyFormValues {
       neighborhood: c.location.neighborhood ?? '',
       city: c.location.city,
       state: c.location.state,
-      zipCode: formatCEP(c.location.zipCode),
+      zipCode: c.location.zipCode ? formatCEP(c.location.zipCode) : '',
     },
     social: {
       websiteUrl: c.social?.websiteUrl ?? '',
@@ -389,8 +389,8 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 name="location.zipCode"
                 control={control}
                 rules={{
-                  required: 'CEP obrigatório',
                   validate: (v) =>
+                    !v ||
                     v.replace(/\D/g, '').length === 8 ||
                     'CEP deve ter 8 dígitos',
                 }}
@@ -398,7 +398,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                   <FormInput
                     as={IMaskInput}
                     mask="00000-000"
-                    label="CEP *"
+                    label="CEP"
                     type="tel"
                     placeholder="00000-000"
                     error={errors.location?.zipCode?.message}
@@ -464,7 +464,10 @@ export function ClientInfoTab({ company, onSaved }: Props) {
               type="number"
               placeholder="Sem limite"
               min="1"
-              {...register('monthlyTaskLimit', { valueAsNumber: true })}
+              {...register('monthlyTaskLimit', {
+                setValueAs: (v) =>
+                  v === '' || v === null ? undefined : Number(v),
+              })}
             />
           </div>
           <p className="mt-2 text-[11px] text-text-muted">

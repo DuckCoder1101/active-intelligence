@@ -2,7 +2,7 @@ import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/https';
 
 import { database } from 'functions-shared';
-import { TaskStatus, TaskDocument } from '../types/task.document';
+import { TaskDocument } from '../types/task.document';
 import { TaskDTO, SaveTaskDTO } from '../types/task.dto';
 
 function toDTO(id: string, data: TaskDocument): TaskDTO {
@@ -13,7 +13,6 @@ function toDTO(id: string, data: TaskDocument): TaskDTO {
     description: data.description,
     type: data.type,
     status: data.status,
-    approvalStatus: data.approvalStatus,
     dueDate: data.dueDate.toMillis(),
     createdBy: data.createdBy,
     createdByName: data.createdByName,
@@ -130,14 +129,6 @@ export class TaskRepository {
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
   }
 
-  static async listPendingApproval(): Promise<TaskDTO[]> {
-    const snap = await this.col
-      .where('approvalStatus', '==', 'pending_approval')
-      .orderBy('dueDate', 'asc')
-      .get();
-    return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
-  }
-
   static async updateImages(
     taskId: string,
     companyId: string,
@@ -161,21 +152,5 @@ export class TaskRepository {
       hasMedia: images.length > 0,
       updatedAt: FieldValue.serverTimestamp(),
     });
-  }
-
-  static async updateApprovalStatus(
-    taskId: string,
-    approvalStatus: TaskStatus,
-  ): Promise<TaskDTO> {
-    const ref = this.col.doc(taskId);
-    const snap = await ref.get();
-    if (!snap.exists)
-      throw new HttpsError('not-found', 'Tarefa não encontrada!');
-    await ref.update({
-      approvalStatus,
-      updatedAt: FieldValue.serverTimestamp(),
-    });
-    const updated = await ref.get();
-    return toDTO(updated.id, updated.data() as TaskDocument);
   }
 }

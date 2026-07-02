@@ -7,7 +7,9 @@ export function Breadcrumb() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const match = BROADCRUMB_ROUTE_MAP.find((r) => r.test(pathname));
-  if (!match) {return null;}
+  if (!match) {
+    return null;
+  }
 
   const { crumbs } = match;
 

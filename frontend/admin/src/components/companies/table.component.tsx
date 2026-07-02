@@ -54,8 +54,8 @@ export function CompaniesTable({ companies, isLoading }: CompaniesTableProps) {
               key={company.companyId}
               onClick={() =>
                 navigate({
-                  to: '/admin/clients/$client_id',
-                  params: { client_id: company.companyId },
+                  to: '/companies/$company_id',
+                  params: { company_id: company.companyId },
                 })
               }
               className="cursor-pointer transition-colors hover:bg-bg/40"

@@ -17,17 +17,17 @@ export const SIDEBAR_ITEMS: NavSection[] = [
     label: 'Principal',
     items: [
       {
-        to: '/app/admin/dashboard',
+        to: '/',
         label: 'Dashboard',
         icon: MdOutlineDashboard,
       },
       {
-        to: '/app/admin/clients',
+        to: '/clients',
         label: 'Clientes',
         icon: MdOutlineBusiness,
       },
       {
-        to: '/app/admin/projects',
+        to: '/projects',
         label: 'Projetos',
         icon: MdOutlineViewKanban,
       },
@@ -37,18 +37,18 @@ export const SIDEBAR_ITEMS: NavSection[] = [
     label: 'Módulos',
     items: [
       {
-        to: '/app/admin/pipeline',
+        to: '/app/pipeline',
         label: 'Pipeline CRM',
         icon: MdOutlineAccountTree,
       },
       {
-        to: '/app/admin/operational',
+        to: '/app/operational',
         label: 'Operacional',
         icon: MdOutlinePushPin,
         badge: 2,
       },
       {
-        to: '/app/admin/finances',
+        to: '/app/finances',
         label: 'Financeiro',
         icon: MdOutlineAccountBalance,
       },
@@ -63,12 +63,12 @@ export const SIDEBAR_ITEMS: NavSection[] = [
     label: 'Sistema',
     items: [
       {
-        to: '/app/admin/team',
+        to: '/app/team',
         label: 'Administradores',
         icon: MdOutlineAdminPanelSettings,
       },
       {
-        to: '/app/admin/settings',
+        to: '/app/settings',
         label: 'Configurações do painel',
         icon: MdOutlineSettings,
       },

@@ -42,9 +42,9 @@ export function AdminModal({
   onSaved,
   onDelete,
 }: AdminModalProps) {
-  const { userProfile: profile } = useAuth();
+  const { userProfile: profile, claims } = useAuth();
 
-  const callerLevel = (profile as AdminProfile | null)?.accessLevel ?? 'admin';
+  const callerLevel = claims?.accessLevel ?? 'admin';
   const targetLevel = targetAdmin.accessLevel;
 
   const [localPermissions, setLocalPermissions] = useState<AdminPermission[]>(
@@ -164,10 +164,16 @@ export function AdminModal({
         <button
           form={FORM_ID}
           type="submit"
-          disabled={updateAdminInfo.isPending || updatePermissions.isPending || !hasChanges}
+          disabled={
+            updateAdminInfo.isPending ||
+            updatePermissions.isPending ||
+            !hasChanges
+          }
           className="btn-primary"
         >
-          {(updateAdminInfo.isPending || updatePermissions.isPending) && <Spinner size={12} />}
+          {(updateAdminInfo.isPending || updatePermissions.isPending) && (
+            <Spinner size={12} />
+          )}
           Salvar
         </button>
       </div>
@@ -290,7 +296,11 @@ export function AdminModal({
           disabled={sendPasswordReset.isPending}
           className="btn-ghost-border w-full justify-center px-4 py-2.5"
         >
-          {sendPasswordReset.isPending ? <Spinner size={14} /> : <MdLockReset size={16} />}
+          {sendPasswordReset.isPending ? (
+            <Spinner size={14} />
+          ) : (
+            <MdLockReset size={16} />
+          )}
           Solicitar troca de senha
         </button>
       </div>

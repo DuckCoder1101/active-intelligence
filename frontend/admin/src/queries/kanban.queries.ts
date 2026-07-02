@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 
 import { pushSnackbarViaBridge } from '@/contexts/snackbar.bridge';
-import type { KanbanColumn } from '@/models/kanban.model';
+import type { KanbanColumn, SaveKanbanColumnDTO } from '@/models/kanban.model';
 import KanbanService from '@/services/kanban.service';
 
 export const kanbanKeys = {
@@ -124,7 +124,7 @@ export function useAddColumnMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: KanbanService.saveColumn,
+    mutationFn: (data: SaveKanbanColumnDTO) => KanbanService.saveColumn(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: kanbanKeys.all });
     },

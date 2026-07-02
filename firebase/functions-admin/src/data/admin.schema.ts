@@ -15,4 +15,8 @@ export default class AdminSchema {
   static inviteAdminSchema = z.object({
     email: z.string().email('E-mail inválido!'),
   });
+
+  static markNotificationReadSchema = z.object({
+    notificationId: z.string().min(1),
+  });
 }

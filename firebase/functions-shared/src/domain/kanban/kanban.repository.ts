@@ -1,11 +1,12 @@
 import { HttpsError } from 'firebase-functions/https';
-import { database } from 'functions-shared';
+import { FieldValue } from 'firebase-admin/firestore';
+
+import { database } from '../../utils/firebase';
 import {
   KanbanColumnDocument,
   DEFAULT_COLUMNS,
-} from '../types/kanban.document';
-import { KanbanColumnDTO, SaveColumnDTO } from '../types/kanban.dto';
-import { FieldValue } from 'firebase-admin/firestore';
+} from './kanban.document';
+import { KanbanColumnDTO, SaveColumnDTO } from './kanban.dtos';
 
 export class KanbanRepository {
   private static col = database.collection('kanban_columns');

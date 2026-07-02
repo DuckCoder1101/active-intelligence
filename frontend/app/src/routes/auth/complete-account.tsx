@@ -13,15 +13,19 @@ import type { CompleteAccountDTO } from '@/types/dtos/user.dto';
 import { loadFielErrors } from '@/utils/loadFieldErrors.util';
 
 function getRedirectPath(accessLevel?: string): string {
-  if (accessLevel === 'user') {return '/user/mycompany';}
-  return '/admin/dashboard';
+  if (accessLevel === 'user') {
+    return '/user/mycompany';
+  }
+  return '/';
 }
 
 export const Route = createFileRoute('/auth/complete-account')({
   component: SignUpPage,
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
-    if (!sessionUser) {throw redirect({ to: '/auth/signin' });}
+    if (!sessionUser) {
+      throw redirect({ to: '/auth/signin' });
+    }
     return { sessionUser };
   },
 });
@@ -53,7 +57,9 @@ function SignUpPage() {
     }
   };
 
-  if (!claims) {return null;}
+  if (!claims) {
+    return null;
+  }
 
   return (
     <AuthLayout>
@@ -107,7 +113,11 @@ function SignUpPage() {
           )}
         />
 
-        <button type="submit" disabled={completeAccount.isPending} className="btn-auth">
+        <button
+          type="submit"
+          disabled={completeAccount.isPending}
+          className="btn-auth"
+        >
           {!completeAccount.isPending ? (
             <>Concluir cadastro</>
           ) : (

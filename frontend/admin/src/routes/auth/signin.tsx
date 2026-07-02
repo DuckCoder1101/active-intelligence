@@ -1,9 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  redirect,
-  useNavigate,
-} from '@tanstack/react-router';
+import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -20,34 +15,42 @@ interface SignInFormData {
   password: string;
 }
 
-function getRedirectPath(accessLevel?: string): string {
-  if (accessLevel === 'user') {return '/user/mycompany';}
-  return '/admin/dashboard';
-}
+const APP_SIGNIN_URL = import.meta.env.VITE_APP_URL
+  ? `${import.meta.env.VITE_APP_URL}/auth/signin`
+  : undefined;
 
 export const Route = createFileRoute('/auth/signin')({
   component: SignInPage,
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
-    if (sessionUser) {
-      const to = getRedirectPath(
-        (sessionUser as { accessLevel?: string }).accessLevel,
-      );
-      throw redirect({ to });
+    if (!sessionUser) {
+      return;
     }
+
+    if (sessionUser.accessLevel === 'user') {
+      throw redirect({ href: APP_SIGNIN_URL ?? '/unauthorized' });
+    }
+
+    throw redirect({ to: '/' });
   },
 });
 
 function SignInPage() {
-  const navigate = useNavigate();
   const { claims } = useAuth();
   const signin = useSigninMutation();
 
   useEffect(() => {
-    if (claims) {
-      navigate({ to: getRedirectPath(claims.accessLevel) });
+    if (!claims) {
+      return;
     }
-  }, [claims, navigate]);
+
+    if (claims.accessLevel === 'user') {
+      window.location.href = APP_SIGNIN_URL ?? '/unauthorized';
+      return;
+    }
+
+    window.location.href = '/';
+  }, [claims]);
 
   const {
     register,

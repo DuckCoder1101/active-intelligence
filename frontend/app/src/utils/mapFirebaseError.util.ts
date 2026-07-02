@@ -34,7 +34,7 @@ const STORAGE_MESSAGES: Record<string, string> = {
 
 export function mapFirebaseError(error: unknown): SnackbarMessage {
   if (!(error instanceof FirebaseError)) {
-    console.error(`Erro inesperado: ${error?.toString() ?? error}`);
+    console.error('Erro inesperado:', error);
     return { message: 'Ocorreu um erro inesperado.', type: 'error' };
   }
 

@@ -10,7 +10,5 @@ export * from './handlers/deleteTask';
 export * from './handlers/createClientTask';
 export * from './handlers/listClientTasks';
 export * from './handlers/listCalendarTasks';
-export * from './handlers/updateClientTaskStatus';
-export * from './handlers/listPendingApproval';
 export * from './handlers/updateClientTaskImages';
 // export * from './triggers/deleteOldTaskMedia';

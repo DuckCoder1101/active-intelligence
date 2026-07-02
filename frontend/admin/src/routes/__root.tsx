@@ -54,7 +54,7 @@ function NotFound() {
 
         <p className="text-text-sub text-sm">
           Que tal{' '}
-          <Link to="/admin/dashboard" className="underline">
+          <Link to="/" className="underline">
             voltar para o painel?
           </Link>
         </p>

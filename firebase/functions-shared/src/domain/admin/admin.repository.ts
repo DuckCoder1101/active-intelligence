@@ -8,6 +8,7 @@ import {
   UpdateProfileDTO,
   UserProfileDTO,
 } from '../user/user.dto';
+import { AdminPermission } from '../../types/accessLevel.type';
 
 export default class AdminRepository {
   private static adminsCollection = database.collection('admins');
@@ -103,6 +104,17 @@ export default class AdminRepository {
     }
 
     await ref.delete();
+  }
+
+  static async listUidsWithPermission(
+    permission: AdminPermission,
+  ): Promise<string[]> {
+    const admins = await this.listAll();
+    return admins
+      .filter(
+        (a) => a.accessLevel === 'owner' || a.permissions.includes(permission),
+      )
+      .map((a) => a.uid);
   }
 
   static async getResumeByUid(uid: string): Promise<AdminResumeDTO> {

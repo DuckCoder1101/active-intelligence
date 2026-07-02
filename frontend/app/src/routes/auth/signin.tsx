@@ -21,8 +21,11 @@ interface SignInFormData {
 }
 
 function getRedirectPath(accessLevel?: string): string {
-  if (accessLevel === 'user') {return '/user/mycompany';}
-  return '/admin/dashboard';
+  if (accessLevel === 'user') {
+    return '/user/mycompany';
+  }
+
+  return '/unauthorized';
 }
 
 export const Route = createFileRoute('/auth/signin')({

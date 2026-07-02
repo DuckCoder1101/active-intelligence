@@ -5,57 +5,36 @@ export const BROADCRUMB_ROUTE_MAP: {
   crumbs: Crumb[];
 }[] = [
   {
-    test: (p) => p.startsWith('/admin/dashboard'),
-    crumbs: [{ label: 'Dashboard', to: '/admin/dashboard' }],
+    test: (p) => p === '/',
+    crumbs: [{ label: 'Dashboard', to: '/' }],
   },
   {
-    test: (p) => p.startsWith('/admin/clients'),
-    crumbs: [
-      { label: 'Dashboard', to: '/admin/dashboard' },
-      { label: 'Clientes' },
-    ],
+    test: (p) => p.startsWith('/companies'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Clientes' }],
   },
   {
-    test: (p) => p.startsWith('/admin/projects'),
-    crumbs: [
-      { label: 'Dashboard', to: '/admin/dashboard' },
-      { label: 'Projetos' },
-    ],
+    test: (p) => p.startsWith('/projects'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Projetos' }],
   },
   {
-    test: (p) => p.startsWith('/admin/team'),
-    crumbs: [
-      { label: 'Dashboard', to: '/admin/dashboard' },
-      { label: 'Administradores' },
-    ],
+    test: (p) => p.startsWith('/team'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Administradores' }],
   },
   {
-    test: (p) => p.startsWith('/admin/settings'),
-    crumbs: [
-      { label: 'Dashboard', to: '/admin/dashboard' },
-      { label: 'Configurações' },
-    ],
+    test: (p) => p.startsWith('/settings'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Configurações' }],
   },
   {
-    test: (p) => p.startsWith('/admin/pipeline'),
-    crumbs: [
-      { label: 'Dashboard', to: '/admin/dashboard' },
-      { label: 'Pipeline CRM' },
-    ],
+    test: (p) => p.startsWith('/pipeline'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Pipeline CRM' }],
   },
   {
-    test: (p) => p.startsWith('/admin/operational'),
-    crumbs: [
-      { label: 'Dashboard', to: '/admin/dashboard' },
-      { label: 'Operacional' },
-    ],
+    test: (p) => p.startsWith('/operational'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Operacional' }],
   },
   {
-    test: (p) => p.startsWith('/admin/finances'),
-    crumbs: [
-      { label: 'Dashboard', to: '/admin/dashboard' },
-      { label: 'Financeiro' },
-    ],
+    test: (p) => p.startsWith('/finances'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Financeiro' }],
   },
   {
     test: (p) =>

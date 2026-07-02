@@ -9,19 +9,12 @@ import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useSnackbar } from '@/contexts/snackbar.context';
 import { formatDateLong } from '@/formatters/formatDate';
-import type {
-  Task,
-  CreateClientTaskDTO,
-  TaskStatus,
-  TaskType,
-} from '@/models/task.model';
-import {
-  TASK_TYPES,
-  TASK_TYPE_LABELS,
-  TASK_STATUS_LABELS,
-  TASK_STATUS_COLORS,
-} from '@/models/task.model';
+import type { KanbanColumn } from '@/models/kanban.model';
+import type { Task, CreateClientTaskDTO, TaskType } from '@/models/task.model';
+import { TASK_TYPES, TASK_TYPE_LABELS } from '@/models/task.model';
 import { useCreateClientTaskMutation } from '@/queries/task.queries';
+
+const FALLBACK_COLUMN_COLOR = '#94a3b8';
 
 function toInputDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -29,6 +22,7 @@ function toInputDate(d: Date): string {
 
 interface Props {
   task?: Task;
+  columns: KanbanColumn[];
   defaultDate?: Date;
   onClose: () => void;
   onCreated: (task: Task) => void;
@@ -36,6 +30,7 @@ interface Props {
 
 export function ClientTaskModal({
   task,
+  columns,
   defaultDate,
   onClose,
   onCreated,
@@ -101,7 +96,7 @@ export function ClientTaskModal({
     );
   };
 
-  const status: TaskStatus = task?.approvalStatus ?? 'pending_approval';
+  const currentColumn = columns.find((c) => c.columnId === task?.status);
 
   return (
     <div
@@ -159,10 +154,14 @@ export function ClientTaskModal({
                 <div>
                   <p className="form-label mb-1">Status</p>
                   <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white ${TASK_STATUS_COLORS[status]}`}
+                    className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white"
+                    style={{
+                      backgroundColor:
+                        currentColumn?.color ?? FALLBACK_COLUMN_COLOR,
+                    }}
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
-                    {TASK_STATUS_LABELS[status]}
+                    {currentColumn?.name ?? 'Sem quadro'}
                   </span>
                 </div>
 

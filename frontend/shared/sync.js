@@ -5,8 +5,9 @@
 // onde o repositório completo está disponível (o build remoto do Vercel já
 // recebe os arquivos sincronizados, empacotados junto com o restante do app).
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const targetArg = process.argv[2];
 
@@ -15,7 +16,7 @@ if (!targetArg) {
   process.exit(1);
 }
 
-const SHARED_ROOT = __dirname;
+const SHARED_ROOT = path.dirname(fileURLToPath(import.meta.url));
 const TARGET_ROOT = path.resolve(targetArg);
 
 for (const dir of ['src', 'api']) {

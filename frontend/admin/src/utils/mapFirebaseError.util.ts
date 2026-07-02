@@ -34,12 +34,14 @@ const STORAGE_MESSAGES: Record<string, string> = {
 
 export function mapFirebaseError(error: unknown): SnackbarMessage {
   if (!(error instanceof FirebaseError)) {
+    console.error('Erro inesperado:', error);
     return { message: 'Ocorreu um erro inesperado.', type: 'error' };
   }
 
   const [service, code] = error.code.split('/');
 
   if (service === 'functions') {
+    console.error(`Erro no cloud functions: ${error.code} - ${error.message}`);
     return code === 'internal'
       ? {
           message: 'Erro interno inesperado! Tente novamente mais tarde!',
@@ -49,6 +51,7 @@ export function mapFirebaseError(error: unknown): SnackbarMessage {
   }
 
   if (service === 'auth') {
+    console.error(`Erro no cloud auth: ${error.code} - ${error.message}`);
     return {
       message: AUTH_MESSAGES[code] ?? 'Erro de autenticação.',
       type: 'error',
@@ -56,12 +59,14 @@ export function mapFirebaseError(error: unknown): SnackbarMessage {
   }
 
   if (service === 'storage') {
+    console.error(`Erro no cloud storage: ${error.code} - ${error.message}`);
     return {
       message: STORAGE_MESSAGES[code] ?? 'Erro no armazenamento.',
       type: 'error',
     };
   }
 
+  console.error(`Erro desconhecido: ${error.code} - ${error.message}`);
   return {
     message: 'Ocorreu um erro inesperado.',
     type: 'error',

@@ -8,24 +8,6 @@ export const TASK_TYPES = [
 
 export type TaskType = (typeof TASK_TYPES)[number];
 
-export type TaskStatus = 'pending_approval' | 'approved' | 'in_progress' | 'completed' | 'rejected';
-
-export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
-  pending_approval: 'Pendente aprovação',
-  approved: 'Aprovada',
-  in_progress: 'Em progresso',
-  completed: 'Concluída',
-  rejected: 'Rejeitada',
-};
-
-export const TASK_STATUS_COLORS: Record<TaskStatus, string> = {
-  pending_approval: 'bg-orange-500',
-  approved: 'bg-amber-400',
-  in_progress: 'bg-blue-500',
-  completed: 'bg-emerald-500',
-  rejected: 'bg-red-500',
-};
-
 export interface Task {
   taskId: string;
   companyId: string;
@@ -33,7 +15,6 @@ export interface Task {
   description: string;
   type: TaskType;
   status: string;
-  approvalStatus?: TaskStatus;
   dueDate: number;
   createdBy: string;
   createdByName?: string;

@@ -63,20 +63,10 @@ export default class TaskService {
     'listClientTasksHandler',
   );
 
-  private static updateClientTaskStatusCallable = httpsCallable<
-    { taskId: string; approvalStatus: string },
-    Task
-  >(functions, 'updateClientTaskStatusHandler');
-
   private static listCalendarTasksCallable = httpsCallable<
     { companyId?: string; year: number; month: number },
     { tasks: Task[] }
   >(functions, 'listCalendarTasksHandler');
-
-  private static listPendingApprovalCallable = httpsCallable<void, Task[]>(
-    functions,
-    'listPendingApprovalHandler',
-  );
 
   static async createClientTask(data: CreateClientTaskDTO): Promise<Task> {
     const r = await this.createClientTaskCallable(data);
@@ -88,19 +78,9 @@ export default class TaskService {
     return r.data;
   }
 
-  static async updateClientTaskStatus(taskId: string, approvalStatus: string): Promise<Task> {
-    const r = await this.updateClientTaskStatusCallable({ taskId, approvalStatus });
-    return r.data;
-  }
-
   static async listCalendarTasks(year: number, month: number, companyId?: string): Promise<Task[]> {
     const r = await this.listCalendarTasksCallable({ year, month, companyId });
     return r.data.tasks;
-  }
-
-  static async listPendingApproval(): Promise<Task[]> {
-    const r = await this.listPendingApprovalCallable();
-    return r.data;
   }
 
   private static updateClientTaskImagesCallable = httpsCallable<

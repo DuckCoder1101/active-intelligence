@@ -4,10 +4,10 @@ import {
   MdOutlineDiamond,
   MdOutlineLightMode,
   MdOutlineLogout,
-  MdOutlineSearch,
 } from 'react-icons/md';
 
-import { Breadcrumb } from '@/components/ui/breadcrumb.component';
+import { Breadcrumb } from '@/components/layout/breadcrumb.component';
+import { NotificationBell } from '@/components/layout/notification-bell.component';
 import { UserAvatar } from '@/components/ui/user-avatar.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useTheme } from '@/contexts/theme.context';
@@ -28,7 +28,10 @@ export function Topbar() {
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-6 py-3">
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => navigate({ to: '/' })}
+        >
           <div className="flex h-7.5 w-7.5 items-center justify-center rounded-lg bg-orange">
             <MdOutlineDiamond size={16} className="text-white" />
           </div>
@@ -41,13 +44,7 @@ export function Topbar() {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="hidden sm:flex items-center gap-2 rounded-lg border border-border bg-bg px-3 py-1.5 text-[12px] text-text-muted">
-          <MdOutlineSearch size={14} />
-          <span>Buscar...</span>
-          <kbd className="rounded bg-border px-1.5 py-0.5 text-[10px] font-bold text-text-muted">
-            ⌘K
-          </kbd>
-        </div>
+        <NotificationBell />
 
         <button
           type="button"
@@ -72,7 +69,7 @@ export function Topbar() {
         </button>
 
         <Link
-          to="/user/profile"
+          to="/profile"
           title="Meu perfil"
           className="transition-opacity hover:opacity-80"
         >

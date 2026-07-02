@@ -49,8 +49,9 @@ export default class CompanySchema {
       state: z.enum(BrazilianState),
       zipCode: z
         .string()
-        .transform((v) => v.replace(/\D/g, ''))
-        .refine((v) => v.length === 8, 'CEP inválido!'),
+        .nullish()
+        .transform((v) => (v ? v.replace(/\D/g, '') : undefined))
+        .refine((v) => v === undefined || v.length === 8, 'CEP inválido!'),
     }),
 
     social: z

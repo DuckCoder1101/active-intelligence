@@ -38,7 +38,7 @@ export interface CompanyDocument {
     neighborhood?: string;
     city: string;
     state: BrazilianState;
-    zipCode: string;
+    zipCode?: string;
   };
 
   social?: {

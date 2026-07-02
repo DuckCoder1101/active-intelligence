@@ -4,13 +4,10 @@ import { MdChevronLeft, MdChevronRight, MdClose } from 'react-icons/md';
 import { Spinner } from '@/components/ui/spinner.component';
 import { useSnackbar } from '@/contexts/snackbar.context';
 import type { CompanyResume } from '@/models/company.model';
-import type { Task, TaskStatus } from '@/models/task.model';
-import {
-  TASK_STATUS_LABELS,
-  TASK_STATUS_COLORS,
-  TASK_TYPE_LABELS,
-} from '@/models/task.model';
-import { useUpdateApprovalStatusMutation } from '@/queries/task.queries';
+import type { KanbanColumn } from '@/models/kanban.model';
+import type { Task } from '@/models/task.model';
+import { TASK_TYPE_LABELS } from '@/models/task.model';
+import { useUpdateTaskStatusMutation } from '@/queries/task.queries';
 
 const MONTHS = [
   'Janeiro',
@@ -28,20 +25,14 @@ const MONTHS = [
 ];
 const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 const MAX_CHIPS = 2;
-const APPROVAL_STATUSES: TaskStatus[] = [
-  'pending_approval',
-  'approved',
-  'in_progress',
-  'completed',
-  'rejected',
-];
 
 interface DayTasksModalProps {
   date: Date;
   tasks: Task[];
   companies: CompanyResume[];
+  columns: KanbanColumn[];
   updatingTaskId: string | null;
-  onStatusChange: (task: Task, status: TaskStatus) => void;
+  onStatusChange: (task: Task, status: string) => void;
   onTaskClick: (task: Task) => void;
   onClose: () => void;
 }
@@ -50,6 +41,7 @@ function DayTasksModal({
   date,
   tasks,
   companies,
+  columns,
   updatingTaskId,
   onStatusChange,
   onTaskClick,
@@ -107,7 +99,9 @@ function DayTasksModal({
           ) : (
             <div className="space-y-2">
               {tasks.map((task) => {
-                const currentStatus = task.approvalStatus;
+                const currentColumn = columns.find(
+                  (c) => c.columnId === task.status,
+                );
                 const isUpdating = updatingTaskId === task.taskId;
                 const company = companyMap[task.companyId];
 
@@ -123,9 +117,10 @@ function DayTasksModal({
                       className="w-full text-left"
                     >
                       <div className="flex items-center gap-2">
-                        {currentStatus && (
+                        {currentColumn && (
                           <span
-                            className={`h-2 w-2 shrink-0 rounded-full ${TASK_STATUS_COLORS[currentStatus]}`}
+                            className="h-2 w-2 shrink-0 rounded-full"
+                            style={{ backgroundColor: currentColumn.color }}
                           />
                         )}
                         <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-text">
@@ -140,22 +135,20 @@ function DayTasksModal({
                       </p>
                     </button>
 
-                    {/* Status select */}
+                    {/* Quadro select */}
                     <div className="relative mt-2.5">
                       <select
-                        value={currentStatus ?? ''}
+                        value={task.status}
                         disabled={isUpdating}
-                        onChange={(e) =>
-                          onStatusChange(task, e.target.value as TaskStatus)
-                        }
+                        onChange={(e) => onStatusChange(task, e.target.value)}
                         className="w-full appearance-none rounded-lg border border-border bg-card py-1.5 pl-3 pr-7 text-[11px] font-medium text-text outline-none transition-colors focus:border-orange disabled:opacity-50"
                       >
-                        {!currentStatus && (
-                          <option value="">— sem status —</option>
+                        {!currentColumn && (
+                          <option value="">— sem quadro —</option>
                         )}
-                        {APPROVAL_STATUSES.map((s) => (
-                          <option key={s} value={s}>
-                            {TASK_STATUS_LABELS[s]}
+                        {columns.map((col) => (
+                          <option key={col.columnId} value={col.columnId}>
+                            {col.name}
                           </option>
                         ))}
                       </select>
@@ -179,12 +172,14 @@ function DayTasksModal({
 interface AdminCalendarViewProps {
   tasks: Task[];
   companies: CompanyResume[];
+  columns: KanbanColumn[];
   onTaskClick: (task: Task) => void;
 }
 
 export function AdminCalendarView({
   tasks,
   companies,
+  columns,
   onTaskClick,
 }: AdminCalendarViewProps) {
   const today = new Date();
@@ -193,7 +188,7 @@ export function AdminCalendarView({
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const { pushSnackbar } = useSnackbar();
-  const updateApprovalStatus = useUpdateApprovalStatusMutation();
+  const updateStatus = useUpdateTaskStatusMutation();
 
   const prevMonth = () => {
     setSelectedDay(null);
@@ -238,14 +233,15 @@ export function AdminCalendarView({
     return map;
   }, [tasks, year, month]);
 
-  const handleStatusChange = (task: Task, newStatus: TaskStatus) => {
-    updateApprovalStatus.mutate(
-      { taskId: task.taskId, approvalStatus: newStatus },
+  const handleStatusChange = (task: Task, newStatus: string) => {
+    const column = columns.find((c) => c.columnId === newStatus);
+    updateStatus.mutate(
+      { taskId: task.taskId, status: newStatus },
       {
         onSuccess: () => {
           pushSnackbar({
             type: 'success',
-            message: `Status: ${TASK_STATUS_LABELS[newStatus]}`,
+            message: `Quadro: ${column?.name ?? newStatus}`,
           });
         },
       },
@@ -342,15 +338,16 @@ export function AdminCalendarView({
                 {/* Task chips */}
                 <div className="space-y-0.5">
                   {visible.map((task) => {
-                    const status = task.approvalStatus;
+                    const column = columns.find(
+                      (c) => c.columnId === task.status,
+                    );
                     return (
                       <div
                         key={task.taskId}
-                        className={`truncate rounded px-1.5 py-0.5 text-[10px] font-semibold text-white ${
-                          status
-                            ? TASK_STATUS_COLORS[status]
-                            : 'bg-border text-text-muted'
-                        }`}
+                        className="truncate rounded px-1.5 py-0.5 text-[10px] font-semibold text-white"
+                        style={{
+                          backgroundColor: column?.color ?? '#94a3b8',
+                        }}
                         title={task.title}
                       >
                         {task.title}
@@ -371,19 +368,13 @@ export function AdminCalendarView({
 
       {/* Legend */}
       <div className="shrink-0 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-border px-6 py-2.5">
-        {(
-          [
-            'pending_approval',
-            'in_progress',
-            'completed',
-            'rejected',
-          ] as TaskStatus[]
-        ).map((s) => (
-          <div key={s} className="flex items-center gap-1.5">
-            <span className={`h-2 w-2 rounded-full ${TASK_STATUS_COLORS[s]}`} />
-            <span className="text-[11px] text-text-muted">
-              {TASK_STATUS_LABELS[s]}
-            </span>
+        {columns.map((col) => (
+          <div key={col.columnId} className="flex items-center gap-1.5">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: col.color }}
+            />
+            <span className="text-[11px] text-text-muted">{col.name}</span>
           </div>
         ))}
       </div>
@@ -394,7 +385,8 @@ export function AdminCalendarView({
           date={selectedDate}
           tasks={selectedTasks}
           companies={companies}
-          updatingTaskId={updateApprovalStatus.isPending ? updateApprovalStatus.variables.taskId : null}
+          columns={columns}
+          updatingTaskId={updateStatus.isPending ? updateStatus.variables.taskId : null}
           onStatusChange={handleStatusChange}
           onTaskClick={(task) => {
             setSelectedDay(null);

@@ -2,8 +2,7 @@ import z from 'zod';
 import { HttpsError } from 'firebase-functions/https';
 import { logger } from 'firebase-functions';
 
-import { onCallHandler, requireAccess } from 'functions-shared';
-import { KanbanRepository } from '../repositories/kanban.repository';
+import { onCallHandler, requireAccess, KanbanRepository } from 'functions-shared';
 
 const ACCESS = { minAccessLevel: 'owner' as const };
 

@@ -4,22 +4,34 @@ import { useState, useMemo } from 'react';
 import { MdAdd } from 'react-icons/md';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
-import { AdminPageContainer } from '@/components/layout/page-container.component';
 import { AdminModal } from '@/components/team/info-modal.component';
 import { InviteAdminModal } from '@/components/team/invite-modal.component';
 import { AdminsTable } from '@/components/team/table.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { AdminPageContainer } from '@/components/ui/page-container.component';
 import type { AdminProfile } from '@/models/admin.model';
-import { adminKeys, adminsQueryOptions, useDeleteAdminMutation } from '@/queries/admin.queries';
-import { isAdmin } from '@/utils/isAdmin.util';
+import {
+  adminKeys,
+  adminsQueryOptions,
+  useDeleteAdminMutation,
+} from '@/queries/admin.queries';
+import type { RouteAccessLevel } from '@/types/route-access.type';
+import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
-export const Route = createFileRoute('/admin/team/')({
+const ROUTE_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'owner',
+  permissions: ['manage-team'],
+};
+
+export const Route = createFileRoute('/_admin/team')({
+  ssr: false,
   beforeLoad: ({ context }) => {
-    if (!isAdmin(context.sessionUser)) {
+    if (!checkRouteAccess(context.sessionUser, ROUTE_ACCESS)) {
       throw redirect({ to: '/unauthorized' });
     }
   },
-  loader: ({ context }) => context.queryClient.ensureQueryData(adminsQueryOptions()),
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(adminsQueryOptions()),
   component: AdminTeam,
 });
 
@@ -125,7 +137,9 @@ function AdminTeam() {
         <ConfirmDeleteModal
           title="Excluir administrador"
           description={`Tem certeza que deseja excluir "${deletingAdmin.name}"? Esta ação não pode ser desfeita.`}
-          isDeleting={deleteAdmin.isPending && deleteAdmin.variables === deletingAdmin.uid}
+          isDeleting={
+            deleteAdmin.isPending && deleteAdmin.variables === deletingAdmin.uid
+          }
           onConfirm={handleDeleteConfirm}
           onCancel={() => setDeletingAdmin(null)}
         />

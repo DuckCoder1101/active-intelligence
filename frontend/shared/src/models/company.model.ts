@@ -49,7 +49,7 @@ export interface Company {
     neighborhood?: string;
     city: string;
     state: string;
-    zipCode: string;
+    zipCode?: string;
   };
   social?: {
     websiteUrl?: string;
@@ -96,7 +96,7 @@ export interface SaveCompanyDTO {
     neighborhood?: string;
     city: string;
     state: string;
-    zipCode: string;
+    zipCode?: string;
   };
   social?: {
     websiteUrl?: string;

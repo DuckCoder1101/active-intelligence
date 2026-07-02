@@ -1,6 +1,8 @@
 import { AuthContext } from '@contexts/auth.context';
 import type { AuthContextState } from '@contexts/auth.context';
 import UserService from '@services/user.service';
+import { useNavigate } from '@tanstack/react-router';
+import { FirebaseError } from 'firebase/app';
 import { onIdTokenChanged } from 'firebase/auth';
 import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -17,6 +19,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const navigate = useNavigate();
   const [authState, setAuthState] = useState<AuthContextState>({
     claims: null,
     userProfile: null,
@@ -32,7 +35,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       profile = await UserService.getMe();
       profile.avatarUrl = await UserService.getAvatarUrl(profile.uid);
     } catch (err) {
-      pushSnackbarViaBridge(mapFirebaseError(err));
+      if (err instanceof FirebaseError && err.code === 'functions/not-found') {
+        await navigate({ to: '/auth/complete-account' });
+      } else {
+        pushSnackbarViaBridge(mapFirebaseError(err));
+      }
     } finally {
       setAuthState((prev) => ({
         ...prev,
@@ -40,7 +47,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         userProfile: profile,
       }));
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {

@@ -118,7 +118,6 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
       localizacao: !!errs.location,
       redes: !!errs.social,
       observacoes: !!errs.extra,
-      convite: !!errs.ownerEmail,
     });
     if (tab) {
       setActiveTab(tab);
@@ -136,12 +135,19 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
     localizacao: !!errors.location,
     redes: !!errors.social,
     observacoes: !!errors.extra,
-    convite: !!errors.ownerEmail,
   };
 
   const TABS = [
-    { id: 'empresa', label: 'Empresa', hasError: tabErrors.empresa },
-    { id: 'mercado', label: 'Mercado', hasError: tabErrors.mercado },
+    {
+      id: 'empresa',
+      label: 'Empresa',
+      hasError: tabErrors.empresa,
+    },
+    {
+      id: 'mercado',
+      label: 'Mercado',
+      hasError: tabErrors.mercado,
+    },
     {
       id: 'localizacao',
       label: 'Localização',
@@ -156,11 +162,6 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
       id: 'observacoes',
       label: 'Observações',
       hasError: tabErrors.observacoes,
-    },
-    {
-      id: 'convite',
-      label: 'Convite',
-      hasError: tabErrors.convite,
     },
   ];
 
@@ -339,7 +340,8 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
               min={0}
               placeholder="0"
               {...register('business.quantityOfEmployees', {
-                valueAsNumber: true,
+                setValueAs: (v) =>
+                  v === '' || v === null ? undefined : Number(v),
               })}
             />
             <FormInput
@@ -348,7 +350,8 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
               min={0}
               placeholder="0"
               {...register('business.quantityOfBrokers', {
-                valueAsNumber: true,
+                setValueAs: (v) =>
+                  v === '' || v === null ? undefined : Number(v),
               })}
             />
           </div>
@@ -387,15 +390,16 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
               name="location.zipCode"
               control={control}
               rules={{
-                required: 'CEP obrigatório',
                 validate: (v) =>
-                  v.replace(/\D/g, '').length === 8 || 'CEP deve ter 8 dígitos',
+                  !v ||
+                  v.replace(/\D/g, '').length === 8 ||
+                  'CEP deve ter 8 dígitos',
               }}
               render={({ field }) => (
                 <FormInput
                   as={IMaskInput}
                   mask="00000-000"
-                  label="CEP *"
+                  label="CEP"
                   type="tel"
                   placeholder="00000-000"
                   error={errors.location?.zipCode?.message}
@@ -461,35 +465,16 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
               type="number"
               placeholder="Sem limite"
               min="1"
-              {...register('monthlyTaskLimit', { valueAsNumber: true })}
+              {...register('monthlyTaskLimit', {
+                setValueAs: (v) =>
+                  v === '' || v === null ? undefined : Number(v),
+              })}
             />
             <p className="mt-1.5 text-[11px] text-text-muted">
               Máximo de tarefas que o cliente pode criar por mês. Deixe em
               branco para ilimitado.
             </p>
           </div>
-        </div>
-
-        {/* Convite */}
-
-        <div className={activeTab === 'convite' ? 'space-y-4' : 'hidden'}>
-          <p className="text-[13px] text-text-sub">
-            O responsável receberá um convite por e-mail para acessar o sistema
-            como owner desta empresa.
-          </p>
-          <FormInput
-            label="E-mail do responsável *"
-            type="email"
-            placeholder="responsavel@empresa.com"
-            error={errors.ownerEmail?.message}
-            {...register('ownerEmail', {
-              required: 'E-mail do responsável obrigatório',
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: 'E-mail inválido',
-              },
-            })}
-          />
         </div>
       </form>
     </Modal>

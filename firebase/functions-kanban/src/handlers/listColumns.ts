@@ -1,9 +1,8 @@
 import { logger } from 'firebase-functions';
 
-import { onCallHandler, requireAccess } from 'functions-shared';
-import { KanbanRepository } from '../repositories/kanban.repository';
+import { onCallHandler, requireAccess, KanbanRepository } from 'functions-shared';
 
-const ACCESS = { minAccessLevel: 'admin' as const };
+const ACCESS = { minAccessLevel: 'user' as const };
 
 export const listKanbanColumnsHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);

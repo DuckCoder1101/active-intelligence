@@ -7,6 +7,9 @@ import {
   CompanyRepository,
   AuditRepository,
   AuditAction,
+  AdminRepository,
+  NotificationRepository,
+  KanbanRepository,
 } from 'functions-shared';
 import TaskSchema from '../data/task.schema';
 import { TaskRepository } from '../repositories/task.repository';
@@ -43,13 +46,14 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
 
   await CompanyRepository.checkAndIncrementUsage(companyId);
 
+  const columns = await KanbanRepository.listAll();
+
   const task = await TaskRepository.save({
     companyId,
     title: data.title,
     description: data.description,
     type: data.type,
-    status: 'pending_approval',
-    approvalStatus: 'pending_approval',
+    status: columns[0].columnId,
     dueDate: data.dueDate,
     assignedTo: [],
     referenceLinks: data.referenceLinks,
@@ -64,6 +68,16 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
     actorName: data.createdByName ?? '(usuário)',
     taskId: task.taskId,
     taskTitle: task.title,
+  });
+
+  const recipientUids = await AdminRepository.listUidsWithPermission(
+    'manage-projects',
+  );
+  await NotificationRepository.notifyAdmins(recipientUids, {
+    type: 'new-client-task',
+    message: `Nova tarefa recebida: "${task.title}"`,
+    taskId: task.taskId,
+    companyId,
   });
 
   return task;

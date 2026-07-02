@@ -12,6 +12,6 @@ export const Route = createFileRoute('/')({
       throw redirect({ to: '/user/mycompany' });
     }
 
-    throw redirect({ to: '/admin/dashboard' });
+    throw redirect({ to: '/auth/signin' });
   },
 });

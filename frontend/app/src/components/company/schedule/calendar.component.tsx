@@ -11,34 +11,52 @@ import {
 import { ClientTaskModal } from './task-modal.component';
 
 import { formatDateShort } from '@/formatters/formatDate';
-import type { Task, TaskStatus } from '@/models/task.model';
-import {
-  TASK_STATUS_LABELS,
-  TASK_STATUS_COLORS,
-  TASK_TYPE_LABELS,
-} from '@/models/task.model';
+import type { KanbanColumn } from '@/models/kanban.model';
+import type { Task } from '@/models/task.model';
+import { TASK_TYPE_LABELS } from '@/models/task.model';
 
+const FALLBACK_COLUMN_COLOR = '#94a3b8';
 
 const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 const MONTHS = [
-  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
 ];
 const MAX_CHIPS = 2;
-
-// ─── Day Modal ───────────────────────────────────────────────────────────────
 
 interface DayModalProps {
   date: Date;
   tasks: Task[];
+  columns: KanbanColumn[];
   onNewTask: () => void;
   onTaskClick: (task: Task) => void;
   onClose: () => void;
 }
 
-function DayModal({ date, tasks, onNewTask, onTaskClick, onClose }: DayModalProps) {
+function DayModal({
+  date,
+  tasks,
+  columns,
+  onNewTask,
+  onTaskClick,
+  onClose,
+}: DayModalProps) {
   const today = new Date();
-  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const todayStart = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
   const isPast = date < todayStart;
 
   const dateLabel = date.toLocaleDateString('pt-BR', {
@@ -51,13 +69,19 @@ function DayModal({ date, tasks, onNewTask, onTaskClick, onClose }: DayModalProp
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={(e) => { if (e.target === e.currentTarget) {onClose();} }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
     >
       <div className="flex w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-border px-5 py-4">
           <div>
-            <h2 className="text-[14px] font-bold capitalize text-text">{dateLabel}</h2>
+            <h2 className="text-[14px] font-bold capitalize text-text">
+              {dateLabel}
+            </h2>
             <p className="mt-0.5 text-[11px] text-text-muted">
               {tasks.length === 0
                 ? 'Nenhuma tarefa nesse dia'
@@ -69,7 +93,11 @@ function DayModal({ date, tasks, onNewTask, onTaskClick, onClose }: DayModalProp
               type="button"
               onClick={onNewTask}
               disabled={isPast}
-              title={isPast ? 'Não é possível criar tarefas em datas passadas' : undefined}
+              title={
+                isPast
+                  ? 'Não é possível criar tarefas em datas passadas'
+                  : undefined
+              }
               className="flex items-center gap-1.5 rounded-lg bg-orange px-3 py-1.5 text-[12px] font-semibold text-white transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <MdAdd size={14} />
@@ -89,7 +117,9 @@ function DayModal({ date, tasks, onNewTask, onTaskClick, onClose }: DayModalProp
         <div className="max-h-[60vh] overflow-y-auto p-4">
           {tasks.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-10">
-              <p className="text-[13px] text-text-muted">Nenhuma tarefa agendada para esse dia.</p>
+              <p className="text-[13px] text-text-muted">
+                Nenhuma tarefa agendada para esse dia.
+              </p>
               {!isPast && (
                 <button
                   type="button"
@@ -104,7 +134,8 @@ function DayModal({ date, tasks, onNewTask, onTaskClick, onClose }: DayModalProp
           ) : (
             <div className="space-y-2">
               {tasks.map((task) => {
-                const status: TaskStatus = task.approvalStatus ?? 'pending_approval';
+                const column = columns.find((c) => c.columnId === task.status);
+                const color = column?.color ?? FALLBACK_COLUMN_COLOR;
                 return (
                   <button
                     key={task.taskId}
@@ -113,7 +144,10 @@ function DayModal({ date, tasks, onNewTask, onTaskClick, onClose }: DayModalProp
                     className="w-full overflow-hidden rounded-xl border border-border bg-bg/60 text-left transition-all hover:-translate-y-px hover:shadow-md"
                   >
                     <div className="flex">
-                      <div className={`w-1 shrink-0 rounded-l-xl ${TASK_STATUS_COLORS[status]}`} />
+                      <div
+                        className="w-1 shrink-0 rounded-l-xl"
+                        style={{ backgroundColor: color }}
+                      />
                       <div className="flex-1 px-3 py-3">
                         {/* Title + status badge */}
                         <div className="flex items-start justify-between gap-2">
@@ -121,9 +155,10 @@ function DayModal({ date, tasks, onNewTask, onTaskClick, onClose }: DayModalProp
                             {task.title}
                           </p>
                           <span
-                            className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold text-white ${TASK_STATUS_COLORS[status]}`}
+                            className="mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold text-white"
+                            style={{ backgroundColor: color }}
                           >
-                            {TASK_STATUS_LABELS[status]}
+                            {column?.name ?? 'Sem quadro'}
                           </span>
                         </div>
 
@@ -158,10 +193,9 @@ function DayModal({ date, tasks, onNewTask, onTaskClick, onClose }: DayModalProp
   );
 }
 
-// ─── Calendar ────────────────────────────────────────────────────────────────
-
 interface Props {
   tasks: Task[];
+  columns: KanbanColumn[];
   year: number;
   month: number;
   onPrevMonth: () => void;
@@ -171,6 +205,7 @@ interface Props {
 
 export function CompanyScheduleCalendar({
   tasks,
+  columns,
   year,
   month,
   onPrevMonth,
@@ -193,16 +228,33 @@ export function CompanyScheduleCalendar({
     tasksByDay[day] = arr;
   }
 
-  const selectedDate = selectedDay !== null ? new Date(year, month, selectedDay) : null;
-  const selectedTasks = selectedDay !== null ? (tasksByDay[selectedDay] ?? []) : [];
+  const selectedDate =
+    selectedDay !== null ? new Date(year, month, selectedDay) : null;
+  const selectedTasks =
+    selectedDay !== null ? (tasksByDay[selectedDay] ?? []) : [];
 
-  const handlePrev = () => { setSelectedDay(null); onPrevMonth(); };
-  const handleNext = () => { setSelectedDay(null); onNextMonth(); };
+  const handlePrev = () => {
+    setSelectedDay(null);
+    onPrevMonth();
+  };
+  const handleNext = () => {
+    setSelectedDay(null);
+    onNextMonth();
+  };
 
   const openCreate = () => setSubModal('create');
-  const openView = (task: Task) => { setViewingTask(task); setSubModal('view'); };
-  const closeSubModal = () => { setSubModal(null); setViewingTask(undefined); };
-  const closeDayModal = () => { setSelectedDay(null); closeSubModal(); };
+  const openView = (task: Task) => {
+    setViewingTask(task);
+    setSubModal('view');
+  };
+  const closeSubModal = () => {
+    setSubModal(null);
+    setViewingTask(undefined);
+  };
+  const closeDayModal = () => {
+    setSelectedDay(null);
+    closeSubModal();
+  };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -272,7 +324,9 @@ export function CompanyScheduleCalendar({
                 <div className="mb-1 flex justify-end pr-0.5">
                   <span
                     className={`flex h-6 w-6 items-center justify-center rounded-full text-[12px] font-semibold transition-colors ${
-                      isToday ? 'bg-orange text-white' : 'text-text-sub group-hover:bg-border'
+                      isToday
+                        ? 'bg-orange text-white'
+                        : 'text-text-sub group-hover:bg-border'
                     }`}
                   >
                     {day}
@@ -282,11 +336,18 @@ export function CompanyScheduleCalendar({
                 {/* Task chips */}
                 <div className="space-y-0.5">
                   {visible.map((task) => {
-                    const status: TaskStatus = task.approvalStatus ?? 'pending_approval';
+                    const column = columns.find(
+                      (c) => c.columnId === task.status,
+                    );
+
                     return (
                       <div
                         key={task.taskId}
-                        className={`truncate rounded px-1.5 py-0.5 text-[10px] font-semibold text-white ${TASK_STATUS_COLORS[status]}`}
+                        className="truncate rounded px-1.5 py-0.5 text-[10px] font-semibold text-white"
+                        style={{
+                          backgroundColor:
+                            column?.color ?? FALLBACK_COLUMN_COLOR,
+                        }}
                         title={task.title}
                       >
                         {task.title}
@@ -307,10 +368,13 @@ export function CompanyScheduleCalendar({
 
       {/* Legend */}
       <div className="shrink-0 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-border px-6 py-2.5">
-        {(['pending_approval', 'in_progress', 'completed', 'rejected'] as TaskStatus[]).map((s) => (
-          <div key={s} className="flex items-center gap-1.5">
-            <span className={`h-2 w-2 rounded-full ${TASK_STATUS_COLORS[s]}`} />
-            <span className="text-[11px] text-text-muted">{TASK_STATUS_LABELS[s]}</span>
+        {columns.map((col) => (
+          <div key={col.columnId} className="flex items-center gap-1.5">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: col.color }}
+            />
+            <span className="text-[11px] text-text-muted">{col.name}</span>
           </div>
         ))}
       </div>
@@ -320,6 +384,7 @@ export function CompanyScheduleCalendar({
         <DayModal
           date={selectedDate}
           tasks={selectedTasks}
+          columns={columns}
           onNewTask={openCreate}
           onTaskClick={openView}
           onClose={closeDayModal}
@@ -330,6 +395,7 @@ export function CompanyScheduleCalendar({
       {subModal === 'create' && (
         <ClientTaskModal
           defaultDate={selectedDate ?? undefined}
+          columns={columns}
           onClose={closeSubModal}
           onCreated={(task) => {
             onTaskCreated(task);
@@ -338,10 +404,10 @@ export function CompanyScheduleCalendar({
         />
       )}
 
-      {/* View task modal */}
       {subModal === 'view' && viewingTask && (
         <ClientTaskModal
           task={viewingTask}
+          columns={columns}
           onClose={closeSubModal}
           onCreated={onTaskCreated}
         />

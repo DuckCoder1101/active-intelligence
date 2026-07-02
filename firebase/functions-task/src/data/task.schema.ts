@@ -72,7 +72,4 @@ export default class TaskSchema {
       .transform((v) => v ?? undefined),
   });
 
-  static approveRejectSchema = z.object({
-    taskId: z.string().min(1, 'taskId obrigatório'),
-  });
 }

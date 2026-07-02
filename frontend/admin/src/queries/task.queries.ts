@@ -4,7 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import type { SaveTaskDTO, Task, TaskStatus } from '@/models/task.model';
+import type { SaveTaskDTO, Task } from '@/models/task.model';
 import TaskService from '@/services/task.service';
 
 export const taskKeys = {
@@ -100,36 +100,6 @@ export function useDeleteTaskMutation() {
   return useMutation({
     mutationFn: (taskId: string) => TaskService.deleteTask(taskId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
-    },
-  });
-}
-
-interface UpdateApprovalStatusVars {
-  taskId: string;
-  approvalStatus: TaskStatus;
-}
-
-export function useUpdateApprovalStatusMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ taskId, approvalStatus }: UpdateApprovalStatusVars) =>
-      TaskService.updateClientTaskStatus(taskId, approvalStatus),
-    onMutate: async ({ taskId, approvalStatus }: UpdateApprovalStatusVars) => {
-      await queryClient.cancelQueries({ queryKey: taskKeys.lists() });
-      const previous = queryClient.getQueryData<Task[]>(taskKeys.lists());
-      queryClient.setQueryData<Task[]>(taskKeys.lists(), (old) =>
-        old?.map((t) => (t.taskId === taskId ? { ...t, approvalStatus } : t)),
-      );
-      return { previous };
-    },
-    onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(taskKeys.lists(), context.previous);
-      }
-    },
-    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
   });

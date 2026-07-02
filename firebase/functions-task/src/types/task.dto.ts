@@ -1,4 +1,4 @@
-import type { TaskStatus, TaskType } from './task.document';
+import type { TaskType } from './task.document';
 
 export interface TaskDTO {
   taskId: string;
@@ -7,7 +7,6 @@ export interface TaskDTO {
   description: string;
   type: TaskType;
   status: string;
-  approvalStatus?: TaskStatus;
   dueDate: number;
   createdBy: string;
   createdByName?: string;
@@ -26,7 +25,6 @@ export interface SaveTaskDTO {
   description?: string;
   type: TaskType;
   status?: string;
-  approvalStatus?: TaskStatus;
   dueDate: number;
   assignedTo?: string[];
   referenceLinks?: string[];
@@ -47,8 +45,4 @@ export interface CreateClientTaskDTO {
 export interface UpdateTaskStatusDTO {
   taskId: string;
   status: string;
-}
-
-export interface ApproveRejectTaskDTO {
-  taskId: string;
 }

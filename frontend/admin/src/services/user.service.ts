@@ -19,7 +19,6 @@ import type {
 } from '@/types/dtos/user.dto';
 import { auth, functions, storage } from '@/utils/firebase.util';
 
-
 export default class UserService {
   private static getMeCallable = httpsCallable<void, UserProfile>(
     functions,

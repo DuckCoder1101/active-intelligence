@@ -3,16 +3,23 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useState, useMemo } from 'react';
 import { MdAdd } from 'react-icons/md';
 
-import { CreateCompanyModal } from '@/components/clients/modal.component';
-import { CompaniesTable } from '@/components/clients/table.component';
-import { AdminPageContainer } from '@/components/layout/page-container.component';
+import { CreateCompanyModal } from '@/components/companies/modal.component';
+import { CompaniesTable } from '@/components/companies/table.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { AdminPageContainer } from '@/components/ui/page-container.component';
 import { companiesQueryOptions, companyKeys } from '@/queries/company.queries';
-import { isAdmin } from '@/utils/isAdmin.util';
+import type { RouteAccessLevel } from '@/types/route-access.type';
+import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
-export const Route = createFileRoute('/admin/clients/')({
+const ROUTE_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+  permissions: ['manage-clients'],
+};
+
+export const Route = createFileRoute('/_admin/companies/')({
+  ssr: false,
   beforeLoad: ({ context }) => {
-    if (!isAdmin(context.sessionUser)) {
+    if (!checkRouteAccess(context.sessionUser, ROUTE_ACCESS)) {
       throw redirect({ to: '/unauthorized' });
     }
   },

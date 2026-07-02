@@ -1,10 +1,15 @@
-import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { CompanyScheduleCalendar } from '@/components/company/schedule/calendar.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { Task } from '@/models/task.model';
+import { kanbanColumnsQueryOptions } from '@/queries/kanban.queries';
 import {
   calendarTasksQueryOptions,
   clientTasksQueryOptions,
@@ -15,12 +20,20 @@ export const Route = createFileRoute('/company/$companyId/schedule')({
     const today = new Date();
     return Promise.all([
       context.queryClient.ensureQueryData(
-        calendarTasksQueryOptions(params.companyId, today.getFullYear(), today.getMonth()),
+        calendarTasksQueryOptions(
+          params.companyId,
+          today.getFullYear(),
+          today.getMonth(),
+        ),
       ),
-      context.queryClient.ensureQueryData(clientTasksQueryOptions(params.companyId)),
+      context.queryClient.ensureQueryData(
+        clientTasksQueryOptions(params.companyId),
+      ),
+      context.queryClient.ensureQueryData(kanbanColumnsQueryOptions()),
     ]);
   },
   component: CompanySchedule,
+  ssr: false,
 });
 
 function CompanySchedule() {
@@ -33,6 +46,7 @@ function CompanySchedule() {
 
   const { data: clientData } = useQuery(clientTasksQueryOptions(companyId));
   const usage = clientData?.usage ?? { used: 0, limit: null, yearMonth: '' };
+  const { data: columns = [] } = useQuery(kanbanColumnsQueryOptions());
 
   const { data: tasks = [], isLoading } = useQuery({
     ...calendarTasksQueryOptions(companyId, year, month),
@@ -47,13 +61,21 @@ function CompanySchedule() {
   };
 
   const prevMonth = () => {
-    if (month === 0) { setMonth(11); setYear((y) => y - 1); }
-    else {setMonth((m) => m - 1);}
+    if (month === 0) {
+      setMonth(11);
+      setYear((y) => y - 1);
+    } else {
+      setMonth((m) => m - 1);
+    }
   };
 
   const nextMonth = () => {
-    if (month === 11) { setMonth(0); setYear((y) => y + 1); }
-    else {setMonth((m) => m + 1);}
+    if (month === 11) {
+      setMonth(0);
+      setYear((y) => y + 1);
+    } else {
+      setMonth((m) => m + 1);
+    }
   };
 
   return (
@@ -62,7 +84,9 @@ function CompanySchedule() {
       <div className="shrink-0 border-b border-border px-4 py-4 sm:px-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-[18px] font-bold text-text sm:text-[20px]">Cronograma</h1>
+            <h1 className="text-[18px] font-bold text-text sm:text-[20px]">
+              Cronograma
+            </h1>
             <p className="mt-0.5 text-[12px] text-text-sub">
               Acompanhe e solicite tarefas para o seu calendário de publicações.
             </p>
@@ -76,7 +100,9 @@ function CompanySchedule() {
               <div className="mt-1 h-1.5 w-32 overflow-hidden rounded-full bg-border">
                 <div
                   className="h-full rounded-full bg-orange transition-all"
-                  style={{ width: `${Math.min((usage.used / usage.limit) * 100, 100)}%` }}
+                  style={{
+                    width: `${Math.min((usage.used / usage.limit) * 100, 100)}%`,
+                  }}
                 />
               </div>
             </div>
@@ -91,6 +117,7 @@ function CompanySchedule() {
       ) : (
         <CompanyScheduleCalendar
           tasks={tasks}
+          columns={columns}
           year={year}
           month={month}
           onPrevMonth={prevMonth}
