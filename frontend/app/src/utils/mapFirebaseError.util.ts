@@ -1,7 +1,5 @@
 import { FirebaseError } from 'firebase/app';
 
-import type { SnackbarMessage } from '@/contexts/snackbar.context';
-
 const AUTH_MESSAGES: Record<string, string> = {
   'email-already-in-use': 'Este e-mail já está em uso.',
   'invalid-email': 'E-mail inválido.',
@@ -32,10 +30,10 @@ const STORAGE_MESSAGES: Record<string, string> = {
   unknown: 'Erro desconhecido no armazenamento.',
 };
 
-export function mapFirebaseError(error: unknown): SnackbarMessage {
+export function mapFirebaseError(error: unknown): string {
   if (!(error instanceof FirebaseError)) {
     console.error('Erro inesperado:', error);
-    return { message: 'Ocorreu um erro inesperado.', type: 'error' };
+    return 'Ocorreu um erro inesperado.';
   }
 
   const [service, code] = error.code.split('/');
@@ -43,29 +41,20 @@ export function mapFirebaseError(error: unknown): SnackbarMessage {
   if (service === 'functions') {
     console.error(`Erro no cloud functions: ${error.code} - ${error.message}`);
     return code === 'internal'
-      ? {
-          message: 'Erro interno inesperado! Tente novamente mais tarde!',
-          type: 'error',
-        }
-      : { message: error.message, type: 'error' };
+      ? 'Erro interno inesperado! Tente novamente mais tarde!'
+      : error.message;
   }
 
   if (service === 'auth') {
     console.error(`Erro no cloud auth: ${error.code} - ${error.message}`);
-    return {
-      message: AUTH_MESSAGES[code] ?? 'Erro de autenticação.',
-      type: 'error',
-    };
+    return AUTH_MESSAGES[code] ?? 'Erro de autenticação.';
   }
 
   if (service === 'storage') {
     console.error(`Erro no cloud storage: ${error.code} - ${error.message}`);
-    return {
-      message: STORAGE_MESSAGES[code] ?? 'Erro no armazenamento.',
-      type: 'error',
-    };
+    return STORAGE_MESSAGES[code] ?? 'Erro no armazenamento.';
   }
 
   console.error(`Erro desconhecido: ${error.code} - ${error.message}`);
-  return { message: 'Ocorreu um erro inesperado.', type: 'error' };
+  return 'Ocorreu um erro inesperado.';
 }

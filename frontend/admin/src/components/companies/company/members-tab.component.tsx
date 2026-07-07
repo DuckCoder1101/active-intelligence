@@ -9,12 +9,12 @@ import {
   MdDeleteOutline,
 } from 'react-icons/md';
 import { IMaskInput } from 'react-imask';
+import { toast } from 'react-toastify';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import { formatPhone } from '@/formatters/formatPhone';
 import type { UserProfile } from '@/models/user-profile.model';
 import {
@@ -49,7 +49,6 @@ function InviteUserModal({
   onClose: () => void;
   onInvited: () => void;
 }) {
-  const { pushSnackbar } = useSnackbar();
   const inviteUser = useInviteCompanyUserMutation(companyId);
 
   const {
@@ -61,10 +60,7 @@ function InviteUserModal({
   const onSubmit = (values: InviteFormValues) => {
     inviteUser.mutate(values.email, {
       onSuccess: () => {
-        pushSnackbar({
-          type: 'success',
-          message: `Convite enviado para ${values.email}.`,
-        });
+        toast.success(`Convite enviado para ${values.email}.`);
         onInvited();
         onClose();
       },
@@ -116,7 +112,6 @@ function EditUserModal({
   onClose: () => void;
   onSaved: (updated: Partial<UserProfile>) => void;
 }) {
-  const { pushSnackbar } = useSnackbar();
   const updateAccount = useUpdateAccountMutation();
   const sendPasswordReset = useSendPasswordResetMutation();
 
@@ -141,7 +136,7 @@ function EditUserModal({
       },
       {
         onSuccess: () => {
-          pushSnackbar({ type: 'success', message: 'Usuário atualizado!' });
+          toast.success('Usuário atualizado!');
           onSaved({ name: values.name, phone: values.phone || undefined });
         },
       },
@@ -151,10 +146,7 @@ function EditUserModal({
   const handleSendPasswordReset = () => {
     sendPasswordReset.mutate(user.email, {
       onSuccess: () => {
-        pushSnackbar({
-          type: 'success',
-          message: `E-mail de redefinição enviado para ${user.email}.`,
-        });
+        toast.success(`E-mail de redefinição enviado para ${user.email}.`);
       },
     });
   };
@@ -253,7 +245,6 @@ export function CompanyMembersTab({ companyId }: Props) {
   const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null);
 
   const queryClient = useQueryClient();
-  const { pushSnackbar } = useSnackbar();
   const deleteCompanyUser = useDeleteCompanyUserMutation(companyId);
 
   const handleSaved = (updated: Partial<UserProfile>) => {
@@ -274,10 +265,7 @@ export function CompanyMembersTab({ companyId }: Props) {
     }
     deleteCompanyUser.mutate(deletingUser.uid, {
       onSuccess: () => {
-        pushSnackbar({
-          type: 'success',
-          message: `Usuário ${deletingUser.name} removido.`,
-        });
+        toast.success(`Usuário ${deletingUser.name} removido.`);
         setDeletingUser(null);
       },
     });

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { MdOutlineNotifications } from 'react-icons/md';
+import { MdCheck, MdOutlineNotifications } from 'react-icons/md';
 
+import { useNotifications } from '@/contexts/notifications.context';
 import { formatRelativeTime } from '@/formatters/formatRelativeTime';
-import { useNotifications } from '@/hooks/useNotifications.util';
 
 export function NotificationBell() {
   const { canView, notifications, unreadCount, markAsRead } =
@@ -54,26 +54,29 @@ export function NotificationBell() {
               </p>
             ) : (
               notifications.map((notification) => (
-                <button
+                <div
                   key={notification.notificationId}
-                  type="button"
-                  onClick={() => markAsRead(notification.notificationId)}
-                  className={`flex w-full flex-col gap-1 border-b border-border/50 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-bg ${
-                    notification.read ? '' : 'bg-orange/5'
-                  }`}
+                  className="flex items-start gap-2 border-b border-border/50 bg-orange/5 px-4 py-3 transition-colors last:border-b-0 hover:bg-bg"
                 >
-                  <div className="flex items-start gap-2">
-                    {!notification.read && (
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
-                    )}
-                    <p className="flex-1 text-[12.5px] text-text">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[12.5px] text-text">
                       {notification.message}
                     </p>
+                    <span className="text-[11px] text-text-muted">
+                      {formatRelativeTime(notification.createdAt)}
+                    </span>
                   </div>
-                  <span className="pl-3.5 text-[11px] text-text-muted">
-                    {formatRelativeTime(notification.createdAt)}
-                  </span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => markAsRead(notification.notificationId)}
+                    title="Marcar como lida"
+                    className="flex shrink-0 items-center gap-1 rounded-lg border border-border px-2 py-1 text-[11px] font-semibold text-text-sub transition-colors hover:border-orange hover:bg-orange/10 hover:text-orange"
+                  >
+                    <MdCheck size={13} />
+                    Marcar como lida
+                  </button>
+                </div>
               ))
             )}
           </div>

@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { CompanyScheduleCalendar } from '@/components/company/schedule/calendar.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { Task } from '@/models/task.model';
-import { kanbanColumnsQueryOptions } from '@/queries/kanban.queries';
+import { operationalKanbanColumnsQueryOptions } from '@/queries/operational-kanban.queries';
 import {
   calendarTasksQueryOptions,
   clientTasksQueryOptions,
@@ -29,7 +29,7 @@ export const Route = createFileRoute('/company/$companyId/schedule')({
       context.queryClient.ensureQueryData(
         clientTasksQueryOptions(params.companyId),
       ),
-      context.queryClient.ensureQueryData(kanbanColumnsQueryOptions()),
+      context.queryClient.ensureQueryData(operationalKanbanColumnsQueryOptions()),
     ]);
   },
   component: CompanySchedule,
@@ -46,7 +46,7 @@ function CompanySchedule() {
 
   const { data: clientData } = useQuery(clientTasksQueryOptions(companyId));
   const usage = clientData?.usage ?? { used: 0, limit: null, yearMonth: '' };
-  const { data: columns = [] } = useQuery(kanbanColumnsQueryOptions());
+  const { data: columns = [] } = useQuery(operationalKanbanColumnsQueryOptions());
 
   const { data: tasks = [], isLoading } = useQuery({
     ...calendarTasksQueryOptions(companyId, year, month),
@@ -57,6 +57,14 @@ function CompanySchedule() {
     queryClient.setQueryData(
       calendarTasksQueryOptions(companyId, year, month).queryKey,
       (prev: Task[] | undefined) => (prev ? [...prev, task] : prev),
+    );
+  };
+
+  const updateTask = (task: Task) => {
+    queryClient.setQueryData(
+      calendarTasksQueryOptions(companyId, year, month).queryKey,
+      (prev: Task[] | undefined) =>
+        prev?.map((t) => (t.taskId === task.taskId ? task : t)),
     );
   };
 
@@ -123,6 +131,7 @@ function CompanySchedule() {
           onPrevMonth={prevMonth}
           onNextMonth={nextMonth}
           onTaskCreated={addTask}
+          onTaskUpdated={updateTask}
         />
       )}
     </div>

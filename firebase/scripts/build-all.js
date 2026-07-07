@@ -15,11 +15,22 @@ for (const { source } of firebaseJson.functions) {
   console.log(`Codebase: ${source}`);
   console.log('='.repeat(60));
 
-  execSync(`node "${path.join(__dirname, 'vendor-shared.js')}" "${codebaseDir}"`, {
+  execSync(
+    `node "${path.join(__dirname, 'vendor-shared.js')}" "${codebaseDir}"`,
+    {
+      stdio: 'inherit',
+    },
+  );
+
+  execSync('npm install', {
+    cwd: codebaseDir,
     stdio: 'inherit',
   });
-  execSync('npm install', { cwd: codebaseDir, stdio: 'inherit' });
-  execSync('npm run build', { cwd: codebaseDir, stdio: 'inherit' });
+
+  execSync('npm run build', {
+    cwd: codebaseDir,
+    stdio: 'inherit',
+  });
 }
 
 console.log('\nTodas as codebases foram buildadas com sucesso.');

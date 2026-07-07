@@ -11,7 +11,7 @@ import {
 import { ClientTaskModal } from './task-modal.component';
 
 import { formatDateShort } from '@/formatters/formatDate';
-import type { KanbanColumn } from '@/models/kanban.model';
+import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
 import type { Task } from '@/models/task.model';
 import { TASK_TYPE_LABELS } from '@/models/task.model';
 
@@ -37,7 +37,7 @@ const MAX_CHIPS = 2;
 interface DayModalProps {
   date: Date;
   tasks: Task[];
-  columns: KanbanColumn[];
+  columns: OperationalKanbanColumn[];
   onNewTask: () => void;
   onTaskClick: (task: Task) => void;
   onClose: () => void;
@@ -195,12 +195,13 @@ function DayModal({
 
 interface Props {
   tasks: Task[];
-  columns: KanbanColumn[];
+  columns: OperationalKanbanColumn[];
   year: number;
   month: number;
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onTaskCreated: (task: Task) => void;
+  onTaskUpdated: (task: Task) => void;
 }
 
 export function CompanyScheduleCalendar({
@@ -211,6 +212,7 @@ export function CompanyScheduleCalendar({
   onPrevMonth,
   onNextMonth,
   onTaskCreated,
+  onTaskUpdated,
 }: Props) {
   const today = new Date();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -410,6 +412,10 @@ export function CompanyScheduleCalendar({
           columns={columns}
           onClose={closeSubModal}
           onCreated={onTaskCreated}
+          onApproved={(task) => {
+            onTaskUpdated(task);
+            closeSubModal();
+          }}
         />
       )}
     </div>

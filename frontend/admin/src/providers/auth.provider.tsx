@@ -6,8 +6,8 @@ import { FirebaseError } from 'firebase/app';
 import { onIdTokenChanged } from 'firebase/auth';
 import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
+import { toast } from 'react-toastify';
 
-import { pushSnackbarViaBridge } from '@/contexts/snackbar.bridge';
 import type { UserProfile } from '@/models/user-profile.model';
 import { createSession, deleteSession } from '@/server/session';
 import type { CustomClaims } from '@/types/custom-claims.type';
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (err instanceof FirebaseError && err.code === 'functions/not-found') {
         await navigate({ to: '/auth/complete-account' });
       } else {
-        pushSnackbarViaBridge(mapFirebaseError(err));
+        toast.error(mapFirebaseError(err));
       }
     } finally {
       setAuthState((prev) => ({

@@ -11,4 +11,5 @@ export * from './handlers/createClientTask';
 export * from './handlers/listClientTasks';
 export * from './handlers/listCalendarTasks';
 export * from './handlers/updateClientTaskImages';
-// export * from './triggers/deleteOldTaskMedia';
+export * from './handlers/approveClientTask';
+export * from './triggers/deleteOldTaskMedia';

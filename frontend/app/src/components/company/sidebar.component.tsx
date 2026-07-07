@@ -3,6 +3,7 @@ import React from 'react';
 import {
   MdOutlineDashboard,
   MdOutlineCalendarMonth,
+  MdOutlineAccountTree,
   MdClose,
 } from 'react-icons/md';
 
@@ -10,6 +11,7 @@ interface NavItem {
   to:
     | '/company/$companyId'
     | '/company/$companyId/schedule'
+    | '/company/$companyId/crm'
     | '/company/$companyId/ad-accounts'
     | '/company/$companyId/team';
   label: string;
@@ -30,6 +32,12 @@ const NAV_ITEMS: NavItem[] = [
     icon: MdOutlineCalendarMonth,
     exact: false,
   },
+  {
+    to: '/company/$companyId/crm',
+    label: 'CRM',
+    icon: MdOutlineAccountTree,
+    exact: false,
+  },
   // {
   //   to: '/company/$companyId/ad-accounts',
   //   label: 'Contas de anúncios',
@@ -44,13 +52,17 @@ const NAV_ITEMS: NavItem[] = [
   // },
 ];
 
-interface UserSidebarProps {
+interface CompanySidebarProps {
   companyId: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function UserSidebar({ companyId, isOpen, onClose }: UserSidebarProps) {
+export function CompanySidebar({
+  companyId,
+  isOpen,
+  onClose,
+}: CompanySidebarProps) {
   return (
     <aside
       className={[
@@ -72,7 +84,7 @@ export function UserSidebar({ companyId, isOpen, onClose }: UserSidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-2 justify-center">
+      <nav className="flex-1 py-2 justify-center mt-4">
         {NAV_ITEMS.map((item) => (
           <Link
             key={item.to}

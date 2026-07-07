@@ -32,7 +32,7 @@ function UnauthorizedComponent() {
           Você não tem permissão para acessar esta página.
         </p>
       </div>
-      <Link to="/user/profile" className="btn-primary mt-2">
+      <Link to="/profile" className="btn-primary mt-2">
         Voltar ao perfil
       </Link>
     </div>

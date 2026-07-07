@@ -46,6 +46,18 @@ interface CreateClientTaskVars {
   pendingFiles: File[];
 }
 
+interface ApproveClientTaskVars {
+  taskId: string;
+  actorName?: string;
+}
+
+export function useApproveClientTaskMutation() {
+  return useMutation({
+    mutationFn: ({ taskId, actorName }: ApproveClientTaskVars) =>
+      TaskService.approveClientTask(taskId, actorName),
+  });
+}
+
 export function useCreateClientTaskMutation() {
   return useMutation({
     mutationFn: async ({ dto, companyId, pendingFiles }: CreateClientTaskVars): Promise<Task> => {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { MdLockReset, MdDelete } from 'react-icons/md';
 import { IMaskInput } from 'react-imask';
+import { toast } from 'react-toastify';
 
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
@@ -9,7 +10,6 @@ import { FormSelect } from '@/components/ui/form-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { ADMIN_PERMISSIONS_META } from '@/constants/permissions.const';
 import { useAuth } from '@/contexts/auth.context';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import type { AdminProfile } from '@/models/admin.model';
 import {
   useUpdateAdminInfoMutation,
@@ -53,7 +53,6 @@ export function AdminModal({
       : targetAdmin.permissions,
   );
 
-  const { pushSnackbar } = useSnackbar();
   const updateAdminInfo = useUpdateAdminInfoMutation();
   const updatePermissions = useUpdatePermissionsMutation();
   const sendPasswordReset = useSendPasswordResetMutation();
@@ -121,7 +120,7 @@ export function AdminModal({
     }
 
     if (anySucceeded) {
-      pushSnackbar({ type: 'success', message: 'Administrador atualizado!' });
+      toast.success('Administrador atualizado!');
       onSaved(updates);
     }
   };
@@ -135,10 +134,9 @@ export function AdminModal({
   const handleSendPasswordReset = () => {
     sendPasswordReset.mutate(targetAdmin.email, {
       onSuccess: () => {
-        pushSnackbar({
-          type: 'success',
-          message: `E-mail de redefinição enviado para ${targetAdmin.email}.`,
-        });
+        toast.success(
+          `E-mail de redefinição enviado para ${targetAdmin.email}.`,
+        );
       },
     });
   };

@@ -9,31 +9,22 @@ export default class NotificationRepository {
   private static notificationsCollection = database.collection('notifications');
 
   static async notifyAdmins(
-    recipientUids: string[],
+    targetUids: string[],
     data: NotifyAdminsDTO,
   ): Promise<void> {
-    if (recipientUids.length === 0) return;
+    if (targetUids.length === 0) return;
 
-    const batch = database.batch();
-
-    for (const recipientUid of recipientUids) {
-      const ref = this.notificationsCollection.doc();
-      batch.set(ref, {
-        recipientUid,
-        ...data,
-        read: false,
-        createdAt: FieldValue.serverTimestamp(),
-      });
-    }
-
-    await batch.commit();
+    await this.notificationsCollection.add({
+      targetUids,
+      ...data,
+      createdAt: FieldValue.serverTimestamp(),
+    });
   }
 
   static async listForUser(uid: string): Promise<NotificationDTO[]> {
     const snapshot = await this.notificationsCollection
-      .where('recipientUid', '==', uid)
+      .where('targetUids', 'array-contains', uid)
       .orderBy('createdAt', 'desc')
-      .limit(50)
       .get();
 
     return snapshot.docs.map((doc) => {
@@ -44,7 +35,6 @@ export default class NotificationRepository {
         message: data.message,
         taskId: data.taskId,
         companyId: data.companyId,
-        read: data.read,
         createdAt: data.createdAt.toMillis(),
       };
     });
@@ -59,10 +49,16 @@ export default class NotificationRepository {
     }
 
     const data = doc.data() as NotificationDocument;
-    if (data.recipientUid !== uid) {
+    if (!data.targetUids.includes(uid)) {
       throw new HttpsError('permission-denied', 'Acesso negado!');
     }
 
-    await ref.update({ read: true });
+    const remaining = data.targetUids.filter((target) => target !== uid);
+
+    if (remaining.length === 0) {
+      await ref.delete();
+    } else {
+      await ref.update({ targetUids: FieldValue.arrayRemove(uid) });
+    }
   }
 }

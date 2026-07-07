@@ -26,7 +26,9 @@ export const Route = createFileRoute('/auth/complete-account')({
     if (!sessionUser) {
       throw redirect({ to: '/auth/signin' });
     }
-    return { sessionUser };
+    return {
+      sessionUser,
+    };
   },
 });
 

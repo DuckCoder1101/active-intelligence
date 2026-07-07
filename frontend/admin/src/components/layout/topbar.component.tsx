@@ -1,7 +1,6 @@
 import { Link, useNavigate } from '@tanstack/react-router';
 import {
   MdOutlineDarkMode,
-  MdOutlineDiamond,
   MdOutlineLightMode,
   MdOutlineLogout,
 } from 'react-icons/md';
@@ -28,17 +27,16 @@ export function Topbar() {
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-6 py-3">
       <div className="flex items-center gap-3">
-        <div
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={() => navigate({ to: '/' })}
-        >
-          <div className="flex h-7.5 w-7.5 items-center justify-center rounded-lg bg-orange">
-            <MdOutlineDiamond size={16} className="text-white" />
-          </div>
-          <span className="text-[15px] font-black tracking-tight text-text">
-            Guará
-          </span>
-        </div>
+        <img
+          src={
+            theme === 'light'
+              ? '/icons/icon-text-dark.png'
+              : '/icons/icon-text.png'
+          }
+          alt="Ícone da Guará"
+          className="w-25 mx-5"
+        />
+
         <div className="h-4 w-px bg-border" />
         <Breadcrumb />
       </div>

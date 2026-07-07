@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MdClose, MdOutlineCalendarToday } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 import { ReferenceImages } from '@/components/tasks/reference-images.component';
 import { ReferenceLinks } from '@/components/tasks/reference-links.component';
@@ -7,12 +8,15 @@ import { FormInput } from '@/components/ui/form-input.component';
 import { FormSelect } from '@/components/ui/form-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import { formatDateLong } from '@/formatters/formatDate';
-import type { KanbanColumn } from '@/models/kanban.model';
+import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
+import { PENDING_APPROVAL_COLUMN_ID, APPROVED_COLUMN_ID } from '@/models/operational-kanban.model';
 import type { Task, CreateClientTaskDTO, TaskType } from '@/models/task.model';
 import { TASK_TYPES, TASK_TYPE_LABELS } from '@/models/task.model';
-import { useCreateClientTaskMutation } from '@/queries/task.queries';
+import {
+  useApproveClientTaskMutation,
+  useCreateClientTaskMutation,
+} from '@/queries/task.queries';
 
 const FALLBACK_COLUMN_COLOR = '#94a3b8';
 
@@ -22,10 +26,11 @@ function toInputDate(d: Date): string {
 
 interface Props {
   task?: Task;
-  columns: KanbanColumn[];
+  columns: OperationalKanbanColumn[];
   defaultDate?: Date;
   onClose: () => void;
   onCreated: (task: Task) => void;
+  onApproved?: (task: Task) => void;
 }
 
 export function ClientTaskModal({
@@ -34,14 +39,15 @@ export function ClientTaskModal({
   defaultDate,
   onClose,
   onCreated,
+  onApproved,
 }: Props) {
   const isView = !!task;
   const { claims, userProfile: profile } = useAuth();
   const companyId = (claims?.accessLevel === 'user' ? claims.companyId : undefined) ?? '';
   const authorName = profile?.name ?? '';
 
-  const { pushSnackbar } = useSnackbar();
   const createTask = useCreateClientTaskMutation();
+  const approveTask = useApproveClientTaskMutation();
 
   const [title, setTitle] = useState(task?.title ?? '');
   const [description, setDescription] = useState(task?.description ?? '');
@@ -86,10 +92,22 @@ export function ClientTaskModal({
       {
         onSuccess: (finalTask) => {
           onCreated(finalTask);
-          pushSnackbar({
-            type: 'success',
-            message: 'Tarefa enviada para aprovação!',
-          });
+          toast.success('Tarefa enviada para aprovação!');
+          onClose();
+        },
+      },
+    );
+  };
+
+  const handleApprove = () => {
+    if (!task) {return;}
+
+    approveTask.mutate(
+      { taskId: task.taskId, actorName: authorName || undefined },
+      {
+        onSuccess: () => {
+          toast.success('Tarefa aprovada!');
+          onApproved?.({ ...task, status: APPROVED_COLUMN_ID });
           onClose();
         },
       },
@@ -97,6 +115,7 @@ export function ClientTaskModal({
   };
 
   const currentColumn = columns.find((c) => c.columnId === task?.status);
+  const canApprove = isView && task?.status === PENDING_APPROVAL_COLUMN_ID;
 
   return (
     <div
@@ -268,6 +287,27 @@ export function ClientTaskModal({
             >
               {createTask.isPending && <Spinner size={13} />}
               Enviar para aprovação
+            </button>
+          </div>
+        )}
+
+        {canApprove && (
+          <div className="flex justify-end gap-3 border-t border-border px-6 py-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-ghost-border"
+            >
+              Fechar
+            </button>
+            <button
+              type="button"
+              onClick={handleApprove}
+              disabled={approveTask.isPending}
+              className="btn-primary"
+            >
+              {approveTask.isPending && <Spinner size={13} />}
+              Aprovar tarefa
             </button>
           </div>
         )}

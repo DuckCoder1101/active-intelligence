@@ -1,6 +1,8 @@
 import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  confirmPasswordReset,
+  verifyPasswordResetCode,
   signOut,
 } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
@@ -18,7 +20,6 @@ import type {
   UpdateAccountDTO,
 } from '@/types/dtos/user.dto';
 import { auth, functions, storage } from '@/utils/firebase.util';
-
 
 export default class UserService {
   private static getMeCallable = httpsCallable<void, UserProfile>(
@@ -51,7 +52,20 @@ export default class UserService {
   }
 
   static async sendRecoverPasswordEmail(email: string): Promise<void> {
-    await sendPasswordResetEmail(auth, email);
+    await sendPasswordResetEmail(auth, email, {
+      url: `${window.location.origin}/auth/reset-password`,
+    });
+  }
+
+  static async verifyPasswordResetCode(oobCode: string): Promise<string> {
+    return await verifyPasswordResetCode(auth, oobCode);
+  }
+
+  static async confirmPasswordReset(
+    oobCode: string,
+    newPassword: string,
+  ): Promise<void> {
+    await confirmPasswordReset(auth, oobCode, newPassword);
   }
 
   static async completeAccount(data: CompleteAccountDTO): Promise<void> {

@@ -14,7 +14,7 @@ export function Breadcrumb() {
   const { crumbs } = match;
 
   return (
-    <nav className="flex items-center gap-1 text-[12px] text-text-muted">
+    <nav className="hidden md:flex items-center gap-1 text-[12px] text-text-muted">
       {crumbs.map((crumb, i) => (
         <span key={crumb.label} className="flex items-center gap-1">
           {i > 0 && (

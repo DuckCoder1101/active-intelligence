@@ -3,7 +3,10 @@ import { FirebaseError } from 'firebase/app';
 import { FunctionsError } from 'firebase/functions';
 
 import UserService from '@/services/user.service';
-import type { CompleteAccountDTO, UpdateAccountDTO } from '@/types/dtos/user.dto';
+import type {
+  CompleteAccountDTO,
+  UpdateAccountDTO,
+} from '@/types/dtos/user.dto';
 import { auth } from '@/utils/firebase.util';
 
 const INVALID_CREDENTIAL_CODES = [
@@ -24,7 +27,10 @@ export function useSigninMutation() {
         await UserService.signin(email, password);
         return { invalidCredentials: false };
       } catch (err) {
-        if (err instanceof FirebaseError && INVALID_CREDENTIAL_CODES.includes(err.code)) {
+        if (
+          err instanceof FirebaseError &&
+          INVALID_CREDENTIAL_CODES.includes(err.code)
+        ) {
           return { invalidCredentials: true };
         }
         throw err;
@@ -63,7 +69,8 @@ interface UpdateAvatarVars {
 
 export function useUpdateAvatarMutation() {
   return useMutation({
-    mutationFn: ({ uid, file }: UpdateAvatarVars) => UserService.updateAvatar(uid, file),
+    mutationFn: ({ uid, file }: UpdateAvatarVars) =>
+      UserService.updateAvatar(uid, file),
   });
 }
 
@@ -76,6 +83,25 @@ export function useDeleteAvatarMutation() {
 export function useSendPasswordResetMutation() {
   return useMutation({
     mutationFn: (email: string) => UserService.sendRecoverPasswordEmail(email),
+  });
+}
+
+export function useVerifyPasswordResetCodeMutation() {
+  return useMutation({
+    mutationFn: (oobCode: string) =>
+      UserService.verifyPasswordResetCode(oobCode),
+  });
+}
+
+interface ConfirmPasswordResetVars {
+  oobCode: string;
+  password: string;
+}
+
+export function useConfirmPasswordResetMutation() {
+  return useMutation({
+    mutationFn: ({ oobCode, password }: ConfirmPasswordResetVars) =>
+      UserService.confirmPasswordReset(oobCode, password),
   });
 }
 

@@ -6,7 +6,6 @@ export interface NotificationDTO {
   message: string;
   taskId?: string;
   companyId?: string;
-  read: boolean;
   createdAt: number;
 }
 

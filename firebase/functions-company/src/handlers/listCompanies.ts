@@ -4,7 +4,6 @@ import { onCallHandler, CompanyRepository, requireAccess } from 'functions-share
 
 const ACCESS = {
   minAccessLevel: 'admin' as const,
-  permissions: ['manage-clients' as const],
 };
 
 export const listCompaniesHandler = onCallHandler(async (req) => {

@@ -32,6 +32,7 @@ function AdminDashboard() {
     if (isOwner || !mod.permission) {
       return false;
     }
+
     return !userPermissions.includes(mod.permission);
   };
 
@@ -61,13 +62,11 @@ function AdminDashboard() {
               </span>
             </div>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
-              {section.modules.map((mod) => (
-                <ModuleCard
-                  key={mod.label}
-                  module={mod}
-                  disabled={isDisabled(mod)}
-                />
-              ))}
+              {section.modules
+                .filter((mod) => !isDisabled(mod))
+                .map((mod) => (
+                  <ModuleCard key={mod.label} module={mod} />
+                ))}
             </div>
           </div>
         ))}

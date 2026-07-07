@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
 import { MdChevronLeft, MdChevronRight, MdClose } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 import { Spinner } from '@/components/ui/spinner.component';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import type { CompanyResume } from '@/models/company.model';
-import type { KanbanColumn } from '@/models/kanban.model';
+import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
 import type { Task } from '@/models/task.model';
 import { TASK_TYPE_LABELS } from '@/models/task.model';
 import { useUpdateTaskStatusMutation } from '@/queries/task.queries';
@@ -30,7 +30,7 @@ interface DayTasksModalProps {
   date: Date;
   tasks: Task[];
   companies: CompanyResume[];
-  columns: KanbanColumn[];
+  columns: OperationalKanbanColumn[];
   updatingTaskId: string | null;
   onStatusChange: (task: Task, status: string) => void;
   onTaskClick: (task: Task) => void;
@@ -172,7 +172,7 @@ function DayTasksModal({
 interface AdminCalendarViewProps {
   tasks: Task[];
   companies: CompanyResume[];
-  columns: KanbanColumn[];
+  columns: OperationalKanbanColumn[];
   onTaskClick: (task: Task) => void;
 }
 
@@ -187,7 +187,6 @@ export function AdminCalendarView({
   const [month, setMonth] = useState(today.getMonth());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
-  const { pushSnackbar } = useSnackbar();
   const updateStatus = useUpdateTaskStatusMutation();
 
   const prevMonth = () => {
@@ -239,10 +238,7 @@ export function AdminCalendarView({
       { taskId: task.taskId, status: newStatus },
       {
         onSuccess: () => {
-          pushSnackbar({
-            type: 'success',
-            message: `Quadro: ${column?.name ?? newStatus}`,
-          });
+          toast.success(`Quadro: ${column?.name ?? newStatus}`);
         },
       },
     );

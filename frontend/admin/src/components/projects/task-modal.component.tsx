@@ -4,16 +4,16 @@ import {
   MdDelete,
   MdPeople,
 } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { ReferenceImages } from '@/components/tasks/reference-images.component';
 import { ReferenceLinks } from '@/components/tasks/reference-links.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import type { AdminProfile } from '@/models/admin.model';
 import type { CompanyResume } from '@/models/company.model';
-import type { KanbanColumn } from '@/models/kanban.model';
+import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
 import { TASK_TYPES, TASK_TYPE_LABELS } from '@/models/task.model';
 import type { Task, TaskType, SaveTaskDTO } from '@/models/task.model';
 import { useDeleteTaskMutation, useSaveTaskMutation } from '@/queries/task.queries';
@@ -22,7 +22,7 @@ interface TaskModalProps {
   task?: Task;
   companies: CompanyResume[];
   admins: AdminProfile[];
-  columns: KanbanColumn[];
+  columns: OperationalKanbanColumn[];
   isOwner: boolean;
   currentUid: string;
   onClose: () => void;
@@ -42,7 +42,6 @@ export function TaskModal({
   onSaved,
   onDeleted,
 }: TaskModalProps) {
-  const { pushSnackbar } = useSnackbar();
   const saveTask = useSaveTaskMutation();
   const deleteTask = useDeleteTaskMutation();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -108,10 +107,7 @@ export function TaskModal({
       { dto, companyId, isEditing, pendingFiles },
       {
         onSuccess: (finalTask) => {
-          pushSnackbar({
-            type: 'success',
-            message: isEditing ? 'Tarefa atualizada!' : 'Tarefa criada!',
-          });
+          toast.success(isEditing ? 'Tarefa atualizada!' : 'Tarefa criada!');
           onSaved(finalTask);
         },
       },
@@ -122,7 +118,7 @@ export function TaskModal({
     if (!task) {return;}
     deleteTask.mutate(task.taskId, {
       onSuccess: () => {
-        pushSnackbar({ type: 'success', message: 'Tarefa excluída!' });
+        toast.success('Tarefa excluída!');
         onDeleted?.(task.taskId);
       },
     });

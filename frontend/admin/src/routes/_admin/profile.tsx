@@ -2,13 +2,13 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useRef, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdArrowBack, MdOutlineCameraAlt, MdDelete } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { UserAvatar } from '@/components/ui/user-avatar.component';
 import { useAuth } from '@/contexts/auth.context';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import { formatAccessLevel } from '@/formatters/formatAccessLevel';
 import {
   useDeleteAvatarMutation,
@@ -30,7 +30,6 @@ function UserProfile() {
   const { userProfile, downloadUserProfile, claims, isLoadingProfile } =
     useAuth();
   const router = useRouter();
-  const { pushSnackbar } = useSnackbar();
   const updateAvatar = useUpdateAvatarMutation();
   const deleteAvatar = useDeleteAvatarMutation();
   const updateAccount = useUpdateAccountMutation();
@@ -66,7 +65,7 @@ function UserProfile() {
       {
         onSuccess: () => {
           downloadUserProfile();
-          pushSnackbar({ type: 'success', message: 'Foto de perfil atualizada!' });
+          toast.success('Foto de perfil atualizada!');
           setIsPhotoModalOpen(false);
         },
         onSettled: () => {
@@ -81,7 +80,7 @@ function UserProfile() {
     deleteAvatar.mutate(userProfile.uid, {
       onSuccess: () => {
         downloadUserProfile();
-        pushSnackbar({ type: 'success', message: 'Foto de perfil removida.' });
+        toast.success('Foto de perfil removida.');
         setIsPhotoModalOpen(false);
       },
     });
@@ -94,7 +93,7 @@ function UserProfile() {
       {
         onSuccess: () => {
           downloadUserProfile();
-          pushSnackbar({ type: 'success', message: 'Perfil atualizado!' });
+          toast.success('Perfil atualizado!');
         },
       },
     );

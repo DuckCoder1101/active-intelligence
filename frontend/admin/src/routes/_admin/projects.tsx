@@ -8,6 +8,7 @@ import {
   MdCalendarMonth,
   MdDashboard,
 } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { AdminCalendarView } from '@/components/projects/admin-calendar-view.component';
@@ -15,17 +16,16 @@ import { TaskCard } from '@/components/projects/task-card.component';
 import { TaskModal } from '@/components/projects/task-modal.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
-import { useSnackbar } from '@/contexts/snackbar.context';
-import { COLUMN_COLOR_PRESETS } from '@/models/kanban.model';
+import { COLUMN_COLOR_PRESETS } from '@/models/operational-kanban.model';
 import type { Task } from '@/models/task.model';
 import { adminsQueryOptions } from '@/queries/admin.queries';
 import { companiesQueryOptions } from '@/queries/company.queries';
 import {
-  kanbanColumnsQueryOptions,
-  useAddColumnMutation,
-  useRemoveColumnMutation,
-  useReorderColumnsMutation,
-} from '@/queries/kanban.queries';
+  operationalKanbanColumnsQueryOptions,
+  useAddOperationalKanbanColumnMutation,
+  useRemoveOperationalKanbanColumnMutation,
+  useReorderOperationalKanbanColumnsMutation,
+} from '@/queries/operational-kanban.queries';
 import {
   taskKeys,
   tasksQueryOptions,
@@ -49,7 +49,7 @@ export const Route = createFileRoute('/_admin/projects')({
   loader: ({ context }) =>
     Promise.all([
       context.queryClient.ensureQueryData(tasksQueryOptions()),
-      context.queryClient.ensureQueryData(kanbanColumnsQueryOptions()),
+      context.queryClient.ensureQueryData(operationalKanbanColumnsQueryOptions()),
       context.queryClient.ensureQueryData(companiesQueryOptions()),
       context.queryClient.ensureQueryData(adminsQueryOptions()),
     ]),
@@ -62,18 +62,17 @@ function ProjectsKanbanPage() {
   const isOwner = claims?.accessLevel === 'owner';
   const currentUid = userProfile?.uid ?? '';
 
-  const { pushSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
 
   const { data: tasks } = useSuspenseQuery(tasksQueryOptions());
-  const { data: columns } = useSuspenseQuery(kanbanColumnsQueryOptions());
+  const { data: columns } = useSuspenseQuery(operationalKanbanColumnsQueryOptions());
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
   const { data: admins } = useSuspenseQuery(adminsQueryOptions());
 
   const updateStatus = useUpdateTaskStatusMutation();
-  const reorderColumns = useReorderColumnsMutation();
-  const addColumn = useAddColumnMutation();
-  const removeColumn = useRemoveColumnMutation();
+  const reorderColumns = useReorderOperationalKanbanColumnsMutation();
+  const addColumn = useAddOperationalKanbanColumnMutation();
+  const removeColumn = useRemoveOperationalKanbanColumnMutation();
 
   // Filters
   const [filterCompany, setFilterCompany] = useState('');
@@ -170,10 +169,7 @@ function ProjectsKanbanPage() {
       task.assignedTo.includes(currentUid);
 
     if (!canEdit) {
-      pushSnackbar({
-        type: 'error',
-        message: 'Você não está atribuído a esta tarefa.',
-      });
+      toast.error('Você não está atribuído a esta tarefa.');
       setDraggingId(null);
       setDragOverColumnId(null);
       return;
@@ -212,7 +208,7 @@ function ProjectsKanbanPage() {
         const msg = movedTo
           ? `Quadro "${colName}" excluído. Tarefas movidas para "${targetName}".`
           : `Quadro "${colName}" excluído.`;
-        pushSnackbar({ type: 'success', message: msg });
+        toast.success(msg);
         queryClient.invalidateQueries({ queryKey: taskKeys.all });
         setDeletingColumnId(null);
       },
