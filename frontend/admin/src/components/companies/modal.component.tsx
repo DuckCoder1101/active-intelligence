@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import type { DefaultValues, FieldErrors } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
+import { toast } from 'react-toastify';
 
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { Tabs } from '@/components/ui/tabs.component';
 import { BRAZILIAN_STATES } from '@/constants/brazilian-states.const';
-import { pushSnackbarViaBridge } from '@/contexts/snackbar.bridge';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import type { SaveCompanyDTO } from '@/models/company.model';
 import { useSaveCompanyMutation } from '@/queries/company.queries';
 import AdminService from '@/services/admin.service';
@@ -41,7 +40,6 @@ interface CompanyModalProps {
 
 export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
   const [activeTab, setActiveTab] = useState('empresa');
-  const { pushSnackbar } = useSnackbar();
   const saveCompany = useSaveCompanyMutation();
 
   const {
@@ -94,13 +92,10 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
             await AdminService.inviteAdmin(ownerEmail);
             await UserService.sendRecoverPasswordEmail(ownerEmail);
           } catch (err) {
-            pushSnackbarViaBridge(mapFirebaseError(err));
+            toast.error(mapFirebaseError(err));
           }
         }
-        pushSnackbar({
-          type: 'success',
-          message: 'Empresa cadastrada!',
-        });
+        toast.success('Empresa cadastrada!');
         onSaved();
       },
     });

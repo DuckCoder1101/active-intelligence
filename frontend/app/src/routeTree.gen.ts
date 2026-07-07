@@ -15,12 +15,14 @@ import { Route as UserProfileRouteImport } from './routes/user/profile'
 import { Route as UserMycompanyRouteImport } from './routes/user/mycompany'
 import { Route as CompanyCompanyIdRouteImport } from './routes/company/$companyId'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
 import { Route as CompanyCompanyIdIndexRouteImport } from './routes/company/$companyId/index'
 import { Route as CompanyCompanyIdTeamRouteImport } from './routes/company/$companyId/team'
 import { Route as CompanyCompanyIdScheduleRouteImport } from './routes/company/$companyId/schedule'
+import { Route as CompanyCompanyIdCrmRouteImport } from './routes/company/$companyId/crm'
 import { Route as CompanyCompanyIdAdAccountsRouteImport } from './routes/company/$companyId/ad-accounts'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
@@ -51,6 +53,11 @@ const CompanyCompanyIdRoute = CompanyCompanyIdRouteImport.update({
 const AuthSigninRoute = AuthSigninRouteImport.update({
   id: '/auth/signin',
   path: '/auth/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLogoutRoute = AuthLogoutRouteImport.update({
@@ -84,6 +91,11 @@ const CompanyCompanyIdScheduleRoute =
     path: '/schedule',
     getParentRoute: () => CompanyCompanyIdRoute,
   } as any)
+const CompanyCompanyIdCrmRoute = CompanyCompanyIdCrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => CompanyCompanyIdRoute,
+} as any)
 const CompanyCompanyIdAdAccountsRoute =
   CompanyCompanyIdAdAccountsRouteImport.update({
     id: '/ad-accounts',
@@ -97,11 +109,13 @@ export interface FileRoutesByFullPath {
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signin': typeof AuthSigninRoute
   '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
   '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
+  '/company/$companyId/crm': typeof CompanyCompanyIdCrmRoute
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
   '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
@@ -112,10 +126,12 @@ export interface FileRoutesByTo {
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signin': typeof AuthSigninRoute
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
   '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
+  '/company/$companyId/crm': typeof CompanyCompanyIdCrmRoute
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
   '/company/$companyId': typeof CompanyCompanyIdIndexRoute
@@ -127,11 +143,13 @@ export interface FileRoutesById {
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signin': typeof AuthSigninRoute
   '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
   '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
+  '/company/$companyId/crm': typeof CompanyCompanyIdCrmRoute
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
   '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
@@ -144,11 +162,13 @@ export interface FileRouteTypes {
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
+    | '/auth/reset-password'
     | '/auth/signin'
     | '/company/$companyId'
     | '/user/mycompany'
     | '/user/profile'
     | '/company/$companyId/ad-accounts'
+    | '/company/$companyId/crm'
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId/'
@@ -159,10 +179,12 @@ export interface FileRouteTypes {
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
+    | '/auth/reset-password'
     | '/auth/signin'
     | '/user/mycompany'
     | '/user/profile'
     | '/company/$companyId/ad-accounts'
+    | '/company/$companyId/crm'
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId'
@@ -173,11 +195,13 @@ export interface FileRouteTypes {
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
+    | '/auth/reset-password'
     | '/auth/signin'
     | '/company/$companyId'
     | '/user/mycompany'
     | '/user/profile'
     | '/company/$companyId/ad-accounts'
+    | '/company/$companyId/crm'
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId/'
@@ -189,6 +213,7 @@ export interface RootRouteChildren {
   AuthCompleteAccountRoute: typeof AuthCompleteAccountRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSigninRoute: typeof AuthSigninRoute
   CompanyCompanyIdRoute: typeof CompanyCompanyIdRouteWithChildren
   UserMycompanyRoute: typeof UserMycompanyRoute
@@ -239,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSigninRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/logout': {
       id: '/auth/logout'
       path: '/auth/logout'
@@ -281,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyCompanyIdScheduleRouteImport
       parentRoute: typeof CompanyCompanyIdRoute
     }
+    '/company/$companyId/crm': {
+      id: '/company/$companyId/crm'
+      path: '/crm'
+      fullPath: '/company/$companyId/crm'
+      preLoaderRoute: typeof CompanyCompanyIdCrmRouteImport
+      parentRoute: typeof CompanyCompanyIdRoute
+    }
     '/company/$companyId/ad-accounts': {
       id: '/company/$companyId/ad-accounts'
       path: '/ad-accounts'
@@ -293,6 +332,7 @@ declare module '@tanstack/react-router' {
 
 interface CompanyCompanyIdRouteChildren {
   CompanyCompanyIdAdAccountsRoute: typeof CompanyCompanyIdAdAccountsRoute
+  CompanyCompanyIdCrmRoute: typeof CompanyCompanyIdCrmRoute
   CompanyCompanyIdScheduleRoute: typeof CompanyCompanyIdScheduleRoute
   CompanyCompanyIdTeamRoute: typeof CompanyCompanyIdTeamRoute
   CompanyCompanyIdIndexRoute: typeof CompanyCompanyIdIndexRoute
@@ -300,6 +340,7 @@ interface CompanyCompanyIdRouteChildren {
 
 const CompanyCompanyIdRouteChildren: CompanyCompanyIdRouteChildren = {
   CompanyCompanyIdAdAccountsRoute: CompanyCompanyIdAdAccountsRoute,
+  CompanyCompanyIdCrmRoute: CompanyCompanyIdCrmRoute,
   CompanyCompanyIdScheduleRoute: CompanyCompanyIdScheduleRoute,
   CompanyCompanyIdTeamRoute: CompanyCompanyIdTeamRoute,
   CompanyCompanyIdIndexRoute: CompanyCompanyIdIndexRoute,
@@ -314,6 +355,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCompleteAccountRoute: AuthCompleteAccountRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLogoutRoute: AuthLogoutRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSigninRoute: AuthSigninRoute,
   CompanyCompanyIdRoute: CompanyCompanyIdRouteWithChildren,
   UserMycompanyRoute: UserMycompanyRoute,

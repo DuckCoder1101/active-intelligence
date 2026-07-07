@@ -72,4 +72,12 @@ export default class TaskSchema {
       .transform((v) => v ?? undefined),
   });
 
+  static approveClientTaskSchema = z.object({
+    taskId: z.string().min(1, 'taskId obrigatório'),
+    actorName: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
+  });
+
 }

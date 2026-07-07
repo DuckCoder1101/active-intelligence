@@ -1,5 +1,4 @@
 import { AuthProvider } from '@providers/auth.provider';
-import { SnackbarProvider } from '@providers/snackbar.provider';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
 import {
@@ -8,9 +7,15 @@ import {
   Outlet,
   Scripts,
   createRootRouteWithContext,
+  useRouter,
 } from '@tanstack/react-router';
+import type { ErrorComponentProps } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
+import { FirebaseError } from 'firebase/app';
+import { useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
+import { ToastContainer } from 'react-toastify';
+import toastifyCss from 'react-toastify/dist/ReactToastify.css?url';
 
 import type { RouterContext } from '../router';
 import appCss from '../styles.css?url';
@@ -49,13 +54,44 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
+      { rel: 'stylesheet', href: toastifyCss },
       { rel: 'icon', href: '/icons/favicon.png' },
     ],
   }),
   component: RootComponent,
   shellComponent: RootDocument,
   notFoundComponent: NotFound,
+  errorComponent: RootErrorBoundary,
 });
+
+function RootErrorBoundary({ error }: ErrorComponentProps) {
+  const router = useRouter();
+
+  const isPermissionDenied =
+    error instanceof FirebaseError &&
+    error.code === 'functions/permission-denied';
+
+  useEffect(() => {
+    if (isPermissionDenied) {
+      router.navigate({ to: '/unauthorized', replace: true });
+    }
+  }, [isPermissionDenied, router]);
+
+  if (isPermissionDenied) {
+    return null;
+  }
+
+  return (
+    <div className="w-full min-h-screen flex justify-center items-center bg-bg">
+      <div className="p-8 rounded-md bg-card animate-slide-up text-center">
+        <strong className="text-text text-lg uppercase">Ocorreu um erro</strong>
+        <p className="text-text-sub text-sm mt-2">
+          Tente novamente mais tarde.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function NotFound() {
   return (
@@ -83,13 +119,11 @@ function NotFound() {
 
 function RootComponent() {
   return (
-    <SnackbarProvider>
-      <AuthProvider>
-        <ThemeProvider>
-          <Outlet />
-        </ThemeProvider>
-      </AuthProvider>
-    </SnackbarProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <Outlet />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 
@@ -101,6 +135,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <ToastContainer position="top-center" theme="colored" />
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
           plugins={[

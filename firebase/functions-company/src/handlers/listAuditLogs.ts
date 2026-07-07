@@ -12,7 +12,6 @@ import {
 
 const ACCESS = {
   minAccessLevel: 'admin' as const,
-  permissions: ['manage-clients' as const],
 };
 
 const schema = z.object({ companyId: z.string().min(1) });

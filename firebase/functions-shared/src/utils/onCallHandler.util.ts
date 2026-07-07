@@ -17,6 +17,8 @@ export function onCallHandler<T = unknown, R = unknown>(
     {
       invoker: 'public',
       region: 'southamerica-east1',
+      concurrency: 80,
+      cpu: 1,
       ...options,
     },
     async (req) => {

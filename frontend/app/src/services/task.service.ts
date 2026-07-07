@@ -92,6 +92,15 @@ export default class TaskService {
     await this.updateClientTaskImagesCallable({ taskId, referenceImages });
   }
 
+  private static approveClientTaskCallable = httpsCallable<
+    { taskId: string; actorName?: string },
+    boolean
+  >(functions, 'approveClientTaskHandler');
+
+  static async approveClientTask(taskId: string, actorName?: string): Promise<void> {
+    await this.approveClientTaskCallable({ taskId, actorName });
+  }
+
   static async uploadImage(
     companyId: string,
     taskId: string,

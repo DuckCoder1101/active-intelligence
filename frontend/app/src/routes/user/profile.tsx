@@ -2,13 +2,14 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useRef, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdArrowBack, MdOutlineCameraAlt, MdDelete } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
+import { Topbar } from '@/components/layout/topbar.component';
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { UserAvatar } from '@/components/ui/user-avatar.component';
 import { useAuth } from '@/contexts/auth.context';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import { formatAccessLevel } from '@/formatters/formatAccessLevel';
 import {
   useDeleteAvatarMutation,
@@ -26,11 +27,9 @@ type PersonalInfoFields = {
 };
 
 function UserProfile() {
-  // All hooks must be called before any conditional return (Rules of Hooks)
   const { userProfile, downloadUserProfile, claims, isLoadingProfile } =
     useAuth();
   const router = useRouter();
-  const { pushSnackbar } = useSnackbar();
   const updateAvatar = useUpdateAvatarMutation();
   const deleteAvatar = useDeleteAvatarMutation();
   const updateAccount = useUpdateAccountMutation();
@@ -49,7 +48,10 @@ function UserProfile() {
     claims?.accessLevel === 'admin' || claims?.accessLevel === 'owner';
 
   useEffect(() => {
-    if (!userProfile) {return;}
+    if (!userProfile) {
+      return;
+    }
+
     reset({
       name: userProfile.name,
       phone: userProfile.phone ?? '',
@@ -57,44 +59,55 @@ function UserProfile() {
   }, [userProfile, reset]);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!userProfile) {return;}
+    if (!userProfile) {
+      return;
+    }
     const file = e.target.files?.[0];
-    if (!file) {return;}
+    if (!file) {
+      return;
+    }
 
     updateAvatar.mutate(
       { uid: userProfile.uid, file },
       {
         onSuccess: () => {
           downloadUserProfile();
-          pushSnackbar({ type: 'success', message: 'Foto de perfil atualizada!' });
+          toast.success('Foto de perfil atualizada!');
           setIsPhotoModalOpen(false);
         },
         onSettled: () => {
-          if (fileInputRef.current) {fileInputRef.current.value = '';}
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
         },
       },
     );
   };
 
   const handlePhotoDelete = () => {
-    if (!userProfile) {return;}
+    if (!userProfile) {
+      return;
+    }
     deleteAvatar.mutate(userProfile.uid, {
       onSuccess: () => {
         downloadUserProfile();
-        pushSnackbar({ type: 'success', message: 'Foto de perfil removida.' });
+        toast.success('Foto de perfil removida.');
         setIsPhotoModalOpen(false);
       },
     });
   };
 
   const onSubmitPersonalInfo = (data: PersonalInfoFields) => {
-    if (!userProfile) {return;}
+    if (!userProfile) {
+      return;
+    }
+
     updateAccount.mutate(
       { targetId: userProfile.uid, ...data },
       {
         onSuccess: () => {
           downloadUserProfile();
-          pushSnackbar({ type: 'success', message: 'Perfil atualizado!' });
+          toast.success('Perfil atualizado!');
         },
       },
     );
@@ -102,7 +115,9 @@ function UserProfile() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <header className="sticky top-0 z-10 border-b border-border bg-card px-4 py-3 sm:px-6">
+      <Topbar />
+
+      <div className="border-b border-border px-4 py-3 sm:px-6">
         <button
           type="button"
           onClick={() => router.history.back()}
@@ -111,7 +126,7 @@ function UserProfile() {
           <MdArrowBack size={16} />
           Voltar
         </button>
-      </header>
+      </div>
 
       <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
         {isLoadingProfile || !userProfile ? (
@@ -245,7 +260,9 @@ function UserProfile() {
               <button
                 type="button"
                 disabled={
-                  !userProfile.avatarUrl || deleteAvatar.isPending || updateAvatar.isPending
+                  !userProfile.avatarUrl ||
+                  deleteAvatar.isPending ||
+                  updateAvatar.isPending
                 }
                 onClick={handlePhotoDelete}
                 className="btn-danger w-full justify-center disabled:cursor-not-allowed disabled:opacity-40"

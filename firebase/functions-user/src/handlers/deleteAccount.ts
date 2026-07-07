@@ -8,6 +8,8 @@ import {
   UserSchema,
   auth,
   bucket,
+  AdminRepository,
+  CompanyUserRepository,
 } from 'functions-shared';
 
 export const deleteAccountHandler = onCallHandler(async (req) => {
@@ -32,9 +34,20 @@ export const deleteAccountHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info('deleteAccount', { targetUid: data.targetId, callerUid: uid });
+  logger.info('deleteAccount', {
+    targetUid: data.targetId,
+    callerUid: uid,
+  });
 
-  await auth.deleteUser(data.targetId);
+  const targetUser = await auth.getUser(data.targetId);
+  const targetAccessLevel = targetUser.customClaims?.['accessLevel'];
+
+  let deleteAccountPromise =
+    targetAccessLevel === 'user'
+      ? CompanyUserRepository.delete(data.targetId)
+      : AdminRepository.delete(data.targetId);
+
+  await Promise.all([auth.deleteUser(data.targetId), deleteAccountPromise]);
 
   await bucket
     .file(`users/${data.targetId}/avatar`)

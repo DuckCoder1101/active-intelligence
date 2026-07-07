@@ -17,7 +17,7 @@ export const Route = createFileRoute('/auth/forgot-password')({
   beforeLoad: async () => {
     const sessionUser = await getSessionUser();
     if (sessionUser) {
-      throw redirect({ to: '/user/profile' });
+      throw redirect({ to: '/profile' });
     }
   },
 });

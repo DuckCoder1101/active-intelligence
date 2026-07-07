@@ -65,16 +65,20 @@ export type {
   CompanyUserListDTO,
 } from './domain/company-user/company-user.dtos';
 
-// domain: kanban (usado por kanban e task)
-export { KanbanRepository } from './domain/kanban/kanban.repository';
+// domain: operational-kanban (usado por operational-kanban e task)
+export { OperationalKanbanRepository } from './domain/operational-kanban/operational-kanban.repository';
 export type {
-  KanbanColumnDocument,
-} from './domain/kanban/kanban.document';
-export { DEFAULT_COLUMNS } from './domain/kanban/kanban.document';
+  OperationalKanbanColumnDocument,
+} from './domain/operational-kanban/operational-kanban.document';
+export {
+  DEFAULT_COLUMNS,
+  PENDING_APPROVAL_COLUMN_ID,
+  APPROVED_COLUMN_ID,
+} from './domain/operational-kanban/operational-kanban.document';
 export type {
-  KanbanColumnDTO,
-  SaveColumnDTO,
-} from './domain/kanban/kanban.dtos';
+  OperationalKanbanColumnDTO,
+  SaveOperationalKanbanColumnDTO,
+} from './domain/operational-kanban/operational-kanban.dtos';
 
 // domain: notification (usado por admin e task)
 export { default as NotificationRepository } from './domain/notification/notification.repository';

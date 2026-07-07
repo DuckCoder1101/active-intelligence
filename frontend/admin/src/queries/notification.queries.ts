@@ -8,14 +8,14 @@ export const notificationKeys = {
   lists: () => [...notificationKeys.all, 'list'] as const,
 };
 
-const POLL_INTERVAL_MS = 30_000;
+const POLL_INTERVAL_MS = 60_000;
 
 export function useNotificationsQuery(enabled: boolean) {
   return useQuery({
     queryKey: notificationKeys.lists(),
     queryFn: () => NotificationService.listNotifications(),
-    enabled,
     refetchInterval: POLL_INTERVAL_MS,
+    enabled,
   });
 }
 
@@ -25,6 +25,7 @@ export function useMarkNotificationReadMutation() {
   return useMutation({
     mutationFn: (notificationId: string) =>
       NotificationService.markNotificationRead(notificationId),
+
     onMutate: async (notificationId) => {
       await queryClient.cancelQueries({ queryKey: notificationKeys.lists() });
 
@@ -36,12 +37,20 @@ export function useMarkNotificationReadMutation() {
         notificationKeys.lists(),
         (old) =>
           old?.map((n) =>
-            n.notificationId === notificationId ? { ...n, read: true } : n,
+            n.notificationId === notificationId
+              ? {
+                  ...n,
+                  read: true,
+                }
+              : n,
           ),
       );
 
-      return { previous };
+      return {
+        previous,
+      };
     },
+
     onError: (_err, _notificationId, context) => {
       if (context?.previous) {
         queryClient.setQueryData(notificationKeys.lists(), context.previous);

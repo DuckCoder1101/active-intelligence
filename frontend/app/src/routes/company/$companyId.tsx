@@ -1,8 +1,8 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
 
-import { UserSidebar } from '@/components/company/sidebar.component';
-import { CompanyTopbar } from '@/components/company/topbar.component';
+import { CompanySidebar } from '@/components/company/sidebar.component';
+import { Topbar } from '@/components/layout/topbar.component';
 import { getSessionUser } from '@/server/session';
 
 export const Route = createFileRoute('/company/$companyId')({
@@ -10,7 +10,12 @@ export const Route = createFileRoute('/company/$companyId')({
     const sessionUser = await getSessionUser();
 
     if (!sessionUser) {
-      throw redirect({ to: '/auth/signin' });
+      throw redirect({
+        to: '/auth/signin',
+        search: {
+          companyId: params.companyId,
+        },
+      });
     }
 
     if (!sessionUser.complete) {
@@ -48,14 +53,14 @@ function CompanyLayout() {
         />
       )}
 
-      <UserSidebar
+      <CompanySidebar
         companyId={companyId}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <CompanyTopbar onMenuClick={() => setSidebarOpen(true)} />
+        <Topbar onMenuClick={() => setSidebarOpen(true)} />
 
         <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <Outlet />

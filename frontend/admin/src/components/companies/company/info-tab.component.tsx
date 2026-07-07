@@ -9,11 +9,11 @@ import {
   MdOutlineCalendarToday,
 } from 'react-icons/md';
 import { IMaskInput } from 'react-imask';
+import { toast } from 'react-toastify';
 
 import { SaveBar } from '@/components/layout/save-bar.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { BRAZILIAN_STATES } from '@/constants/brazilian-states.const';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import { formatCNPJ } from '@/formatters/formatCnpj';
 import { formatDateLong } from '@/formatters/formatDate';
 import { formatPhone } from '@/formatters/formatPhone';
@@ -116,7 +116,6 @@ interface Props {
 }
 
 export function ClientInfoTab({ company, onSaved }: Props) {
-  const { pushSnackbar } = useSnackbar();
   const saveCompany = useSaveCompanyMutation();
 
   const {
@@ -168,7 +167,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
 
     saveCompany.mutate(data, {
       onSuccess: () => {
-        pushSnackbar({ type: 'success', message: 'Empresa atualizada!' });
+        toast.success('Empresa atualizada!');
         onSaved();
       },
     });

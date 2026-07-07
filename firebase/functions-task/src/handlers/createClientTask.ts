@@ -9,7 +9,7 @@ import {
   AuditAction,
   AdminRepository,
   NotificationRepository,
-  KanbanRepository,
+  OperationalKanbanRepository,
 } from 'functions-shared';
 import TaskSchema from '../data/task.schema';
 import { TaskRepository } from '../repositories/task.repository';
@@ -46,7 +46,7 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
 
   await CompanyRepository.checkAndIncrementUsage(companyId);
 
-  const columns = await KanbanRepository.listAll();
+  const columns = await OperationalKanbanRepository.listAll();
 
   const task = await TaskRepository.save({
     companyId,
@@ -70,10 +70,11 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
     taskTitle: task.title,
   });
 
-  const recipientUids = await AdminRepository.listUidsWithPermission(
+  const permissionUids = await AdminRepository.listUidsWithPermission(
     'manage-projects',
   );
-  await NotificationRepository.notifyAdmins(recipientUids, {
+  const targetUids = [...new Set([...permissionUids, ...task.assignedTo])];
+  await NotificationRepository.notifyAdmins(targetUids, {
     type: 'new-client-task',
     message: `Nova tarefa recebida: "${task.title}"`,
     taskId: task.taskId,

@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
-import { useSnackbar } from '@/contexts/snackbar.context';
 import { useInviteAdminMutation } from '@/queries/admin.queries';
 
 const FORM_ID = 'invite-admin-form';
@@ -16,7 +16,6 @@ interface InviteAdminModalProps {
 }
 
 export function InviteAdminModal({ onClose }: InviteAdminModalProps) {
-  const { pushSnackbar } = useSnackbar();
   const inviteAdmin = useInviteAdminMutation();
 
   const {
@@ -28,10 +27,7 @@ export function InviteAdminModal({ onClose }: InviteAdminModalProps) {
   const onSubmit = (values: InviteFormValues) => {
     inviteAdmin.mutate(values.email, {
       onSuccess: () => {
-        pushSnackbar({
-          type: 'success',
-          message: `Convite enviado para ${values.email}.`,
-        });
+        toast.success(`Convite enviado para ${values.email}.`);
         onClose();
       },
     });

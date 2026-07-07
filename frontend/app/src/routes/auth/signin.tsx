@@ -20,7 +20,15 @@ interface SignInFormData {
   password: string;
 }
 
-function getRedirectPath(accessLevel?: string): string {
+interface SearchParams {
+  companyId?: string;
+}
+
+function getRedirectPath(accessLevel?: string, companyId?: string): string {
+  if (companyId) {
+    return `/company/${companyId}`;
+  }
+
   if (accessLevel === 'user') {
     return '/user/mycompany';
   }
@@ -30,12 +38,15 @@ function getRedirectPath(accessLevel?: string): string {
 
 export const Route = createFileRoute('/auth/signin')({
   component: SignInPage,
-  beforeLoad: async () => {
+  validateSearch: (search): SearchParams => {
+    return {
+      companyId: (search.companyId as string) || undefined,
+    };
+  },
+  beforeLoad: async ({ search }) => {
     const sessionUser = await getSessionUser();
     if (sessionUser) {
-      const to = getRedirectPath(
-        (sessionUser as { accessLevel?: string }).accessLevel,
-      );
+      const to = getRedirectPath(sessionUser.accessLevel, search.companyId);
       throw redirect({ to });
     }
   },
@@ -43,12 +54,16 @@ export const Route = createFileRoute('/auth/signin')({
 
 function SignInPage() {
   const navigate = useNavigate();
+  const { companyId } = Route.useSearch();
+
   const { claims } = useAuth();
   const signin = useSigninMutation();
 
   useEffect(() => {
     if (claims) {
-      navigate({ to: getRedirectPath(claims.accessLevel) });
+      navigate({
+        to: getRedirectPath(claims.accessLevel, companyId),
+      });
     }
   }, [claims, navigate]);
 
