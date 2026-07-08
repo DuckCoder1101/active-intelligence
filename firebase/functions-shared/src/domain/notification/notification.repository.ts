@@ -1,12 +1,12 @@
-import { FieldValue } from 'firebase-admin/firestore';
-import { HttpsError } from 'firebase-functions/https';
+import {FieldValue} from "firebase-admin/firestore";
+import {HttpsError} from "firebase-functions/https";
 
-import { database } from '../../utils/firebase';
-import { NotificationDocument } from './notification.document';
-import { NotificationDTO, NotifyAdminsDTO } from './notification.dtos';
+import {database} from "../../utils/firebase";
+import {NotificationDocument} from "./notification.document";
+import {NotificationDTO, NotifyAdminsDTO} from "./notification.dtos";
 
 export default class NotificationRepository {
-  private static notificationsCollection = database.collection('notifications');
+  private static notificationsCollection = database.collection("notifications");
 
   static async notifyAdmins(
     targetUids: string[],
@@ -23,8 +23,8 @@ export default class NotificationRepository {
 
   static async listForUser(uid: string): Promise<NotificationDTO[]> {
     const snapshot = await this.notificationsCollection
-      .where('targetUids', 'array-contains', uid)
-      .orderBy('createdAt', 'desc')
+      .where("targetUids", "array-contains", uid)
+      .orderBy("createdAt", "desc")
       .get();
 
     return snapshot.docs.map((doc) => {
@@ -45,12 +45,12 @@ export default class NotificationRepository {
     const doc = await ref.get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Notificação não encontrada.');
+      throw new HttpsError("not-found", "Notificação não encontrada.");
     }
 
     const data = doc.data() as NotificationDocument;
     if (!data.targetUids.includes(uid)) {
-      throw new HttpsError('permission-denied', 'Acesso negado!');
+      throw new HttpsError("permission-denied", "Acesso negado!");
     }
 
     const remaining = data.targetUids.filter((target) => target !== uid);
@@ -58,7 +58,7 @@ export default class NotificationRepository {
     if (remaining.length === 0) {
       await ref.delete();
     } else {
-      await ref.update({ targetUids: FieldValue.arrayRemove(uid) });
+      await ref.update({targetUids: FieldValue.arrayRemove(uid)});
     }
   }
 }

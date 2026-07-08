@@ -1,6 +1,6 @@
-import { AdminAccessLevel } from '../../types/accessLevel.type';
+import {AdminAccessLevel} from "../../types/accessLevel.type";
 
 export const AdminAccessLevels = [
-  'owner',
-  'admin',
+  "owner",
+  "admin",
 ] as const satisfies AdminAccessLevel[];

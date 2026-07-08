@@ -1,19 +1,19 @@
-import { FieldValue } from 'firebase-admin/firestore';
-import { database } from '../../utils/firebase';
+import {FieldValue} from "firebase-admin/firestore";
+import {database} from "../../utils/firebase";
 import {
   CompanyFullDTO,
   CompanyResumeDTO,
   RegisterCompanyDTO,
-} from './company.type';
-import { CompanyDocument } from './company.document';
-import { HttpsError } from 'firebase-functions/https';
+} from "./company.type";
+import {CompanyDocument} from "./company.document";
+import {HttpsError} from "firebase-functions/https";
 
 export class CompanyRepository {
-  private static companiesCollection = database.collection('companies');
+  private static companiesCollection = database.collection("companies");
 
   static async findByCnpj(cnpjIndex: string): Promise<string | null> {
     const snap = await this.companiesCollection
-      .where('cnpjIndex', '==', cnpjIndex)
+      .where("cnpjIndex", "==", cnpjIndex)
       .limit(1)
       .get();
     return snap.empty ? null : snap.docs[0].id;
@@ -28,14 +28,14 @@ export class CompanyRepository {
 
     if (existingId && existingId !== companyId) {
       throw new HttpsError(
-        'already-exists',
-        'CNPJ já cadastrado para outra empresa!',
+        "already-exists",
+        "CNPJ já cadastrado para outra empresa!",
       );
     }
 
-    const ref = companyId
-      ? this.companiesCollection.doc(companyId)
-      : this.companiesCollection.doc();
+    const ref = companyId ?
+      this.companiesCollection.doc(companyId) :
+      this.companiesCollection.doc();
 
     await ref.set(
       {
@@ -44,7 +44,7 @@ export class CompanyRepository {
         createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
       },
-      { merge: true },
+      {merge: true},
     );
   }
 
@@ -53,7 +53,7 @@ export class CompanyRepository {
     const doc = await ref.get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Empresa não encontrada!');
+      throw new HttpsError("not-found", "Empresa não encontrada!");
     }
 
     await ref.delete();
@@ -63,7 +63,7 @@ export class CompanyRepository {
     const doc = await this.companiesCollection.doc(companyId).get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Empresa não encontrada!');
+      throw new HttpsError("not-found", "Empresa não encontrada!");
     }
 
     const company = doc.data() as CompanyDocument;
@@ -82,10 +82,10 @@ export class CompanyRepository {
     const doc = await this.companiesCollection.doc(companyId).get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Empresa não encontrada!');
+      throw new HttpsError("not-found", "Empresa não encontrada!");
     }
 
-    const { displayName } = doc.data() as CompanyDocument;
+    const {displayName} = doc.data() as CompanyDocument;
 
     return {
       companyId,
@@ -94,7 +94,7 @@ export class CompanyRepository {
   }
 
   static async getAllCompanyResumes(): Promise<CompanyResumeDTO[]> {
-    const snapshot = await this.companiesCollection.select('displayName').get();
+    const snapshot = await this.companiesCollection.select("displayName").get();
 
     return snapshot.docs.map((doc) => ({
       companyId: doc.id,
@@ -123,7 +123,7 @@ export class CompanyRepository {
     await database.runTransaction(async (tx) => {
       const snap = await tx.get(ref);
       if (!snap.exists) {
-        throw new HttpsError('not-found', 'Empresa não encontrada.');
+        throw new HttpsError("not-found", "Empresa não encontrada.");
       }
 
       const company = snap.data() as CompanyDocument;
@@ -136,15 +136,17 @@ export class CompanyRepository {
 
         if (currentCount >= limit) {
           throw new HttpsError(
-            'resource-exhausted',
-            `Limite mensal de ${limit} tarefas atingido. Para ampliar o seu plano, entre em contato com a equipe da Guará ou aguarde o próximo mês.`,
+            "resource-exhausted",
+            `Limite mensal de ${limit} tarefas atingido. Para ampliar o seu ` +
+              "plano, entre em contato com a equipe da Guará ou aguarde o " +
+              "próximo mês.",
           );
         }
 
         const newCount =
           (usage?.yearMonth === yearMonth ? usage.count : 0) + 1;
         tx.update(ref, {
-          taskUsage: { yearMonth, count: newCount },
+          taskUsage: {yearMonth, count: newCount},
           updatedAt: FieldValue.serverTimestamp(),
         });
       }
@@ -161,11 +163,12 @@ export class CompanyRepository {
     const usage = company?.taskUsage;
     const used =
       usage?.yearMonth === yearMonth ? (usage.count ?? 0) : 0;
-    return { used, limit, yearMonth };
+    return {used, limit, yearMonth};
   }
 
   private static currentYearMonth(): string {
     const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    return `${now.getFullYear()}-${month}`;
   }
 }

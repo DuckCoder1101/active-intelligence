@@ -1,16 +1,16 @@
-import { database } from '../../utils/firebase';
-import { HttpsError } from 'firebase-functions/https';
-import { CompanyUserListDTO } from './company-user.dtos';
-import { CompanyUserDocument } from './company-user.document';
+import {database} from "../../utils/firebase";
+import {HttpsError} from "firebase-functions/https";
+import {CompanyUserListDTO} from "./company-user.dtos";
+import {CompanyUserDocument} from "./company-user.document";
 import {
   CompleteProfileDTO,
   UpdateProfileDTO,
   UserProfileDTO,
-} from '../user/user.dto';
-import { FieldValue } from 'firebase-admin/firestore';
+} from "../user/user.dto";
+import {FieldValue} from "firebase-admin/firestore";
 
 export default class CompanyUserRepository {
-  private static usersCollection = database.collection('company-users');
+  private static usersCollection = database.collection("company-users");
 
   static async create(
     uid: string,
@@ -34,7 +34,7 @@ export default class CompanyUserRepository {
     const doc = await this.usersCollection.doc(uid).get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Usuário não encontrado!');
+      throw new HttpsError("not-found", "Usuário não encontrado!");
     }
 
     const user = doc.data() as CompanyUserDocument;
@@ -50,7 +50,7 @@ export default class CompanyUserRepository {
     };
   }
 
-  static async update({ targetId, ...data }: UpdateProfileDTO) {
+  static async update({targetId, ...data}: UpdateProfileDTO) {
     await this.usersCollection.doc(targetId).update({
       ...data,
       updatedAt: FieldValue.serverTimestamp(),
@@ -62,23 +62,27 @@ export default class CompanyUserRepository {
     const doc = await ref.get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Usuário não encontrado!');
+      throw new HttpsError("not-found", "Usuário não encontrado!");
     }
 
     await ref.delete();
   }
 
-  static async getResumeByUid(uid: string): Promise<{ uid: string; name: string }> {
+  static async getResumeByUid(
+    uid: string,
+  ): Promise<{ uid: string; name: string }> {
     const doc = await this.usersCollection.doc(uid).get();
-    if (!doc.exists) throw new HttpsError('not-found', 'Usuário não encontrado!');
+    if (!doc.exists) {
+      throw new HttpsError("not-found", "Usuário não encontrado!");
+    }
     const user = doc.data() as CompanyUserDocument;
-    return { uid, name: user.name };
+    return {uid, name: user.name};
   }
 
   static async listByCompany(companyId: string): Promise<CompanyUserListDTO[]> {
     const snapshot = await this.usersCollection
-      .where('companyId', '==', companyId)
-      .orderBy('createdAt', 'desc')
+      .where("companyId", "==", companyId)
+      .orderBy("createdAt", "desc")
       .get();
 
     if (snapshot.empty) return [];

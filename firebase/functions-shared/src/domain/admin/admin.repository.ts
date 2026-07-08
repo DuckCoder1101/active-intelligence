@@ -1,17 +1,17 @@
-import { database, auth } from '../../utils/firebase';
-import { AdminResumeDTO, AdminProfileDTO } from './admin.dtos';
-import { HttpsError } from 'firebase-functions/https';
-import { AdminDocument } from './admin.document';
-import { FieldValue } from 'firebase-admin/firestore';
+import {database, auth} from "../../utils/firebase";
+import {AdminResumeDTO, AdminProfileDTO} from "./admin.dtos";
+import {HttpsError} from "firebase-functions/https";
+import {AdminDocument} from "./admin.document";
+import {FieldValue} from "firebase-admin/firestore";
 import {
   CompleteProfileDTO,
   UpdateProfileDTO,
   UserProfileDTO,
-} from '../user/user.dto';
-import { AdminPermission } from '../../types/accessLevel.type';
+} from "../user/user.dto";
+import {AdminPermission} from "../../types/accessLevel.type";
 
 export default class AdminRepository {
-  private static adminsCollection = database.collection('admins');
+  private static adminsCollection = database.collection("admins");
 
   static async create(uid: string, email: string, data: CompleteProfileDTO) {
     const adminRef = this.adminsCollection.doc(uid);
@@ -30,7 +30,7 @@ export default class AdminRepository {
     const doc = await this.adminsCollection.doc(uid).get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Administrador não encontrado!');
+      throw new HttpsError("not-found", "Administrador não encontrado!");
     }
 
     const admin = doc.data() as AdminDocument;
@@ -45,7 +45,7 @@ export default class AdminRepository {
 
   static async listAll(): Promise<AdminProfileDTO[]> {
     const snapshot = await this.adminsCollection
-      .orderBy('createdAt', 'desc')
+      .orderBy("createdAt", "desc")
       .get();
 
     if (snapshot.empty) return [];
@@ -55,12 +55,12 @@ export default class AdminRepository {
       data: doc.data() as AdminDocument,
     }));
 
-    const { users } = await auth.getUsers(
-      profileDocs.map(({ uid }) => ({ uid })),
+    const {users} = await auth.getUsers(
+      profileDocs.map(({uid}) => ({uid})),
     );
     const claimsMap = new Map(users.map((u) => [u.uid, u.customClaims ?? {}]));
 
-    return profileDocs.map(({ uid, data }) => {
+    return profileDocs.map(({uid, data}) => {
       const claims = claimsMap.get(uid) ?? {};
       return {
         uid,
@@ -68,20 +68,21 @@ export default class AdminRepository {
         email: data.email,
         phone: data.phone,
         cpf: data.cpf,
-        accessLevel: (claims['accessLevel'] ?? 'admin') as AdminProfileDTO['accessLevel'],
-        permissions: (claims['permissions'] ?? []) as string[],
+        accessLevel: (claims["accessLevel"] ?? "admin") as
+          AdminProfileDTO["accessLevel"],
+        permissions: (claims["permissions"] ?? []) as string[],
         createdAt: data.createdAt.toMillis(),
         updatedAt: data.updatedAt.toMillis(),
       };
     });
   }
 
-  static async update({ targetId, ...data }: UpdateProfileDTO) {
+  static async update({targetId, ...data}: UpdateProfileDTO) {
     const ref = this.adminsCollection.doc(targetId);
     const doc = await ref.get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Administrador não encontrado!');
+      throw new HttpsError("not-found", "Administrador não encontrado!");
     }
 
     await ref.set(
@@ -100,7 +101,7 @@ export default class AdminRepository {
     const doc = await ref.get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Administrador não encontrado!');
+      throw new HttpsError("not-found", "Administrador não encontrado!");
     }
 
     await ref.delete();
@@ -112,7 +113,7 @@ export default class AdminRepository {
     const admins = await this.listAll();
     return admins
       .filter(
-        (a) => a.accessLevel === 'owner' || a.permissions.includes(permission),
+        (a) => a.accessLevel === "owner" || a.permissions.includes(permission),
       )
       .map((a) => a.uid);
   }
@@ -121,11 +122,11 @@ export default class AdminRepository {
     const doc = await this.adminsCollection.doc(uid).get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Administrador não encontrado!');
+      throw new HttpsError("not-found", "Administrador não encontrado!");
     }
 
     const admin = doc.data() as AdminDocument;
 
-    return { uid, name: admin.name };
+    return {uid, name: admin.name};
   }
 }

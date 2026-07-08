@@ -1,9 +1,9 @@
-import { FieldValue } from 'firebase-admin/firestore';
-import { HttpsError } from 'firebase-functions/https';
+import {FieldValue} from "firebase-admin/firestore";
+import {HttpsError} from "firebase-functions/https";
 
-import { database } from 'functions-shared';
-import { LeadDocument } from '../types/lead.document';
-import { LeadDTO, SaveLeadDTO } from '../types/lead.dto';
+import {database} from "functions-shared";
+import {LeadDocument} from "../types/lead.document";
+import {LeadDTO, SaveLeadDTO} from "../types/lead.dto";
 
 function toDTO(id: string, data: LeadDocument): LeadDTO {
   return {
@@ -47,7 +47,7 @@ function toDTO(id: string, data: LeadDocument): LeadDTO {
 }
 
 export class LeadRepository {
-  private static col = database.collection('leads');
+  private static col = database.collection("leads");
 
   static async save(
     companyId: string,
@@ -55,7 +55,7 @@ export class LeadRepository {
     data: SaveLeadDTO,
     defaultStatus: string,
   ): Promise<LeadDTO> {
-    const { leadId, ...rest } = data;
+    const {leadId, ...rest} = data;
     const ref = leadId ? this.col.doc(leadId) : this.col.doc();
     const isNew = !leadId;
 
@@ -65,7 +65,7 @@ export class LeadRepository {
         !existing.exists ||
         (existing.data() as LeadDocument).companyId !== companyId
       ) {
-        throw new HttpsError('permission-denied', 'Lead não encontrado.');
+        throw new HttpsError("permission-denied", "Lead não encontrado.");
       }
     }
 
@@ -91,21 +91,21 @@ export class LeadRepository {
       payload.createdAt = FieldValue.serverTimestamp();
     }
 
-    await ref.set(payload, { merge: true });
+    await ref.set(payload, {merge: true});
 
     const snap = await ref.get();
     return toDTO(snap.id, snap.data() as LeadDocument);
   }
 
   static async listByCompany(companyId: string): Promise<LeadDTO[]> {
-    const snap = await this.col.where('companyId', '==', companyId).get();
+    const snap = await this.col.where("companyId", "==", companyId).get();
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as LeadDocument));
   }
 
   static async getById(companyId: string, leadId: string): Promise<LeadDTO> {
     const doc = await this.col.doc(leadId).get();
     if (!doc.exists || (doc.data() as LeadDocument).companyId !== companyId) {
-      throw new HttpsError('not-found', 'Lead não encontrado.');
+      throw new HttpsError("not-found", "Lead não encontrado.");
     }
     return toDTO(doc.id, doc.data() as LeadDocument);
   }
@@ -118,16 +118,16 @@ export class LeadRepository {
     const ref = this.col.doc(leadId);
     const doc = await ref.get();
     if (!doc.exists || (doc.data() as LeadDocument).companyId !== companyId) {
-      throw new HttpsError('not-found', 'Lead não encontrado.');
+      throw new HttpsError("not-found", "Lead não encontrado.");
     }
-    await ref.update({ status, updatedAt: FieldValue.serverTimestamp() });
+    await ref.update({status, updatedAt: FieldValue.serverTimestamp()});
   }
 
   static async delete(companyId: string, leadId: string): Promise<void> {
     const ref = this.col.doc(leadId);
     const doc = await ref.get();
     if (!doc.exists || (doc.data() as LeadDocument).companyId !== companyId) {
-      throw new HttpsError('not-found', 'Lead não encontrado.');
+      throw new HttpsError("not-found", "Lead não encontrado.");
     }
     await ref.delete();
   }

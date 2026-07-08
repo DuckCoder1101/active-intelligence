@@ -2,9 +2,9 @@ import {
   onCallHandler,
   requireAccess,
   NotificationRepository,
-} from 'functions-shared';
+} from "functions-shared";
 
-const ACCESS = { minAccessLevel: 'admin' as const };
+const ACCESS = {minAccessLevel: "admin" as const};
 
 export const listNotificationsHandler = onCallHandler(
   async (req) => {

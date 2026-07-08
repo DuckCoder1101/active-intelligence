@@ -4,7 +4,8 @@ const CODEBASES = [
 	'company',
 	'company-user',
 	'task',
-	'kanban',
+	'operational-kanban',
+	'company-crm',
 ];
 
 module.exports = {
@@ -23,7 +24,7 @@ module.exports = {
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
 		project: [
-			'packages/functions-shared/tsconfig.json',
+			'functions-shared/tsconfig.json',
 			...CODEBASES.map((name) => `functions-${name}/tsconfig.json`),
 		],
 		tsconfigRootDir: __dirname,

@@ -1,9 +1,9 @@
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
-import { HttpsError } from 'firebase-functions/https';
+import {FieldValue, Timestamp} from "firebase-admin/firestore";
+import {HttpsError} from "firebase-functions/https";
 
-import { database } from 'functions-shared';
-import { TaskDocument } from '../types/task.document';
-import { TaskDTO, SaveTaskDTO } from '../types/task.dto';
+import {database} from "functions-shared";
+import {TaskDocument} from "../types/task.document";
+import {TaskDTO, SaveTaskDTO} from "../types/task.dto";
 
 function toDTO(id: string, data: TaskDocument): TaskDTO {
   return {
@@ -26,12 +26,12 @@ function toDTO(id: string, data: TaskDocument): TaskDTO {
 }
 
 export class TaskRepository {
-  private static col = database.collection('tasks');
+  private static col = database.collection("tasks");
 
   static async save(
     data: SaveTaskDTO & { createdBy: string },
   ): Promise<TaskDTO> {
-    const { taskId, createdBy, dueDate, ...rest } = data;
+    const {taskId, createdBy, dueDate, ...rest} = data;
     const ref = taskId ? this.col.doc(taskId) : this.col.doc();
     const isNew = !taskId;
 
@@ -51,7 +51,7 @@ export class TaskRepository {
       payload.createdAt = FieldValue.serverTimestamp();
     }
 
-    await ref.set(payload, { merge: true });
+    await ref.set(payload, {merge: true});
 
     const snap = await ref.get();
     return toDTO(snap.id, snap.data() as TaskDocument);
@@ -59,20 +59,21 @@ export class TaskRepository {
 
   static async getById(taskId: string): Promise<TaskDTO> {
     const snap = await this.col.doc(taskId).get();
-    if (!snap.exists)
-      throw new HttpsError('not-found', 'Tarefa não encontrada!');
+    if (!snap.exists) {
+      throw new HttpsError("not-found", "Tarefa não encontrada!");
+    }
     return toDTO(snap.id, snap.data() as TaskDocument);
   }
 
   static async listAll(): Promise<TaskDTO[]> {
-    const snap = await this.col.orderBy('dueDate', 'asc').get();
+    const snap = await this.col.orderBy("dueDate", "asc").get();
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
   }
 
   static async listWithMedia(): Promise<TaskDTO[]> {
     const snap = await this.col
-      .where('hasMedia', '==', true)
-      .orderBy('createdAt', 'asc')
+      .where("hasMedia", "==", true)
+      .orderBy("createdAt", "asc")
       .get();
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
   }
@@ -80,16 +81,17 @@ export class TaskRepository {
   static async updateStatus(taskId: string, status: string): Promise<void> {
     const ref = this.col.doc(taskId);
     const snap = await ref.get();
-    if (!snap.exists)
-      throw new HttpsError('not-found', 'Tarefa não encontrada!');
-    await ref.update({ status, updatedAt: FieldValue.serverTimestamp() });
+    if (!snap.exists) {
+      throw new HttpsError("not-found", "Tarefa não encontrada!");
+    }
+    await ref.update({status, updatedAt: FieldValue.serverTimestamp()});
   }
 
   static async delete(taskId: string): Promise<TaskDTO> {
     const ref = this.col.doc(taskId);
     const snap = await ref.get();
     if (!snap.exists) {
-      throw new HttpsError('not-found', 'Tarefa não encontrada!');
+      throw new HttpsError("not-found", "Tarefa não encontrada!");
     }
 
     const task = toDTO(taskId, snap.data() as TaskDocument);
@@ -107,8 +109,8 @@ export class TaskRepository {
 
   static async listByCompany(companyId: string): Promise<TaskDTO[]> {
     const snap = await this.col
-      .where('companyId', '==', companyId)
-      .orderBy('dueDate', 'asc')
+      .where("companyId", "==", companyId)
+      .orderBy("dueDate", "asc")
       .get();
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
   }
@@ -121,10 +123,10 @@ export class TaskRepository {
     const start = Timestamp.fromDate(new Date(year, month, 1));
     const end = Timestamp.fromDate(new Date(year, month + 1, 1));
     const snap = await this.col
-      .where('companyId', '==', companyId)
-      .where('dueDate', '>=', start)
-      .where('dueDate', '<', end)
-      .orderBy('dueDate', 'asc')
+      .where("companyId", "==", companyId)
+      .where("dueDate", ">=", start)
+      .where("dueDate", "<", end)
+      .orderBy("dueDate", "asc")
       .get();
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
   }
@@ -136,14 +138,15 @@ export class TaskRepository {
   ): Promise<void> {
     const ref = this.col.doc(taskId);
     const snap = await ref.get();
-    if (!snap.exists)
-      throw new HttpsError('not-found', 'Tarefa não encontrada.');
+    if (!snap.exists) {
+      throw new HttpsError("not-found", "Tarefa não encontrada.");
+    }
 
     const data = snap.data() as TaskDocument;
     if (data.companyId !== companyId) {
       throw new HttpsError(
-        'permission-denied',
-        'Sem permissão para editar esta tarefa.',
+        "permission-denied",
+        "Sem permissão para editar esta tarefa.",
       );
     }
 

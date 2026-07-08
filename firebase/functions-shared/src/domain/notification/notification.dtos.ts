@@ -1,4 +1,4 @@
-import type { NotificationType } from './notification.document';
+import type {NotificationType} from "./notification.document";
 
 export interface NotificationDTO {
   notificationId: string;

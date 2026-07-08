@@ -1,12 +1,14 @@
 export function checkCnpj(cnpj: string): boolean {
-  const nums = cnpj.replace(/\D/g, '');
+  const nums = cnpj.replace(/\D/g, "");
 
   if (nums.length !== 14) return false;
 
   if (/^(\d)\1{13}$/.test(nums)) return false;
 
   const calcDigito = (slice: string, weights: number[]) => {
-    const soma = slice.split('').reduce((acc, n, i) => acc + Number(n) * weights[i], 0);
+    const soma = slice
+      .split("")
+      .reduce((acc, n, i) => acc + Number(n) * weights[i], 0);
     const resto = soma % 11;
     return resto < 2 ? 0 : 11 - resto;
   };

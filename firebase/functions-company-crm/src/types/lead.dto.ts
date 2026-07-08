@@ -5,7 +5,7 @@ import type {
   PropertyType,
   Purpose,
   Temperature,
-} from './lead.document';
+} from "./lead.document";
 
 export interface LeadDTO {
   leadId: string;

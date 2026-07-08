@@ -1,11 +1,11 @@
-import { Timestamp } from 'firebase-admin/firestore';
+import {Timestamp} from "firebase-admin/firestore";
 
 export const TASK_TYPES = [
-  'feed',
-  'stories',
-  'reels',
-  'carrossel',
-  'campanha',
+  "feed",
+  "stories",
+  "reels",
+  "carrossel",
+  "campanha",
 ] as const;
 
 export type TaskType = (typeof TASK_TYPES)[number];

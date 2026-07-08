@@ -1,23 +1,23 @@
-import { HttpsError } from 'firebase-functions/https';
-import { FieldValue } from 'firebase-admin/firestore';
+import {HttpsError} from "firebase-functions/https";
+import {FieldValue} from "firebase-admin/firestore";
 
-import { database } from '../../utils/firebase';
+import {database} from "../../utils/firebase";
 import {
   OperationalKanbanColumnDocument,
   DEFAULT_COLUMNS,
   PROTECTED_COLUMN_IDS,
-} from './operational-kanban.document';
+} from "./operational-kanban.document";
 import {
   OperationalKanbanColumnDTO,
   SaveOperationalKanbanColumnDTO,
-} from './operational-kanban.dtos';
+} from "./operational-kanban.dtos";
 
 export class OperationalKanbanRepository {
-  private static col = database.collection('operational_kanban_columns');
-  private static tasksCol = database.collection('tasks');
+  private static col = database.collection("operational_kanban_columns");
+  private static tasksCol = database.collection("tasks");
 
   static async listAll(): Promise<OperationalKanbanColumnDTO[]> {
-    const snap = await this.col.orderBy('order', 'asc').get();
+    const snap = await this.col.orderBy("order", "asc").get();
 
     if (snap.empty) {
       const batch = database.batch();
@@ -32,7 +32,7 @@ export class OperationalKanbanRepository {
 
       await batch.commit();
 
-      const seeded = await this.col.orderBy('order', 'asc').get();
+      const seeded = await this.col.orderBy("order", "asc").get();
 
       return seeded.docs.map((doc) => {
         const data = doc.data() as OperationalKanbanColumnDocument;
@@ -59,10 +59,10 @@ export class OperationalKanbanRepository {
   static async save(
     data: SaveOperationalKanbanColumnDTO,
   ): Promise<OperationalKanbanColumnDTO> {
-    const snap = await this.col.orderBy('order', 'desc').limit(1).get();
-    const maxOrder = snap.empty
-      ? -1
-      : (snap.docs[0].data() as OperationalKanbanColumnDocument).order;
+    const snap = await this.col.orderBy("order", "desc").limit(1).get();
+    const maxOrder = snap.empty ?
+      -1 :
+      (snap.docs[0].data() as OperationalKanbanColumnDocument).order;
 
     const ref = data.columnId ? this.col.doc(data.columnId) : this.col.doc();
     const isNew = !data.columnId;
@@ -72,7 +72,7 @@ export class OperationalKanbanRepository {
         name: data.name,
         color: data.color,
         order: data.order ?? maxOrder + 1,
-        ...(isNew ? { createdAt: FieldValue.serverTimestamp() } : {}),
+        ...(isNew ? {createdAt: FieldValue.serverTimestamp()} : {}),
       },
       {
         merge: true,
@@ -93,25 +93,27 @@ export class OperationalKanbanRepository {
   static async delete(columnId: string): Promise<{ movedTo: string | null }> {
     if (PROTECTED_COLUMN_IDS.includes(columnId)) {
       throw new HttpsError(
-        'failed-precondition',
-        'Este quadro é usado pelo fluxo de aprovação do cliente e não pode ser excluído.',
+        "failed-precondition",
+        "Este quadro é usado pelo fluxo de aprovação do cliente e não " +
+          "pode ser excluído.",
       );
     }
 
-    const colSnap = await this.col.orderBy('order', 'asc').get();
-    if (colSnap.empty)
-      throw new HttpsError('not-found', 'Quadro não encontrado!');
+    const colSnap = await this.col.orderBy("order", "asc").get();
+    if (colSnap.empty) {
+      throw new HttpsError("not-found", "Quadro não encontrado!");
+    }
 
     const remaining = colSnap.docs.filter((d) => d.id !== columnId);
     if (remaining.length === 0) {
       throw new HttpsError(
-        'failed-precondition',
-        'Não é possível excluir o último quadro.',
+        "failed-precondition",
+        "Não é possível excluir o último quadro.",
       );
     }
 
     const fallbackId = remaining[0].id;
-    const taskSnap = await this.tasksCol.where('status', '==', columnId).get();
+    const taskSnap = await this.tasksCol.where("status", "==", columnId).get();
 
     const batch = database.batch();
     for (const doc of taskSnap.docs) {

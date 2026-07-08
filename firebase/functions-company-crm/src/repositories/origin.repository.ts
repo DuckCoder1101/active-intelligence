@@ -1,15 +1,15 @@
-import { HttpsError } from 'firebase-functions/https';
-import { FieldValue } from 'firebase-admin/firestore';
+import {HttpsError} from "firebase-functions/https";
+import {FieldValue} from "firebase-admin/firestore";
 
-import { database } from 'functions-shared';
-import { OriginDocument, DEFAULT_ORIGIN_NAMES } from '../types/origin.document';
-import { OriginDTO, SaveOriginDTO } from '../types/origin.dto';
+import {database} from "functions-shared";
+import {OriginDocument, DEFAULT_ORIGIN_NAMES} from "../types/origin.document";
+import {OriginDTO, SaveOriginDTO} from "../types/origin.dto";
 
 export class OriginRepository {
-  private static col = database.collection('crm_origins');
+  private static col = database.collection("crm_origins");
 
   static async listAll(companyId: string): Promise<OriginDTO[]> {
-    const snap = await this.col.where('companyId', '==', companyId).get();
+    const snap = await this.col.where("companyId", "==", companyId).get();
 
     if (snap.empty) {
       const batch = database.batch();
@@ -20,17 +20,17 @@ export class OriginRepository {
           name,
           createdAt: FieldValue.serverTimestamp(),
         });
-        return { ref, name };
+        return {ref, name};
       });
       await batch.commit();
 
-      return seededRefs.map(({ ref, name }) => ({ originId: ref.id, name }));
+      return seededRefs.map(({ref, name}) => ({originId: ref.id, name}));
     }
 
     return snap.docs
       .map((doc) => {
         const data = doc.data() as OriginDocument;
-        return { originId: doc.id, name: data.name };
+        return {originId: doc.id, name: data.name};
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -45,7 +45,7 @@ export class OriginRepository {
       name: data.name,
       createdAt: FieldValue.serverTimestamp(),
     });
-    return { originId: ref.id, name: data.name };
+    return {originId: ref.id, name: data.name};
   }
 
   static async delete(companyId: string, originId: string): Promise<void> {
@@ -55,7 +55,7 @@ export class OriginRepository {
       !doc.exists ||
       (doc.data() as OriginDocument).companyId !== companyId
     ) {
-      throw new HttpsError('not-found', 'Origem não encontrada.');
+      throw new HttpsError("not-found", "Origem não encontrada.");
     }
     await ref.delete();
   }

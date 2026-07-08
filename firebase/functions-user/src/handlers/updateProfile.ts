@@ -1,6 +1,6 @@
-import z from 'zod';
-import { HttpsError } from 'firebase-functions/https';
-import { logger } from 'firebase-functions';
+import {z} from "zod";
+import {HttpsError} from "firebase-functions/https";
+import {logger} from "firebase-functions";
 
 import {
   onCallHandler,
@@ -10,19 +10,19 @@ import {
   UserAccessLevel,
   CompanyUserRepository,
   AdminRepository,
-} from 'functions-shared';
+} from "functions-shared";
 
 export const updateProfileHandler = onCallHandler(async (req) => {
-  const { uid: authorUid, accessLevel } = getAuthenticatedUser(req);
+  const {uid: authorUid, accessLevel} = getAuthenticatedUser(req);
 
-  const { data, success, error } = UserSchema.updateProfileSchema.safeParse(
+  const {data, success, error} = UserSchema.updateProfileSchema.safeParse(
     req.data,
   );
 
   if (!success) {
     throw new HttpsError(
-      'invalid-argument',
-      'Dados inválidos ao atualizar conta!',
+      "invalid-argument",
+      "Dados inválidos ao atualizar conta!",
       z.treeifyError(error),
     );
   }
@@ -31,7 +31,7 @@ export const updateProfileHandler = onCallHandler(async (req) => {
   try {
     targetUser = await auth.getUser(data.targetId);
   } catch {
-    throw new HttpsError('not-found', 'Usuário não encontrado.');
+    throw new HttpsError("not-found", "Usuário não encontrado.");
   }
 
   const targetAccessLevel = targetUser.customClaims
@@ -39,28 +39,28 @@ export const updateProfileHandler = onCallHandler(async (req) => {
 
   if (
     data.targetId !== authorUid &&
-    (accessLevel !== 'owner' || targetAccessLevel === 'owner')
+    (accessLevel !== "owner" || targetAccessLevel === "owner")
   ) {
     throw new HttpsError(
-      'permission-denied',
-      'Você não tem permissão para alterar a conta de outro usuário.',
+      "permission-denied",
+      "Você não tem permissão para alterar a conta de outro usuário.",
     );
   }
 
   if (!targetAccessLevel) {
     throw new HttpsError(
-      'invalid-argument',
-      'O usuário não tem nível de acesso definido!',
+      "invalid-argument",
+      "O usuário não tem nível de acesso definido!",
     );
   }
 
-  logger.info('updateProfile', {
+  logger.info("updateProfile", {
     targetUid: data.targetId,
     callerUid: authorUid,
     targetAccessLevel,
   });
 
-  if (targetAccessLevel === 'user') {
+  if (targetAccessLevel === "user") {
     await CompanyUserRepository.update(data);
   } else {
     await AdminRepository.update(data);

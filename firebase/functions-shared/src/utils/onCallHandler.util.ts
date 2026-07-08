@@ -1,11 +1,11 @@
-import { onCall, HttpsError } from 'firebase-functions/https';
-import { logger } from 'firebase-functions';
+import {onCall, HttpsError} from "firebase-functions/https";
+import {logger} from "firebase-functions";
 
 import type {
   CallableRequest,
   CallableFunction,
   CallableOptions,
-} from 'firebase-functions/https';
+} from "firebase-functions/https";
 
 type Handler<T, R> = (req: CallableRequest<T>) => Promise<R>;
 
@@ -15,8 +15,8 @@ export function onCallHandler<T = unknown, R = unknown>(
 ): CallableFunction<T, Promise<R>> {
   return onCall(
     {
-      invoker: 'public',
-      region: 'southamerica-east1',
+      invoker: "public",
+      region: "southamerica-east1",
       concurrency: 80,
       cpu: 1,
       ...options,
@@ -27,7 +27,7 @@ export function onCallHandler<T = unknown, R = unknown>(
       } catch (err) {
         if (err instanceof HttpsError) {
           logger.error(
-            '[onCallHandler] HttpsError:',
+            "[onCallHandler] HttpsError:",
             err.code,
             err.message,
             err.details,
@@ -35,8 +35,8 @@ export function onCallHandler<T = unknown, R = unknown>(
           throw err;
         }
 
-        logger.error('Unhandled error in callable function', err);
-        throw new HttpsError('internal', 'Erro interno inesperado.');
+        logger.error("Unhandled error in callable function", err);
+        throw new HttpsError("internal", "Erro interno inesperado.");
       }
     },
   );

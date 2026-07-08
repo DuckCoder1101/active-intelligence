@@ -1,4 +1,4 @@
 export enum CompanyStage {
-  comercial = 'comercial',
-  operacional = 'operacional',
+  comercial = "comercial",
+  operacional = "operacional",
 }

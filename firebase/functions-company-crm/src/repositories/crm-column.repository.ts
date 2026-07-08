@@ -1,19 +1,19 @@
-import { HttpsError } from 'firebase-functions/https';
-import { FieldValue } from 'firebase-admin/firestore';
+import {HttpsError} from "firebase-functions/https";
+import {FieldValue} from "firebase-admin/firestore";
 
-import { database } from 'functions-shared';
+import {database} from "functions-shared";
 import {
   CrmColumnDocument,
   DEFAULT_CRM_COLUMNS,
-} from '../types/crm-column.document';
-import { CrmColumnDTO, SaveCrmColumnDTO } from '../types/crm-column.dto';
+} from "../types/crm-column.document";
+import {CrmColumnDTO, SaveCrmColumnDTO} from "../types/crm-column.dto";
 
 export class CrmColumnRepository {
-  private static col = database.collection('crm_columns');
-  private static leadsCol = database.collection('leads');
+  private static col = database.collection("crm_columns");
+  private static leadsCol = database.collection("leads");
 
   static async listAll(companyId: string): Promise<CrmColumnDTO[]> {
-    const snap = await this.col.where('companyId', '==', companyId).get();
+    const snap = await this.col.where("companyId", "==", companyId).get();
 
     if (snap.empty) {
       const batch = database.batch();
@@ -26,12 +26,12 @@ export class CrmColumnRepository {
           order: column.order,
           createdAt: FieldValue.serverTimestamp(),
         });
-        return { ref, column };
+        return {ref, column};
       });
       await batch.commit();
 
       return seededRefs
-        .map(({ ref, column }) => ({
+        .map(({ref, column}) => ({
           columnId: ref.id,
           name: column.name,
           color: column.color,
@@ -57,7 +57,7 @@ export class CrmColumnRepository {
     companyId: string,
     data: SaveCrmColumnDTO,
   ): Promise<CrmColumnDTO> {
-    const snap = await this.col.where('companyId', '==', companyId).get();
+    const snap = await this.col.where("companyId", "==", companyId).get();
     const maxOrder = snap.docs.reduce(
       (max, doc) => Math.max(max, (doc.data() as CrmColumnDocument).order),
       -1,
@@ -72,7 +72,7 @@ export class CrmColumnRepository {
         !existing.exists ||
         (existing.data() as CrmColumnDocument).companyId !== companyId
       ) {
-        throw new HttpsError('permission-denied', 'Quadro não encontrado.');
+        throw new HttpsError("permission-denied", "Quadro não encontrado.");
       }
     }
 
@@ -82,9 +82,9 @@ export class CrmColumnRepository {
         name: data.name,
         color: data.color,
         order: data.order ?? maxOrder + 1,
-        ...(isNew ? { createdAt: FieldValue.serverTimestamp() } : {}),
+        ...(isNew ? {createdAt: FieldValue.serverTimestamp()} : {}),
       },
-      { merge: true },
+      {merge: true},
     );
 
     const saved = await ref.get();
@@ -101,17 +101,17 @@ export class CrmColumnRepository {
     companyId: string,
     columnId: string,
   ): Promise<{ movedTo: string | null }> {
-    const snap = await this.col.where('companyId', '==', companyId).get();
+    const snap = await this.col.where("companyId", "==", companyId).get();
     const target = snap.docs.find((d) => d.id === columnId);
     if (!target) {
-      throw new HttpsError('not-found', 'Quadro não encontrado!');
+      throw new HttpsError("not-found", "Quadro não encontrado!");
     }
 
     const remaining = snap.docs.filter((d) => d.id !== columnId);
     if (remaining.length === 0) {
       throw new HttpsError(
-        'failed-precondition',
-        'Não é possível excluir o último quadro.',
+        "failed-precondition",
+        "Não é possível excluir o último quadro.",
       );
     }
 
@@ -122,8 +122,8 @@ export class CrmColumnRepository {
     )[0];
 
     const leadSnap = await this.leadsCol
-      .where('companyId', '==', companyId)
-      .where('status', '==', columnId)
+      .where("companyId", "==", companyId)
+      .where("status", "==", columnId)
       .get();
 
     const batch = database.batch();
@@ -136,6 +136,6 @@ export class CrmColumnRepository {
     batch.delete(this.col.doc(columnId));
     await batch.commit();
 
-    return { movedTo: leadSnap.size > 0 ? fallback.id : null };
+    return {movedTo: leadSnap.size > 0 ? fallback.id : null};
   }
 }
