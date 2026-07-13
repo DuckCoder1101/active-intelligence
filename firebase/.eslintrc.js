@@ -6,6 +6,7 @@ const CODEBASES = [
 	'task',
 	'operational-kanban',
 	'company-crm',
+	'finance',
 ];
 
 module.exports = {

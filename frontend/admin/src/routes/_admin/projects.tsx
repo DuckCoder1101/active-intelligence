@@ -80,6 +80,7 @@ function ProjectsKanbanPage() {
 
   // Task modal
   const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
+  const [newTaskDate, setNewTaskDate] = useState<Date | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
 
   // View: kanban or calendar
@@ -219,8 +220,9 @@ function ProjectsKanbanPage() {
     setSelectedTask(task);
     setShowModal(true);
   };
-  const openNew = () => {
+  const openNew = (date?: Date) => {
     setSelectedTask(undefined);
+    setNewTaskDate(date);
     setShowModal(true);
   };
 
@@ -259,6 +261,7 @@ function ProjectsKanbanPage() {
           companies={companies}
           columns={columns}
           onTaskClick={openTask}
+          onAddTask={openNew}
         />
       )}
 
@@ -302,7 +305,7 @@ function ProjectsKanbanPage() {
                 </select>
               </div>
 
-              <button onClick={openNew} className="btn-primary shrink-0 px-4">
+              <button onClick={() => openNew()} className="btn-primary shrink-0 px-4">
                 <MdAdd size={16} />
                 Nova tarefa
               </button>
@@ -563,6 +566,7 @@ function ProjectsKanbanPage() {
       {showModal && (
         <TaskModal
           task={selectedTask}
+          defaultDueDate={newTaskDate}
           companies={companies}
           admins={admins}
           columns={columns}

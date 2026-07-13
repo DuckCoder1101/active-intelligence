@@ -221,7 +221,7 @@ export function ClientFinancialTab({ company, onSaved }: Props) {
             control={control}
             render={({ field }) => (
               <MultiSelect
-                label="Serviço contratado"
+                label="Serviços contratados"
                 options={contractedServices.map((s) => ({
                   value: s.serviceId,
                   label: s.name,
@@ -241,8 +241,10 @@ export function ClientFinancialTab({ company, onSaved }: Props) {
         <Section icon={MdOutlineDescription} title="Contrato">
           <div className="space-y-4">
             <FormSelect
-              label="Tipo de contrato"
-              {...register('contractType')}
+              label="Tipo de contrato *"
+              {...register('contractType', {
+                required: true,
+              })}
             >
               <option value="">Selecione...</option>
               <option value="mrr">Recorrente (MRR)</option>

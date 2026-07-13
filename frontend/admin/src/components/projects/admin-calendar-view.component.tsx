@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { MdChevronLeft, MdChevronRight, MdClose } from 'react-icons/md';
+import { MdAdd, MdChevronLeft, MdChevronRight, MdClose } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 import { Spinner } from '@/components/ui/spinner.component';
@@ -34,6 +34,7 @@ interface DayTasksModalProps {
   updatingTaskId: string | null;
   onStatusChange: (task: Task, status: string) => void;
   onTaskClick: (task: Task) => void;
+  onAddTask: (date: Date) => void;
   onClose: () => void;
 }
 
@@ -45,6 +46,7 @@ function DayTasksModal({
   updatingTaskId,
   onStatusChange,
   onTaskClick,
+  onAddTask,
   onClose,
 }: DayTasksModalProps) {
   const companyMap = useMemo(
@@ -81,13 +83,23 @@ function DayTasksModal({
                 : `${tasks.length} tarefa${tasks.length > 1 ? 's' : ''}`}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-text-muted transition-colors hover:bg-bg hover:text-text"
-          >
-            <MdClose size={18} />
-          </button>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => onAddTask(date)}
+              className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-[11px] font-semibold text-text-sub transition-colors hover:bg-bg hover:text-text"
+            >
+              <MdAdd size={16} />
+              Nova tarefa
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg p-1.5 text-text-muted transition-colors hover:bg-bg hover:text-text"
+            >
+              <MdClose size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Task list */}
@@ -174,6 +186,7 @@ interface AdminCalendarViewProps {
   companies: CompanyResume[];
   columns: OperationalKanbanColumn[];
   onTaskClick: (task: Task) => void;
+  onAddTask: (date: Date) => void;
 }
 
 export function AdminCalendarView({
@@ -181,6 +194,7 @@ export function AdminCalendarView({
   companies,
   columns,
   onTaskClick,
+  onAddTask,
 }: AdminCalendarViewProps) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
@@ -387,6 +401,10 @@ export function AdminCalendarView({
           onTaskClick={(task) => {
             setSelectedDay(null);
             onTaskClick(task);
+          }}
+          onAddTask={(day) => {
+            setSelectedDay(null);
+            onAddTask(day);
           }}
           onClose={() => setSelectedDay(null)}
         />

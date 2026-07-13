@@ -44,8 +44,6 @@ export function NotificationsProvider({
 
     if (Notification.permission === 'default') {
       Notification.requestPermission();
-    } else if (Notification.permission === 'denied') {
-      toast.info('Notificações desligadas: permissão negada.');
     }
   }, []);
 

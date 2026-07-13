@@ -20,6 +20,7 @@ import { useDeleteTaskMutation, useSaveTaskMutation } from '@/queries/task.queri
 
 interface TaskModalProps {
   task?: Task;
+  defaultDueDate?: Date;
   companies: CompanyResume[];
   admins: AdminProfile[];
   columns: OperationalKanbanColumn[];
@@ -33,6 +34,7 @@ interface TaskModalProps {
 
 export function TaskModal({
   task,
+  defaultDueDate,
   companies,
   admins,
   columns,
@@ -61,6 +63,9 @@ export function TaskModal({
   const [dueDate, setDueDate] = useState(() => {
     if (task?.dueDate) {
       return new Date(task.dueDate).toISOString().split('T')[0];
+    }
+    if (defaultDueDate) {
+      return defaultDueDate.toISOString().split('T')[0];
     }
     return new Date().toISOString().split('T')[0];
   });

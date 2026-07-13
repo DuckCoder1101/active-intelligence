@@ -20,7 +20,7 @@ import {
 } from 'react-icons/md';
 
 import { ClientAuditTab } from '@/components/companies/company/audit-tab.component';
-import { ClientFinancialTab } from '@/components/companies/company/financial-tab.component';
+import { ClientFinancialTab } from '@/components/companies/company/admin-tab.component';
 import { ClientInfoTab } from '@/components/companies/company/info-tab.component';
 import { CompanyMembersTab } from '@/components/companies/company/members-tab.component';
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';

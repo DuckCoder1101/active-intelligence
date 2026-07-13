@@ -9,7 +9,7 @@ import {
   buildFinancialPayload,
   defaultFinancialFormValues,
   type FinancialFormValues,
-} from '@/components/companies/company/financial-tab.component';
+} from '@/components/companies/company/admin-tab.component';
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { FormSelect } from '@/components/ui/form-select.component';
@@ -523,9 +523,7 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
         {/* Administrativo */}
         {canViewFinancial && (
           <div
-            className={
-              activeTab === 'administrativo' ? 'space-y-4' : 'hidden'
-            }
+            className={activeTab === 'administrativo' ? 'space-y-4' : 'hidden'}
           >
             <Controller
               name="financial.contractedServiceIds"

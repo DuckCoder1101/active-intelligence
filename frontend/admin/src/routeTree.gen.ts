@@ -20,6 +20,7 @@ import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-
 import { Route as AdminTeamRouteImport } from './routes/_admin/team'
 import { Route as AdminProjectsRouteImport } from './routes/_admin/projects'
 import { Route as AdminProfileRouteImport } from './routes/_admin/profile'
+import { Route as AdminFinanceRouteImport } from './routes/_admin/finance'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/_admin/companies/index'
 import { Route as AdminCompaniesCompany_idRouteImport } from './routes/_admin/companies/$company_id'
 
@@ -77,6 +78,11 @@ const AdminProfileRoute = AdminProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFinanceRoute = AdminFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
   id: '/companies/',
   path: '/companies/',
@@ -92,6 +98,7 @@ const AdminCompaniesCompany_idRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AdminIndexRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/finance': typeof AdminFinanceRoute
   '/profile': typeof AdminProfileRoute
   '/projects': typeof AdminProjectsRoute
   '/team': typeof AdminTeamRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedRoute
+  '/finance': typeof AdminFinanceRoute
   '/profile': typeof AdminProfileRoute
   '/projects': typeof AdminProjectsRoute
   '/team': typeof AdminTeamRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_admin': typeof AdminRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
+  '/_admin/finance': typeof AdminFinanceRoute
   '/_admin/profile': typeof AdminProfileRoute
   '/_admin/projects': typeof AdminProjectsRoute
   '/_admin/team': typeof AdminTeamRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/unauthorized'
+    | '/finance'
     | '/profile'
     | '/projects'
     | '/team'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/unauthorized'
+    | '/finance'
     | '/profile'
     | '/projects'
     | '/team'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_admin'
     | '/unauthorized'
+    | '/_admin/finance'
     | '/_admin/profile'
     | '/_admin/projects'
     | '/_admin/team'
@@ -268,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProfileRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/finance': {
+      id: '/_admin/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof AdminFinanceRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/companies/': {
       id: '/_admin/companies/'
       path: '/companies'
@@ -286,6 +305,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminFinanceRoute: typeof AdminFinanceRoute
   AdminProfileRoute: typeof AdminProfileRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminTeamRoute: typeof AdminTeamRoute
@@ -295,6 +315,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminFinanceRoute: AdminFinanceRoute,
   AdminProfileRoute: AdminProfileRoute,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminTeamRoute: AdminTeamRoute,

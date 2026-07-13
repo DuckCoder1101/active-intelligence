@@ -26,32 +26,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoadingProfile: true,
   });
 
-  const downloadUserProfile = useCallback(async (claims?: CustomClaims) => {
-    let profile: UserProfile | null = null;
+  const downloadUserProfile = useCallback(
+    async (claims?: CustomClaims) => {
+      let profile: UserProfile | null = null;
 
-    setAuthState((prev) => ({
-      ...prev,
-      ...(claims !== undefined && { claims }),
-      isLoadingProfile: true,
-    }));
-
-    try {
-      profile = await UserService.getMe();
-      profile.avatarUrl = await UserService.getAvatarUrl(profile.uid);
-    } catch (err) {
-      if (err instanceof FirebaseError && err.code === 'functions/not-found') {
-        await navigate({ to: '/auth/complete-account' });
-      } else {
-        toast.error(mapFirebaseError(err));
-      }
-    } finally {
       setAuthState((prev) => ({
         ...prev,
-        isLoadingProfile: false,
-        userProfile: profile,
+        ...(claims !== undefined && { claims }),
+        isLoadingProfile: true,
       }));
-    }
-  }, [navigate]);
+
+      try {
+        profile = await UserService.getMe();
+        profile.avatarUrl = await UserService.getAvatarUrl(profile.uid);
+      } catch (err) {
+        if (
+          err instanceof FirebaseError &&
+          err.code === 'functions/not-found'
+        ) {
+          await navigate({ to: '/auth/complete-account' });
+        } else {
+          toast.error(mapFirebaseError(err));
+        }
+      } finally {
+        setAuthState((prev) => ({
+          ...prev,
+          isLoadingProfile: false,
+          userProfile: profile,
+        }));
+      }
+    },
+    [navigate],
+  );
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
@@ -63,12 +69,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const idTokenResult = await user.getIdTokenResult();
       const claims = idTokenResult.claims as CustomClaims;
 
-      await createSession({ data: { idToken: idTokenResult.token } });
+      await createSession({
+        data: {
+          idToken: idTokenResult.token,
+        },
+      });
 
       if (claims.complete) {
         await downloadUserProfile(claims);
       } else {
-        setAuthState((prev) => ({ ...prev, claims }));
+        setAuthState((prev) => ({
+          ...prev,
+          claims,
+        }));
       }
     });
 
