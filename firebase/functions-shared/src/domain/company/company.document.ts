@@ -51,6 +51,29 @@ export interface CompanyDocument {
     observations?: string;
   };
 
+  financial?: {
+    contractedServiceIds: string[];
+    contractType?: "mrr" | "tcv";
+    administrativeResponsibleUid?: string;
+    mrr?: {
+      monthlyValue: number;
+      paymentMethod: "pix" | "boleto" | "cartao";
+      dueDay: number;
+      loyaltyMonths?: number;
+      startDate: number;
+      endDate?: number;
+    };
+    tcv?: {
+      totalValue: number;
+      paymentType: "avista" | "parcelado";
+      paymentMethod?: "pix" | "boleto" | "cartao";
+      installments?: number;
+      installmentValue?: number;
+      startDate: number;
+      endDate: number;
+    };
+  };
+
   monthlyTaskLimit?: number;
   taskUsage?: {
     yearMonth: string;

@@ -7,7 +7,9 @@ import { CreateCompanyModal } from '@/components/companies/modal.component';
 import { CompaniesTable } from '@/components/companies/table.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { AdminPageContainer } from '@/components/ui/page-container.component';
+import { adminsQueryOptions } from '@/queries/admin.queries';
 import { companiesQueryOptions, companyKeys } from '@/queries/company.queries';
+import { contractedServicesQueryOptions } from '@/queries/contracted-service.queries';
 import type { RouteAccessLevel } from '@/types/route-access.type';
 import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
@@ -24,7 +26,11 @@ export const Route = createFileRoute('/_admin/companies/')({
     }
   },
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData(companiesQueryOptions()),
+    Promise.all([
+      context.queryClient.ensureQueryData(companiesQueryOptions()),
+      context.queryClient.ensureQueryData(adminsQueryOptions()),
+      context.queryClient.ensureQueryData(contractedServicesQueryOptions()),
+    ]),
   component: AdminCompanies,
 });
 

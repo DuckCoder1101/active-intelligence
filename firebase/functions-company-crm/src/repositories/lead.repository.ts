@@ -47,7 +47,10 @@ function toDTO(id: string, data: LeadDocument): LeadDTO {
 }
 
 export class LeadRepository {
-  private static col = database.collection("leads");
+  private static col(companyId: string) {
+    return database.collection("companies").doc(companyId)
+      .collection("leads");
+  }
 
   static async save(
     companyId: string,
@@ -56,15 +59,13 @@ export class LeadRepository {
     defaultStatus: string,
   ): Promise<LeadDTO> {
     const {leadId, ...rest} = data;
-    const ref = leadId ? this.col.doc(leadId) : this.col.doc();
+    const col = this.col(companyId);
+    const ref = leadId ? col.doc(leadId) : col.doc();
     const isNew = !leadId;
 
     if (!isNew) {
       const existing = await ref.get();
-      if (
-        !existing.exists ||
-        (existing.data() as LeadDocument).companyId !== companyId
-      ) {
+      if (!existing.exists) {
         throw new HttpsError("permission-denied", "Lead não encontrado.");
       }
     }
@@ -98,13 +99,13 @@ export class LeadRepository {
   }
 
   static async listByCompany(companyId: string): Promise<LeadDTO[]> {
-    const snap = await this.col.where("companyId", "==", companyId).get();
+    const snap = await this.col(companyId).get();
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as LeadDocument));
   }
 
   static async getById(companyId: string, leadId: string): Promise<LeadDTO> {
-    const doc = await this.col.doc(leadId).get();
-    if (!doc.exists || (doc.data() as LeadDocument).companyId !== companyId) {
+    const doc = await this.col(companyId).doc(leadId).get();
+    if (!doc.exists) {
       throw new HttpsError("not-found", "Lead não encontrado.");
     }
     return toDTO(doc.id, doc.data() as LeadDocument);
@@ -115,18 +116,18 @@ export class LeadRepository {
     leadId: string,
     status: string,
   ): Promise<void> {
-    const ref = this.col.doc(leadId);
+    const ref = this.col(companyId).doc(leadId);
     const doc = await ref.get();
-    if (!doc.exists || (doc.data() as LeadDocument).companyId !== companyId) {
+    if (!doc.exists) {
       throw new HttpsError("not-found", "Lead não encontrado.");
     }
     await ref.update({status, updatedAt: FieldValue.serverTimestamp()});
   }
 
   static async delete(companyId: string, leadId: string): Promise<void> {
-    const ref = this.col.doc(leadId);
+    const ref = this.col(companyId).doc(leadId);
     const doc = await ref.get();
-    if (!doc.exists || (doc.data() as LeadDocument).companyId !== companyId) {
+    if (!doc.exists) {
       throw new HttpsError("not-found", "Lead não encontrado.");
     }
     await ref.delete();

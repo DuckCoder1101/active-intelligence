@@ -15,28 +15,38 @@ import {
   MdOutlineLocationOn,
   MdOutlinePeopleAlt,
   MdOutlineHistory,
+  MdOutlinePayments,
   MdDelete,
 } from 'react-icons/md';
 
 import { ClientAuditTab } from '@/components/companies/company/audit-tab.component';
+import { ClientFinancialTab } from '@/components/companies/company/financial-tab.component';
 import { ClientInfoTab } from '@/components/companies/company/info-tab.component';
 import { CompanyMembersTab } from '@/components/companies/company/members-tab.component';
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { Badge } from '@/components/ui/badge.component';
 import { AdminPageContainer } from '@/components/ui/page-container.component';
 import { Tabs } from '@/components/ui/tabs.component';
+import { useAuth } from '@/contexts/auth.context';
 import { formatCNPJ } from '@/formatters/formatCnpj';
 import { formatPhone } from '@/formatters/formatPhone';
+import { adminsQueryOptions } from '@/queries/admin.queries';
 import {
   companyDetailQueryOptions,
   useDeleteCompanyMutation,
 } from '@/queries/company.queries';
+import { contractedServicesQueryOptions } from '@/queries/contracted-service.queries';
 import type { RouteAccessLevel } from '@/types/route-access.type';
 import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
 const ROUTE_ACCESS: RouteAccessLevel = {
   minAccessLevel: 'admin',
   permissions: ['manage-clients'],
+};
+
+const FINANCIAL_TAB_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+  permissions: ['manage-finance'],
 };
 
 export const Route = createFileRoute('/_admin/companies/$company_id')({
@@ -47,17 +57,27 @@ export const Route = createFileRoute('/_admin/companies/$company_id')({
     }
   },
   loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(
-      companyDetailQueryOptions(params.company_id),
-    ),
+    Promise.all([
+      context.queryClient.ensureQueryData(
+        companyDetailQueryOptions(params.company_id),
+      ),
+      context.queryClient.ensureQueryData(adminsQueryOptions()),
+      context.queryClient.ensureQueryData(contractedServicesQueryOptions()),
+    ]),
   component: ClientDetailPage,
 });
 
-const TABS = [
+const BASE_TABS = [
   { id: 'informacoes', label: 'Informações', icon: MdOutlineLocationOn },
   { id: 'acessos', label: 'Acessos', icon: MdOutlinePeopleAlt },
   { id: 'auditoria', label: 'Auditoria', icon: MdOutlineHistory },
 ];
+
+const FINANCIAL_TAB = {
+  id: 'administrativo',
+  label: 'Administrativo',
+  icon: MdOutlinePayments,
+};
 
 function ClientDetailPage() {
   const { company_id } = Route.useParams();
@@ -69,6 +89,10 @@ function ClientDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [activeTab, setActiveTab] = useState('informacoes');
   const deleteCompany = useDeleteCompanyMutation();
+  const { claims } = useAuth();
+
+  const canViewFinancial = checkRouteAccess(claims, FINANCIAL_TAB_ACCESS);
+  const TABS = canViewFinancial ? [...BASE_TABS, FINANCIAL_TAB] : BASE_TABS;
 
   const APP_URL = import.meta.env.VITE_APP_URL ?? 'http://localhost:3001/';
 
@@ -189,6 +213,16 @@ function ClientDetailPage() {
             )}
             {activeTab === 'auditoria' && (
               <ClientAuditTab companyId={company_id} />
+            )}
+            {activeTab === 'administrativo' && canViewFinancial && (
+              <ClientFinancialTab
+                company={company}
+                onSaved={() =>
+                  queryClient.invalidateQueries({
+                    queryKey: companyDetailQueryOptions(company_id).queryKey,
+                  })
+                }
+              />
             )}
           </div>
         </div>

@@ -33,6 +33,21 @@ const FIELD_LABELS: Record<string, string> = {
   "social.websiteUrl": "Site",
   "social.instagramUsername": "Instagram",
   "social.linkedInUsername": "LinkedIn",
+  "financial.mrr": "Dados do MRR",
+  "financial.tcv": "Dados do TCV",
+  "financial.mrr.monthlyValue": "Valor mensal",
+  "financial.mrr.paymentMethod": "Forma de pagamento",
+  "financial.mrr.dueDay": "Dia de vencimento",
+  "financial.mrr.loyaltyMonths": "Fidelidade",
+  "financial.mrr.startDate": "Data de início",
+  "financial.mrr.endDate": "Data de término",
+  "financial.tcv.totalValue": "Valor total do contrato",
+  "financial.tcv.paymentType": "Forma de pagamento",
+  "financial.tcv.paymentMethod": "Forma de pagamento",
+  "financial.tcv.installments": "Número de parcelas",
+  "financial.tcv.installmentValue": "Valor por parcela",
+  "financial.tcv.startDate": "Data de início",
+  "financial.tcv.endDate": "Data de término",
 };
 
 function formatZodErrors(error: ZodError): string {
