@@ -1,5 +1,5 @@
-import {onCall, HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { onCall, HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import type {
   CallableRequest,
@@ -21,7 +21,7 @@ export function onCallHandler<T = unknown, R = unknown>(
       cpu: 1,
       ...options,
     },
-    async (req) => {
+    async (req: CallableRequest<T>): Promise<R> => {
       try {
         return await handler(req);
       } catch (err) {

@@ -1,6 +1,6 @@
-import {z} from "zod";
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -10,12 +10,13 @@ import {
   bucket,
   AdminRepository,
   CompanyUserRepository,
+  UserAccessLevel,
 } from "functions-shared";
 
 export const deleteAccountHandler = onCallHandler(async (req) => {
-  const {uid, accessLevel} = getAuthenticatedUser(req);
+  const { uid, accessLevel } = getAuthenticatedUser(req);
 
-  const {data, success, error} = UserSchema.deleteAccountSchema.safeParse(
+  const { data, success, error } = UserSchema.deleteAccountSchema.safeParse(
     req.data,
   );
 
@@ -40,7 +41,9 @@ export const deleteAccountHandler = onCallHandler(async (req) => {
   });
 
   const targetUser = await auth.getUser(data.targetId);
-  const targetAccessLevel = targetUser.customClaims?.["accessLevel"];
+  const targetAccessLevel = targetUser.customClaims?.["accessLevel"] as
+    | UserAccessLevel
+    | undefined;
 
   const deleteAccountPromise =
     targetAccessLevel === "user" ?
