@@ -79,6 +79,26 @@ export default class CompanyUserRepository {
     return {uid, name: user.name};
   }
 
+  static async listUidsByCompany(companyId: string): Promise<string[]> {
+    const snapshot = await this.usersCollection
+      .where("companyId", "==", companyId)
+      .get();
+
+    return snapshot.docs.map((doc) => doc.id);
+  }
+
+  static async addFcmToken(uid: string, token: string): Promise<void> {
+    await this.usersCollection.doc(uid).update({
+      fcmTokens: FieldValue.arrayUnion(token),
+    });
+  }
+
+  static async removeFcmToken(uid: string, token: string): Promise<void> {
+    await this.usersCollection.doc(uid).update({
+      fcmTokens: FieldValue.arrayRemove(token),
+    });
+  }
+
   static async listByCompany(companyId: string): Promise<CompanyUserListDTO[]> {
     const snapshot = await this.usersCollection
       .where("companyId", "==", companyId)

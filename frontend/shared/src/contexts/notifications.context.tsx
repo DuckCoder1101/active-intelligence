@@ -5,7 +5,6 @@ import type { Notification } from '@/models/notification.model';
 export interface NotificationsContextType {
   notifications: Notification[];
   unreadCount: number;
-  canView: boolean;
   markAsRead: (notificationId: string) => void;
 }
 

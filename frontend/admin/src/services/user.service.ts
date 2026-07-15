@@ -14,6 +14,7 @@ import {
 } from 'firebase/storage';
 
 import type { UserProfile } from '@/models/user-profile.model';
+import FcmService from '@/services/fcm.service';
 import type {
   CompleteAccountDTO,
   DeleteAccountDTO,
@@ -73,6 +74,7 @@ export default class UserService {
   }
 
   static async signout(): Promise<void> {
+    await FcmService.unregisterCurrentToken();
     await signOut(auth);
   }
 

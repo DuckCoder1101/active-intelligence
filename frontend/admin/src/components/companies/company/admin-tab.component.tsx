@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { SaveBar } from '@/components/layout/save-bar.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { FormSelect } from '@/components/ui/form-select.component';
+import { MoneyInput } from '@/components/ui/money-input.component';
 import { MultiSelect } from '@/components/ui/multi-select.component';
 import { Section } from '@/components/ui/section.component';
 import type {
@@ -25,6 +26,7 @@ import {
   contractedServicesQueryOptions,
   useSaveContractedServiceMutation,
 } from '@/queries/contracted-service.queries';
+import { fromDateInput, toDateInput } from '@/utils/date.util';
 
 const FORM_ID = 'client-financial-form';
 
@@ -73,14 +75,6 @@ export const defaultFinancialFormValues: FinancialFormValues = {
     endDate: '',
   },
 };
-
-function toDateInput(ms?: number): string {
-  return ms ? new Date(ms).toISOString().split('T')[0] : '';
-}
-
-function fromDateInput(value: string): number {
-  return new Date(`${value}T12:00:00`).getTime();
-}
 
 export function buildFinancialPayload(
   values: FinancialFormValues,
@@ -254,16 +248,19 @@ export function ClientFinancialTab({ company, onSaved }: Props) {
             {contractType === 'mrr' && (
               <div className="space-y-4 border-t border-border pt-4">
                 <div className="form-grid">
-                  <FormInput
-                    label="Valor mensal (R$) *"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    error={errors.mrr?.monthlyValue?.message}
-                    {...register('mrr.monthlyValue', {
-                      required: 'Valor mensal obrigatório',
-                      setValueAs: (v) => (v === '' ? '' : Number(v)),
-                    })}
+                  <Controller
+                    name="mrr.monthlyValue"
+                    control={control}
+                    rules={{ required: 'Valor mensal obrigatório' }}
+                    render={({ field }) => (
+                      <MoneyInput
+                        label="Valor mensal (R$) *"
+                        error={errors.mrr?.monthlyValue?.message}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
                   />
                   <FormSelect
                     label="Forma de pagamento *"
@@ -320,16 +317,19 @@ export function ClientFinancialTab({ company, onSaved }: Props) {
 
             {contractType === 'tcv' && (
               <div className="space-y-4 border-t border-border pt-4">
-                <FormInput
-                  label="Valor total do contrato (R$) *"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  error={errors.tcv?.totalValue?.message}
-                  {...register('tcv.totalValue', {
-                    required: 'Valor total obrigatório',
-                    setValueAs: (v) => (v === '' ? '' : Number(v)),
-                  })}
+                <Controller
+                  name="tcv.totalValue"
+                  control={control}
+                  rules={{ required: 'Valor total obrigatório' }}
+                  render={({ field }) => (
+                    <MoneyInput
+                      label="Valor total do contrato (R$) *"
+                      error={errors.tcv?.totalValue?.message}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                  )}
                 />
                 <FormSelect
                   label="Forma de pagamento *"
@@ -370,16 +370,19 @@ export function ClientFinancialTab({ company, onSaved }: Props) {
                         setValueAs: (v) => (v === '' ? '' : Number(v)),
                       })}
                     />
-                    <FormInput
-                      label="Valor por parcela (R$) *"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      error={errors.tcv?.installmentValue?.message}
-                      {...register('tcv.installmentValue', {
-                        required: 'Valor por parcela obrigatório',
-                        setValueAs: (v) => (v === '' ? '' : Number(v)),
-                      })}
+                    <Controller
+                      name="tcv.installmentValue"
+                      control={control}
+                      rules={{ required: 'Valor por parcela obrigatório' }}
+                      render={({ field }) => (
+                        <MoneyInput
+                          label="Valor por parcela (R$) *"
+                          error={errors.tcv?.installmentValue?.message}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
                     />
                   </div>
                 )}

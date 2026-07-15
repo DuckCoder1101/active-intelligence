@@ -27,3 +27,11 @@ src/utils/firebase.util.ts
 src/utils/firstTabWithError.util.ts
 src/utils/loadFieldErrors.util.ts
 src/utils/queryClient.util.ts
+src/utils/mapFirebaseError.util.ts
+src/utils/date.util.ts
+src/providers/theme.provider.tsx
+src/providers/fcm-notifications.provider.tsx
+src/providers/notifications.provider.tsx
+src/contexts/theme.context.tsx
+src/contexts/auth.context.tsx
+src/contexts/notifications.context.tsx

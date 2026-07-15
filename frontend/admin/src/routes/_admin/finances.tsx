@@ -1,8 +1,12 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
-import { MdOutlineBarChart, MdOutlineDashboard, MdOutlineReceiptLong } from 'react-icons/md';
+import {
+  MdOutlineBarChart,
+  MdOutlineDashboard,
+  MdOutlineReceiptLong,
+} from 'react-icons/md';
 
-import { FinanceTransactionsTab } from '@/components/finance/transactions-tab.component';
+import { FinanceTransactionsTab } from '@components/finances/transactions-tab.component';
 import { AdminPageContainer } from '@/components/ui/page-container.component';
 import { Tabs } from '@/components/ui/tabs.component';
 import { companiesQueryOptions } from '@/queries/company.queries';
@@ -19,7 +23,7 @@ const ROUTE_ACCESS: RouteAccessLevel = {
   permissions: ['manage-finance'],
 };
 
-export const Route = createFileRoute('/_admin/finance')({
+export const Route = createFileRoute('/_admin/finances')({
   ssr: false,
   beforeLoad: ({ context }) => {
     if (!checkRouteAccess(context.sessionUser, ROUTE_ACCESS)) {

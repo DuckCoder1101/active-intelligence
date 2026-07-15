@@ -9,4 +9,6 @@ export interface AdminDocument {
 
   createdAt: Timestamp;
   updatedAt: Timestamp;
+
+  fcmTokens?: string[];
 }

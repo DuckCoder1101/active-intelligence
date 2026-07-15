@@ -77,7 +77,7 @@ export const ADMIN_MODULES: Section[] = [
         icon: MdOutlineCreditCard,
         label: 'Financeiro',
         description: 'Recebíveis, MRR, TCV e mídia.',
-        to: '/finance',
+        to: '/finances',
         permission: 'manage-finance',
       },
     ],

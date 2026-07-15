@@ -7,8 +7,8 @@ import {
   CompanyRepository,
   AuditRepository,
   AuditAction,
-  AdminRepository,
   NotificationRepository,
+  NotificationFilterDTO,
   OperationalKanbanRepository,
 } from "functions-shared";
 import TaskSchema from "../data/task.schema";
@@ -70,11 +70,11 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
     taskTitle: task.title,
   });
 
-  const permissionUids = await AdminRepository.listUidsWithPermission(
-    "manage-projects",
-  );
-  const targetUids = [...new Set([...permissionUids, ...task.assignedTo])];
-  await NotificationRepository.notifyAdmins(targetUids, {
+  const filter: NotificationFilterDTO = task.assignedTo.length > 0 ?
+    {uids: task.assignedTo} :
+    {permission: "manage-projects"};
+
+  await NotificationRepository.notify(filter, {
     type: "new-client-task",
     message: `Nova tarefa recebida: "${task.title}"`,
     taskId: task.taskId,

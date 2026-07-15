@@ -13,6 +13,7 @@ import {
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { FormSelect } from '@/components/ui/form-select.component';
+import { MoneyInput } from '@/components/ui/money-input.component';
 import { MultiSelect } from '@/components/ui/multi-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { Tabs } from '@/components/ui/tabs.component';
@@ -559,16 +560,19 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
             {contractType === 'mrr' && (
               <div className="space-y-4 border-t border-border pt-4">
                 <div className="form-grid">
-                  <FormInput
-                    label="Valor mensal (R$) *"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    error={errors.financial?.mrr?.monthlyValue?.message}
-                    {...register('financial.mrr.monthlyValue', {
-                      required: 'Valor mensal obrigatório',
-                      setValueAs: (v) => (v === '' ? '' : Number(v)),
-                    })}
+                  <Controller
+                    name="financial.mrr.monthlyValue"
+                    control={control}
+                    rules={{ required: 'Valor mensal obrigatório' }}
+                    render={({ field }) => (
+                      <MoneyInput
+                        label="Valor mensal (R$) *"
+                        error={errors.financial?.mrr?.monthlyValue?.message}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
                   />
                   <FormSelect
                     label="Forma de pagamento *"
@@ -625,16 +629,19 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
 
             {contractType === 'tcv' && (
               <div className="space-y-4 border-t border-border pt-4">
-                <FormInput
-                  label="Valor total do contrato (R$) *"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  error={errors.financial?.tcv?.totalValue?.message}
-                  {...register('financial.tcv.totalValue', {
-                    required: 'Valor total obrigatório',
-                    setValueAs: (v) => (v === '' ? '' : Number(v)),
-                  })}
+                <Controller
+                  name="financial.tcv.totalValue"
+                  control={control}
+                  rules={{ required: 'Valor total obrigatório' }}
+                  render={({ field }) => (
+                    <MoneyInput
+                      label="Valor total do contrato (R$) *"
+                      error={errors.financial?.tcv?.totalValue?.message}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                  )}
                 />
                 <FormSelect
                   label="Forma de pagamento *"
@@ -675,16 +682,21 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
                         setValueAs: (v) => (v === '' ? '' : Number(v)),
                       })}
                     />
-                    <FormInput
-                      label="Valor por parcela (R$) *"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      error={errors.financial?.tcv?.installmentValue?.message}
-                      {...register('financial.tcv.installmentValue', {
-                        required: 'Valor por parcela obrigatório',
-                        setValueAs: (v) => (v === '' ? '' : Number(v)),
-                      })}
+                    <Controller
+                      name="financial.tcv.installmentValue"
+                      control={control}
+                      rules={{ required: 'Valor por parcela obrigatório' }}
+                      render={({ field }) => (
+                        <MoneyInput
+                          label="Valor por parcela (R$) *"
+                          error={
+                            errors.financial?.tcv?.installmentValue?.message
+                          }
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
                     />
                   </div>
                 )}

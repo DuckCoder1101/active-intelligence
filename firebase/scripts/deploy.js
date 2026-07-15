@@ -123,7 +123,23 @@ async function deployCodebase(codebase) {
 }
 
 (async () => {
-  const codebases = firebaseJson.functions.map((f) => f.codebase);
+  const allCodebases = firebaseJson.functions.map((f) => f.codebase);
+  const requested = process.argv.slice(2);
+
+  let codebases;
+  if (requested.length > 0) {
+    const invalid = requested.filter((c) => !allCodebases.includes(c));
+    if (invalid.length > 0) {
+      console.error(
+        `Codebase(s) inválida(s): ${invalid.join(', ')}\nCodebases disponíveis: ${allCodebases.join(', ')}`,
+      );
+      process.exitCode = 1;
+      return;
+    }
+    codebases = requested;
+  } else {
+    codebases = allCodebases;
+  }
 
   console.log(`Codebases a deployar: ${codebases.join(', ')}\n`);
 

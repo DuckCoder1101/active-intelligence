@@ -67,7 +67,9 @@ export function useMarkNotificationReadMutation() {
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
+      queryClient.invalidateQueries({
+        queryKey: notificationKeys.unreadCount(),
+      });
     },
   });
 }

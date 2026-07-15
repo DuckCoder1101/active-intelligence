@@ -118,6 +118,27 @@ export default class AdminRepository {
       .map((a) => a.uid);
   }
 
+  static async listUidsByAccessLevel(
+    level: "owner" | "admin",
+  ): Promise<string[]> {
+    const admins = await this.listAll();
+    return admins
+      .filter((a) => a.accessLevel === level)
+      .map((a) => a.uid);
+  }
+
+  static async addFcmToken(uid: string, token: string): Promise<void> {
+    await this.adminsCollection.doc(uid).update({
+      fcmTokens: FieldValue.arrayUnion(token),
+    });
+  }
+
+  static async removeFcmToken(uid: string, token: string): Promise<void> {
+    await this.adminsCollection.doc(uid).update({
+      fcmTokens: FieldValue.arrayRemove(token),
+    });
+  }
+
   static async getResumeByUid(uid: string): Promise<AdminResumeDTO> {
     const doc = await this.adminsCollection.doc(uid).get();
 

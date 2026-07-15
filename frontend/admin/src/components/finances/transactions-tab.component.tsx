@@ -2,7 +2,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 
-import { TransactionModal } from '@/components/finance/transaction-modal.component';
+import { TransactionModal } from '@/components/finances/transaction-modal.component';
 import { Badge } from '@/components/ui/badge.component';
 import { formatCurrency } from '@/formatters/formatCurrency';
 import { formatDateShort } from '@/formatters/formatDate';

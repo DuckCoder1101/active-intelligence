@@ -1,20 +1,20 @@
-import {HttpsError} from "firebase-functions/https";
 import {z} from "zod";
+import {HttpsError} from "firebase-functions/https";
 
 import {
   onCallHandler,
   requireAccess,
   NotificationRepository,
 } from "functions-shared";
-import AdminSchema from "../data/admin.schema";
+import NotificationSchema from "../data/notification.schema";
 
-const ACCESS = {minAccessLevel: "admin" as const};
+const ACCESS = {minAccessLevel: "user" as const};
 
 export const markNotificationReadHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 
   const {success, data, error} =
-    AdminSchema.markNotificationReadSchema.safeParse(req.data);
+    NotificationSchema.markReadSchema.safeParse(req.data);
 
   if (!success) {
     throw new HttpsError(

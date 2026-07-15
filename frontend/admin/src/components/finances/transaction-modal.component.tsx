@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { FormSelect } from '@/components/ui/form-select.component';
+import { MoneyInput } from '@/components/ui/money-input.component';
 import { SelectCreate } from '@/components/ui/select-create.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { CompanyResume } from '@/models/company.model';
@@ -30,6 +31,7 @@ import {
   useSaveFinanceCategoryMutation,
   useSaveTransactionMutation,
 } from '@/queries/finance.queries';
+import { fromDateInput, toDateInput } from '@/utils/date.util';
 
 interface FormValues {
   type: TransactionType;
@@ -41,10 +43,6 @@ interface FormValues {
   accountId: string;
   dueDate: string;
   description: string;
-}
-
-function toDateInput(ms?: number): string {
-  return ms ? new Date(ms).toISOString().split('T')[0] : '';
 }
 
 function defaultValues(transaction?: Transaction): FormValues {
@@ -113,7 +111,7 @@ export function TransactionModal({
       amount: Number(values.amount),
       paymentMethod: values.paymentMethod as PaymentMethod,
       accountId: values.accountId,
-      dueDate: new Date(`${values.dueDate}T12:00:00`).getTime(),
+      dueDate: fromDateInput(values.dueDate),
       description: values.description.trim() || undefined,
     };
 
@@ -189,16 +187,19 @@ export function TransactionModal({
                 ))}
               </FormSelect>
 
-              <FormInput
-                label="Valor (R$) *"
-                type="number"
-                min="0"
-                step="0.01"
-                error={errors.amount?.message}
-                {...register('amount', {
-                  required: 'Valor obrigatório',
-                  setValueAs: (v) => (v === '' ? '' : Number(v)),
-                })}
+              <Controller
+                name="amount"
+                control={control}
+                rules={{ required: 'Valor obrigatório' }}
+                render={({ field }) => (
+                  <MoneyInput
+                    label="Valor (R$) *"
+                    error={errors.amount?.message}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                  />
+                )}
               />
             </div>
 

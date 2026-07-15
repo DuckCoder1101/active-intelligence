@@ -10,4 +10,6 @@ export interface CompanyUserDocument {
 
   createdAt: Timestamp;
   updatedAt: Timestamp;
+
+  fcmTokens?: string[];
 }

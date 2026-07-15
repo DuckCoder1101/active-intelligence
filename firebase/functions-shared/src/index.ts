@@ -98,5 +98,6 @@ export type {
 } from "./domain/notification/notification.document";
 export type {
   NotificationDTO,
-  NotifyAdminsDTO,
+  NotificationContentDTO,
+  NotificationFilterDTO,
 } from "./domain/notification/notification.dtos";
