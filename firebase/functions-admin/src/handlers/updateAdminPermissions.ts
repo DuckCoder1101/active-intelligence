@@ -1,16 +1,16 @@
-import {z} from "zod";
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
-import {onCallHandler, requireAccess, auth} from "functions-shared";
+import { onCallHandler, requireAccess, auth } from "functions-shared";
 import AdminSchema from "../data/admin.schema";
 
-const ACCESS = {minAccessLevel: "owner" as const};
+const ACCESS = { minAccessLevel: "owner" as const };
 
 export const updateAdminPermissionsHandler = onCallHandler(async (req) => {
-  const {uid: callerUid} = requireAccess(req, ACCESS);
+  const { uid: callerUid } = requireAccess(req, ACCESS);
 
-  const {success, data, error} =
+  const { success, data, error } =
     AdminSchema.updatePermissionsSchema.safeParse(req.data);
 
   if (!success) {

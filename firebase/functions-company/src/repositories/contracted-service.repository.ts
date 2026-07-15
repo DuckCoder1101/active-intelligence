@@ -1,5 +1,5 @@
-import {FieldValue} from "firebase-admin/firestore";
-import {database} from "functions-shared";
+import { FieldValue } from "firebase-admin/firestore";
+import { database } from "functions-shared";
 
 import {
   ContractedServiceDocument,
@@ -14,7 +14,7 @@ export class ContractedServiceRepository {
     return snap.docs
       .map((doc) => {
         const data = doc.data() as ContractedServiceDocument;
-        return {serviceId: doc.id, name: data.name};
+        return { serviceId: doc.id, name: data.name };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -28,7 +28,7 @@ export class ContractedServiceRepository {
     if (!existing.empty) {
       const doc = existing.docs[0];
       const data = doc.data() as ContractedServiceDocument;
-      return {serviceId: doc.id, name: data.name};
+      return { serviceId: doc.id, name: data.name };
     }
 
     const ref = this.col.doc();
@@ -37,6 +37,6 @@ export class ContractedServiceRepository {
       nameIndex: name.trim().toLowerCase(),
       createdAt: FieldValue.serverTimestamp(),
     });
-    return {serviceId: ref.id, name: name.trim()};
+    return { serviceId: ref.id, name: name.trim() };
   }
 }

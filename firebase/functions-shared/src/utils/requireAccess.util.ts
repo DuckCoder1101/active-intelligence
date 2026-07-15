@@ -1,8 +1,8 @@
-import {CallableRequest, HttpsError} from "firebase-functions/https";
-import {getAuthenticatedUser} from "./getAuthenticatedUser.util";
-import {LEVEL_ORDER} from "../constants/levelOrder.const";
-import {BackendAccessLevel} from "../types/accessLevel.type";
-import {AuthenticatedUser} from "../types/authenticatedUser.type";
+import { CallableRequest, HttpsError } from "firebase-functions/https";
+import { getAuthenticatedUser } from "./getAuthenticatedUser.util";
+import { LEVEL_ORDER } from "../constants/levelOrder.const";
+import { BackendAccessLevel } from "../types/accessLevel.type";
+import { AuthenticatedUser } from "../types/authenticatedUser.type";
 
 export function requireAccess(
   req: CallableRequest,

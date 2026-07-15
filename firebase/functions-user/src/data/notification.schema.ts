@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from "zod";
 
 export default class NotificationSchema {
   static markReadSchema = z.object({

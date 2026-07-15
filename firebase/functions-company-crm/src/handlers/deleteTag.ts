@@ -1,10 +1,10 @@
-import {HttpsError} from "firebase-functions/https";
-import {z} from "zod";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { z } from "zod";
+import { logger } from "firebase-functions";
 
-import {onCallHandler} from "functions-shared";
-import {TagRepository} from "../repositories/tag.repository";
-import {requireCompanyAccess} from "../utils/requireCompanyAccess";
+import { onCallHandler } from "functions-shared";
+import { TagRepository } from "../repositories/tag.repository";
+import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 const schema = z.object({
   companyId: z.string().min(1),
@@ -12,14 +12,14 @@ const schema = z.object({
 });
 
 export const deleteTagHandler = onCallHandler(async (req) => {
-  const {success, data, error} = schema.safeParse(req.data);
+  const { success, data, error } = schema.safeParse(req.data);
   if (!success) {
     throw new HttpsError("invalid-argument", "tagId obrigatório", error.issues);
   }
 
-  const {companyId} = requireCompanyAccess(req, data.companyId);
+  const { companyId } = requireCompanyAccess(req, data.companyId);
 
-  logger.info("deleteTag", {companyId, tagId: data.tagId});
+  logger.info("deleteTag", { companyId, tagId: data.tagId });
 
   await TagRepository.delete(companyId, data.tagId);
   return true;

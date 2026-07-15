@@ -1,4 +1,4 @@
-import {logger} from "firebase-functions";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -6,7 +6,7 @@ import {
   OperationalKanbanRepository,
 } from "functions-shared";
 
-const ACCESS = {minAccessLevel: "user" as const};
+const ACCESS = { minAccessLevel: "user" as const };
 
 export const listOperationalKanbanColumnsHandler =
   onCallHandler(async (req) => {

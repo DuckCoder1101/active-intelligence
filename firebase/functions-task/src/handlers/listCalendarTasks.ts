@@ -1,9 +1,9 @@
-import {HttpsError} from "firebase-functions/https";
-import {z} from "zod";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { z } from "zod";
+import { logger } from "firebase-functions";
 
-import {onCallHandler, getAuthenticatedUser} from "functions-shared";
-import {TaskRepository} from "../repositories/task.repository";
+import { onCallHandler, getAuthenticatedUser } from "functions-shared";
+import { TaskRepository } from "../repositories/task.repository";
 
 const schema = z.object({
   companyId: z.string().optional(),
@@ -14,7 +14,7 @@ const schema = z.object({
 export const listCalendarTasksHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 
-  const {success, data, error} = schema.safeParse(req.data);
+  const { success, data, error } = schema.safeParse(req.data);
   if (!success) {
     throw new HttpsError(
       "invalid-argument",
@@ -56,5 +56,5 @@ export const listCalendarTasksHandler = onCallHandler(async (req) => {
     data.month,
   );
 
-  return {tasks};
+  return { tasks };
 });

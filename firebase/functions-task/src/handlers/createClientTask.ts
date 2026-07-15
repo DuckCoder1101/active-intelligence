@@ -1,5 +1,5 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -12,7 +12,7 @@ import {
   OperationalKanbanRepository,
 } from "functions-shared";
 import TaskSchema from "../data/task.schema";
-import {TaskRepository} from "../repositories/task.repository";
+import { TaskRepository } from "../repositories/task.repository";
 
 export const createClientTaskHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
@@ -32,7 +32,7 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
     );
   }
 
-  const {success, data, error} = TaskSchema.createClientTaskSchema.safeParse(
+  const { success, data, error } = TaskSchema.createClientTaskSchema.safeParse(
     req.data,
   );
   if (!success) {
@@ -42,7 +42,11 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("createClientTask", {companyId, type: data.type, uid: user.uid});
+  logger.info("createClientTask", {
+    companyId,
+    type: data.type,
+    uid: user.uid,
+  });
 
   await CompanyRepository.checkAndIncrementUsage(companyId);
 
@@ -70,9 +74,10 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
     taskTitle: task.title,
   });
 
-  const filter: NotificationFilterDTO = task.assignedTo.length > 0 ?
-    {uids: task.assignedTo} :
-    {permission: "manage-projects"};
+  const filter: NotificationFilterDTO =
+    task.assignedTo.length > 0
+      ? { uids: task.assignedTo }
+      : { permission: "manage-projects" };
 
   await NotificationRepository.notify(filter, {
     type: "new-client-task",

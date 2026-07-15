@@ -1,5 +1,5 @@
-import {onCallHandler, requireAccess} from "functions-shared";
-import {TransactionRepository} from "../repositories/transaction.repository";
+import { onCallHandler, requireAccess } from "functions-shared";
+import { TransactionRepository } from "../repositories/transaction.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,

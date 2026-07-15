@@ -1,9 +1,9 @@
-import {HttpsError} from "firebase-functions/https";
-import {z} from "zod";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { z } from "zod";
+import { logger } from "firebase-functions";
 
-import {onCallHandler, getAuthenticatedUser} from "functions-shared";
-import {TaskRepository} from "../repositories/task.repository";
+import { onCallHandler, getAuthenticatedUser } from "functions-shared";
+import { TaskRepository } from "../repositories/task.repository";
 
 const schema = z.object({
   taskId: z.string().min(1, "taskId obrigatório"),
@@ -25,7 +25,7 @@ export const updateClientTaskImagesHandler = onCallHandler(async (req) => {
     );
   }
 
-  const {success, data, error} = schema.safeParse(req.data);
+  const { success, data, error } = schema.safeParse(req.data);
   if (!success) {
     throw new HttpsError(
       "invalid-argument",
@@ -44,5 +44,5 @@ export const updateClientTaskImagesHandler = onCallHandler(async (req) => {
     data.referenceImages,
   );
 
-  return {success: true};
+  return { success: true };
 });

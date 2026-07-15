@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from "zod";
 import UserSchema from "./user.schema";
 
 export interface UserProfileDTO {

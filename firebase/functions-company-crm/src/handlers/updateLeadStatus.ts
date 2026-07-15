@@ -1,13 +1,13 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
-import {onCallHandler} from "functions-shared";
+import { onCallHandler } from "functions-shared";
 import LeadSchema from "../data/lead.schema";
-import {LeadRepository} from "../repositories/lead.repository";
-import {requireCompanyAccess} from "../utils/requireCompanyAccess";
+import { LeadRepository } from "../repositories/lead.repository";
+import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 export const updateLeadStatusHandler = onCallHandler(async (req) => {
-  const {success, data, error} = LeadSchema.updateStatusSchema.safeParse(
+  const { success, data, error } = LeadSchema.updateStatusSchema.safeParse(
     req.data,
   );
   if (!success) {
@@ -17,7 +17,7 @@ export const updateLeadStatusHandler = onCallHandler(async (req) => {
     );
   }
 
-  const {companyId} = requireCompanyAccess(req, data.companyId);
+  const { companyId } = requireCompanyAccess(req, data.companyId);
 
   logger.info("updateLeadStatus", {
     companyId,

@@ -1,5 +1,5 @@
-import {HttpsError, CallableRequest} from "firebase-functions/https";
-import {getAuthenticatedUser} from "functions-shared";
+import { HttpsError, CallableRequest } from "firebase-functions/https";
+import { getAuthenticatedUser } from "functions-shared";
 
 export function requireCompanyAccess(
   req: CallableRequest,
@@ -16,5 +16,5 @@ export function requireCompanyAccess(
     );
   }
 
-  return {uid: user.uid, companyId};
+  return { uid: user.uid, companyId };
 }

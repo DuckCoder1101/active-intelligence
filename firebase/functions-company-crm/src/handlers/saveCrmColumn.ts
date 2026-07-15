@@ -1,10 +1,10 @@
-import {HttpsError} from "firebase-functions/https";
-import {z} from "zod";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { z } from "zod";
+import { logger } from "firebase-functions";
 
-import {onCallHandler} from "functions-shared";
-import {CrmColumnRepository} from "../repositories/crm-column.repository";
-import {requireCompanyAccess} from "../utils/requireCompanyAccess";
+import { onCallHandler } from "functions-shared";
+import { CrmColumnRepository } from "../repositories/crm-column.repository";
+import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 const schema = z.object({
   companyId: z.string().min(1),
@@ -15,7 +15,7 @@ const schema = z.object({
 });
 
 export const saveCrmColumnHandler = onCallHandler(async (req) => {
-  const {success, data, error} = schema.safeParse(req.data);
+  const { success, data, error } = schema.safeParse(req.data);
   if (!success) {
     throw new HttpsError(
       "invalid-argument",
@@ -23,7 +23,7 @@ export const saveCrmColumnHandler = onCallHandler(async (req) => {
     );
   }
 
-  const {companyId} = requireCompanyAccess(req, data.companyId);
+  const { companyId } = requireCompanyAccess(req, data.companyId);
 
   logger.info("saveCrmColumn", {
     companyId,

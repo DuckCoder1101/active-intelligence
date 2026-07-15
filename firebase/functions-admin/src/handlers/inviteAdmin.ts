@@ -1,9 +1,9 @@
-import {z} from "zod";
-import {FirebaseAuthError} from "firebase-admin/auth";
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { z } from "zod";
+import { FirebaseAuthError } from "firebase-admin/auth";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
-import {onCallHandler, requireAccess, auth} from "functions-shared";
+import { onCallHandler, requireAccess, auth } from "functions-shared";
 import AdminSchema from "../data/admin.schema";
 
 const ACCESS = {
@@ -14,7 +14,7 @@ const ACCESS = {
 export const inviteAdminHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
-  const {success, data, error} = AdminSchema.inviteAdminSchema.safeParse(
+  const { success, data, error } = AdminSchema.inviteAdminSchema.safeParse(
     req.data,
   );
 
@@ -26,7 +26,7 @@ export const inviteAdminHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("inviteAdmin", {email: data.email});
+  logger.info("inviteAdmin", { email: data.email });
 
   try {
     const userRecord = await auth.createUser({

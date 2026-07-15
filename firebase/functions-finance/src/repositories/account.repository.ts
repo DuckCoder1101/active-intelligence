@@ -1,5 +1,5 @@
-import {FieldValue} from "firebase-admin/firestore";
-import {database} from "functions-shared";
+import { FieldValue } from "firebase-admin/firestore";
+import { database } from "functions-shared";
 
 import {
   FinanceAccountDocument,
@@ -14,7 +14,7 @@ export class AccountRepository {
     return snap.docs
       .map((doc) => {
         const data = doc.data() as FinanceAccountDocument;
-        return {accountId: doc.id, name: data.name};
+        return { accountId: doc.id, name: data.name };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -22,7 +22,7 @@ export class AccountRepository {
   static async getById(accountId: string): Promise<FinanceAccountDTO> {
     const snap = await this.col.doc(accountId).get();
     const data = snap.data() as FinanceAccountDocument;
-    return {accountId: snap.id, name: data.name};
+    return { accountId: snap.id, name: data.name };
   }
 
   static async save(name: string): Promise<FinanceAccountDTO> {
@@ -34,7 +34,7 @@ export class AccountRepository {
     if (!existing.empty) {
       const doc = existing.docs[0];
       const data = doc.data() as FinanceAccountDocument;
-      return {accountId: doc.id, name: data.name};
+      return { accountId: doc.id, name: data.name };
     }
 
     const ref = this.col.doc();
@@ -43,6 +43,6 @@ export class AccountRepository {
       nameIndex: name.trim().toLowerCase(),
       createdAt: FieldValue.serverTimestamp(),
     });
-    return {accountId: ref.id, name: name.trim()};
+    return { accountId: ref.id, name: name.trim() };
   }
 }

@@ -1,8 +1,8 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
-import {z} from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
+import { z } from "zod";
 
-import {onCallHandler, requireAccess} from "functions-shared";
+import { onCallHandler, requireAccess } from "functions-shared";
 
 import {
   ContractedServiceRepository,
@@ -21,7 +21,7 @@ const schema = z.object({
 export const saveContractedServiceHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
-  const {success, data, error} = schema.safeParse(req.data);
+  const { success, data, error } = schema.safeParse(req.data);
   if (!success) {
     throw new HttpsError(
       "invalid-argument",
@@ -29,7 +29,7 @@ export const saveContractedServiceHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("saveContractedService", {name: data.name});
+  logger.info("saveContractedService", { name: data.name });
 
   return ContractedServiceRepository.save(data.name);
 });

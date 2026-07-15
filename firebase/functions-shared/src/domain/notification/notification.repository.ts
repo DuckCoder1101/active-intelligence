@@ -1,14 +1,14 @@
-import {FieldValue} from "firebase-admin/firestore";
-import {getMessaging} from "firebase-admin/messaging";
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { FieldValue } from "firebase-admin/firestore";
+import { getMessaging } from "firebase-admin/messaging";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
-import {database} from "../../utils/firebase";
+import { database } from "../../utils/firebase";
 import AdminRepository from "../admin/admin.repository";
-import {AdminDocument} from "../admin/admin.document";
+import { AdminDocument } from "../admin/admin.document";
 import CompanyUserRepository from "../company-user/company-user.repository";
-import {CompanyUserDocument} from "../company-user/company-user.document";
-import {NotificationDocument} from "./notification.document";
+import { CompanyUserDocument } from "../company-user/company-user.document";
+import { NotificationDocument } from "./notification.document";
 import {
   NotificationContentDTO,
   NotificationDTO,
@@ -97,7 +97,7 @@ export default class NotificationRepository {
     if (remaining.length === 0) {
       await ref.delete();
     } else {
-      await ref.update({targetUids: FieldValue.arrayRemove(uid)});
+      await ref.update({ targetUids: FieldValue.arrayRemove(uid) });
     }
   }
 
@@ -125,17 +125,17 @@ export default class NotificationRepository {
     data: NotificationContentDTO,
   ): Promise<void> {
     try {
-      const {tokens, tokenOwners} = await this.resolveFcmTokens(uids);
+      const { tokens, tokenOwners } = await this.resolveFcmTokens(uids);
       if (tokens.length === 0) return;
 
       for (const tokenChunk of chunk(tokens, 500)) {
         const response = await getMessaging().sendEachForMulticast({
           tokens: tokenChunk,
-          notification: {title: "Guará", body: data.message},
+          notification: { title: "Guará", body: data.message },
           data: {
             type: data.type,
-            ...(data.taskId && {taskId: data.taskId}),
-            ...(data.companyId && {companyId: data.companyId}),
+            ...(data.taskId && { taskId: data.taskId }),
+            ...(data.companyId && { companyId: data.companyId }),
           },
         });
 
@@ -172,7 +172,7 @@ export default class NotificationRepository {
         const admin = snap.data() as AdminDocument;
         for (const token of admin.fcmTokens ?? []) {
           tokens.push(token);
-          tokenOwners.set(token, {uid: snap.id, collection: "admins"});
+          tokenOwners.set(token, { uid: snap.id, collection: "admins" });
         }
       }
 
@@ -181,12 +181,12 @@ export default class NotificationRepository {
         const companyUser = snap.data() as CompanyUserDocument;
         for (const token of companyUser.fcmTokens ?? []) {
           tokens.push(token);
-          tokenOwners.set(token, {uid: snap.id, collection: "company-users"});
+          tokenOwners.set(token, { uid: snap.id, collection: "company-users" });
         }
       }
     }
 
-    return {tokens, tokenOwners};
+    return { tokens, tokenOwners };
   }
 
   private static async pruneInvalidTokens(

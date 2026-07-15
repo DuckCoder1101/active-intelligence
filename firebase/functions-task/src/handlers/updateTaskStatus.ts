@@ -1,5 +1,5 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -9,14 +9,14 @@ import {
   AuditAction,
 } from "functions-shared";
 import TaskSchema from "../data/task.schema";
-import {TaskRepository} from "../repositories/task.repository";
+import { TaskRepository } from "../repositories/task.repository";
 
-const ACCESS = {minAccessLevel: "admin" as const};
+const ACCESS = { minAccessLevel: "admin" as const };
 
 export const updateTaskStatusHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 
-  const {success, data, error} = TaskSchema.updateStatusSchema.safeParse(
+  const { success, data, error } = TaskSchema.updateStatusSchema.safeParse(
     req.data,
   );
   if (!success) {
@@ -39,7 +39,7 @@ export const updateTaskStatusHandler = onCallHandler(async (req) => {
     }
   }
 
-  logger.info("updateTaskStatus", {taskId: data.taskId, status: data.status});
+  logger.info("updateTaskStatus", { taskId: data.taskId, status: data.status });
 
   await TaskRepository.updateStatus(data.taskId, data.status);
 

@@ -1,9 +1,9 @@
-import {HttpsError} from "firebase-functions/https";
-import {FieldValue} from "firebase-admin/firestore";
+import { HttpsError } from "firebase-functions/https";
+import { FieldValue } from "firebase-admin/firestore";
 
-import {database} from "functions-shared";
-import {TagDocument} from "../types/tag.document";
-import {TagDTO, SaveTagDTO} from "../types/tag.dto";
+import { database } from "functions-shared";
+import { TagDocument } from "../types/tag.document";
+import { TagDTO, SaveTagDTO } from "../types/tag.dto";
 
 export class TagRepository {
   private static col(companyId: string) {
@@ -16,7 +16,7 @@ export class TagRepository {
     return snap.docs
       .map((doc) => {
         const data = doc.data() as TagDocument;
-        return {tagId: doc.id, name: data.name};
+        return { tagId: doc.id, name: data.name };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -28,7 +28,7 @@ export class TagRepository {
       name: data.name,
       createdAt: FieldValue.serverTimestamp(),
     });
-    return {tagId: ref.id, name: data.name};
+    return { tagId: ref.id, name: data.name };
   }
 
   static async delete(companyId: string, tagId: string): Promise<void> {

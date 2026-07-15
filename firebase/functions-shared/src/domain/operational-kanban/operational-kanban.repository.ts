@@ -1,7 +1,7 @@
-import {HttpsError} from "firebase-functions/https";
-import {FieldValue} from "firebase-admin/firestore";
+import { HttpsError } from "firebase-functions/https";
+import { FieldValue } from "firebase-admin/firestore";
 
-import {database} from "../../utils/firebase";
+import { database } from "../../utils/firebase";
 import {
   OperationalKanbanColumnDocument,
   DEFAULT_COLUMNS,
@@ -72,7 +72,7 @@ export class OperationalKanbanRepository {
         name: data.name,
         color: data.color,
         order: data.order ?? maxOrder + 1,
-        ...(isNew ? {createdAt: FieldValue.serverTimestamp()} : {}),
+        ...(isNew ? { createdAt: FieldValue.serverTimestamp() } : {}),
       },
       {
         merge: true,

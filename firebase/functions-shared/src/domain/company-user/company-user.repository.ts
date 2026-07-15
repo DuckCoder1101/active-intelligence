@@ -1,13 +1,13 @@
-import {database} from "../../utils/firebase";
-import {HttpsError} from "firebase-functions/https";
-import {CompanyUserListDTO} from "./company-user.dtos";
-import {CompanyUserDocument} from "./company-user.document";
+import { database } from "../../utils/firebase";
+import { HttpsError } from "firebase-functions/https";
+import { CompanyUserListDTO } from "./company-user.dtos";
+import { CompanyUserDocument } from "./company-user.document";
 import {
   CompleteProfileDTO,
   UpdateProfileDTO,
   UserProfileDTO,
 } from "../user/user.dto";
-import {FieldValue} from "firebase-admin/firestore";
+import { FieldValue } from "firebase-admin/firestore";
 
 export default class CompanyUserRepository {
   private static usersCollection = database.collection("company-users");
@@ -50,7 +50,7 @@ export default class CompanyUserRepository {
     };
   }
 
-  static async update({targetId, ...data}: UpdateProfileDTO) {
+  static async update({ targetId, ...data }: UpdateProfileDTO) {
     await this.usersCollection.doc(targetId).update({
       ...data,
       updatedAt: FieldValue.serverTimestamp(),
@@ -76,7 +76,7 @@ export default class CompanyUserRepository {
       throw new HttpsError("not-found", "Usuário não encontrado!");
     }
     const user = doc.data() as CompanyUserDocument;
-    return {uid, name: user.name};
+    return { uid, name: user.name };
   }
 
   static async listUidsByCompany(companyId: string): Promise<string[]> {

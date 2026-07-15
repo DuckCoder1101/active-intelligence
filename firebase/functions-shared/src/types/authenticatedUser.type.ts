@@ -1,4 +1,4 @@
-import {AdminPermission, UserAccessLevel} from "./accessLevel.type";
+import { AdminPermission, UserAccessLevel } from "./accessLevel.type";
 
 export interface AuthenticatedUser {
   uid: string;

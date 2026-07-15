@@ -1,4 +1,4 @@
-import {logger} from "firebase-functions";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -13,6 +13,6 @@ const ACCESS = {
 export const listAdminsHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
   const result = await AdminRepository.listAll();
-  logger.info("listAdmins: retornando N itens", {count: result.length});
+  logger.info("listAdmins: retornando N itens", { count: result.length });
   return result;
 });

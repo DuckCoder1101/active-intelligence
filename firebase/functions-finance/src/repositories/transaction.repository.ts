@@ -1,9 +1,9 @@
-import {FieldValue, Timestamp} from "firebase-admin/firestore";
-import {HttpsError} from "firebase-functions/https";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
+import { HttpsError } from "firebase-functions/https";
 
-import {database} from "functions-shared";
-import {TransactionDocument} from "../types/transaction.document";
-import {TransactionDTO} from "../types/transaction.dto";
+import { database } from "functions-shared";
+import { TransactionDocument } from "../types/transaction.document";
+import { TransactionDTO } from "../types/transaction.dto";
 
 function toDTO(id: string, data: TransactionDocument): TransactionDTO {
   return {
@@ -51,7 +51,7 @@ export class TransactionRepository {
   private static col = database.collection("finance_transactions");
 
   static async save(data: SaveTransactionInput): Promise<TransactionDTO> {
-    const {transactionId, dueDate, createdBy, ...rest} = data;
+    const { transactionId, dueDate, createdBy, ...rest } = data;
     const ref = transactionId ? this.col.doc(transactionId) : this.col.doc();
     const isNew = !transactionId;
 
@@ -68,7 +68,7 @@ export class TransactionRepository {
       payload.createdAt = FieldValue.serverTimestamp();
     }
 
-    await ref.set(payload, {merge: true});
+    await ref.set(payload, { merge: true });
 
     const snap = await ref.get();
     return toDTO(snap.id, snap.data() as TransactionDocument);

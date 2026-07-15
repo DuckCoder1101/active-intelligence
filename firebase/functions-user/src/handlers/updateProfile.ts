@@ -1,6 +1,6 @@
-import {z} from "zod";
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -13,9 +13,9 @@ import {
 } from "functions-shared";
 
 export const updateProfileHandler = onCallHandler(async (req) => {
-  const {uid: authorUid, accessLevel} = getAuthenticatedUser(req);
+  const { uid: authorUid, accessLevel } = getAuthenticatedUser(req);
 
-  const {data, success, error} = UserSchema.updateProfileSchema.safeParse(
+  const { data, success, error } = UserSchema.updateProfileSchema.safeParse(
     req.data,
   );
 

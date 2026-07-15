@@ -1,12 +1,12 @@
-import {FieldValue} from "firebase-admin/firestore";
-import {database} from "../../utils/firebase";
+import { FieldValue } from "firebase-admin/firestore";
+import { database } from "../../utils/firebase";
 import {
   CompanyFullDTO,
   CompanyResumeDTO,
   RegisterCompanyDTO,
 } from "./company.type";
-import {CompanyDocument} from "./company.document";
-import {HttpsError} from "firebase-functions/https";
+import { CompanyDocument } from "./company.document";
+import { HttpsError } from "firebase-functions/https";
 
 export class CompanyRepository {
   private static companiesCollection = database.collection("companies");
@@ -44,7 +44,7 @@ export class CompanyRepository {
         createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
       },
-      {merge: true},
+      { merge: true },
     );
   }
 
@@ -85,7 +85,7 @@ export class CompanyRepository {
       throw new HttpsError("not-found", "Empresa não encontrada!");
     }
 
-    const {displayName} = doc.data() as CompanyDocument;
+    const { displayName } = doc.data() as CompanyDocument;
 
     return {
       companyId,
@@ -146,7 +146,7 @@ export class CompanyRepository {
         const newCount =
           (usage?.yearMonth === yearMonth ? usage.count : 0) + 1;
         tx.update(ref, {
-          taskUsage: {yearMonth, count: newCount},
+          taskUsage: { yearMonth, count: newCount },
           updatedAt: FieldValue.serverTimestamp(),
         });
       }
@@ -163,7 +163,7 @@ export class CompanyRepository {
     const usage = company?.taskUsage;
     const used =
       usage?.yearMonth === yearMonth ? (usage.count ?? 0) : 0;
-    return {used, limit, yearMonth};
+    return { used, limit, yearMonth };
   }
 
   private static currentYearMonth(): string {

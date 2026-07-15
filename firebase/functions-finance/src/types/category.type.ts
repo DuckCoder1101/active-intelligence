@@ -1,4 +1,4 @@
-import {Timestamp} from "firebase-admin/firestore";
+import { Timestamp } from "firebase-admin/firestore";
 
 export interface FinanceCategoryDocument {
   name: string;

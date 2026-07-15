@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from "zod";
 import {
   PAYMENT_METHODS,
   TRANSACTION_TYPES,
@@ -10,7 +10,7 @@ export default class TransactionSchema {
       .string()
       .nullish()
       .transform((v) => v ?? undefined),
-    type: z.enum(TRANSACTION_TYPES, {message: "Tipo inválido"}),
+    type: z.enum(TRANSACTION_TYPES, { message: "Tipo inválido" }),
     categoryId: z.string().min(1, "Categoria obrigatória"),
     subcategory: z
       .string()

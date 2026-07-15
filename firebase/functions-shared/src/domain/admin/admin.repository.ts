@@ -1,14 +1,14 @@
-import {database, auth} from "../../utils/firebase";
-import {AdminResumeDTO, AdminProfileDTO} from "./admin.dtos";
-import {HttpsError} from "firebase-functions/https";
-import {AdminDocument} from "./admin.document";
-import {FieldValue} from "firebase-admin/firestore";
+import { database, auth } from "../../utils/firebase";
+import { AdminResumeDTO, AdminProfileDTO } from "./admin.dtos";
+import { HttpsError } from "firebase-functions/https";
+import { AdminDocument } from "./admin.document";
+import { FieldValue } from "firebase-admin/firestore";
 import {
   CompleteProfileDTO,
   UpdateProfileDTO,
   UserProfileDTO,
 } from "../user/user.dto";
-import {AdminPermission} from "../../types/accessLevel.type";
+import { AdminPermission } from "../../types/accessLevel.type";
 
 export default class AdminRepository {
   private static adminsCollection = database.collection("admins");
@@ -55,12 +55,12 @@ export default class AdminRepository {
       data: doc.data() as AdminDocument,
     }));
 
-    const {users} = await auth.getUsers(
-      profileDocs.map(({uid}) => ({uid})),
+    const { users } = await auth.getUsers(
+      profileDocs.map(({ uid }) => ({ uid })),
     );
     const claimsMap = new Map(users.map((u) => [u.uid, u.customClaims ?? {}]));
 
-    return profileDocs.map(({uid, data}) => {
+    return profileDocs.map(({ uid, data }) => {
       const claims = claimsMap.get(uid) ?? {};
       return {
         uid,
@@ -77,7 +77,7 @@ export default class AdminRepository {
     });
   }
 
-  static async update({targetId, ...data}: UpdateProfileDTO) {
+  static async update({ targetId, ...data }: UpdateProfileDTO) {
     const ref = this.adminsCollection.doc(targetId);
     const doc = await ref.get();
 
@@ -148,6 +148,6 @@ export default class AdminRepository {
 
     const admin = doc.data() as AdminDocument;
 
-    return {uid, name: admin.name};
+    return { uid, name: admin.name };
   }
 }

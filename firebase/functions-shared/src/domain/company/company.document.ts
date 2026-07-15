@@ -1,8 +1,8 @@
-import {Timestamp} from "firebase-admin/firestore";
-import {BrazilianState} from "../../enums/brazilianState.enum";
-import {BusinessSector} from "./businessSector.enum";
-import {CompanyStage} from "./companyStage.emum";
-import {RevenueRange} from "./revenueRange.enum";
+import { Timestamp } from "firebase-admin/firestore";
+import { BrazilianState } from "../../enums/brazilianState.enum";
+import { BusinessSector } from "./businessSector.enum";
+import { CompanyStage } from "./companyStage.emum";
+import { RevenueRange } from "./revenueRange.enum";
 
 export interface CompanyDocument {
   displayName: string;

@@ -1,5 +1,5 @@
-import {z} from "zod";
-import {AdminAccessLevels, ADMIN_PERMISSIONS} from "functions-shared";
+import { z } from "zod";
+import { AdminAccessLevels, ADMIN_PERMISSIONS } from "functions-shared";
 
 export default class AdminSchema {
   static updateAccessLevelSchema = z.object({

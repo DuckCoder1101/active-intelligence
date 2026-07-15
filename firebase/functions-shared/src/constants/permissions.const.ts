@@ -1,4 +1,4 @@
-import {AdminPermission} from "../types/accessLevel.type";
+import { AdminPermission } from "../types/accessLevel.type";
 
 export const ADMIN_PERMISSIONS: AdminPermission[] = [
   "manage-clients",

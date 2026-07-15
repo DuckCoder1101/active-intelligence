@@ -1,10 +1,10 @@
-import {z} from "zod";
-import {FirebaseAuthError} from "firebase-admin/auth";
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { z } from "zod";
+import { FirebaseAuthError } from "firebase-admin/auth";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
-import {onCallHandler, requireAccess, auth} from "functions-shared";
-import {CompanyUserSchema} from "../data/company-user.schema";
+import { onCallHandler, requireAccess, auth } from "functions-shared";
+import { CompanyUserSchema } from "../data/company-user.schema";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
@@ -13,7 +13,7 @@ const ACCESS = {
 export const inviteCompanyUserHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
-  const {success, data, error} = CompanyUserSchema.inviteUserSchema.safeParse(
+  const { success, data, error } = CompanyUserSchema.inviteUserSchema.safeParse(
     req.data,
   );
 
@@ -25,7 +25,7 @@ export const inviteCompanyUserHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("inviteUser", {email: data.email, companyId: data.companyId});
+  logger.info("inviteUser", { email: data.email, companyId: data.companyId });
 
   try {
     const userRecord = await auth.createUser({

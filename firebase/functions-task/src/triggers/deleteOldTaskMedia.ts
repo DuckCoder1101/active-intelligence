@@ -1,6 +1,6 @@
-import {onSchedule} from "firebase-functions/scheduler";
-import {bucket} from "functions-shared";
-import {TaskRepository} from "../repositories/task.repository";
+import { onSchedule } from "firebase-functions/scheduler";
+import { bucket } from "functions-shared";
+import { TaskRepository } from "../repositories/task.repository";
 
 const DAYS_TO_EXPIRE = 31;
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
@@ -19,7 +19,7 @@ export const deleteOldTaskMedia = onSchedule(
       if (age < DAYS_TO_EXPIRE * MS_IN_DAY) continue;
 
       const prefix = `client/${task.companyId}/tasks/${task.taskId}/`;
-      await bucket.deleteFiles({prefix}).catch((_err) => {
+      await bucket.deleteFiles({ prefix }).catch((_err) => {
         console.log("Erro ao deletar os arquivos da task: " + task.taskId);
       });
       await TaskRepository.clearMedia(task.taskId);

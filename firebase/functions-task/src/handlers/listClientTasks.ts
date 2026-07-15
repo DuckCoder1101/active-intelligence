@@ -1,12 +1,12 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
   getAuthenticatedUser,
   CompanyRepository,
 } from "functions-shared";
-import {TaskRepository} from "../repositories/task.repository";
+import { TaskRepository } from "../repositories/task.repository";
 
 export const listClientTasksHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
@@ -33,7 +33,7 @@ export const listClientTasksHandler = onCallHandler(async (req) => {
     throw new HttpsError("permission-denied", "Acesso negado.");
   }
 
-  logger.info("listClientTasks", {companyId});
+  logger.info("listClientTasks", { companyId });
 
   const [tasks, usage] = await Promise.all([
     TaskRepository.listByCompany(companyId),
@@ -45,5 +45,5 @@ export const listClientTasksHandler = onCallHandler(async (req) => {
     count: tasks.length,
   });
 
-  return {tasks, usage};
+  return { tasks, usage };
 });

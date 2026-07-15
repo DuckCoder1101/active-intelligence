@@ -1,9 +1,9 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
-import {z} from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
+import { z } from "zod";
 
-import {onCallHandler, requireAccess} from "functions-shared";
-import {CategoryRepository} from "../repositories/category.repository";
+import { onCallHandler, requireAccess } from "functions-shared";
+import { CategoryRepository } from "../repositories/category.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
@@ -21,7 +21,7 @@ const schema = z.object({
 export const saveCategoryHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
-  const {success, data, error} = schema.safeParse(req.data);
+  const { success, data, error } = schema.safeParse(req.data);
   if (!success) {
     throw new HttpsError(
       "invalid-argument",
@@ -29,7 +29,7 @@ export const saveCategoryHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("saveCategory", {name: data.name});
+  logger.info("saveCategory", { name: data.name });
 
   return CategoryRepository.save(data.name);
 });

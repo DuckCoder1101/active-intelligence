@@ -1,6 +1,6 @@
-import {z} from "zod";
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   UserSchema,
@@ -12,9 +12,9 @@ import {
 } from "functions-shared";
 
 export const completeProfileHandler = onCallHandler(async (req) => {
-  const {uid, email, accessLevel, companyId} = getAuthenticatedUser(req);
+  const { uid, email, accessLevel, companyId } = getAuthenticatedUser(req);
 
-  const {success, data, error} = UserSchema.completeProfileSchema.safeParse(
+  const { success, data, error } = UserSchema.completeProfileSchema.safeParse(
     req.data,
   );
 
@@ -26,7 +26,7 @@ export const completeProfileHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("completeProfile", {uid, accessLevel, companyId});
+  logger.info("completeProfile", { uid, accessLevel, companyId });
 
   let saveAccountPromise: Promise<void>;
 

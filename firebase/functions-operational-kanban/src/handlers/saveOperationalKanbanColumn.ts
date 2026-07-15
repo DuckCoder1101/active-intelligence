@@ -1,19 +1,19 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 import {
   onCallHandler,
   requireAccess,
   OperationalKanbanRepository,
 } from "functions-shared";
-import {OperationalKanbanSchema} from "../data/operational-kanban.schema";
+import { OperationalKanbanSchema } from "../data/operational-kanban.schema";
 
-const ACCESS = {minAccessLevel: "owner" as const};
+const ACCESS = { minAccessLevel: "owner" as const };
 
 export const saveOperationalKanbanColumnHandler =
   onCallHandler(async (req) => {
     requireAccess(req, ACCESS);
 
-    const {success, data, error} =
+    const { success, data, error } =
       OperationalKanbanSchema.saveColumnSchema.safeParse(req.data);
 
     if (!success) {

@@ -1,5 +1,5 @@
-import {z} from "zod";
-import {TASK_TYPES} from "../types/task.document";
+import { z } from "zod";
+import { TASK_TYPES } from "../types/task.document";
 
 export default class TaskSchema {
   static saveSchema = z.object({
@@ -14,7 +14,7 @@ export default class TaskSchema {
       .nullish()
       .default("")
       .transform((v) => v ?? ""),
-    type: z.enum(TASK_TYPES, {message: "Tipo inválido"}),
+    type: z.enum(TASK_TYPES, { message: "Tipo inválido" }),
     status: z.string().default("requisitada"),
     dueDate: z.number().refine((v) => {
       const today = new Date();
@@ -50,7 +50,7 @@ export default class TaskSchema {
       .nullish()
       .default("")
       .transform((v) => v ?? ""),
-    type: z.enum(TASK_TYPES, {message: "Tipo inválido"}),
+    type: z.enum(TASK_TYPES, { message: "Tipo inválido" }),
     dueDate: z.number().refine((v) => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);

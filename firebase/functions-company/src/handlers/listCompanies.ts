@@ -1,4 +1,4 @@
-import {logger} from "firebase-functions";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -13,6 +13,6 @@ const ACCESS = {
 export const listCompaniesHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
   const result = await CompanyRepository.getAllCompanies();
-  logger.info("listCompanies: retornando N itens", {count: result.length});
+  logger.info("listCompanies: retornando N itens", { count: result.length });
   return result;
 });

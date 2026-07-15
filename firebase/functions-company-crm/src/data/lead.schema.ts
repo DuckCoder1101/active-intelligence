@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from "zod";
 
 import {
   BUSINESS_TYPES,
@@ -44,7 +44,9 @@ export default class LeadSchema {
       .default([])
       .transform((v) => v ?? []),
 
-    businessType: z.enum(BUSINESS_TYPES, {message: "Tipo de negócio inválido"}),
+    businessType: z.enum(BUSINESS_TYPES, {
+      message: "Tipo de negócio inválido",
+    }),
     businessTypeOther: z
       .string()
       .nullish()

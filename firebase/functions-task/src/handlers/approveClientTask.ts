@@ -1,5 +1,5 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -10,7 +10,7 @@ import {
   APPROVED_COLUMN_ID,
 } from "functions-shared";
 import TaskSchema from "../data/task.schema";
-import {TaskRepository} from "../repositories/task.repository";
+import { TaskRepository } from "../repositories/task.repository";
 
 export const approveClientTaskHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
@@ -30,7 +30,7 @@ export const approveClientTaskHandler = onCallHandler(async (req) => {
     );
   }
 
-  const {success, data, error} = TaskSchema.approveClientTaskSchema.safeParse(
+  const { success, data, error } = TaskSchema.approveClientTaskSchema.safeParse(
     req.data,
   );
   if (!success) {
@@ -56,7 +56,7 @@ export const approveClientTaskHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("approveClientTask", {taskId: data.taskId, companyId});
+  logger.info("approveClientTask", { taskId: data.taskId, companyId });
 
   await TaskRepository.updateStatus(data.taskId, APPROVED_COLUMN_ID);
 

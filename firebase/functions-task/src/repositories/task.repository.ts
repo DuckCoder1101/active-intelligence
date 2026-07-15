@@ -1,9 +1,9 @@
-import {FieldValue, Timestamp} from "firebase-admin/firestore";
-import {HttpsError} from "firebase-functions/https";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
+import { HttpsError } from "firebase-functions/https";
 
-import {database} from "functions-shared";
-import {TaskDocument} from "../types/task.document";
-import {TaskDTO, SaveTaskDTO} from "../types/task.dto";
+import { database } from "functions-shared";
+import { TaskDocument } from "../types/task.document";
+import { TaskDTO, SaveTaskDTO } from "../types/task.dto";
 
 function toDTO(id: string, data: TaskDocument): TaskDTO {
   return {
@@ -31,7 +31,7 @@ export class TaskRepository {
   static async save(
     data: SaveTaskDTO & { createdBy: string },
   ): Promise<TaskDTO> {
-    const {taskId, createdBy, dueDate, ...rest} = data;
+    const { taskId, createdBy, dueDate, ...rest } = data;
     const ref = taskId ? this.col.doc(taskId) : this.col.doc();
     const isNew = !taskId;
 
@@ -51,7 +51,7 @@ export class TaskRepository {
       payload.createdAt = FieldValue.serverTimestamp();
     }
 
-    await ref.set(payload, {merge: true});
+    await ref.set(payload, { merge: true });
 
     const snap = await ref.get();
     return toDTO(snap.id, snap.data() as TaskDocument);
@@ -84,7 +84,7 @@ export class TaskRepository {
     if (!snap.exists) {
       throw new HttpsError("not-found", "Tarefa não encontrada!");
     }
-    await ref.update({status, updatedAt: FieldValue.serverTimestamp()});
+    await ref.update({ status, updatedAt: FieldValue.serverTimestamp() });
   }
 
   static async delete(taskId: string): Promise<TaskDTO> {

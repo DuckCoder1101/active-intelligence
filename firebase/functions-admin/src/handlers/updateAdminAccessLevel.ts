@@ -1,10 +1,10 @@
-import {z} from "zod";
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
-import {onCallHandler, requireAccess, auth} from "functions-shared";
+import { onCallHandler, requireAccess, auth } from "functions-shared";
 
-const ACCESS = {minAccessLevel: "owner" as const};
+const ACCESS = { minAccessLevel: "owner" as const };
 
 const schema = z.object({
   targetUid: z.string().min(1, "targetUid obrigatório"),
@@ -14,7 +14,7 @@ const schema = z.object({
 export const updateAdminAccessLevelHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 
-  const {success, data, error} = schema.safeParse(req.data);
+  const { success, data, error } = schema.safeParse(req.data);
   if (!success) {
     throw new HttpsError("invalid-argument", "Dados inválidos!", error.issues);
   }

@@ -1,14 +1,14 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
-import {onCallHandler} from "functions-shared";
+import { onCallHandler } from "functions-shared";
 import LeadSchema from "../data/lead.schema";
-import {LeadRepository} from "../repositories/lead.repository";
-import {CrmColumnRepository} from "../repositories/crm-column.repository";
-import {requireCompanyAccess} from "../utils/requireCompanyAccess";
+import { LeadRepository } from "../repositories/lead.repository";
+import { CrmColumnRepository } from "../repositories/crm-column.repository";
+import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 export const saveLeadHandler = onCallHandler(async (req) => {
-  const {success, data, error} = LeadSchema.saveSchema.safeParse(req.data);
+  const { success, data, error } = LeadSchema.saveSchema.safeParse(req.data);
   if (!success) {
     throw new HttpsError(
       "invalid-argument",
@@ -16,7 +16,7 @@ export const saveLeadHandler = onCallHandler(async (req) => {
     );
   }
 
-  const {uid, companyId} = requireCompanyAccess(req, data.companyId);
+  const { uid, companyId } = requireCompanyAccess(req, data.companyId);
 
   if (
     data.priceMin !== undefined &&
@@ -29,7 +29,7 @@ export const saveLeadHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("saveLead", {companyId, leadId: data.leadId});
+  logger.info("saveLead", { companyId, leadId: data.leadId });
 
   const columns = await CrmColumnRepository.listAll(companyId);
   const defaultStatus = columns[0]?.columnId ?? "";

@@ -1,5 +1,5 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   CompanyRepository,
@@ -7,9 +7,9 @@ import {
   requireAccess,
 } from "functions-shared";
 import TransactionSchema from "../data/transaction.schema";
-import {AccountRepository} from "../repositories/account.repository";
-import {CategoryRepository} from "../repositories/category.repository";
-import {TransactionRepository} from "../repositories/transaction.repository";
+import { AccountRepository } from "../repositories/account.repository";
+import { CategoryRepository } from "../repositories/category.repository";
+import { TransactionRepository } from "../repositories/transaction.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
@@ -19,7 +19,7 @@ const ACCESS = {
 export const saveTransactionHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 
-  const {success, data, error} = TransactionSchema.saveSchema.safeParse(
+  const { success, data, error } = TransactionSchema.saveSchema.safeParse(
     req.data,
   );
   if (!success) {

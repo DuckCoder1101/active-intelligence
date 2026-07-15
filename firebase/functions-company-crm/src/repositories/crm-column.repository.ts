@@ -1,12 +1,12 @@
-import {HttpsError} from "firebase-functions/https";
-import {FieldValue} from "firebase-admin/firestore";
+import { HttpsError } from "firebase-functions/https";
+import { FieldValue } from "firebase-admin/firestore";
 
-import {database} from "functions-shared";
+import { database } from "functions-shared";
 import {
   CrmColumnDocument,
   DEFAULT_CRM_COLUMNS,
 } from "../types/crm-column.document";
-import {CrmColumnDTO, SaveCrmColumnDTO} from "../types/crm-column.dto";
+import { CrmColumnDTO, SaveCrmColumnDTO } from "../types/crm-column.dto";
 
 export class CrmColumnRepository {
   private static col(companyId: string) {
@@ -34,12 +34,12 @@ export class CrmColumnRepository {
           order: column.order,
           createdAt: FieldValue.serverTimestamp(),
         });
-        return {ref, column};
+        return { ref, column };
       });
       await batch.commit();
 
       return seededRefs
-        .map(({ref, column}) => ({
+        .map(({ ref, column }) => ({
           columnId: ref.id,
           name: column.name,
           color: column.color,
@@ -88,9 +88,9 @@ export class CrmColumnRepository {
         name: data.name,
         color: data.color,
         order: data.order ?? maxOrder + 1,
-        ...(isNew ? {createdAt: FieldValue.serverTimestamp()} : {}),
+        ...(isNew ? { createdAt: FieldValue.serverTimestamp() } : {}),
       },
-      {merge: true},
+      { merge: true },
     );
 
     const saved = await ref.get();
@@ -142,6 +142,6 @@ export class CrmColumnRepository {
     batch.delete(col.doc(columnId));
     await batch.commit();
 
-    return {movedTo: leadSnap.size > 0 ? fallback.id : null};
+    return { movedTo: leadSnap.size > 0 ? fallback.id : null };
   }
 }

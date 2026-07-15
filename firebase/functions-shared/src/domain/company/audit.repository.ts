@@ -1,8 +1,8 @@
-import {FieldValue, Transaction} from "firebase-admin/firestore";
-import {logger} from "firebase-functions";
-import {database} from "../../utils/firebase";
+import { FieldValue, Transaction } from "firebase-admin/firestore";
+import { logger } from "firebase-functions";
+import { database } from "../../utils/firebase";
 
-import {CompanyAuditDocument} from "./company-audit.document";
+import { CompanyAuditDocument } from "./company-audit.document";
 
 type CreateAuditData = Omit<CompanyAuditDocument, "createdAt">;
 
@@ -31,12 +31,14 @@ export class AuditRepository {
       .collection("audits")
       .doc();
 
-    ref.set({...data, createdAt: FieldValue.serverTimestamp()}).catch((err) => {
-      logger.warn("AuditRepository.log: falha ao salvar auditoria", {
-        companyId,
-        action: data.action,
-        err: String(err),
+    ref
+      .set({ ...data, createdAt: FieldValue.serverTimestamp() })
+      .catch((err) => {
+        logger.warn("AuditRepository.log: falha ao salvar auditoria", {
+          companyId,
+          action: data.action,
+          err: String(err),
+        });
       });
-    });
   }
 }

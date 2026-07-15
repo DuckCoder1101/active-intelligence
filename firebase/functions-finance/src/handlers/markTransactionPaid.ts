@@ -1,9 +1,9 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
-import {onCallHandler, requireAccess} from "functions-shared";
+import { onCallHandler, requireAccess } from "functions-shared";
 import TransactionSchema from "../data/transaction.schema";
-import {TransactionRepository} from "../repositories/transaction.repository";
+import { TransactionRepository } from "../repositories/transaction.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
@@ -13,7 +13,7 @@ const ACCESS = {
 export const markTransactionPaidHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
-  const {success, data, error} = TransactionSchema.markPaidSchema.safeParse(
+  const { success, data, error } = TransactionSchema.markPaidSchema.safeParse(
     req.data,
   );
   if (!success) {
@@ -23,7 +23,7 @@ export const markTransactionPaidHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("markTransactionPaid", {transactionId: data.transactionId});
+  logger.info("markTransactionPaid", { transactionId: data.transactionId });
 
   return TransactionRepository.markPaid(data.transactionId, data.paidDate);
 });

@@ -1,5 +1,5 @@
-import {z} from "zod";
-import {HttpsError} from "firebase-functions/https";
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
 
 import {
   onCallHandler,
@@ -9,12 +9,12 @@ import {
 } from "functions-shared";
 import NotificationSchema from "../data/notification.schema";
 
-const ACCESS = {minAccessLevel: "user" as const};
+const ACCESS = { minAccessLevel: "user" as const };
 
 export const registerFcmTokenHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 
-  const {success, data, error} =
+  const { success, data, error } =
     NotificationSchema.registerFcmTokenSchema.safeParse(req.data);
 
   if (!success) {

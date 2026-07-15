@@ -1,6 +1,6 @@
-import {z} from "zod";
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -20,7 +20,7 @@ const deleteCompanySchema = z.object({
 export const deleteCompanyHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
-  const {success, data, error} = deleteCompanySchema.safeParse(req.data);
+  const { success, data, error } = deleteCompanySchema.safeParse(req.data);
 
   if (!success) {
     throw new HttpsError(
@@ -30,7 +30,7 @@ export const deleteCompanyHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("deleteCompany", {companyId: data.companyId});
+  logger.info("deleteCompany", { companyId: data.companyId });
 
   await CompanyRepository.deleteCompany(data.companyId);
 

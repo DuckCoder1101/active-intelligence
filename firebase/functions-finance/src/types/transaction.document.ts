@@ -1,4 +1,4 @@
-import {Timestamp} from "firebase-admin/firestore";
+import { Timestamp } from "firebase-admin/firestore";
 
 export const TRANSACTION_TYPES = ["entrada", "saida"] as const;
 export type TransactionType = (typeof TRANSACTION_TYPES)[number];

@@ -1,4 +1,4 @@
-import {Timestamp} from "firebase-admin/firestore";
+import { Timestamp } from "firebase-admin/firestore";
 
 export const BUSINESS_TYPES = ["compra", "venda", "locacao", "outro"] as const;
 export type BusinessType = (typeof BUSINESS_TYPES)[number];

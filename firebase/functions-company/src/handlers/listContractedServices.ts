@@ -1,4 +1,4 @@
-import {onCallHandler, requireAccess} from "functions-shared";
+import { onCallHandler, requireAccess } from "functions-shared";
 
 import {
   ContractedServiceRepository,

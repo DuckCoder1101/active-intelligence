@@ -1,6 +1,6 @@
-import {z} from "zod";
-import {checkCpf} from "../../validations/checkCPF";
-import {checkPhone} from "../../validations/checkPhone";
+import { z } from "zod";
+import { checkCpf } from "../../validations/checkCPF";
+import { checkPhone } from "../../validations/checkPhone";
 
 export default class UserSchema {
   static completeProfileSchema = z.object({

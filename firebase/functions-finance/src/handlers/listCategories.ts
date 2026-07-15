@@ -1,5 +1,5 @@
-import {onCallHandler, requireAccess} from "functions-shared";
-import {CategoryRepository} from "../repositories/category.repository";
+import { onCallHandler, requireAccess } from "functions-shared";
+import { CategoryRepository } from "../repositories/category.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,

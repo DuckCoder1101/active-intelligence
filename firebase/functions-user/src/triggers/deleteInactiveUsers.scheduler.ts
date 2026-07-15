@@ -1,5 +1,5 @@
-import {auth} from "functions-shared";
-import {onSchedule} from "firebase-functions/scheduler";
+import { auth } from "functions-shared";
+import { onSchedule } from "firebase-functions/scheduler";
 
 const DAYS_TO_EXPIRE = 7;
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
@@ -14,7 +14,7 @@ export const deleteInactiveUsers = onSchedule(
     let token: string | undefined;
 
     do {
-      const {users, pageToken} = await auth.listUsers(1000, token);
+      const { users, pageToken } = await auth.listUsers(1000, token);
 
       const toDelete = users
         .filter((user) => {

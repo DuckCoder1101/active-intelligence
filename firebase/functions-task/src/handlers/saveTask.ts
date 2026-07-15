@@ -1,5 +1,5 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -9,14 +9,14 @@ import {
   AuditAction,
 } from "functions-shared";
 import TaskSchema from "../data/task.schema";
-import {TaskRepository} from "../repositories/task.repository";
+import { TaskRepository } from "../repositories/task.repository";
 
-const ACCESS = {minAccessLevel: "admin" as const};
+const ACCESS = { minAccessLevel: "admin" as const };
 
 export const saveTaskHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 
-  const {success, data, error} = TaskSchema.saveSchema.safeParse(req.data);
+  const { success, data, error } = TaskSchema.saveSchema.safeParse(req.data);
   if (!success) {
     throw new HttpsError(
       "invalid-argument",
@@ -51,9 +51,9 @@ export const saveTaskHandler = onCallHandler(async (req) => {
     taskId: data.taskId,
   });
 
-  const task = await TaskRepository.save({...data, createdBy: caller.uid});
+  const task = await TaskRepository.save({ ...data, createdBy: caller.uid });
 
-  logger.info("saveTask: concluído", {taskId: task.taskId});
+  logger.info("saveTask: concluído", { taskId: task.taskId });
 
   const actorName = await AdminRepository.getResumeByUid(caller.uid)
     .then((r) => r.name)

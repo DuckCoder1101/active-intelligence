@@ -1,6 +1,6 @@
-import {HttpsError} from "firebase-functions/https";
-import {logger} from "firebase-functions";
-import type {ZodError} from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
+import type { ZodError } from "zod";
 
 import {
   onCallHandler,
@@ -68,7 +68,7 @@ const ACCESS = {
 export const saveCompanyHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
-  const {success, data, error} = CompanySchema.registerSchema.safeParse(
+  const { success, data, error } = CompanySchema.registerSchema.safeParse(
     req.data,
   );
 

@@ -1,6 +1,6 @@
-import {z} from "zod";
+import { z } from "zod";
 import CompanySchema from "./company.schema";
-import {CompanyDocument} from "./company.document";
+import { CompanyDocument } from "./company.document";
 
 export type RegisterCompanyDTO = z.infer<typeof CompanySchema.registerSchema>;
 
