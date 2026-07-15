@@ -11,12 +11,21 @@ interface StatCardProps {
   count: number;
   linkLabel: string;
   to: string;
+  search?: Record<string, string>;
 }
 
-function StatCard({ icon: Icon, label, count, linkLabel, to }: StatCardProps) {
+function StatCard({
+  icon: Icon,
+  label,
+  count,
+  linkLabel,
+  to,
+  search,
+}: StatCardProps) {
   return (
     <Link
       to={to}
+      search={search}
       className="rounded-xl border border-border bg-card p-2.5 transition-all hover:shadow-md hover:-translate-y-0.5"
     >
       <div className="flex items-center gap-2">
@@ -62,6 +71,7 @@ export function AttentionWidget({ taskCount, staleCount }: Props) {
         count={staleCount}
         linkLabel="Ver clientes"
         to="/companies"
+        search={{ filter: 'inativos' }}
       />
     </div>
   );
