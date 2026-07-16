@@ -1,12 +1,12 @@
-import z from 'zod';
-import CompanySchema from './company.schema';
-import { CompanyDocument } from './company.document';
+import { z } from "zod";
+import CompanySchema from "./company.schema";
+import { CompanyDocument } from "./company.document";
 
 export type RegisterCompanyDTO = z.infer<typeof CompanySchema.registerSchema>;
 
 export interface CompanyFullDTO extends Omit<
-  CompanyDocument,
-  'createdAt' | 'updatedAt'
+CompanyDocument,
+"createdAt" | "updatedAt"
 > {
   companyId: string;
   createdAt: number;

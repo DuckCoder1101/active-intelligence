@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from "firebase-admin/firestore";
 
 export interface AdminDocument {
   name: string;
@@ -9,4 +9,6 @@ export interface AdminDocument {
 
   createdAt: Timestamp;
   updatedAt: Timestamp;
+
+  fcmTokens?: string[];
 }

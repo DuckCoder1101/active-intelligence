@@ -1,5 +1,5 @@
-import { Timestamp } from 'firebase-admin/firestore';
-import { AuditAction } from '../../enums/auditAction.enum';
+import { Timestamp } from "firebase-admin/firestore";
+import { AuditAction } from "../../enums/auditAction.enum";
 
 export interface CompanyAuditDocument {
   action: AuditAction;

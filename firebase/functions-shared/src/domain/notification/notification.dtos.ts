@@ -1,4 +1,8 @@
-import type { NotificationType } from './notification.document';
+import type { NotificationType } from "./notification.document";
+import type {
+  AdminPermission,
+  UserAccessLevel,
+} from "../../types/accessLevel.type";
 
 export interface NotificationDTO {
   notificationId: string;
@@ -9,9 +13,16 @@ export interface NotificationDTO {
   createdAt: number;
 }
 
-export interface NotifyAdminsDTO {
+export interface NotificationContentDTO {
   type: NotificationType;
   message: string;
   taskId?: string;
+  companyId?: string;
+}
+
+export interface NotificationFilterDTO {
+  uids?: string[];
+  accessLevel?: UserAccessLevel;
+  permission?: AdminPermission;
   companyId?: string;
 }

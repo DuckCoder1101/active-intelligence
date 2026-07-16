@@ -16,6 +16,35 @@ export type RevenueRange =
   | 'From30MTo100M'
   | 'Above100M';
 
+export type ContractType = 'mrr' | 'tcv';
+
+export type FinancialPaymentMethod = 'pix' | 'boleto' | 'cartao';
+
+export type TcvPaymentType = 'avista' | 'parcelado';
+
+export interface CompanyFinancial {
+  contractedServiceIds: string[];
+  contractType?: ContractType;
+  administrativeResponsibleUid?: string;
+  mrr?: {
+    monthlyValue: number;
+    paymentMethod: FinancialPaymentMethod;
+    dueDay: number;
+    loyaltyMonths?: number;
+    startDate: number;
+    endDate?: number;
+  };
+  tcv?: {
+    totalValue: number;
+    paymentType: TcvPaymentType;
+    paymentMethod?: FinancialPaymentMethod;
+    installments?: number;
+    installmentValue?: number;
+    startDate: number;
+    endDate: number;
+  };
+}
+
 export interface CompanyResume {
   companyId: string;
   displayName: string;
@@ -59,6 +88,7 @@ export interface Company {
   extra?: {
     observations?: string;
   };
+  financial?: CompanyFinancial;
   monthlyTaskLimit?: number;
   taskUsage?: {
     yearMonth: string;
@@ -106,5 +136,6 @@ export interface SaveCompanyDTO {
   extra?: {
     observations?: string;
   };
+  financial?: CompanyFinancial;
   monthlyTaskLimit?: number;
 }

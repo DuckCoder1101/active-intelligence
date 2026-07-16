@@ -6,6 +6,7 @@ import {
   MdOutlineLightMode,
 } from 'react-icons/md';
 
+import { NotificationBell } from '@/components/layout/notification-bell.component';
 import { UserAvatar } from '@/components/ui/user-avatar.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useTheme } from '@/contexts/theme.context';
@@ -64,6 +65,8 @@ export function Topbar({ onMenuClick }: TopbarProps) {
 
       {/* Right */}
       <div className="flex items-center gap-3">
+        <NotificationBell />
+
         <button
           type="button"
           onClick={toggleTheme}

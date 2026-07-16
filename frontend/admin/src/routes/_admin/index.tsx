@@ -1,23 +1,38 @@
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { useMemo, useState } from 'react';
 
+import { AttentionWidget } from '@/components/dashboard/attention-widget.component';
 import { ModuleCard } from '@/components/dashboard/module-card.component';
 import { AdminPageContainer } from '@/components/ui/page-container.component';
 import { ADMIN_MODULES } from '@/constants/admin-modules.const';
 import { useAuth } from '@/contexts/auth.context';
+import { companiesQueryOptions } from '@/queries/company.queries';
+import { tasksQueryOptions } from '@/queries/task.queries';
 import type { AdminModule } from '@/types/admin-module.type';
 import type { RouteAccessLevel } from '@/types/route-access.type';
 import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
+import {
+  getMyAttentionTasks,
+  getStaleCompanies,
+} from '@/utils/dashboard-insights.util';
 
 const ROUTE_ACCESS: RouteAccessLevel = {
   minAccessLevel: 'admin',
 };
 
 export const Route = createFileRoute('/_admin/')({
+  ssr: false,
   beforeLoad: ({ context }) => {
     if (!checkRouteAccess(context.sessionUser, ROUTE_ACCESS)) {
       throw redirect({ to: '/unauthorized' });
     }
   },
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(tasksQueryOptions()),
+      context.queryClient.ensureQueryData(companiesQueryOptions()),
+    ]),
   component: AdminDashboard,
 });
 
@@ -36,6 +51,19 @@ function AdminDashboard() {
     return !userPermissions.includes(mod.permission);
   };
 
+  const { data: tasks } = useSuspenseQuery(tasksQueryOptions());
+  const { data: companies } = useSuspenseQuery(companiesQueryOptions());
+
+  const [now] = useState(() => Date.now());
+  const myTasks = useMemo(
+    () => getMyAttentionTasks(tasks, companies, userProfile?.uid ?? '', now),
+    [tasks, companies, userProfile?.uid, now],
+  );
+  const staleCompanies = useMemo(
+    () => getStaleCompanies(companies, tasks, 7, now),
+    [companies, tasks, now],
+  );
+
   return (
     <AdminPageContainer>
       {/* Hero */}
@@ -48,6 +76,11 @@ function AdminDashboard() {
           Sistema operacional Guará. Tudo conectado em um só lugar.
         </p>
       </div>
+
+      <AttentionWidget
+        taskCount={myTasks.length}
+        staleCount={staleCompanies.length}
+      />
 
       {/* Sections */}
       <div className="space-y-8 sm:space-y-10">

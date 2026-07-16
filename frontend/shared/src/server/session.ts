@@ -22,7 +22,9 @@ export const getSessionUser = createServerFn({ method: 'GET' }).handler(
     }
 
     try {
-      const decoded = await adminAuth.verifySessionCookie(cookie, true);
+      // checkRevoked só em produção: em dev ele faz uma ida ao Auth emulator
+      // a cada navegação, e qualquer piscada do emulator viraria "deslogado".
+      const decoded = await adminAuth.verifySessionCookie(cookie, !isDev);
       const accessLevel = decoded['accessLevel'] as CustomClaims['accessLevel'];
       const complete = decoded['complete'] as boolean | undefined;
 
@@ -38,8 +40,17 @@ export const getSessionUser = createServerFn({ method: 'GET' }).handler(
         complete,
         permissions: (decoded['permissions'] ?? []) as AdminPermission[],
       };
-    } catch {
-      return null;
+    } catch (err) {
+      const code = (err as { code?: string }).code;
+      if (typeof code === 'string' && code.startsWith('auth/')) {
+        // Cookie inválido/expirado/revogado — não logado mesmo.
+        return null;
+      }
+      // Falha de infra (rede, emulator fora do ar): retornar null aqui
+      // deslogaria um usuário com sessão válida e inicia o ping-pong
+      // signin ⇄ guard. Melhor falhar a navegação e manter a sessão.
+      console.error('[session] verifySessionCookie failed (non-auth)', err);
+      throw err;
     }
   },
 );
@@ -60,15 +71,22 @@ export const createSession = createServerFn({ method: 'POST' })
     });
   });
 
-export const deleteSession = createServerFn({ method: 'POST' }).handler(
-  async () => {
-    const cookie = getCookie(SESSION_COOKIE);
-
-    if (cookie) {
-      const decoded = await adminAuth.verifySessionCookie(cookie);
-      await adminAuth.revokeRefreshTokens(decoded.sub);
+export const deleteSession = createServerFn({ method: 'POST' })
+  .validator((data: unknown) => (data ?? {}) as { revoke?: boolean })
+  .handler(async ({ data }) => {
+    // Revogar refresh tokens derruba a conta em TODOS os dispositivos — se
+    // outra pessoa/aba estiver na mesma conta, a sessão dela morre no meio
+    // do que estiver fazendo (as callables passam a sair sem Authorization
+    // e falham como "unauthenticated"). Por isso é opt-in: o caminho
+    // automático (logout comum, SDK sem usuário ao carregar) só apaga o
+    // cookie deste dispositivo.
+    if (data.revoke) {
+      const cookie = getCookie(SESSION_COOKIE);
+      if (cookie) {
+        const decoded = await adminAuth.verifySessionCookie(cookie);
+        await adminAuth.revokeRefreshTokens(decoded.sub);
+      }
     }
 
     deleteCookie(SESSION_COOKIE, { path: '/' });
-  },
-);
+  });

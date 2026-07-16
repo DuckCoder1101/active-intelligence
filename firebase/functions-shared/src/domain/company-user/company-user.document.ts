@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from "firebase-admin/firestore";
 
 export interface CompanyUserDocument {
   companyId: string;
@@ -10,4 +10,6 @@ export interface CompanyUserDocument {
 
   createdAt: Timestamp;
   updatedAt: Timestamp;
+
+  fcmTokens?: string[];
 }

@@ -1,53 +1,68 @@
-import { HttpsError } from 'firebase-functions/https';
-import { logger } from 'firebase-functions';
-import type { ZodError } from 'zod';
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
+import type { ZodError } from "zod";
 
 import {
   onCallHandler,
   CompanySchema,
   CompanyRepository,
   requireAccess,
-} from 'functions-shared';
+} from "functions-shared";
 
 const FIELD_LABELS: Record<string, string> = {
-  displayName: 'Nome de exibição',
-  'legalInformation.documentNumber': 'CNPJ',
-  'legalInformation.legalName': 'Razão social',
-  'legalInformation.tradeName': 'Nome fantasia',
-  'contact.email': 'E-mail',
-  'contact.phone': 'Telefone',
-  companyStage: 'Estágio',
-  'business.businessSector': 'Setor de atuação',
-  'business.customSegment': 'Segmento',
-  'business.cnae': 'CNAE',
-  'business.revenueRange': 'Faturamento',
-  'business.quantityOfEmployees': 'Funcionários',
-  'business.quantityOfBrokers': 'Corretores',
-  'location.address': 'Endereço',
-  'location.number': 'Número',
-  'location.complement': 'Complemento',
-  'location.neighborhood': 'Bairro',
-  'location.city': 'Cidade',
-  'location.state': 'Estado',
-  'location.zipCode': 'CEP',
-  'social.websiteUrl': 'Site',
-  'social.instagramUsername': 'Instagram',
-  'social.linkedInUsername': 'LinkedIn',
+  "displayName": "Nome de exibição",
+  "legalInformation.documentNumber": "CNPJ",
+  "legalInformation.legalName": "Razão social",
+  "legalInformation.tradeName": "Nome fantasia",
+  "contact.email": "E-mail",
+  "contact.phone": "Telefone",
+  "companyStage": "Estágio",
+  "business.businessSector": "Setor de atuação",
+  "business.customSegment": "Segmento",
+  "business.cnae": "CNAE",
+  "business.revenueRange": "Faturamento",
+  "business.quantityOfEmployees": "Funcionários",
+  "business.quantityOfBrokers": "Corretores",
+  "location.address": "Endereço",
+  "location.number": "Número",
+  "location.complement": "Complemento",
+  "location.neighborhood": "Bairro",
+  "location.city": "Cidade",
+  "location.state": "Estado",
+  "location.zipCode": "CEP",
+  "social.websiteUrl": "Site",
+  "social.instagramUsername": "Instagram",
+  "social.linkedInUsername": "LinkedIn",
+  "financial.mrr": "Dados do MRR",
+  "financial.tcv": "Dados do TCV",
+  "financial.mrr.monthlyValue": "Valor mensal",
+  "financial.mrr.paymentMethod": "Forma de pagamento",
+  "financial.mrr.dueDay": "Dia de vencimento",
+  "financial.mrr.loyaltyMonths": "Fidelidade",
+  "financial.mrr.startDate": "Data de início",
+  "financial.mrr.endDate": "Data de término",
+  "financial.tcv.totalValue": "Valor total do contrato",
+  "financial.tcv.paymentType": "Forma de pagamento",
+  "financial.tcv.paymentMethod": "Forma de pagamento",
+  "financial.tcv.installments": "Número de parcelas",
+  "financial.tcv.installmentValue": "Valor por parcela",
+  "financial.tcv.startDate": "Data de início",
+  "financial.tcv.endDate": "Data de término",
 };
 
 function formatZodErrors(error: ZodError): string {
   return error.issues
     .map((issue) => {
-      const path = issue.path.join('.');
+      const path = issue.path.join(".");
       const label = FIELD_LABELS[path] ?? path;
       return `${label}: ${issue.message}`;
     })
-    .join('\n');
+    .join("\n");
 }
 
 const ACCESS = {
-  minAccessLevel: 'admin' as const,
-  permissions: ['manage-clients' as const],
+  minAccessLevel: "admin" as const,
+  permissions: ["manage-clients" as const],
 };
 
 export const saveCompanyHandler = onCallHandler(async (req) => {
@@ -58,10 +73,13 @@ export const saveCompanyHandler = onCallHandler(async (req) => {
   );
 
   if (!success) {
-    throw new HttpsError('invalid-argument', formatZodErrors(error));
+    throw new HttpsError("invalid-argument", formatZodErrors(error));
   }
 
-  logger.info('saveCompany', { action: data.companyId ? 'update' : 'create', companyId: data.companyId });
+  logger.info("saveCompany", {
+    action: data.companyId ? "update" : "create",
+    companyId: data.companyId,
+  });
 
   await CompanyRepository.saveCompany(data);
 

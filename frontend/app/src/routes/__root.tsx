@@ -20,6 +20,8 @@ import toastifyCss from 'react-toastify/dist/ReactToastify.css?url';
 import type { RouterContext } from '../router';
 import appCss from '../styles.css?url';
 
+import { FcmNotificationsProvider } from '@/providers/fcm-notifications.provider';
+import { NotificationsProvider } from '@/providers/notifications.provider';
 import { ThemeProvider } from '@/providers/theme.provider';
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -120,9 +122,13 @@ function NotFound() {
 function RootComponent() {
   return (
     <AuthProvider>
-      <ThemeProvider>
-        <Outlet />
-      </ThemeProvider>
+      <FcmNotificationsProvider>
+        <NotificationsProvider>
+          <ThemeProvider>
+            <Outlet />
+          </ThemeProvider>
+        </NotificationsProvider>
+      </FcmNotificationsProvider>
     </AuthProvider>
   );
 }

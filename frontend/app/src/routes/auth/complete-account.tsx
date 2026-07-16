@@ -76,7 +76,10 @@ function SignUpPage() {
           error={errors.name?.message}
           {...register('name', {
             required: 'Nome obrigatório',
-            minLength: { value: 2, message: 'Nome muito curto' },
+            minLength: {
+              value: 2,
+              message: 'Nome muito curto',
+            },
           })}
         />
 

@@ -5,7 +5,7 @@ import type {
   PropertyType,
   Purpose,
   Temperature,
-} from './lead.document';
+} from "./lead.document";
 
 export interface LeadDTO {
   leadId: string;
@@ -19,6 +19,7 @@ export interface LeadDTO {
   referredBy?: string;
   tagIds: string[];
   assignedTo: string[];
+  notes?: string;
 
   businessType: BusinessType;
   businessTypeOther?: string;
@@ -62,6 +63,7 @@ export interface SaveLeadDTO {
   referredBy?: string;
   tagIds?: string[];
   assignedTo?: string[];
+  notes?: string;
 
   businessType: BusinessType;
   businessTypeOther?: string;

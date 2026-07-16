@@ -6,16 +6,27 @@ import NotificationService from '@/services/notification.service';
 export const notificationKeys = {
   all: ['notifications'] as const,
   lists: () => [...notificationKeys.all, 'list'] as const,
+  unreadCount: () => [...notificationKeys.all, 'unread-count'] as const,
 };
 
-const POLL_INTERVAL_MS = 60_000;
+const UNREAD_COUNT_POLL_INTERVAL_MS = 120_000;
 
 export function useNotificationsQuery(enabled: boolean) {
   return useQuery({
     queryKey: notificationKeys.lists(),
     queryFn: () => NotificationService.listNotifications(),
-    refetchInterval: POLL_INTERVAL_MS,
     enabled,
+    meta: { silentOnUnauthenticated: true },
+  });
+}
+
+export function useUnreadNotificationCountQuery(enabled: boolean) {
+  return useQuery({
+    queryKey: notificationKeys.unreadCount(),
+    queryFn: () => NotificationService.getUnreadCount(),
+    refetchInterval: UNREAD_COUNT_POLL_INTERVAL_MS,
+    enabled,
+    meta: { silentOnUnauthenticated: true },
   });
 }
 
@@ -55,6 +66,10 @@ export function useMarkNotificationReadMutation() {
       if (context?.previous) {
         queryClient.setQueryData(notificationKeys.lists(), context.previous);
       }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
     },
   });
 }

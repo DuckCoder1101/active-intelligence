@@ -1,8 +1,8 @@
-import { Timestamp } from 'firebase-admin/firestore';
-import { BrazilianState } from '../../enums/brazilianState.enum';
-import { BusinessSector } from './businessSector.enum';
-import { CompanyStage } from './companyStage.emum';
-import { RevenueRange } from './revenueRange.enum';
+import { Timestamp } from "firebase-admin/firestore";
+import { BrazilianState } from "../../enums/brazilianState.enum";
+import { BusinessSector } from "./businessSector.enum";
+import { CompanyStage } from "./companyStage.emum";
+import { RevenueRange } from "./revenueRange.enum";
 
 export interface CompanyDocument {
   displayName: string;
@@ -49,6 +49,29 @@ export interface CompanyDocument {
 
   extra?: {
     observations?: string;
+  };
+
+  financial?: {
+    contractedServiceIds: string[];
+    contractType?: "mrr" | "tcv";
+    administrativeResponsibleUid?: string;
+    mrr?: {
+      monthlyValue: number;
+      paymentMethod: "pix" | "boleto" | "cartao";
+      dueDay: number;
+      loyaltyMonths?: number;
+      startDate: number;
+      endDate?: number;
+    };
+    tcv?: {
+      totalValue: number;
+      paymentType: "avista" | "parcelado";
+      paymentMethod?: "pix" | "boleto" | "cartao";
+      installments?: number;
+      installmentValue?: number;
+      startDate: number;
+      endDate: number;
+    };
   };
 
   monthlyTaskLimit?: number;

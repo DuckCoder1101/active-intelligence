@@ -1,5 +1,5 @@
-import z from 'zod';
-import UserSchema from './user.schema';
+import { z } from "zod";
+import UserSchema from "./user.schema";
 
 export interface UserProfileDTO {
   uid: string;

@@ -1,8 +1,7 @@
+import { FirebaseError } from 'firebase/app';
 import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
-  confirmPasswordReset,
-  verifyPasswordResetCode,
   signOut,
 } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
@@ -14,6 +13,7 @@ import {
 } from 'firebase/storage';
 
 import type { UserProfile } from '@/models/user-profile.model';
+import FcmService from '@/services/fcm.service';
 import type {
   CompleteAccountDTO,
   DeleteAccountDTO,
@@ -52,27 +52,25 @@ export default class UserService {
   }
 
   static async sendRecoverPasswordEmail(email: string): Promise<void> {
-    await sendPasswordResetEmail(auth, email, {
-      url: `${window.location.origin}/auth/reset-password`,
-    });
-  }
-
-  static async verifyPasswordResetCode(oobCode: string): Promise<string> {
-    return await verifyPasswordResetCode(auth, oobCode);
-  }
-
-  static async confirmPasswordReset(
-    oobCode: string,
-    newPassword: string,
-  ): Promise<void> {
-    await confirmPasswordReset(auth, oobCode, newPassword);
+    await sendPasswordResetEmail(auth, email);
   }
 
   static async completeAccount(data: CompleteAccountDTO): Promise<void> {
+    // Garante credencial válida ANTES de chamar: se o refresh do token
+    // falhar (sessão revogada/expirada), o SDK enviaria a callable SEM o
+    // header Authorization e o backend responderia "unauthenticated" — o
+    // cadastro falharia sem mensagem útil. Forçar o refresh aqui faz a
+    // falha aparecer como erro de login claro pro usuário.
+    if (!auth.currentUser) {
+      throw new FirebaseError('auth/requires-recent-login', 'Sessão expirada.');
+    }
+    await auth.currentUser.getIdToken(true);
+
     await this.completeAccountCallable(data);
   }
 
   static async signout(): Promise<void> {
+    await FcmService.unregisterCurrentToken();
     await signOut(auth);
   }
 

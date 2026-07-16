@@ -1,17 +1,13 @@
-import z from 'zod';
-import { HttpsError } from 'firebase-functions/https';
-import { logger } from 'firebase-functions';
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
-import {
-  onCallHandler,
-  database,
-  CompanyAuditDocument,
-  AdminRepository,
-  requireAccess,
-} from 'functions-shared';
+import { onCallHandler, database, requireAccess } from "functions-shared";
+
+import { mapAuditLogDoc } from "../utils/audit-log.mapper";
 
 const ACCESS = {
-  minAccessLevel: 'admin' as const,
+  minAccessLevel: "admin" as const,
 };
 
 const schema = z.object({ companyId: z.string().min(1) });
@@ -22,59 +18,19 @@ export const listAuditLogsHandler = onCallHandler(async (req) => {
   const { success, data } = schema.safeParse(req.data);
 
   if (!success) {
-    throw new HttpsError('invalid-argument', 'companyId inválido!');
+    throw new HttpsError("invalid-argument", "companyId inválido!");
   }
 
-  logger.info('listAuditLogs', { companyId: data.companyId });
+  logger.info("listAuditLogs", { companyId: data.companyId });
 
   const snapshot = await database
-    .collection('companies')
+    .collection("companies")
     .doc(data.companyId)
-    .collection('audits')
-    .orderBy('createdAt', 'desc')
+    .collection("audits")
+    .orderBy("createdAt", "desc")
     .get();
 
   if (snapshot.empty) return [];
 
-  return Promise.all(
-    snapshot.docs.map(async (doc) => {
-      const audit = doc.data() as CompanyAuditDocument;
-
-      const [actorName, targetName] = await Promise.all([
-        audit.actorName
-          ? Promise.resolve(audit.actorName)
-          : AdminRepository.getResumeByUid(audit.actorUid)
-              .then((r) => r.name)
-              .catch((err) => {
-                logger.warn('listAuditLogs: falha ao resolver actor', {
-                  uid: audit.actorUid,
-                  err: String(err),
-                });
-                return '(desconhecido)';
-              }),
-        audit.targetUid
-          ? AdminRepository.getResumeByUid(audit.targetUid)
-              .then((r) => r.name)
-              .catch((err) => {
-                logger.warn('listAuditLogs: falha ao resolver target', {
-                  uid: audit.targetUid,
-                  err: String(err),
-                });
-                return '(desconhecido)';
-              })
-          : Promise.resolve(null),
-      ]);
-
-      return {
-        id: doc.id,
-        action: audit.action,
-        actorName,
-        targetName,
-        taskId: audit.taskId ?? null,
-        taskTitle: audit.taskTitle ?? null,
-        details: audit.details ?? null,
-        createdAt: audit.createdAt.toMillis(),
-      };
-    }),
-  );
+  return Promise.all(snapshot.docs.map(mapAuditLogDoc));
 });

@@ -1,4 +1,4 @@
-import type { TaskType } from './task.document';
+import type { TaskType } from "./task.document";
 
 export interface TaskDTO {
   taskId: string;

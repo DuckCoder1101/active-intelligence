@@ -1,6 +1,6 @@
-import z from 'zod';
-import { HttpsError } from 'firebase-functions/https';
-import { logger } from 'firebase-functions';
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   onCallHandler,
@@ -10,7 +10,8 @@ import {
   bucket,
   AdminRepository,
   CompanyUserRepository,
-} from 'functions-shared';
+  UserAccessLevel,
+} from "functions-shared";
 
 export const deleteAccountHandler = onCallHandler(async (req) => {
   const { uid, accessLevel } = getAuthenticatedUser(req);
@@ -21,31 +22,33 @@ export const deleteAccountHandler = onCallHandler(async (req) => {
 
   if (!success) {
     throw new HttpsError(
-      'invalid-argument',
-      'Dados inválidos ao deletar conta!',
+      "invalid-argument",
+      "Dados inválidos ao deletar conta!",
       z.treeifyError(error),
     );
   }
 
-  if (data.targetId !== uid && accessLevel !== 'owner') {
+  if (data.targetId !== uid && accessLevel !== "owner") {
     throw new HttpsError(
-      'permission-denied',
-      'Você não tem permissão para deletar a conta de outro usuário.',
+      "permission-denied",
+      "Você não tem permissão para deletar a conta de outro usuário.",
     );
   }
 
-  logger.info('deleteAccount', {
+  logger.info("deleteAccount", {
     targetUid: data.targetId,
     callerUid: uid,
   });
 
   const targetUser = await auth.getUser(data.targetId);
-  const targetAccessLevel = targetUser.customClaims?.['accessLevel'];
+  const targetAccessLevel = targetUser.customClaims?.["accessLevel"] as
+    | UserAccessLevel
+    | undefined;
 
-  let deleteAccountPromise =
-    targetAccessLevel === 'user'
-      ? CompanyUserRepository.delete(data.targetId)
-      : AdminRepository.delete(data.targetId);
+  const deleteAccountPromise =
+    targetAccessLevel === "user" ?
+      CompanyUserRepository.delete(data.targetId) :
+      AdminRepository.delete(data.targetId);
 
   await Promise.all([auth.deleteUser(data.targetId), deleteAccountPromise]);
 
@@ -53,7 +56,7 @@ export const deleteAccountHandler = onCallHandler(async (req) => {
     .file(`users/${data.targetId}/avatar`)
     .delete()
     .catch((err) =>
-      logger.warn('deleteAccount: falha ao deletar avatar', {
+      logger.warn("deleteAccount: falha ao deletar avatar", {
         targetUid: data.targetId,
         err: String(err),
       }),

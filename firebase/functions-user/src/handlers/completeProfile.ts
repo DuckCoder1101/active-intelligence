@@ -1,6 +1,6 @@
-import z from 'zod';
-import { HttpsError } from 'firebase-functions/https';
-import { logger } from 'firebase-functions';
+import { z } from "zod";
+import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 import {
   UserSchema,
@@ -9,7 +9,7 @@ import {
   getAuthenticatedUser,
   CompanyUserRepository,
   AdminRepository,
-} from 'functions-shared';
+} from "functions-shared";
 
 export const completeProfileHandler = onCallHandler(async (req) => {
   const { uid, email, accessLevel, companyId } = getAuthenticatedUser(req);
@@ -20,21 +20,21 @@ export const completeProfileHandler = onCallHandler(async (req) => {
 
   if (!success) {
     throw new HttpsError(
-      'invalid-argument',
-      'Dados inválidos ao cadastrar conta!',
+      "invalid-argument",
+      "Dados inválidos ao cadastrar conta!",
       z.treeifyError(error),
     );
   }
 
-  logger.info('completeProfile', { uid, accessLevel, companyId });
+  logger.info("completeProfile", { uid, accessLevel, companyId });
 
   let saveAccountPromise: Promise<void>;
 
-  if (accessLevel === 'user') {
+  if (accessLevel === "user") {
     if (!companyId) {
       throw new HttpsError(
-        'invalid-argument',
-        'Faltando companyId! Contate um administrador!',
+        "invalid-argument",
+        "Faltando companyId! Contate um administrador!",
       );
     }
 

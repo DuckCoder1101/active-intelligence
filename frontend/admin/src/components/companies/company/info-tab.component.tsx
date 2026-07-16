@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 
 import { SaveBar } from '@/components/layout/save-bar.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { Section } from '@/components/ui/section.component';
 import { BRAZILIAN_STATES } from '@/constants/brazilian-states.const';
 import { formatCNPJ } from '@/formatters/formatCnpj';
 import { formatDateLong } from '@/formatters/formatDate';
@@ -86,28 +87,6 @@ function toFormValues(c: Company): CompanyFormValues {
     },
     monthlyTaskLimit: c.monthlyTaskLimit,
   };
-}
-
-function Section({
-  icon: Icon,
-  title,
-  children,
-}: {
-  icon: React.ElementType;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="card overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-border px-5 py-3">
-        <Icon size={15} className="text-orange" />
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
-          {title}
-        </p>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
 }
 
 interface Props {

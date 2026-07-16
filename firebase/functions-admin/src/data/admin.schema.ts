@@ -1,5 +1,5 @@
-import z from 'zod';
-import { AdminAccessLevels, ADMIN_PERMISSIONS } from 'functions-shared';
+import { z } from "zod";
+import { AdminAccessLevels, ADMIN_PERMISSIONS } from "functions-shared";
 
 export default class AdminSchema {
   static updateAccessLevelSchema = z.object({
@@ -13,10 +13,6 @@ export default class AdminSchema {
   });
 
   static inviteAdminSchema = z.object({
-    email: z.string().email('E-mail inválido!'),
-  });
-
-  static markNotificationReadSchema = z.object({
-    notificationId: z.string().min(1),
+    email: z.string().email("E-mail inválido!"),
   });
 }

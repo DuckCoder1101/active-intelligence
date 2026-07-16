@@ -1,26 +1,49 @@
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import type { DefaultValues, FieldErrors } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 import { toast } from 'react-toastify';
 
+import {
+  buildFinancialPayload,
+  defaultFinancialFormValues,
+  type FinancialFormValues,
+} from '@/components/companies/company/admin-tab.component';
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { FormSelect } from '@/components/ui/form-select.component';
+import { MoneyInput } from '@/components/ui/money-input.component';
+import { MultiSelect } from '@/components/ui/multi-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { Tabs } from '@/components/ui/tabs.component';
 import { BRAZILIAN_STATES } from '@/constants/brazilian-states.const';
+import { useAuth } from '@/contexts/auth.context';
 import type { SaveCompanyDTO } from '@/models/company.model';
+import { adminsQueryOptions } from '@/queries/admin.queries';
 import { useSaveCompanyMutation } from '@/queries/company.queries';
+import {
+  contractedServicesQueryOptions,
+  useSaveContractedServiceMutation,
+} from '@/queries/contracted-service.queries';
 import AdminService from '@/services/admin.service';
 import UserService from '@/services/user.service';
+import type { RouteAccessLevel } from '@/types/route-access.type';
+import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 import { firstTabWithError } from '@/utils/firstTabWithError.util';
 import { mapFirebaseError } from '@/utils/mapFirebaseError.util';
 
 const FORM_ID = 'company-form';
 
-type CompanyFormValues = Omit<SaveCompanyDTO, 'business'> & {
+const FINANCIAL_TAB_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+  permissions: ['manage-finance'],
+};
+
+type CompanyFormValues = Omit<SaveCompanyDTO, 'business' | 'financial'> & {
   ownerEmail?: string;
   business: NonNullable<SaveCompanyDTO['business']>;
+  financial: FinancialFormValues;
 };
 
 const defaultValues: DefaultValues<CompanyFormValues> = {
@@ -31,6 +54,7 @@ const defaultValues: DefaultValues<CompanyFormValues> = {
   location: {
     state: 'SP',
   },
+  financial: defaultFinancialFormValues,
 };
 
 interface CompanyModalProps {
@@ -41,6 +65,13 @@ interface CompanyModalProps {
 export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
   const [activeTab, setActiveTab] = useState('empresa');
   const saveCompany = useSaveCompanyMutation();
+  const saveContractedService = useSaveContractedServiceMutation();
+  const { claims } = useAuth();
+  const canViewFinancial = checkRouteAccess(claims, FINANCIAL_TAB_ACCESS);
+  const { data: contractedServices } = useSuspenseQuery(
+    contractedServicesQueryOptions(),
+  );
+  const { data: admins } = useSuspenseQuery(adminsQueryOptions());
 
   const {
     register,
@@ -54,6 +85,11 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
     control,
     name: 'business.businessSector',
   });
+  const contractType = useWatch({ control, name: 'financial.contractType' });
+  const tcvPaymentType = useWatch({
+    control,
+    name: 'financial.tcv.paymentType',
+  });
 
   useEffect(() => {
     if (businessSector !== 'outro') {
@@ -64,6 +100,7 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
   const onSubmit = ({
     ownerEmail,
     business: biz,
+    financial,
     ...raw
   }: CompanyFormValues) => {
     const data = {
@@ -83,6 +120,7 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
           ? raw.social
           : undefined,
       extra: raw.extra?.observations ? raw.extra : undefined,
+      financial: buildFinancialPayload(financial),
     } as SaveCompanyDTO;
 
     saveCompany.mutate(data, {
@@ -113,6 +151,7 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
       localizacao: !!errs.location,
       redes: !!errs.social,
       observacoes: !!errs.extra,
+      administrativo: !!errs.financial,
     });
     if (tab) {
       setActiveTab(tab);
@@ -130,6 +169,7 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
     localizacao: !!errors.location,
     redes: !!errors.social,
     observacoes: !!errors.extra,
+    administrativo: !!errors.financial,
   };
 
   const TABS = [
@@ -158,6 +198,15 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
       label: 'Observações',
       hasError: tabErrors.observacoes,
     },
+    ...(canViewFinancial
+      ? [
+          {
+            id: 'administrativo',
+            label: 'Administrativo',
+            hasError: tabErrors.administrativo,
+          },
+        ]
+      : []),
   ];
 
   const footer = (
@@ -471,6 +520,221 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
             </p>
           </div>
         </div>
+
+        {/* Administrativo */}
+        {canViewFinancial && (
+          <div
+            className={activeTab === 'administrativo' ? 'space-y-4' : 'hidden'}
+          >
+            <Controller
+              name="financial.contractedServiceIds"
+              control={control}
+              render={({ field }) => (
+                <MultiSelect
+                  label="Serviço contratado"
+                  options={contractedServices.map((s) => ({
+                    value: s.serviceId,
+                    label: s.name,
+                  }))}
+                  selected={field.value}
+                  onChange={field.onChange}
+                  createLabel="Adicionar novo serviço"
+                  onCreateOption={async (name) => {
+                    const created =
+                      await saveContractedService.mutateAsync(name);
+                    return created.serviceId;
+                  }}
+                />
+              )}
+            />
+
+            <FormSelect
+              label="Tipo de contrato"
+              {...register('financial.contractType')}
+            >
+              <option value="">Selecione...</option>
+              <option value="mrr">Recorrente (MRR)</option>
+              <option value="tcv">Fechado (TCV)</option>
+            </FormSelect>
+
+            {contractType === 'mrr' && (
+              <div className="space-y-4 border-t border-border pt-4">
+                <div className="form-grid">
+                  <Controller
+                    name="financial.mrr.monthlyValue"
+                    control={control}
+                    rules={{ required: 'Valor mensal obrigatório' }}
+                    render={({ field }) => (
+                      <MoneyInput
+                        label="Valor mensal (R$) *"
+                        error={errors.financial?.mrr?.monthlyValue?.message}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
+                  <FormSelect
+                    label="Forma de pagamento *"
+                    error={errors.financial?.mrr?.paymentMethod?.message}
+                    {...register('financial.mrr.paymentMethod', {
+                      required: 'Forma de pagamento obrigatória',
+                    })}
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="pix">PIX</option>
+                    <option value="boleto">Boleto</option>
+                    <option value="cartao">Cartão</option>
+                  </FormSelect>
+                </div>
+                <div className="form-grid">
+                  <FormInput
+                    label="Dia de vencimento *"
+                    type="number"
+                    min="1"
+                    max="31"
+                    error={errors.financial?.mrr?.dueDay?.message}
+                    {...register('financial.mrr.dueDay', {
+                      required: 'Dia de vencimento obrigatório',
+                      setValueAs: (v) => (v === '' ? '' : Number(v)),
+                    })}
+                  />
+                  <FormInput
+                    label="Fidelidade (meses)"
+                    type="number"
+                    min="0"
+                    placeholder="Sem fidelidade"
+                    {...register('financial.mrr.loyaltyMonths', {
+                      setValueAs: (v) => (v === '' ? '' : Number(v)),
+                    })}
+                  />
+                </div>
+                <div className="form-grid">
+                  <FormInput
+                    label="Data de início *"
+                    type="date"
+                    error={errors.financial?.mrr?.startDate?.message}
+                    {...register('financial.mrr.startDate', {
+                      required: 'Data de início obrigatória',
+                    })}
+                  />
+                  <FormInput
+                    label="Data de término"
+                    type="date"
+                    {...register('financial.mrr.endDate')}
+                  />
+                </div>
+              </div>
+            )}
+
+            {contractType === 'tcv' && (
+              <div className="space-y-4 border-t border-border pt-4">
+                <Controller
+                  name="financial.tcv.totalValue"
+                  control={control}
+                  rules={{ required: 'Valor total obrigatório' }}
+                  render={({ field }) => (
+                    <MoneyInput
+                      label="Valor total do contrato (R$) *"
+                      error={errors.financial?.tcv?.totalValue?.message}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                  )}
+                />
+                <FormSelect
+                  label="Forma de pagamento *"
+                  error={errors.financial?.tcv?.paymentType?.message}
+                  {...register('financial.tcv.paymentType', {
+                    required: 'Forma de pagamento obrigatória',
+                  })}
+                >
+                  <option value="">Selecione...</option>
+                  <option value="avista">À vista</option>
+                  <option value="parcelado">Parcelado</option>
+                </FormSelect>
+
+                {tcvPaymentType === 'avista' && (
+                  <FormSelect
+                    label="Método (à vista) *"
+                    error={errors.financial?.tcv?.paymentMethod?.message}
+                    {...register('financial.tcv.paymentMethod', {
+                      required: 'Método de pagamento obrigatório',
+                    })}
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="pix">PIX</option>
+                    <option value="cartao">Cartão</option>
+                    <option value="boleto">Boleto</option>
+                  </FormSelect>
+                )}
+
+                {tcvPaymentType === 'parcelado' && (
+                  <div className="form-grid">
+                    <FormInput
+                      label="Número de parcelas *"
+                      type="number"
+                      min="1"
+                      error={errors.financial?.tcv?.installments?.message}
+                      {...register('financial.tcv.installments', {
+                        required: 'Número de parcelas obrigatório',
+                        setValueAs: (v) => (v === '' ? '' : Number(v)),
+                      })}
+                    />
+                    <Controller
+                      name="financial.tcv.installmentValue"
+                      control={control}
+                      rules={{ required: 'Valor por parcela obrigatório' }}
+                      render={({ field }) => (
+                        <MoneyInput
+                          label="Valor por parcela (R$) *"
+                          error={
+                            errors.financial?.tcv?.installmentValue?.message
+                          }
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
+                    />
+                  </div>
+                )}
+
+                <div className="form-grid">
+                  <FormInput
+                    label="Data de início *"
+                    type="date"
+                    error={errors.financial?.tcv?.startDate?.message}
+                    {...register('financial.tcv.startDate', {
+                      required: 'Data de início obrigatória',
+                    })}
+                  />
+                  <FormInput
+                    label="Data de término *"
+                    type="date"
+                    error={errors.financial?.tcv?.endDate?.message}
+                    {...register('financial.tcv.endDate', {
+                      required: 'Data de término obrigatória',
+                    })}
+                  />
+                </div>
+              </div>
+            )}
+
+            <FormSelect
+              label="Responsável administrativo"
+              {...register('financial.administrativeResponsibleUid')}
+            >
+              <option value="">Não definido</option>
+              {admins.map((admin) => (
+                <option key={admin.uid} value={admin.uid}>
+                  {admin.name}
+                </option>
+              ))}
+            </FormSelect>
+          </div>
+        )}
       </form>
     </Modal>
   );

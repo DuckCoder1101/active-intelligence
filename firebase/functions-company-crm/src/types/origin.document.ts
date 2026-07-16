@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from "firebase-admin/firestore";
 
 export interface OriginDocument {
   companyId: string;
@@ -7,10 +7,10 @@ export interface OriginDocument {
 }
 
 export const DEFAULT_ORIGIN_NAMES = [
-  'Meta Ads',
-  'Google',
-  'Indicação',
-  'Site',
-  'Instagram',
-  'Youtube',
+  "Meta Ads",
+  "Google",
+  "Indicação",
+  "Site",
+  "Instagram",
+  "Youtube",
 ] as const;

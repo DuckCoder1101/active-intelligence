@@ -13,14 +13,19 @@ import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as AdminIndexRouteImport } from './routes/_admin/index'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
-import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
+import { Route as AdminWorkspaceRouteImport } from './routes/_admin/workspace'
 import { Route as AdminTeamRouteImport } from './routes/_admin/team'
 import { Route as AdminProjectsRouteImport } from './routes/_admin/projects'
 import { Route as AdminProfileRouteImport } from './routes/_admin/profile'
+import { Route as AdminFinancesRouteImport } from './routes/_admin/finances'
+import { Route as AdminWorkspaceIndexRouteImport } from './routes/_admin/workspace/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/_admin/companies/index'
+import { Route as AdminWorkspaceScheduleRouteImport } from './routes/_admin/workspace/schedule'
+import { Route as AdminWorkspaceHistoryRouteImport } from './routes/_admin/workspace/history'
+import { Route as AdminWorkspaceClientsRouteImport } from './routes/_admin/workspace/clients'
 import { Route as AdminCompaniesCompany_idRouteImport } from './routes/_admin/companies/$company_id'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
@@ -42,11 +47,6 @@ const AuthSigninRoute = AuthSigninRouteImport.update({
   path: '/auth/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/auth/reset-password',
-  path: '/auth/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthLogoutRoute = AuthLogoutRouteImport.update({
   id: '/auth/logout',
   path: '/auth/logout',
@@ -61,6 +61,11 @@ const AuthCompleteAccountRoute = AuthCompleteAccountRouteImport.update({
   id: '/auth/complete-account',
   path: '/auth/complete-account',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminWorkspaceRoute = AdminWorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminTeamRoute = AdminTeamRouteImport.update({
   id: '/team',
@@ -77,10 +82,35 @@ const AdminProfileRoute = AdminProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFinancesRoute = AdminFinancesRouteImport.update({
+  id: '/finances',
+  path: '/finances',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminWorkspaceIndexRoute = AdminWorkspaceIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminWorkspaceRoute,
+} as any)
 const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
   id: '/companies/',
   path: '/companies/',
   getParentRoute: () => AdminRoute,
+} as any)
+const AdminWorkspaceScheduleRoute = AdminWorkspaceScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => AdminWorkspaceRoute,
+} as any)
+const AdminWorkspaceHistoryRoute = AdminWorkspaceHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AdminWorkspaceRoute,
+} as any)
+const AdminWorkspaceClientsRoute = AdminWorkspaceClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
+  getParentRoute: () => AdminWorkspaceRoute,
 } as any)
 const AdminCompaniesCompany_idRoute =
   AdminCompaniesCompany_idRouteImport.update({
@@ -92,91 +122,119 @@ const AdminCompaniesCompany_idRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AdminIndexRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/finances': typeof AdminFinancesRoute
   '/profile': typeof AdminProfileRoute
   '/projects': typeof AdminProjectsRoute
   '/team': typeof AdminTeamRoute
+  '/workspace': typeof AdminWorkspaceRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signin': typeof AuthSigninRoute
   '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
+  '/workspace/clients': typeof AdminWorkspaceClientsRoute
+  '/workspace/history': typeof AdminWorkspaceHistoryRoute
+  '/workspace/schedule': typeof AdminWorkspaceScheduleRoute
   '/companies/': typeof AdminCompaniesIndexRoute
+  '/workspace/': typeof AdminWorkspaceIndexRoute
 }
 export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedRoute
+  '/finances': typeof AdminFinancesRoute
   '/profile': typeof AdminProfileRoute
   '/projects': typeof AdminProjectsRoute
   '/team': typeof AdminTeamRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signin': typeof AuthSigninRoute
   '/': typeof AdminIndexRoute
   '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
+  '/workspace/clients': typeof AdminWorkspaceClientsRoute
+  '/workspace/history': typeof AdminWorkspaceHistoryRoute
+  '/workspace/schedule': typeof AdminWorkspaceScheduleRoute
   '/companies': typeof AdminCompaniesIndexRoute
+  '/workspace': typeof AdminWorkspaceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_admin': typeof AdminRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
+  '/_admin/finances': typeof AdminFinancesRoute
   '/_admin/profile': typeof AdminProfileRoute
   '/_admin/projects': typeof AdminProjectsRoute
   '/_admin/team': typeof AdminTeamRoute
+  '/_admin/workspace': typeof AdminWorkspaceRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signin': typeof AuthSigninRoute
   '/_admin/': typeof AdminIndexRoute
   '/_admin/companies/$company_id': typeof AdminCompaniesCompany_idRoute
+  '/_admin/workspace/clients': typeof AdminWorkspaceClientsRoute
+  '/_admin/workspace/history': typeof AdminWorkspaceHistoryRoute
+  '/_admin/workspace/schedule': typeof AdminWorkspaceScheduleRoute
   '/_admin/companies/': typeof AdminCompaniesIndexRoute
+  '/_admin/workspace/': typeof AdminWorkspaceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/unauthorized'
+    | '/finances'
     | '/profile'
     | '/projects'
     | '/team'
+    | '/workspace'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
-    | '/auth/reset-password'
     | '/auth/signin'
     | '/companies/$company_id'
+    | '/workspace/clients'
+    | '/workspace/history'
+    | '/workspace/schedule'
     | '/companies/'
+    | '/workspace/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/unauthorized'
+    | '/finances'
     | '/profile'
     | '/projects'
     | '/team'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
-    | '/auth/reset-password'
     | '/auth/signin'
     | '/'
     | '/companies/$company_id'
+    | '/workspace/clients'
+    | '/workspace/history'
+    | '/workspace/schedule'
     | '/companies'
+    | '/workspace'
   id:
     | '__root__'
     | '/_admin'
     | '/unauthorized'
+    | '/_admin/finances'
     | '/_admin/profile'
     | '/_admin/projects'
     | '/_admin/team'
+    | '/_admin/workspace'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
-    | '/auth/reset-password'
     | '/auth/signin'
     | '/_admin/'
     | '/_admin/companies/$company_id'
+    | '/_admin/workspace/clients'
+    | '/_admin/workspace/history'
+    | '/_admin/workspace/schedule'
     | '/_admin/companies/'
+    | '/_admin/workspace/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -185,7 +243,6 @@ export interface RootRouteChildren {
   AuthCompleteAccountRoute: typeof AuthCompleteAccountRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
-  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSigninRoute: typeof AuthSigninRoute
 }
 
@@ -219,13 +276,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSigninRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/reset-password': {
-      id: '/auth/reset-password'
-      path: '/auth/reset-password'
-      fullPath: '/auth/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth/logout': {
       id: '/auth/logout'
       path: '/auth/logout'
@@ -246,6 +296,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/complete-account'
       preLoaderRoute: typeof AuthCompleteAccountRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_admin/workspace': {
+      id: '/_admin/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof AdminWorkspaceRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/_admin/team': {
       id: '/_admin/team'
@@ -268,12 +325,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProfileRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/finances': {
+      id: '/_admin/finances'
+      path: '/finances'
+      fullPath: '/finances'
+      preLoaderRoute: typeof AdminFinancesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/workspace/': {
+      id: '/_admin/workspace/'
+      path: '/'
+      fullPath: '/workspace/'
+      preLoaderRoute: typeof AdminWorkspaceIndexRouteImport
+      parentRoute: typeof AdminWorkspaceRoute
+    }
     '/_admin/companies/': {
       id: '/_admin/companies/'
       path: '/companies'
       fullPath: '/companies/'
       preLoaderRoute: typeof AdminCompaniesIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/_admin/workspace/schedule': {
+      id: '/_admin/workspace/schedule'
+      path: '/schedule'
+      fullPath: '/workspace/schedule'
+      preLoaderRoute: typeof AdminWorkspaceScheduleRouteImport
+      parentRoute: typeof AdminWorkspaceRoute
+    }
+    '/_admin/workspace/history': {
+      id: '/_admin/workspace/history'
+      path: '/history'
+      fullPath: '/workspace/history'
+      preLoaderRoute: typeof AdminWorkspaceHistoryRouteImport
+      parentRoute: typeof AdminWorkspaceRoute
+    }
+    '/_admin/workspace/clients': {
+      id: '/_admin/workspace/clients'
+      path: '/clients'
+      fullPath: '/workspace/clients'
+      preLoaderRoute: typeof AdminWorkspaceClientsRouteImport
+      parentRoute: typeof AdminWorkspaceRoute
     }
     '/_admin/companies/$company_id': {
       id: '/_admin/companies/$company_id'
@@ -285,19 +377,41 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminWorkspaceRouteChildren {
+  AdminWorkspaceClientsRoute: typeof AdminWorkspaceClientsRoute
+  AdminWorkspaceHistoryRoute: typeof AdminWorkspaceHistoryRoute
+  AdminWorkspaceScheduleRoute: typeof AdminWorkspaceScheduleRoute
+  AdminWorkspaceIndexRoute: typeof AdminWorkspaceIndexRoute
+}
+
+const AdminWorkspaceRouteChildren: AdminWorkspaceRouteChildren = {
+  AdminWorkspaceClientsRoute: AdminWorkspaceClientsRoute,
+  AdminWorkspaceHistoryRoute: AdminWorkspaceHistoryRoute,
+  AdminWorkspaceScheduleRoute: AdminWorkspaceScheduleRoute,
+  AdminWorkspaceIndexRoute: AdminWorkspaceIndexRoute,
+}
+
+const AdminWorkspaceRouteWithChildren = AdminWorkspaceRoute._addFileChildren(
+  AdminWorkspaceRouteChildren,
+)
+
 interface AdminRouteChildren {
+  AdminFinancesRoute: typeof AdminFinancesRoute
   AdminProfileRoute: typeof AdminProfileRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminTeamRoute: typeof AdminTeamRoute
+  AdminWorkspaceRoute: typeof AdminWorkspaceRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
   AdminCompaniesCompany_idRoute: typeof AdminCompaniesCompany_idRoute
   AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminFinancesRoute: AdminFinancesRoute,
   AdminProfileRoute: AdminProfileRoute,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminTeamRoute: AdminTeamRoute,
+  AdminWorkspaceRoute: AdminWorkspaceRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
   AdminCompaniesCompany_idRoute: AdminCompaniesCompany_idRoute,
   AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
@@ -311,7 +425,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCompleteAccountRoute: AuthCompleteAccountRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLogoutRoute: AuthLogoutRoute,
-  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSigninRoute: AuthSigninRoute,
 }
 export const routeTree = rootRouteImport

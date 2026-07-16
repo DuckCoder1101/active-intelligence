@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { MdClose } from 'react-icons/md';
+import { MdClose, MdDeleteOutline } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 import { LeadBusinessTab } from './lead-drawer-business-tab.component';
@@ -8,6 +8,7 @@ import { LeadContactTab } from './lead-drawer-contact-tab.component';
 import { LeadProfileTab } from './lead-drawer-profile-tab.component';
 import { LeadQualificationTab } from './lead-drawer-qualification-tab.component';
 
+import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { Tabs, type Tab } from '@/components/ui/tabs.component';
 import type {
@@ -23,7 +24,10 @@ import type {
   Temperature,
 } from '@/models/lead.model';
 import type { UserProfile } from '@/models/user-profile.model';
-import { useSaveLeadMutation } from '@/queries/company-crm.queries';
+import {
+  useDeleteLeadMutation,
+  useSaveLeadMutation,
+} from '@/queries/company-crm.queries';
 
 export interface FormValues {
   name: string;
@@ -33,6 +37,7 @@ export interface FormValues {
   referredBy: string;
   tagIds: string[];
   assignedTo: string[];
+  notes: string;
 
   businessType: BusinessType;
   businessTypeOther: string;
@@ -86,6 +91,7 @@ function toFormValues(lead?: Lead): FormValues {
     referredBy: lead?.referredBy ?? '',
     tagIds: lead?.tagIds ?? [],
     assignedTo: lead?.assignedTo ?? [],
+    notes: lead?.notes ?? '',
 
     businessType: lead?.businessType ?? 'compra',
     businessTypeOther: lead?.businessTypeOther ?? '',
@@ -138,8 +144,10 @@ export function LeadDrawer({
   onSaved,
 }: LeadDrawerProps) {
   const [activeTab, setActiveTab] = useState(TABS[0].id);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const saveLead = useSaveLeadMutation(companyId);
+  const deleteLead = useDeleteLeadMutation(companyId);
 
   const methods = useForm<FormValues>({ defaultValues: toFormValues(lead) });
   const {
@@ -177,6 +185,7 @@ export function LeadDrawer({
         : undefined,
       tagIds: values.tagIds,
       assignedTo: values.assignedTo,
+      notes: values.notes.trim() || undefined,
 
       businessType: values.businessType,
       businessTypeOther:
@@ -223,6 +232,18 @@ export function LeadDrawer({
       onSuccess: (saved) => {
         toast.success(lead ? 'Lead atualizado!' : 'Lead cadastrado!');
         onSaved(saved);
+        onClose();
+      },
+    });
+  };
+
+  const handleDelete = () => {
+    if (!lead) {
+      return;
+    }
+    deleteLead.mutate(lead.leadId, {
+      onSuccess: () => {
+        toast.success('Lead excluído!');
         onClose();
       },
     });
@@ -284,25 +305,49 @@ export function LeadDrawer({
           </div>
 
           {/* Fixed footer */}
-          <div className="flex shrink-0 justify-end gap-3 border-t border-border px-6 py-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn-ghost-border"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={saveLead.isPending}
-              className="btn-primary"
-            >
-              {saveLead.isPending && <Spinner size={13} />}
-              Salvar
-            </button>
+          <div className="flex shrink-0 items-center justify-between border-t border-border px-6 py-4">
+            {lead ? (
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="flex items-center gap-1.5 text-[13px] font-semibold text-danger transition-opacity hover:opacity-80"
+              >
+                <MdDeleteOutline size={16} />
+                Excluir
+              </button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="btn-ghost-border"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={saveLead.isPending}
+                className="btn-primary"
+              >
+                {saveLead.isPending && <Spinner size={13} />}
+                Salvar
+              </button>
+            </div>
           </div>
         </form>
       </FormProvider>
+
+      {showDeleteConfirm && (
+        <ConfirmDeleteModal
+          title="Excluir lead"
+          description={`Excluir "${lead?.name}"? Essa ação não pode ser desfeita.`}
+          isDeleting={deleteLead.isPending}
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
     </div>
   );
 }

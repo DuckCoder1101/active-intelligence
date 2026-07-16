@@ -86,25 +86,6 @@ export function useSendPasswordResetMutation() {
   });
 }
 
-export function useVerifyPasswordResetCodeMutation() {
-  return useMutation({
-    mutationFn: (oobCode: string) =>
-      UserService.verifyPasswordResetCode(oobCode),
-  });
-}
-
-interface ConfirmPasswordResetVars {
-  oobCode: string;
-  password: string;
-}
-
-export function useConfirmPasswordResetMutation() {
-  return useMutation({
-    mutationFn: ({ oobCode, password }: ConfirmPasswordResetVars) =>
-      UserService.confirmPasswordReset(oobCode, password),
-  });
-}
-
 export function useSignoutMutation() {
   return useMutation({
     mutationFn: () => UserService.signout(),

@@ -17,3 +17,7 @@ export interface AuditLogModel {
   details: string | null;
   createdAt: number;
 }
+
+export interface WorkspaceAuditLogModel extends AuditLogModel {
+  companyId: string;
+}

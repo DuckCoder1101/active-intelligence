@@ -1,6 +1,6 @@
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from "firebase-admin/firestore";
 
-export type NotificationType = 'new-client-task';
+export type NotificationType = "new-client-task";
 
 export interface NotificationDocument {
   // uids dos usuários alvo desta notificação que ainda não a leram (admins

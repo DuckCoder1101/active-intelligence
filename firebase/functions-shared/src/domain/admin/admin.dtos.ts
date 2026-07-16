@@ -1,4 +1,4 @@
-import { AdminAccessLevel } from '../../types/accessLevel.type';
+import { AdminAccessLevel } from "../../types/accessLevel.type";
 
 export interface AdminResumeDTO {
   uid: string;

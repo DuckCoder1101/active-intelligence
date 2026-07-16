@@ -1,17 +1,17 @@
-import { database, auth } from '../../utils/firebase';
-import { AdminResumeDTO, AdminProfileDTO } from './admin.dtos';
-import { HttpsError } from 'firebase-functions/https';
-import { AdminDocument } from './admin.document';
-import { FieldValue } from 'firebase-admin/firestore';
+import { database, auth } from "../../utils/firebase";
+import { AdminResumeDTO, AdminProfileDTO } from "./admin.dtos";
+import { HttpsError } from "firebase-functions/https";
+import { AdminDocument } from "./admin.document";
+import { FieldValue } from "firebase-admin/firestore";
 import {
   CompleteProfileDTO,
   UpdateProfileDTO,
   UserProfileDTO,
-} from '../user/user.dto';
-import { AdminPermission } from '../../types/accessLevel.type';
+} from "../user/user.dto";
+import { AdminPermission } from "../../types/accessLevel.type";
 
 export default class AdminRepository {
-  private static adminsCollection = database.collection('admins');
+  private static adminsCollection = database.collection("admins");
 
   static async create(uid: string, email: string, data: CompleteProfileDTO) {
     const adminRef = this.adminsCollection.doc(uid);
@@ -30,7 +30,7 @@ export default class AdminRepository {
     const doc = await this.adminsCollection.doc(uid).get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Administrador não encontrado!');
+      throw new HttpsError("not-found", "Administrador não encontrado!");
     }
 
     const admin = doc.data() as AdminDocument;
@@ -45,7 +45,7 @@ export default class AdminRepository {
 
   static async listAll(): Promise<AdminProfileDTO[]> {
     const snapshot = await this.adminsCollection
-      .orderBy('createdAt', 'desc')
+      .orderBy("createdAt", "desc")
       .get();
 
     if (snapshot.empty) return [];
@@ -68,8 +68,9 @@ export default class AdminRepository {
         email: data.email,
         phone: data.phone,
         cpf: data.cpf,
-        accessLevel: (claims['accessLevel'] ?? 'admin') as AdminProfileDTO['accessLevel'],
-        permissions: (claims['permissions'] ?? []) as string[],
+        accessLevel: (claims["accessLevel"] ?? "admin") as
+          AdminProfileDTO["accessLevel"],
+        permissions: (claims["permissions"] ?? []) as string[],
         createdAt: data.createdAt.toMillis(),
         updatedAt: data.updatedAt.toMillis(),
       };
@@ -81,7 +82,7 @@ export default class AdminRepository {
     const doc = await ref.get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Administrador não encontrado!');
+      throw new HttpsError("not-found", "Administrador não encontrado!");
     }
 
     await ref.set(
@@ -100,7 +101,7 @@ export default class AdminRepository {
     const doc = await ref.get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Administrador não encontrado!');
+      throw new HttpsError("not-found", "Administrador não encontrado!");
     }
 
     await ref.delete();
@@ -112,16 +113,37 @@ export default class AdminRepository {
     const admins = await this.listAll();
     return admins
       .filter(
-        (a) => a.accessLevel === 'owner' || a.permissions.includes(permission),
+        (a) => a.accessLevel === "owner" || a.permissions.includes(permission),
       )
       .map((a) => a.uid);
+  }
+
+  static async listUidsByAccessLevel(
+    level: "owner" | "admin",
+  ): Promise<string[]> {
+    const admins = await this.listAll();
+    return admins
+      .filter((a) => a.accessLevel === level)
+      .map((a) => a.uid);
+  }
+
+  static async addFcmToken(uid: string, token: string): Promise<void> {
+    await this.adminsCollection.doc(uid).update({
+      fcmTokens: FieldValue.arrayUnion(token),
+    });
+  }
+
+  static async removeFcmToken(uid: string, token: string): Promise<void> {
+    await this.adminsCollection.doc(uid).update({
+      fcmTokens: FieldValue.arrayRemove(token),
+    });
   }
 
   static async getResumeByUid(uid: string): Promise<AdminResumeDTO> {
     const doc = await this.adminsCollection.doc(uid).get();
 
     if (!doc.exists) {
-      throw new HttpsError('not-found', 'Administrador não encontrado!');
+      throw new HttpsError("not-found", "Administrador não encontrado!");
     }
 
     const admin = doc.data() as AdminDocument;

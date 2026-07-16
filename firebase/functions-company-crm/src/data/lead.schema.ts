@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 import {
   BUSINESS_TYPES,
@@ -7,11 +7,11 @@ import {
   PROPERTY_TYPES,
   PURPOSES,
   TEMPERATURES,
-} from '../types/lead.document';
+} from "../types/lead.document";
 
 export default class LeadSchema {
   static saveSchema = z.object({
-    companyId: z.string().min(1, 'companyId obrigatório'),
+    companyId: z.string().min(1, "companyId obrigatório"),
     leadId: z
       .string()
       .nullish()
@@ -21,14 +21,13 @@ export default class LeadSchema {
       .nullish()
       .transform((v) => v ?? undefined),
 
-    name: z.string().min(1, 'Nome obrigatório'),
-    phone: z.string().min(1, 'Telefone obrigatório'),
+    name: z.string().min(1, "Nome obrigatório"),
+    phone: z.string().min(1, "Telefone obrigatório"),
     email: z
-      .string()
-      .email('E-mail inválido')
+      .email("E-mail inválido")
       .nullish()
       .transform((v) => v ?? undefined),
-    originId: z.string().min(1, 'Origem obrigatória'),
+    originId: z.string().min(1, "Origem obrigatória"),
     referredBy: z
       .string()
       .nullish()
@@ -43,8 +42,14 @@ export default class LeadSchema {
       .nullish()
       .default([])
       .transform((v) => v ?? []),
+    notes: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
 
-    businessType: z.enum(BUSINESS_TYPES, { message: 'Tipo de negócio inválido' }),
+    businessType: z.enum(BUSINESS_TYPES, {
+      message: "Tipo de negócio inválido",
+    }),
     businessTypeOther: z
       .string()
       .nullish()
@@ -140,8 +145,8 @@ export default class LeadSchema {
   });
 
   static updateStatusSchema = z.object({
-    companyId: z.string().min(1, 'companyId obrigatório'),
-    leadId: z.string().min(1, 'leadId obrigatório'),
-    status: z.string().min(1, 'Status inválido'),
+    companyId: z.string().min(1, "companyId obrigatório"),
+    leadId: z.string().min(1, "leadId obrigatório"),
+    status: z.string().min(1, "Status inválido"),
   });
 }

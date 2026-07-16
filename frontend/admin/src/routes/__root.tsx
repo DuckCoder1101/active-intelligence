@@ -15,11 +15,12 @@ import { FirebaseError } from 'firebase/app';
 import { useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { ToastContainer } from 'react-toastify';
+import toastifyCss from 'react-toastify/dist/ReactToastify.css?url';
 
 import type { RouterContext } from '../router';
 import appCss from '../styles.css?url';
-import toastifyCss from 'react-toastify/dist/ReactToastify.css?url';
 
+import { FcmNotificationsProvider } from '@/providers/fcm-notifications.provider';
 import { NotificationsProvider } from '@/providers/notifications.provider';
 import { ThemeProvider } from '@/providers/theme.provider';
 
@@ -106,11 +107,13 @@ function NotFound() {
 function RootComponent() {
   return (
     <AuthProvider>
-      <NotificationsProvider>
-        <ThemeProvider>
-          <Outlet />
-        </ThemeProvider>
-      </NotificationsProvider>
+      <FcmNotificationsProvider>
+        <NotificationsProvider>
+          <ThemeProvider>
+            <Outlet />
+          </ThemeProvider>
+        </NotificationsProvider>
+      </FcmNotificationsProvider>
     </AuthProvider>
   );
 }
