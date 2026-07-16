@@ -24,7 +24,6 @@ export default class LeadSchema {
     name: z.string().min(1, "Nome obrigatório"),
     phone: z.string().min(1, "Telefone obrigatório"),
     email: z
-      .string()
       .email("E-mail inválido")
       .nullish()
       .transform((v) => v ?? undefined),
@@ -43,6 +42,10 @@ export default class LeadSchema {
       .nullish()
       .default([])
       .transform((v) => v ?? []),
+    notes: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
 
     businessType: z.enum(BUSINESS_TYPES, {
       message: "Tipo de negócio inválido",

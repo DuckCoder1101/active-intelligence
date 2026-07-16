@@ -4,6 +4,7 @@ import {
   redirect,
   useNavigate,
 } from '@tanstack/react-router';
+import { signOut } from 'firebase/auth';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -14,6 +15,7 @@ import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useSigninMutation } from '@/queries/user.queries';
 import { getSessionUser } from '@/server/session';
+import { auth } from '@/utils/firebase.util';
 
 interface SignInFormData {
   email: string;
@@ -60,12 +62,36 @@ function SignInPage() {
   const signin = useSigninMutation();
 
   useEffect(() => {
-    if (claims) {
-      navigate({
-        to: getRedirectPath(claims.accessLevel, companyId),
-      });
+    if (!claims) {
+      return;
     }
-  }, [claims, navigate]);
+
+    let cancelled = false;
+
+    (async () => {
+      // Confirma a sessão no servidor antes de sair da tela: se o guard da
+      // rota de destino não reconhece o cookie, navegar só inicia um
+      // ping-pong infinito (navigate → redirect de volta → navigate...).
+      // Nesse caso o usuário persistido no SDK é lixo (ex.: emulator
+      // reiniciado) — derruba para realinhar cliente e servidor.
+      const sessionUser = await getSessionUser();
+      if (cancelled) {
+        return;
+      }
+
+      if (sessionUser) {
+        navigate({
+          to: getRedirectPath(sessionUser.accessLevel, companyId),
+        });
+      } else {
+        await signOut(auth);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [claims, companyId, navigate]);
 
   const {
     register,

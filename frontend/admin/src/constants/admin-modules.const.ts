@@ -28,9 +28,9 @@ export const ADMIN_MODULES: Section[] = [
       },
       {
         icon: MdOutlineViewKanban,
-        label: 'Tarefas',
-        description: 'Board com tarefas, prazos e equipe.',
-        to: '/projects',
+        label: 'Workspace',
+        description: 'Central de operação por cliente: tarefas, prazos e cronograma.',
+        to: '/workspace',
         permission: 'manage-projects',
       },
     ],

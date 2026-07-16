@@ -15,7 +15,6 @@ import { Route as UserProfileRouteImport } from './routes/user/profile'
 import { Route as UserMycompanyRouteImport } from './routes/user/mycompany'
 import { Route as CompanyCompanyIdRouteImport } from './routes/company/$companyId'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
-import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
@@ -53,11 +52,6 @@ const CompanyCompanyIdRoute = CompanyCompanyIdRouteImport.update({
 const AuthSigninRoute = AuthSigninRouteImport.update({
   id: '/auth/signin',
   path: '/auth/signin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/auth/reset-password',
-  path: '/auth/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLogoutRoute = AuthLogoutRouteImport.update({
@@ -109,7 +103,6 @@ export interface FileRoutesByFullPath {
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signin': typeof AuthSigninRoute
   '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
   '/user/mycompany': typeof UserMycompanyRoute
@@ -126,7 +119,6 @@ export interface FileRoutesByTo {
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signin': typeof AuthSigninRoute
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
@@ -143,7 +135,6 @@ export interface FileRoutesById {
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signin': typeof AuthSigninRoute
   '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
   '/user/mycompany': typeof UserMycompanyRoute
@@ -162,7 +153,6 @@ export interface FileRouteTypes {
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
-    | '/auth/reset-password'
     | '/auth/signin'
     | '/company/$companyId'
     | '/user/mycompany'
@@ -179,7 +169,6 @@ export interface FileRouteTypes {
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
-    | '/auth/reset-password'
     | '/auth/signin'
     | '/user/mycompany'
     | '/user/profile'
@@ -195,7 +184,6 @@ export interface FileRouteTypes {
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
-    | '/auth/reset-password'
     | '/auth/signin'
     | '/company/$companyId'
     | '/user/mycompany'
@@ -213,7 +201,6 @@ export interface RootRouteChildren {
   AuthCompleteAccountRoute: typeof AuthCompleteAccountRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
-  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSigninRoute: typeof AuthSigninRoute
   CompanyCompanyIdRoute: typeof CompanyCompanyIdRouteWithChildren
   UserMycompanyRoute: typeof UserMycompanyRoute
@@ -262,13 +249,6 @@ declare module '@tanstack/react-router' {
       path: '/auth/signin'
       fullPath: '/auth/signin'
       preLoaderRoute: typeof AuthSigninRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/reset-password': {
-      id: '/auth/reset-password'
-      path: '/auth/reset-password'
-      fullPath: '/auth/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/logout': {
@@ -355,7 +335,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCompleteAccountRoute: AuthCompleteAccountRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLogoutRoute: AuthLogoutRoute,
-  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSigninRoute: AuthSigninRoute,
   CompanyCompanyIdRoute: CompanyCompanyIdRouteWithChildren,
   UserMycompanyRoute: UserMycompanyRoute,

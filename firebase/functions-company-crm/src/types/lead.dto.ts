@@ -19,6 +19,7 @@ export interface LeadDTO {
   referredBy?: string;
   tagIds: string[];
   assignedTo: string[];
+  notes?: string;
 
   businessType: BusinessType;
   businessTypeOther?: string;
@@ -62,6 +63,7 @@ export interface SaveLeadDTO {
   referredBy?: string;
   tagIds?: string[];
   assignedTo?: string[];
+  notes?: string;
 
   businessType: BusinessType;
   businessTypeOther?: string;

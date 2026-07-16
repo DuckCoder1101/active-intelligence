@@ -1,6 +1,13 @@
 import { httpsCallable } from 'firebase/functions';
 
-import type { AuditLogModel } from '@/models/audit.model';
+import type {
+  AuditLogModel,
+  WorkspaceAuditLogModel,
+} from '@/models/audit.model';
+import type {
+  CompanyOperationalRecord,
+  SaveCompanyOperationalDTO,
+} from '@/models/company-operational.model';
 import type {
   Company,
   SaveCompanyDTO,
@@ -34,6 +41,21 @@ export default class CompanyService {
     AuditLogModel[]
   >(functions, 'listAuditLogsHandler');
 
+  private static listWorkspaceAuditLogsCallable = httpsCallable<
+    { companyIds?: string[]; limit?: number },
+    WorkspaceAuditLogModel[]
+  >(functions, 'listWorkspaceAuditLogsHandler');
+
+  private static getCompanyOperationalRecordCallable = httpsCallable<
+    { companyId: string },
+    CompanyOperationalRecord
+  >(functions, 'getCompanyOperationalRecordHandler');
+
+  private static saveCompanyOperationalRecordCallable = httpsCallable<
+    SaveCompanyOperationalDTO,
+    boolean
+  >(functions, 'saveCompanyOperationalRecordHandler');
+
   static async listCompanies(): Promise<Company[]> {
     const result = await this.listCompaniesCallable();
     return result.data;
@@ -55,5 +77,29 @@ export default class CompanyService {
   static async listAuditLogs(companyId: string): Promise<AuditLogModel[]> {
     const result = await this.listAuditLogsCallable({ companyId });
     return result.data;
+  }
+
+  static async listWorkspaceAuditLogs(
+    companyIds: string[],
+  ): Promise<WorkspaceAuditLogModel[]> {
+    const result = await this.listWorkspaceAuditLogsCallable(
+      companyIds.length > 0 ? { companyIds } : {},
+    );
+    return result.data;
+  }
+
+  static async getOperationalRecord(
+    companyId: string,
+  ): Promise<CompanyOperationalRecord> {
+    const result = await this.getCompanyOperationalRecordCallable({
+      companyId,
+    });
+    return result.data;
+  }
+
+  static async saveOperationalRecord(
+    data: SaveCompanyOperationalDTO,
+  ): Promise<void> {
+    await this.saveCompanyOperationalRecordCallable(data);
   }
 }

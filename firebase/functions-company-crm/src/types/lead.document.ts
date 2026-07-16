@@ -108,6 +108,7 @@ export interface LeadDocument {
   referredBy?: string;
   tagIds: string[];
   assignedTo: string[];
+  notes?: string;
 
   // Sessão 2 — Intenção/Negócio
   businessType: BusinessType;

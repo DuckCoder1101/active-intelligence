@@ -10,7 +10,7 @@ import {
 import { FieldValue } from "firebase-admin/firestore";
 
 export default class CompanyUserRepository {
-  private static usersCollection = database.collection("company-users");
+  private static usersCollection = database.collection("company_users");
 
   static async create(
     uid: string,

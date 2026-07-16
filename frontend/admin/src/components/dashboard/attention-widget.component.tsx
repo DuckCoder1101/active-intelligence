@@ -63,7 +63,7 @@ export function AttentionWidget({ taskCount, staleCount }: Props) {
         label="Tarefas do dia ou atrasadas"
         count={taskCount}
         linkLabel="Ver tarefas"
-        to="/projects"
+        to="/workspace/schedule"
       />
       <StatCard
         icon={MdOutlinePeople}

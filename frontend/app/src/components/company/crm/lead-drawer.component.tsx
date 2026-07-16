@@ -37,6 +37,7 @@ export interface FormValues {
   referredBy: string;
   tagIds: string[];
   assignedTo: string[];
+  notes: string;
 
   businessType: BusinessType;
   businessTypeOther: string;
@@ -90,6 +91,7 @@ function toFormValues(lead?: Lead): FormValues {
     referredBy: lead?.referredBy ?? '',
     tagIds: lead?.tagIds ?? [],
     assignedTo: lead?.assignedTo ?? [],
+    notes: lead?.notes ?? '',
 
     businessType: lead?.businessType ?? 'compra',
     businessTypeOther: lead?.businessTypeOther ?? '',
@@ -183,6 +185,7 @@ export function LeadDrawer({
         : undefined,
       tagIds: values.tagIds,
       assignedTo: values.assignedTo,
+      notes: values.notes.trim() || undefined,
 
       businessType: values.businessType,
       businessTypeOther:

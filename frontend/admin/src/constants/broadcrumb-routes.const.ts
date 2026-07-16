@@ -13,8 +13,8 @@ export const BROADCRUMB_ROUTE_MAP: {
     crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Clientes' }],
   },
   {
-    test: (p) => p.startsWith('/projects'),
-    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Projetos' }],
+    test: (p) => p.startsWith('/workspace'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Workspace' }],
   },
   {
     test: (p) => p.startsWith('/team'),

@@ -17,6 +17,7 @@ function toDTO(id: string, data: LeadDocument): LeadDTO {
     referredBy: data.referredBy,
     tagIds: data.tagIds ?? [],
     assignedTo: data.assignedTo ?? [],
+    notes: data.notes,
     businessType: data.businessType,
     businessTypeOther: data.businessTypeOther,
     propertyType: data.propertyType,

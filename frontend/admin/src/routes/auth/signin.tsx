@@ -1,4 +1,5 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { signOut } from 'firebase/auth';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -9,6 +10,7 @@ import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useSigninMutation } from '@/queries/user.queries';
 import { getSessionUser } from '@/server/session';
+import { auth } from '@/utils/firebase.util';
 
 interface SignInFormData {
   email: string;
@@ -44,12 +46,35 @@ function SignInPage() {
       return;
     }
 
-    if (claims.accessLevel === 'user') {
-      window.location.href = APP_SIGNIN_URL ?? '/unauthorized';
-      return;
-    }
+    let cancelled = false;
 
-    window.location.href = '/';
+    (async () => {
+      // Confirma a sessão no servidor antes do window.location.href: se o
+      // guard de "/" não reconhece o cookie, ele devolve para cá e cada
+      // volta do ciclo é um reload de página inteira — infinito. Nesse caso
+      // o usuário persistido no SDK é lixo (ex.: emulator reiniciado) —
+      // derruba para realinhar cliente e servidor.
+      const sessionUser = await getSessionUser();
+      if (cancelled) {
+        return;
+      }
+
+      if (!sessionUser) {
+        await signOut(auth);
+        return;
+      }
+
+      if (sessionUser.accessLevel === 'user') {
+        window.location.href = APP_SIGNIN_URL ?? '/unauthorized';
+        return;
+      }
+
+      window.location.href = '/';
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [claims]);
 
   const {

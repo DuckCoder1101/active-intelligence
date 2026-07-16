@@ -63,6 +63,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
       if (!user) {
         await deleteSession().catch(() => {});
+        // Sem usuário no SDK, nenhuma chamada sai autenticada — manter claims
+        // aqui deixaria a UI fingindo sessão ativa e as callables falhariam
+        // com "unauthenticated" no backend.
+        setAuthState({
+          claims: null,
+          userProfile: null,
+          isLoadingProfile: false,
+        });
         return;
       }
 

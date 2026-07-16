@@ -232,6 +232,14 @@ export function LeadContactTab({ companyId, origins, tags, teammates }: Props) {
           />
         </div>
       )}
+
+      <FormInput
+        as="textarea"
+        label="Observações"
+        rows={3}
+        className="min-h-24 resize-none"
+        {...register('notes')}
+      />
     </div>
   );
 }

@@ -27,30 +27,40 @@ export function FcmNotificationsProvider({
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
       return;
     }
+    if (!FCM_VAPID_KEY || FCM_VAPID_KEY.startsWith('<')) {
+      // VAPID key not configured (still the placeholder) — skip SW
+      // registration entirely instead of registering it just to have
+      // getToken() fail on every render.
+      return;
+    }
 
     let cancelled = false;
 
     (async () => {
-      const registration = await navigator.serviceWorker.register(
-        '/firebase-messaging-sw.js',
-      );
+      try {
+        const registration = await navigator.serviceWorker.register(
+          '/firebase-messaging-sw.js',
+        );
 
-      if (Notification.permission === 'default') {
-        await Notification.requestPermission();
-      }
+        if (Notification.permission === 'default') {
+          await Notification.requestPermission();
+        }
 
-      if (Notification.permission !== 'granted') {return;}
+        if (Notification.permission !== 'granted') {return;}
 
-      const messaging = getMessagingClient();
-      if (!messaging) {return;}
+        const messaging = getMessagingClient();
+        if (!messaging) {return;}
 
-      const token = await getToken(messaging, {
-        vapidKey: FCM_VAPID_KEY,
-        serviceWorkerRegistration: registration,
-      });
+        const token = await getToken(messaging, {
+          vapidKey: FCM_VAPID_KEY,
+          serviceWorkerRegistration: registration,
+        });
 
-      if (!cancelled && token) {
-        await FcmService.registerToken(token);
+        if (!cancelled && token) {
+          await FcmService.registerToken(token);
+        }
+      } catch (err) {
+        console.error('[FcmNotificationsProvider] setup failed', err);
       }
     })();
 

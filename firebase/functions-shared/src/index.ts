@@ -56,6 +56,13 @@ export type {
 } from "./domain/company/company.type";
 export { CompanyRepository } from "./domain/company/company.repository";
 export { AuditRepository } from "./domain/company/audit.repository";
+export { default as CompanyOperationalSchema } from "./domain/company/company-operational.schema";
+export type { CompanyOperationalDocument } from "./domain/company/company-operational.document";
+export type {
+  SaveCompanyOperationalDTO,
+  CompanyOperationalDTO,
+} from "./domain/company/company-operational.type";
+export { CompanyOperationalRepository } from "./domain/company/company-operational.repository";
 export { BusinessSector } from "./domain/company/businessSector.enum";
 export { CompanyStage } from "./domain/company/companyStage.emum";
 export { RevenueRange } from "./domain/company/revenueRange.enum";

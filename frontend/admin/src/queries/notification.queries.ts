@@ -16,6 +16,7 @@ export function useNotificationsQuery(enabled: boolean) {
     queryKey: notificationKeys.lists(),
     queryFn: () => NotificationService.listNotifications(),
     enabled,
+    meta: { silentOnUnauthenticated: true },
   });
 }
 
@@ -25,6 +26,7 @@ export function useUnreadNotificationCountQuery(enabled: boolean) {
     queryFn: () => NotificationService.getUnreadCount(),
     refetchInterval: UNREAD_COUNT_POLL_INTERVAL_MS,
     enabled,
+    meta: { silentOnUnauthenticated: true },
   });
 }
 

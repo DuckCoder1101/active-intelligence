@@ -20,7 +20,7 @@ const INVALID_TOKEN_ERROR_CODES = [
   "messaging/invalid-registration-token",
 ];
 
-type TokenOwner = { uid: string; collection: "admins" | "company-users" };
+type TokenOwner = { uid: string; collection: "admins" | "company_users" };
 
 function chunk<T>(items: T[], size: number): T[][] {
   const chunks: T[][] = [];
@@ -33,7 +33,7 @@ function chunk<T>(items: T[], size: number): T[][] {
 export default class NotificationRepository {
   private static notificationsCollection = database.collection("notifications");
   private static adminsCollection = database.collection("admins");
-  private static companyUsersCollection = database.collection("company-users");
+  private static companyUsersCollection = database.collection("company_users");
 
   static async notify(
     filter: NotificationFilterDTO,
@@ -181,7 +181,7 @@ export default class NotificationRepository {
         const companyUser = snap.data() as CompanyUserDocument;
         for (const token of companyUser.fcmTokens ?? []) {
           tokens.push(token);
-          tokenOwners.set(token, { uid: snap.id, collection: "company-users" });
+          tokenOwners.set(token, { uid: snap.id, collection: "company_users" });
         }
       }
     }

@@ -7,5 +7,8 @@ export * from "./handlers/getCompany";
 export * from "./handlers/saveCompany";
 export * from "./handlers/deleteCompany";
 export * from "./handlers/listAuditLogs";
+export * from "./handlers/listWorkspaceAuditLogs";
 export * from "./handlers/listContractedServices";
 export * from "./handlers/saveContractedService";
+export * from "./handlers/getCompanyOperationalRecord";
+export * from "./handlers/saveCompanyOperationalRecord";
