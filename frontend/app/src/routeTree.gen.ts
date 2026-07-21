@@ -13,6 +13,7 @@ import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UserProfileRouteImport } from './routes/user/profile'
 import { Route as UserMycompanyRouteImport } from './routes/user/mycompany'
+import { Route as GGuideIdRouteImport } from './routes/g/$guideId'
 import { Route as CompanyCompanyIdRouteImport } from './routes/company/$companyId'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
@@ -23,6 +24,8 @@ import { Route as CompanyCompanyIdTeamRouteImport } from './routes/company/$comp
 import { Route as CompanyCompanyIdScheduleRouteImport } from './routes/company/$companyId/schedule'
 import { Route as CompanyCompanyIdCrmRouteImport } from './routes/company/$companyId/crm'
 import { Route as CompanyCompanyIdAdAccountsRouteImport } from './routes/company/$companyId/ad-accounts'
+import { Route as CompanyCompanyIdConteudosIndexRouteImport } from './routes/company/$companyId/conteudos/index'
+import { Route as CompanyCompanyIdConteudosGuideIdRouteImport } from './routes/company/$companyId/conteudos/$guideId'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -42,6 +45,11 @@ const UserProfileRoute = UserProfileRouteImport.update({
 const UserMycompanyRoute = UserMycompanyRouteImport.update({
   id: '/user/mycompany',
   path: '/user/mycompany',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GGuideIdRoute = GGuideIdRouteImport.update({
+  id: '/g/$guideId',
+  path: '/g/$guideId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompanyCompanyIdRoute = CompanyCompanyIdRouteImport.update({
@@ -96,6 +104,18 @@ const CompanyCompanyIdAdAccountsRoute =
     path: '/ad-accounts',
     getParentRoute: () => CompanyCompanyIdRoute,
   } as any)
+const CompanyCompanyIdConteudosIndexRoute =
+  CompanyCompanyIdConteudosIndexRouteImport.update({
+    id: '/conteudos/',
+    path: '/conteudos/',
+    getParentRoute: () => CompanyCompanyIdRoute,
+  } as any)
+const CompanyCompanyIdConteudosGuideIdRoute =
+  CompanyCompanyIdConteudosGuideIdRouteImport.update({
+    id: '/conteudos/$guideId',
+    path: '/conteudos/$guideId',
+    getParentRoute: () => CompanyCompanyIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -105,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
+  '/g/$guideId': typeof GGuideIdRoute
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
   '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
@@ -112,6 +133,8 @@ export interface FileRoutesByFullPath {
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
   '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
+  '/company/$companyId/conteudos/$guideId': typeof CompanyCompanyIdConteudosGuideIdRoute
+  '/company/$companyId/conteudos/': typeof CompanyCompanyIdConteudosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -120,6 +143,7 @@ export interface FileRoutesByTo {
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
+  '/g/$guideId': typeof GGuideIdRoute
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
   '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
@@ -127,6 +151,8 @@ export interface FileRoutesByTo {
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
   '/company/$companyId': typeof CompanyCompanyIdIndexRoute
+  '/company/$companyId/conteudos/$guideId': typeof CompanyCompanyIdConteudosGuideIdRoute
+  '/company/$companyId/conteudos': typeof CompanyCompanyIdConteudosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -137,6 +163,7 @@ export interface FileRoutesById {
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
+  '/g/$guideId': typeof GGuideIdRoute
   '/user/mycompany': typeof UserMycompanyRoute
   '/user/profile': typeof UserProfileRoute
   '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
@@ -144,6 +171,8 @@ export interface FileRoutesById {
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
   '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
+  '/company/$companyId/conteudos/$guideId': typeof CompanyCompanyIdConteudosGuideIdRoute
+  '/company/$companyId/conteudos/': typeof CompanyCompanyIdConteudosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -155,6 +184,7 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/signin'
     | '/company/$companyId'
+    | '/g/$guideId'
     | '/user/mycompany'
     | '/user/profile'
     | '/company/$companyId/ad-accounts'
@@ -162,6 +192,8 @@ export interface FileRouteTypes {
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId/'
+    | '/company/$companyId/conteudos/$guideId'
+    | '/company/$companyId/conteudos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -170,6 +202,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
+    | '/g/$guideId'
     | '/user/mycompany'
     | '/user/profile'
     | '/company/$companyId/ad-accounts'
@@ -177,6 +210,8 @@ export interface FileRouteTypes {
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId'
+    | '/company/$companyId/conteudos/$guideId'
+    | '/company/$companyId/conteudos'
   id:
     | '__root__'
     | '/'
@@ -186,6 +221,7 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/signin'
     | '/company/$companyId'
+    | '/g/$guideId'
     | '/user/mycompany'
     | '/user/profile'
     | '/company/$companyId/ad-accounts'
@@ -193,6 +229,8 @@ export interface FileRouteTypes {
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId/'
+    | '/company/$companyId/conteudos/$guideId'
+    | '/company/$companyId/conteudos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -203,6 +241,7 @@ export interface RootRouteChildren {
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthSigninRoute: typeof AuthSigninRoute
   CompanyCompanyIdRoute: typeof CompanyCompanyIdRouteWithChildren
+  GGuideIdRoute: typeof GGuideIdRoute
   UserMycompanyRoute: typeof UserMycompanyRoute
   UserProfileRoute: typeof UserProfileRoute
 }
@@ -235,6 +274,13 @@ declare module '@tanstack/react-router' {
       path: '/user/mycompany'
       fullPath: '/user/mycompany'
       preLoaderRoute: typeof UserMycompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/g/$guideId': {
+      id: '/g/$guideId'
+      path: '/g/$guideId'
+      fullPath: '/g/$guideId'
+      preLoaderRoute: typeof GGuideIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/company/$companyId': {
@@ -307,6 +353,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyCompanyIdAdAccountsRouteImport
       parentRoute: typeof CompanyCompanyIdRoute
     }
+    '/company/$companyId/conteudos/': {
+      id: '/company/$companyId/conteudos/'
+      path: '/conteudos'
+      fullPath: '/company/$companyId/conteudos/'
+      preLoaderRoute: typeof CompanyCompanyIdConteudosIndexRouteImport
+      parentRoute: typeof CompanyCompanyIdRoute
+    }
+    '/company/$companyId/conteudos/$guideId': {
+      id: '/company/$companyId/conteudos/$guideId'
+      path: '/conteudos/$guideId'
+      fullPath: '/company/$companyId/conteudos/$guideId'
+      preLoaderRoute: typeof CompanyCompanyIdConteudosGuideIdRouteImport
+      parentRoute: typeof CompanyCompanyIdRoute
+    }
   }
 }
 
@@ -316,6 +376,8 @@ interface CompanyCompanyIdRouteChildren {
   CompanyCompanyIdScheduleRoute: typeof CompanyCompanyIdScheduleRoute
   CompanyCompanyIdTeamRoute: typeof CompanyCompanyIdTeamRoute
   CompanyCompanyIdIndexRoute: typeof CompanyCompanyIdIndexRoute
+  CompanyCompanyIdConteudosGuideIdRoute: typeof CompanyCompanyIdConteudosGuideIdRoute
+  CompanyCompanyIdConteudosIndexRoute: typeof CompanyCompanyIdConteudosIndexRoute
 }
 
 const CompanyCompanyIdRouteChildren: CompanyCompanyIdRouteChildren = {
@@ -324,6 +386,8 @@ const CompanyCompanyIdRouteChildren: CompanyCompanyIdRouteChildren = {
   CompanyCompanyIdScheduleRoute: CompanyCompanyIdScheduleRoute,
   CompanyCompanyIdTeamRoute: CompanyCompanyIdTeamRoute,
   CompanyCompanyIdIndexRoute: CompanyCompanyIdIndexRoute,
+  CompanyCompanyIdConteudosGuideIdRoute: CompanyCompanyIdConteudosGuideIdRoute,
+  CompanyCompanyIdConteudosIndexRoute: CompanyCompanyIdConteudosIndexRoute,
 }
 
 const CompanyCompanyIdRouteWithChildren =
@@ -337,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLogoutRoute: AuthLogoutRoute,
   AuthSigninRoute: AuthSigninRoute,
   CompanyCompanyIdRoute: CompanyCompanyIdRouteWithChildren,
+  GGuideIdRoute: GGuideIdRoute,
   UserMycompanyRoute: UserMycompanyRoute,
   UserProfileRoute: UserProfileRoute,
 }

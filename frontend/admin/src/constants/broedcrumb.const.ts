@@ -24,4 +24,8 @@ export const BROADCRUMB_ROUTE_MAP: {
     test: (p) => p.startsWith('/finances'),
     crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Financeiro' }],
   },
+  {
+    test: (p) => p.startsWith('/library'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Biblioteca' }],
+  },
 ];

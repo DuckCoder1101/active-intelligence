@@ -175,7 +175,7 @@ export function TaskModal({
                   setCompanyId(e.target.value);
                   if (fieldErrors.companyId) {setFieldErrors((p) => ({ ...p, companyId: '' }));}
                 }}
-                disabled={!canEdit || (isEditing && !isOwner)}
+                disabled={!canEdit}
                 error={fieldErrors.companyId}
               >
                 {companies.map((c) => (

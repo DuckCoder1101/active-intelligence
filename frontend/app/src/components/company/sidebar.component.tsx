@@ -4,6 +4,7 @@ import {
   MdOutlineDashboard,
   MdOutlineCalendarMonth,
   MdOutlineAccountTree,
+  MdOutlineMenuBook,
   MdClose,
 } from 'react-icons/md';
 
@@ -12,6 +13,7 @@ interface NavItem {
     | '/company/$companyId'
     | '/company/$companyId/schedule'
     | '/company/$companyId/crm'
+    | '/company/$companyId/conteudos'
     | '/company/$companyId/ad-accounts'
     | '/company/$companyId/team';
   label: string;
@@ -36,6 +38,12 @@ const NAV_ITEMS: NavItem[] = [
     to: '/company/$companyId/crm',
     label: 'CRM',
     icon: MdOutlineAccountTree,
+    exact: false,
+  },
+  {
+    to: '/company/$companyId/conteudos',
+    label: 'Conteúdos',
+    icon: MdOutlineMenuBook,
     exact: false,
   },
   // {

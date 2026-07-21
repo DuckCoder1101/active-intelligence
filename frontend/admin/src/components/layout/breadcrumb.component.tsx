@@ -1,7 +1,7 @@
 import { Link, useRouterState } from '@tanstack/react-router';
 import { MdChevronRight } from 'react-icons/md';
 
-import { BROADCRUMB_ROUTE_MAP } from '@/constants/broadcrumb-routes.const';
+import { BROADCRUMB_ROUTE_MAP } from '@/constants/broedcrumb.const';
 
 export function Breadcrumb() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });

@@ -20,12 +20,15 @@ import { Route as AdminWorkspaceRouteImport } from './routes/_admin/workspace'
 import { Route as AdminTeamRouteImport } from './routes/_admin/team'
 import { Route as AdminProjectsRouteImport } from './routes/_admin/projects'
 import { Route as AdminProfileRouteImport } from './routes/_admin/profile'
+import { Route as AdminLibraryRouteImport } from './routes/_admin/library'
 import { Route as AdminFinancesRouteImport } from './routes/_admin/finances'
 import { Route as AdminWorkspaceIndexRouteImport } from './routes/_admin/workspace/index'
+import { Route as AdminLibraryIndexRouteImport } from './routes/_admin/library/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/_admin/companies/index'
 import { Route as AdminWorkspaceScheduleRouteImport } from './routes/_admin/workspace/schedule'
 import { Route as AdminWorkspaceHistoryRouteImport } from './routes/_admin/workspace/history'
 import { Route as AdminWorkspaceClientsRouteImport } from './routes/_admin/workspace/clients'
+import { Route as AdminLibraryGuideIdRouteImport } from './routes/_admin/library/$guideId'
 import { Route as AdminCompaniesCompany_idRouteImport } from './routes/_admin/companies/$company_id'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
@@ -82,6 +85,11 @@ const AdminProfileRoute = AdminProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminLibraryRoute = AdminLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFinancesRoute = AdminFinancesRouteImport.update({
   id: '/finances',
   path: '/finances',
@@ -91,6 +99,11 @@ const AdminWorkspaceIndexRoute = AdminWorkspaceIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminWorkspaceRoute,
+} as any)
+const AdminLibraryIndexRoute = AdminLibraryIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminLibraryRoute,
 } as any)
 const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
   id: '/companies/',
@@ -112,6 +125,11 @@ const AdminWorkspaceClientsRoute = AdminWorkspaceClientsRouteImport.update({
   path: '/clients',
   getParentRoute: () => AdminWorkspaceRoute,
 } as any)
+const AdminLibraryGuideIdRoute = AdminLibraryGuideIdRouteImport.update({
+  id: '/$guideId',
+  path: '/$guideId',
+  getParentRoute: () => AdminLibraryRoute,
+} as any)
 const AdminCompaniesCompany_idRoute =
   AdminCompaniesCompany_idRouteImport.update({
     id: '/companies/$company_id',
@@ -123,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AdminIndexRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/finances': typeof AdminFinancesRoute
+  '/library': typeof AdminLibraryRouteWithChildren
   '/profile': typeof AdminProfileRoute
   '/projects': typeof AdminProjectsRoute
   '/team': typeof AdminTeamRoute
@@ -132,10 +151,12 @@ export interface FileRoutesByFullPath {
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
   '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
+  '/library/$guideId': typeof AdminLibraryGuideIdRoute
   '/workspace/clients': typeof AdminWorkspaceClientsRoute
   '/workspace/history': typeof AdminWorkspaceHistoryRoute
   '/workspace/schedule': typeof AdminWorkspaceScheduleRoute
   '/companies/': typeof AdminCompaniesIndexRoute
+  '/library/': typeof AdminLibraryIndexRoute
   '/workspace/': typeof AdminWorkspaceIndexRoute
 }
 export interface FileRoutesByTo {
@@ -150,10 +171,12 @@ export interface FileRoutesByTo {
   '/auth/signin': typeof AuthSigninRoute
   '/': typeof AdminIndexRoute
   '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
+  '/library/$guideId': typeof AdminLibraryGuideIdRoute
   '/workspace/clients': typeof AdminWorkspaceClientsRoute
   '/workspace/history': typeof AdminWorkspaceHistoryRoute
   '/workspace/schedule': typeof AdminWorkspaceScheduleRoute
   '/companies': typeof AdminCompaniesIndexRoute
+  '/library': typeof AdminLibraryIndexRoute
   '/workspace': typeof AdminWorkspaceIndexRoute
 }
 export interface FileRoutesById {
@@ -161,6 +184,7 @@ export interface FileRoutesById {
   '/_admin': typeof AdminRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
   '/_admin/finances': typeof AdminFinancesRoute
+  '/_admin/library': typeof AdminLibraryRouteWithChildren
   '/_admin/profile': typeof AdminProfileRoute
   '/_admin/projects': typeof AdminProjectsRoute
   '/_admin/team': typeof AdminTeamRoute
@@ -171,10 +195,12 @@ export interface FileRoutesById {
   '/auth/signin': typeof AuthSigninRoute
   '/_admin/': typeof AdminIndexRoute
   '/_admin/companies/$company_id': typeof AdminCompaniesCompany_idRoute
+  '/_admin/library/$guideId': typeof AdminLibraryGuideIdRoute
   '/_admin/workspace/clients': typeof AdminWorkspaceClientsRoute
   '/_admin/workspace/history': typeof AdminWorkspaceHistoryRoute
   '/_admin/workspace/schedule': typeof AdminWorkspaceScheduleRoute
   '/_admin/companies/': typeof AdminCompaniesIndexRoute
+  '/_admin/library/': typeof AdminLibraryIndexRoute
   '/_admin/workspace/': typeof AdminWorkspaceIndexRoute
 }
 export interface FileRouteTypes {
@@ -183,6 +209,7 @@ export interface FileRouteTypes {
     | '/'
     | '/unauthorized'
     | '/finances'
+    | '/library'
     | '/profile'
     | '/projects'
     | '/team'
@@ -192,10 +219,12 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/signin'
     | '/companies/$company_id'
+    | '/library/$guideId'
     | '/workspace/clients'
     | '/workspace/history'
     | '/workspace/schedule'
     | '/companies/'
+    | '/library/'
     | '/workspace/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -210,16 +239,19 @@ export interface FileRouteTypes {
     | '/auth/signin'
     | '/'
     | '/companies/$company_id'
+    | '/library/$guideId'
     | '/workspace/clients'
     | '/workspace/history'
     | '/workspace/schedule'
     | '/companies'
+    | '/library'
     | '/workspace'
   id:
     | '__root__'
     | '/_admin'
     | '/unauthorized'
     | '/_admin/finances'
+    | '/_admin/library'
     | '/_admin/profile'
     | '/_admin/projects'
     | '/_admin/team'
@@ -230,10 +262,12 @@ export interface FileRouteTypes {
     | '/auth/signin'
     | '/_admin/'
     | '/_admin/companies/$company_id'
+    | '/_admin/library/$guideId'
     | '/_admin/workspace/clients'
     | '/_admin/workspace/history'
     | '/_admin/workspace/schedule'
     | '/_admin/companies/'
+    | '/_admin/library/'
     | '/_admin/workspace/'
   fileRoutesById: FileRoutesById
 }
@@ -325,6 +359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProfileRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/library': {
+      id: '/_admin/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof AdminLibraryRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/finances': {
       id: '/_admin/finances'
       path: '/finances'
@@ -338,6 +379,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/workspace/'
       preLoaderRoute: typeof AdminWorkspaceIndexRouteImport
       parentRoute: typeof AdminWorkspaceRoute
+    }
+    '/_admin/library/': {
+      id: '/_admin/library/'
+      path: '/'
+      fullPath: '/library/'
+      preLoaderRoute: typeof AdminLibraryIndexRouteImport
+      parentRoute: typeof AdminLibraryRoute
     }
     '/_admin/companies/': {
       id: '/_admin/companies/'
@@ -367,6 +415,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWorkspaceClientsRouteImport
       parentRoute: typeof AdminWorkspaceRoute
     }
+    '/_admin/library/$guideId': {
+      id: '/_admin/library/$guideId'
+      path: '/$guideId'
+      fullPath: '/library/$guideId'
+      preLoaderRoute: typeof AdminLibraryGuideIdRouteImport
+      parentRoute: typeof AdminLibraryRoute
+    }
     '/_admin/companies/$company_id': {
       id: '/_admin/companies/$company_id'
       path: '/companies/$company_id'
@@ -376,6 +431,20 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminLibraryRouteChildren {
+  AdminLibraryGuideIdRoute: typeof AdminLibraryGuideIdRoute
+  AdminLibraryIndexRoute: typeof AdminLibraryIndexRoute
+}
+
+const AdminLibraryRouteChildren: AdminLibraryRouteChildren = {
+  AdminLibraryGuideIdRoute: AdminLibraryGuideIdRoute,
+  AdminLibraryIndexRoute: AdminLibraryIndexRoute,
+}
+
+const AdminLibraryRouteWithChildren = AdminLibraryRoute._addFileChildren(
+  AdminLibraryRouteChildren,
+)
 
 interface AdminWorkspaceRouteChildren {
   AdminWorkspaceClientsRoute: typeof AdminWorkspaceClientsRoute
@@ -397,6 +466,7 @@ const AdminWorkspaceRouteWithChildren = AdminWorkspaceRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminFinancesRoute: typeof AdminFinancesRoute
+  AdminLibraryRoute: typeof AdminLibraryRouteWithChildren
   AdminProfileRoute: typeof AdminProfileRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminTeamRoute: typeof AdminTeamRoute
@@ -408,6 +478,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminFinancesRoute: AdminFinancesRoute,
+  AdminLibraryRoute: AdminLibraryRouteWithChildren,
   AdminProfileRoute: AdminProfileRoute,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminTeamRoute: AdminTeamRoute,
