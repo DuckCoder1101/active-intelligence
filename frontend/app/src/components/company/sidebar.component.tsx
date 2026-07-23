@@ -13,7 +13,7 @@ interface NavItem {
     | '/company/$companyId'
     | '/company/$companyId/schedule'
     | '/company/$companyId/crm'
-    | '/company/$companyId/conteudos'
+    | '/company/$companyId/library'
     | '/company/$companyId/ad-accounts'
     | '/company/$companyId/team';
   label: string;
@@ -41,7 +41,7 @@ const NAV_ITEMS: NavItem[] = [
     exact: false,
   },
   {
-    to: '/company/$companyId/conteudos',
+    to: '/company/$companyId/library',
     label: 'Conteúdos',
     icon: MdOutlineMenuBook,
     exact: false,

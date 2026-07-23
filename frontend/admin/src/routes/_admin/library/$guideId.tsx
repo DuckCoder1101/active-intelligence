@@ -208,7 +208,9 @@ function GuideDetailPage() {
             </button>
             <button
               type="button"
-              onClick={() => void sharePublicGuideLink(guide.guideId, guide.name)}
+              onClick={() =>
+                void sharePublicGuideLink(guide.guideId, guide.name)
+              }
               className="btn-ghost"
             >
               <MdOutlineShare size={15} />
@@ -263,7 +265,11 @@ function GuideDetailPage() {
               render={({ field }) => (
                 <MultiSelect
                   label="Intenção do conteúdo"
-                  options={distinctTagOptions(allGuides, 'intentTags', intentTags)}
+                  options={distinctTagOptions(
+                    allGuides,
+                    'intentTags',
+                    intentTags,
+                  )}
                   selected={field.value}
                   onChange={field.onChange}
                   createLabel="Adicionar intenção"
@@ -278,7 +284,11 @@ function GuideDetailPage() {
               render={({ field }) => (
                 <MultiSelect
                   label="Plataforma"
-                  options={distinctTagOptions(allGuides, 'platformTags', platformTags)}
+                  options={distinctTagOptions(
+                    allGuides,
+                    'platformTags',
+                    platformTags,
+                  )}
                   selected={field.value}
                   onChange={field.onChange}
                   createLabel="Adicionar plataforma"
@@ -293,7 +303,11 @@ function GuideDetailPage() {
               render={({ field }) => (
                 <MultiSelect
                   label="Formato de gravação"
-                  options={distinctTagOptions(allGuides, 'formatTags', formatTags)}
+                  options={distinctTagOptions(
+                    allGuides,
+                    'formatTags',
+                    formatTags,
+                  )}
                   selected={field.value}
                   onChange={field.onChange}
                   createLabel="Adicionar formato"

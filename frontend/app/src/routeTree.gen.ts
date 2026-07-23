@@ -24,8 +24,8 @@ import { Route as CompanyCompanyIdTeamRouteImport } from './routes/company/$comp
 import { Route as CompanyCompanyIdScheduleRouteImport } from './routes/company/$companyId/schedule'
 import { Route as CompanyCompanyIdCrmRouteImport } from './routes/company/$companyId/crm'
 import { Route as CompanyCompanyIdAdAccountsRouteImport } from './routes/company/$companyId/ad-accounts'
-import { Route as CompanyCompanyIdConteudosIndexRouteImport } from './routes/company/$companyId/conteudos/index'
-import { Route as CompanyCompanyIdConteudosGuideIdRouteImport } from './routes/company/$companyId/conteudos/$guideId'
+import { Route as CompanyCompanyIdLibraryIndexRouteImport } from './routes/company/$companyId/library/index'
+import { Route as CompanyCompanyIdLibraryGuideIdRouteImport } from './routes/company/$companyId/library/$guideId'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -104,16 +104,16 @@ const CompanyCompanyIdAdAccountsRoute =
     path: '/ad-accounts',
     getParentRoute: () => CompanyCompanyIdRoute,
   } as any)
-const CompanyCompanyIdConteudosIndexRoute =
-  CompanyCompanyIdConteudosIndexRouteImport.update({
-    id: '/conteudos/',
-    path: '/conteudos/',
+const CompanyCompanyIdLibraryIndexRoute =
+  CompanyCompanyIdLibraryIndexRouteImport.update({
+    id: '/library/',
+    path: '/library/',
     getParentRoute: () => CompanyCompanyIdRoute,
   } as any)
-const CompanyCompanyIdConteudosGuideIdRoute =
-  CompanyCompanyIdConteudosGuideIdRouteImport.update({
-    id: '/conteudos/$guideId',
-    path: '/conteudos/$guideId',
+const CompanyCompanyIdLibraryGuideIdRoute =
+  CompanyCompanyIdLibraryGuideIdRouteImport.update({
+    id: '/library/$guideId',
+    path: '/library/$guideId',
     getParentRoute: () => CompanyCompanyIdRoute,
   } as any)
 
@@ -133,8 +133,8 @@ export interface FileRoutesByFullPath {
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
   '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
-  '/company/$companyId/conteudos/$guideId': typeof CompanyCompanyIdConteudosGuideIdRoute
-  '/company/$companyId/conteudos/': typeof CompanyCompanyIdConteudosIndexRoute
+  '/company/$companyId/library/$guideId': typeof CompanyCompanyIdLibraryGuideIdRoute
+  '/company/$companyId/library/': typeof CompanyCompanyIdLibraryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -151,8 +151,8 @@ export interface FileRoutesByTo {
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
   '/company/$companyId': typeof CompanyCompanyIdIndexRoute
-  '/company/$companyId/conteudos/$guideId': typeof CompanyCompanyIdConteudosGuideIdRoute
-  '/company/$companyId/conteudos': typeof CompanyCompanyIdConteudosIndexRoute
+  '/company/$companyId/library/$guideId': typeof CompanyCompanyIdLibraryGuideIdRoute
+  '/company/$companyId/library': typeof CompanyCompanyIdLibraryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -171,8 +171,8 @@ export interface FileRoutesById {
   '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
   '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
   '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
-  '/company/$companyId/conteudos/$guideId': typeof CompanyCompanyIdConteudosGuideIdRoute
-  '/company/$companyId/conteudos/': typeof CompanyCompanyIdConteudosIndexRoute
+  '/company/$companyId/library/$guideId': typeof CompanyCompanyIdLibraryGuideIdRoute
+  '/company/$companyId/library/': typeof CompanyCompanyIdLibraryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -192,8 +192,8 @@ export interface FileRouteTypes {
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId/'
-    | '/company/$companyId/conteudos/$guideId'
-    | '/company/$companyId/conteudos/'
+    | '/company/$companyId/library/$guideId'
+    | '/company/$companyId/library/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,8 +210,8 @@ export interface FileRouteTypes {
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId'
-    | '/company/$companyId/conteudos/$guideId'
-    | '/company/$companyId/conteudos'
+    | '/company/$companyId/library/$guideId'
+    | '/company/$companyId/library'
   id:
     | '__root__'
     | '/'
@@ -229,8 +229,8 @@ export interface FileRouteTypes {
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId/'
-    | '/company/$companyId/conteudos/$guideId'
-    | '/company/$companyId/conteudos/'
+    | '/company/$companyId/library/$guideId'
+    | '/company/$companyId/library/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -353,18 +353,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyCompanyIdAdAccountsRouteImport
       parentRoute: typeof CompanyCompanyIdRoute
     }
-    '/company/$companyId/conteudos/': {
-      id: '/company/$companyId/conteudos/'
-      path: '/conteudos'
-      fullPath: '/company/$companyId/conteudos/'
-      preLoaderRoute: typeof CompanyCompanyIdConteudosIndexRouteImport
+    '/company/$companyId/library/': {
+      id: '/company/$companyId/library/'
+      path: '/library'
+      fullPath: '/company/$companyId/library/'
+      preLoaderRoute: typeof CompanyCompanyIdLibraryIndexRouteImport
       parentRoute: typeof CompanyCompanyIdRoute
     }
-    '/company/$companyId/conteudos/$guideId': {
-      id: '/company/$companyId/conteudos/$guideId'
-      path: '/conteudos/$guideId'
-      fullPath: '/company/$companyId/conteudos/$guideId'
-      preLoaderRoute: typeof CompanyCompanyIdConteudosGuideIdRouteImport
+    '/company/$companyId/library/$guideId': {
+      id: '/company/$companyId/library/$guideId'
+      path: '/library/$guideId'
+      fullPath: '/company/$companyId/library/$guideId'
+      preLoaderRoute: typeof CompanyCompanyIdLibraryGuideIdRouteImport
       parentRoute: typeof CompanyCompanyIdRoute
     }
   }
@@ -376,8 +376,8 @@ interface CompanyCompanyIdRouteChildren {
   CompanyCompanyIdScheduleRoute: typeof CompanyCompanyIdScheduleRoute
   CompanyCompanyIdTeamRoute: typeof CompanyCompanyIdTeamRoute
   CompanyCompanyIdIndexRoute: typeof CompanyCompanyIdIndexRoute
-  CompanyCompanyIdConteudosGuideIdRoute: typeof CompanyCompanyIdConteudosGuideIdRoute
-  CompanyCompanyIdConteudosIndexRoute: typeof CompanyCompanyIdConteudosIndexRoute
+  CompanyCompanyIdLibraryGuideIdRoute: typeof CompanyCompanyIdLibraryGuideIdRoute
+  CompanyCompanyIdLibraryIndexRoute: typeof CompanyCompanyIdLibraryIndexRoute
 }
 
 const CompanyCompanyIdRouteChildren: CompanyCompanyIdRouteChildren = {
@@ -386,8 +386,8 @@ const CompanyCompanyIdRouteChildren: CompanyCompanyIdRouteChildren = {
   CompanyCompanyIdScheduleRoute: CompanyCompanyIdScheduleRoute,
   CompanyCompanyIdTeamRoute: CompanyCompanyIdTeamRoute,
   CompanyCompanyIdIndexRoute: CompanyCompanyIdIndexRoute,
-  CompanyCompanyIdConteudosGuideIdRoute: CompanyCompanyIdConteudosGuideIdRoute,
-  CompanyCompanyIdConteudosIndexRoute: CompanyCompanyIdConteudosIndexRoute,
+  CompanyCompanyIdLibraryGuideIdRoute: CompanyCompanyIdLibraryGuideIdRoute,
+  CompanyCompanyIdLibraryIndexRoute: CompanyCompanyIdLibraryIndexRoute,
 }
 
 const CompanyCompanyIdRouteWithChildren =

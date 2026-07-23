@@ -1,8 +1,7 @@
 import { toast } from 'react-toastify';
 
 export function buildPublicGuideUrl(guideId: string): string {
-  const appUrl = import.meta.env.VITE_APP_URL ?? 'http://localhost:3001/';
-  return `${appUrl.replace(/\/$/, '')}/g/${guideId}`;
+  return `${window.location.origin}/g/${guideId}`;
 }
 
 export async function copyPublicGuideLink(guideId: string): Promise<void> {

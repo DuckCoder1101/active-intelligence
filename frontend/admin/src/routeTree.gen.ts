@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as AdminIndexRouteImport } from './routes/_admin/index'
+import { Route as GGuideIdRouteImport } from './routes/g/$guideId'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
@@ -44,6 +45,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const GGuideIdRoute = GGuideIdRouteImport.update({
+  id: '/g/$guideId',
+  path: '/g/$guideId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSigninRoute = AuthSigninRouteImport.update({
   id: '/auth/signin',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
+  '/g/$guideId': typeof GGuideIdRoute
   '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
   '/library/$guideId': typeof AdminLibraryGuideIdRoute
   '/workspace/clients': typeof AdminWorkspaceClientsRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
+  '/g/$guideId': typeof GGuideIdRoute
   '/': typeof AdminIndexRoute
   '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
   '/library/$guideId': typeof AdminLibraryGuideIdRoute
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
+  '/g/$guideId': typeof GGuideIdRoute
   '/_admin/': typeof AdminIndexRoute
   '/_admin/companies/$company_id': typeof AdminCompaniesCompany_idRoute
   '/_admin/library/$guideId': typeof AdminLibraryGuideIdRoute
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
+    | '/g/$guideId'
     | '/companies/$company_id'
     | '/library/$guideId'
     | '/workspace/clients'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
+    | '/g/$guideId'
     | '/'
     | '/companies/$company_id'
     | '/library/$guideId'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
+    | '/g/$guideId'
     | '/_admin/'
     | '/_admin/companies/$company_id'
     | '/_admin/library/$guideId'
@@ -278,6 +290,7 @@ export interface RootRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthSigninRoute: typeof AuthSigninRoute
+  GGuideIdRoute: typeof GGuideIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -302,6 +315,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/g/$guideId': {
+      id: '/g/$guideId'
+      path: '/g/$guideId'
+      fullPath: '/g/$guideId'
+      preLoaderRoute: typeof GGuideIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/signin': {
       id: '/auth/signin'
@@ -497,6 +517,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLogoutRoute: AuthLogoutRoute,
   AuthSigninRoute: AuthSigninRoute,
+  GGuideIdRoute: GGuideIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,6 +1,6 @@
 import { httpsCallable } from 'firebase/functions';
 
-import type { Guide, SaveGuideDTO } from '@/models/guide.model';
+import type { Guide, GuideContent, SaveGuideDTO } from '@/models/guide.model';
 import { functions } from '@/utils/firebase.util';
 
 export default class LibraryService {
@@ -29,6 +29,11 @@ export default class LibraryService {
     { next: number }
   >(functions, 'getNextGuideSequenceHandler');
 
+  private static getPublicGuideCallable = httpsCallable<
+    { guideId: string },
+    GuideContent
+  >(functions, 'getPublicGuideHandler');
+
   static async listGuides(): Promise<Guide[]> {
     const result = await this.listGuidesCallable();
     return result.data;
@@ -51,5 +56,10 @@ export default class LibraryService {
   static async getNextGuideSequence(): Promise<number> {
     const result = await this.getNextGuideSequenceCallable();
     return result.data.next;
+  }
+
+  static async getPublicGuide(guideId: string): Promise<GuideContent> {
+    const result = await this.getPublicGuideCallable({ guideId });
+    return result.data;
   }
 }

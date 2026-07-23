@@ -5,7 +5,7 @@ import { MdOutlineMenuBook, MdChevronRight } from 'react-icons/md';
 import { Badge } from '@/components/ui/badge.component';
 import { assignedGuidesQueryOptions } from '@/queries/library.queries';
 
-export const Route = createFileRoute('/company/$companyId/conteudos/')({
+export const Route = createFileRoute('/company/$companyId/library/')({
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
       assignedGuidesQueryOptions(params.companyId),
@@ -50,7 +50,7 @@ function CompanyContents() {
             return (
               <Link
                 key={guide.guideId}
-                to="/company/$companyId/conteudos/$guideId"
+                to="/company/$companyId/library/$guideId"
                 params={{ companyId, guideId: guide.guideId }}
                 className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-orange/40"
               >

@@ -12,6 +12,8 @@ export const libraryKeys = {
   guides: () => [...libraryKeys.all, 'guides'] as const,
   guide: (guideId: string) => [...libraryKeys.all, 'guides', guideId] as const,
   nextSequence: () => [...libraryKeys.all, 'nextSequence'] as const,
+  publicGuide: (guideId: string) =>
+    [...libraryKeys.all, 'publicGuide', guideId] as const,
 };
 
 export const guidesQueryOptions = () =>
@@ -33,6 +35,12 @@ export const nextGuideSequenceQueryOptions = () =>
   queryOptions({
     queryKey: libraryKeys.nextSequence(),
     queryFn: () => LibraryService.getNextGuideSequence(),
+  });
+
+export const publicGuideQueryOptions = (guideId: string) =>
+  queryOptions({
+    queryKey: libraryKeys.publicGuide(guideId),
+    queryFn: () => LibraryService.getPublicGuide(guideId),
   });
 
 export function useSaveGuideMutation() {

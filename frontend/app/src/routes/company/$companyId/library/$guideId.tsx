@@ -6,7 +6,7 @@ import { GuideContentView } from '@/components/library/guide-content-view.compon
 import { assignedGuideQueryOptions } from '@/queries/library.queries';
 
 export const Route = createFileRoute(
-  '/company/$companyId/conteudos/$guideId',
+  '/company/$companyId/library/$guideId',
 )({
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
@@ -25,7 +25,7 @@ function CompanyContentDetail() {
   return (
     <div className="p-4 sm:p-6">
       <Link
-        to="/company/$companyId/conteudos"
+        to="/company/$companyId/library"
         params={{ companyId }}
         className="mb-4 flex w-fit items-center gap-1.5 text-[12px] font-semibold text-text-sub transition-colors hover:text-text"
       >
