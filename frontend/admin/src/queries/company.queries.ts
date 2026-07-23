@@ -76,6 +76,26 @@ export function useSaveCompanyMutation() {
   });
 }
 
+export function useUpdateCompanyStatusMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      companyId,
+      active,
+    }: {
+      companyId: string;
+      active: boolean;
+    }) => CompanyService.updateCompanyStatus(companyId, active),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: companyKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: companyKeys.detail(variables.companyId),
+      });
+    },
+  });
+}
+
 export function useDeleteCompanyMutation() {
   const queryClient = useQueryClient();
 

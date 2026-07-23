@@ -147,7 +147,7 @@ function WorkspaceOverview() {
         <>
           <AttentionWidget
             taskCount={myTasks.length}
-            staleCount={staleCompanies.length}
+            staleCompanies={staleCompanies}
           />
 
           <TaskListSection

@@ -6,6 +6,7 @@ import {
   RegisterCompanyDTO,
 } from "./company.type";
 import { CompanyDocument } from "./company.document";
+import { CompanyStage } from "./companyStage.emum";
 import { HttpsError } from "firebase-functions/https";
 
 export class CompanyRepository {
@@ -57,6 +58,20 @@ export class CompanyRepository {
     }
 
     await ref.delete();
+  }
+
+  static async setActive(companyId: string, active: boolean): Promise<void> {
+    const ref = this.companiesCollection.doc(companyId);
+    const doc = await ref.get();
+
+    if (!doc.exists) {
+      throw new HttpsError("not-found", "Empresa não encontrada!");
+    }
+
+    await ref.update({
+      companyStage: active ? CompanyStage.operacional : CompanyStage.inactive,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
   }
 
   static async getCompanyById(companyId: string): Promise<CompanyFullDTO> {

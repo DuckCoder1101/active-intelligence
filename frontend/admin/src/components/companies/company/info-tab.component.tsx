@@ -246,6 +246,7 @@ export function ClientInfoTab({ company, onSaved }: Props) {
             >
               <option value="comercial">Comercial</option>
               <option value="operacional">Operacional</option>
+              <option value="inactive">Inativo</option>
             </FormInput>
           </div>
         </Section>

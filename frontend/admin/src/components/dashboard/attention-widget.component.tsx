@@ -5,6 +5,10 @@ import {
   MdOutlinePeople,
 } from 'react-icons/md';
 
+import type { StaleCompany } from '@/utils/dashboard-insights.util';
+
+const STALE_PREVIEW_LIMIT = 5;
+
 interface StatCardProps {
   icon: React.ElementType;
   label: string;
@@ -12,6 +16,7 @@ interface StatCardProps {
   linkLabel: string;
   to: string;
   search?: Record<string, string>;
+  items?: string[];
 }
 
 function StatCard({
@@ -21,6 +26,7 @@ function StatCard({
   linkLabel,
   to,
   search,
+  items,
 }: StatCardProps) {
   return (
     <Link
@@ -42,6 +48,19 @@ function StatCard({
         <MdChevronRight size={15} className="shrink-0 text-text-muted" />
       </div>
 
+      {items && items.length > 0 && (
+        <ul className="mt-2 space-y-1 border-t border-border/60 pt-2">
+          {items.map((item) => (
+            <li
+              key={item}
+              className="truncate text-[11px] text-text-sub"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+
       <div className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-text-sub">
         {linkLabel}
         <MdChevronRight size={11} className="text-orange" />
@@ -52,10 +71,14 @@ function StatCard({
 
 interface Props {
   taskCount: number;
-  staleCount: number;
+  staleCompanies: StaleCompany[];
 }
 
-export function AttentionWidget({ taskCount, staleCount }: Props) {
+export function AttentionWidget({ taskCount, staleCompanies }: Props) {
+  const staleClientIds = staleCompanies
+    .map((s) => s.company.companyId)
+    .join(',');
+
   return (
     <div className="mb-5 grid grid-cols-1 gap-2.5 sm:mb-6 sm:grid-cols-2 sm:gap-3">
       <StatCard
@@ -68,10 +91,13 @@ export function AttentionWidget({ taskCount, staleCount }: Props) {
       <StatCard
         icon={MdOutlinePeople}
         label="Clientes sem interação (7+ dias)"
-        count={staleCount}
+        count={staleCompanies.length}
         linkLabel="Ver clientes"
-        to="/companies"
-        search={{ filter: 'inativos' }}
+        to="/workspace/clients"
+        search={{ clients: staleClientIds }}
+        items={staleCompanies
+          .slice(0, STALE_PREVIEW_LIMIT)
+          .map((s) => s.company.displayName)}
       />
     </div>
   );

@@ -79,7 +79,7 @@ function AdminDashboard() {
 
       <AttentionWidget
         taskCount={myTasks.length}
-        staleCount={staleCompanies.length}
+        staleCompanies={staleCompanies}
       />
 
       {/* Sections */}

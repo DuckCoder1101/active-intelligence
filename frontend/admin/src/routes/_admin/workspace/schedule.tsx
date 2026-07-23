@@ -103,6 +103,11 @@ function WorkspaceSchedule() {
     [companies],
   );
 
+  const pickableCompanies = useMemo(
+    () => companies.filter((c) => c.companyStage !== 'inactive'),
+    [companies],
+  );
+
   const filtered = useMemo(() => {
     return tasks.filter((t) => {
       if (
@@ -546,7 +551,7 @@ function WorkspaceSchedule() {
         <TaskModal
           task={selectedTask}
           defaultDueDate={newTaskDate}
-          companies={companies}
+          companies={pickableCompanies}
           admins={admins}
           columns={columns}
           isOwner={isOwner}

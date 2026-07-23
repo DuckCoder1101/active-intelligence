@@ -36,6 +36,11 @@ export default class CompanyService {
     boolean
   >(functions, 'deleteCompanyHandler');
 
+  private static updateCompanyStatusCallable = httpsCallable<
+    { companyId: string; active: boolean },
+    boolean
+  >(functions, 'updateCompanyStatusHandler');
+
   private static listAuditLogsCallable = httpsCallable<
     { companyId: string },
     AuditLogModel[]
@@ -72,6 +77,13 @@ export default class CompanyService {
 
   static async deleteCompany(companyId: string): Promise<void> {
     await this.deleteCompanyCallable({ companyId });
+  }
+
+  static async updateCompanyStatus(
+    companyId: string,
+    active: boolean,
+  ): Promise<void> {
+    await this.updateCompanyStatusCallable({ companyId, active });
   }
 
   static async listAuditLogs(companyId: string): Promise<AuditLogModel[]> {

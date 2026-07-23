@@ -11,10 +11,8 @@ import { AdminPageContainer } from '@/components/ui/page-container.component';
 import { adminsQueryOptions } from '@/queries/admin.queries';
 import { companiesQueryOptions, companyKeys } from '@/queries/company.queries';
 import { contractedServicesQueryOptions } from '@/queries/contracted-service.queries';
-import { tasksQueryOptions } from '@/queries/task.queries';
 import type { RouteAccessLevel } from '@/types/route-access.type';
 import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
-import { getStaleCompanies } from '@/utils/dashboard-insights.util';
 
 const ROUTE_ACCESS: RouteAccessLevel = {
   minAccessLevel: 'admin',
@@ -47,14 +45,12 @@ export const Route = createFileRoute('/_admin/companies/')({
       context.queryClient.ensureQueryData(companiesQueryOptions()),
       context.queryClient.ensureQueryData(adminsQueryOptions()),
       context.queryClient.ensureQueryData(contractedServicesQueryOptions()),
-      context.queryClient.ensureQueryData(tasksQueryOptions()),
     ]),
   component: AdminCompanies,
 });
 
 function AdminCompanies() {
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
-  const { data: tasks } = useSuspenseQuery(tasksQueryOptions());
   const { filter } = Route.useSearch();
   const activeFilter = filter ?? 'todos';
   const navigate = Route.useNavigate();
@@ -62,17 +58,12 @@ function AdminCompanies() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-  const staleCompanyIds = useMemo(() => {
-    const stale = getStaleCompanies(companies, tasks);
-    return new Set(stale.map((s) => s.company.companyId));
-  }, [companies, tasks]);
-
   const filtered = useMemo(() => {
-    let list = companies;
-
-    if (filter === 'inativos') {
-      list = list.filter((c) => staleCompanyIds.has(c.companyId));
-    }
+    let list = companies.filter((c) =>
+      filter === 'inativos'
+        ? c.companyStage === 'inactive'
+        : c.companyStage !== 'inactive',
+    );
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -85,7 +76,7 @@ function AdminCompanies() {
     }
 
     return list;
-  }, [companies, staleCompanyIds, filter, search]);
+  }, [companies, filter, search]);
 
   const handleSaved = () => {
     setShowModal(false);

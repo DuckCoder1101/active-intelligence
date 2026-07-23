@@ -17,6 +17,8 @@ import {
   MdOutlineHistory,
   MdOutlinePayments,
   MdDelete,
+  MdOutlineBlock,
+  MdOutlineCheckCircle,
 } from 'react-icons/md';
 
 import { ClientAuditTab } from '@/components/companies/company/audit-tab.component';
@@ -34,6 +36,7 @@ import { adminsQueryOptions } from '@/queries/admin.queries';
 import {
   companyDetailQueryOptions,
   useDeleteCompanyMutation,
+  useUpdateCompanyStatusMutation,
 } from '@/queries/company.queries';
 import { contractedServicesQueryOptions } from '@/queries/contracted-service.queries';
 import type { RouteAccessLevel } from '@/types/route-access.type';
@@ -89,7 +92,10 @@ function ClientDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [activeTab, setActiveTab] = useState('informacoes');
   const deleteCompany = useDeleteCompanyMutation();
+  const updateCompanyStatus = useUpdateCompanyStatusMutation();
   const { claims } = useAuth();
+
+  const isActive = company.companyStage !== 'inactive';
 
   const canViewFinancial = checkRouteAccess(claims, FINANCIAL_TAB_ACCESS);
   const TABS = canViewFinancial ? [...BASE_TABS, FINANCIAL_TAB] : BASE_TABS;
@@ -99,6 +105,13 @@ function ClientDetailPage() {
   const handleDeleteConfirm = () => {
     deleteCompany.mutate(company.companyId, {
       onSuccess: () => navigate({ to: '/companies' }),
+    });
+  };
+
+  const handleToggleActive = () => {
+    updateCompanyStatus.mutate({
+      companyId: company.companyId,
+      active: !isActive,
     });
   };
 
@@ -123,12 +136,16 @@ function ClientDetailPage() {
                 </h1>
                 <Badge
                   variant={
-                    company.companyStage === 'operacional'
-                      ? 'orange'
-                      : 'default'
+                    company.companyStage === 'inactive'
+                      ? 'danger'
+                      : company.companyStage === 'operacional'
+                        ? 'orange'
+                        : 'default'
                   }
                 >
-                  {company.companyStage}
+                  {company.companyStage === 'inactive'
+                    ? 'Inativo'
+                    : company.companyStage}
                 </Badge>
               </div>
 
@@ -176,6 +193,19 @@ function ClientDetailPage() {
                 <MdOutlineOpenInNew size={15} />
                 Ver portal
               </a>
+              <button
+                type="button"
+                onClick={handleToggleActive}
+                disabled={updateCompanyStatus.isPending}
+                className="btn-ghost-border"
+              >
+                {isActive ? (
+                  <MdOutlineBlock size={15} />
+                ) : (
+                  <MdOutlineCheckCircle size={15} />
+                )}
+                {isActive ? 'Marcar como inativo' : 'Reativar cliente'}
+              </button>
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(true)}

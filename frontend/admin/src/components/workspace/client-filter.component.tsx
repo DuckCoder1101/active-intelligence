@@ -12,10 +12,12 @@ export function ClientFilter() {
   const navigate = useNavigate();
 
   const selected = clients ? clients.split(',') : [];
-  const options: MultiSelectOption[] = companies.map((c) => ({
-    value: c.companyId,
-    label: c.displayName,
-  }));
+  const options: MultiSelectOption[] = companies
+    .filter((c) => c.companyStage !== 'inactive')
+    .map((c) => ({
+      value: c.companyId,
+      label: c.displayName,
+    }));
 
   return (
     <div className="w-full sm:w-72">

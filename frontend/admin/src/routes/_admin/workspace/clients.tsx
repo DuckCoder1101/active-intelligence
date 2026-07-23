@@ -33,7 +33,7 @@ function WorkspaceClients() {
 
   const scopedCompanies = useMemo(() => {
     if (selectedCompanyIds.length === 0) {
-      return companies;
+      return companies.filter((c) => c.companyStage !== 'inactive');
     }
     return companies.filter((c) => selectedCompanyIds.includes(c.companyId));
   }, [companies, selectedCompanyIds]);
