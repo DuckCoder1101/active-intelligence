@@ -4,7 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import type { CrmColumn, SaveLeadDTO } from '@/models/lead.model';
+import type { CrmColumn, DealStatus, SaveLeadDTO } from '@/models/lead.model';
 import CompanyCrmService from '@/services/company-crm.service';
 
 export const companyCrmKeys = {
@@ -84,6 +84,25 @@ export function useUpdateLeadStatusMutation(companyId: string) {
   return useMutation({
     mutationFn: ({ leadId, status }: { leadId: string; status: string }) =>
       CompanyCrmService.updateLeadStatus(companyId, leadId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: companyCrmKeys.leads(companyId),
+      });
+    },
+  });
+}
+
+export function useUpdateLeadDealStatusMutation(companyId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      leadId,
+      dealStatus,
+    }: {
+      leadId: string;
+      dealStatus: DealStatus;
+    }) => CompanyCrmService.updateLeadDealStatus(companyId, leadId, dealStatus),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: companyCrmKeys.leads(companyId),

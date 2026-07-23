@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   BUSINESS_TYPES,
+  DEAL_STATUSES,
   LEAD_PREFERENCES,
   PAYMENT_METHODS,
   PROPERTY_TYPES,
@@ -148,5 +149,11 @@ export default class LeadSchema {
     companyId: z.string().min(1, "companyId obrigatório"),
     leadId: z.string().min(1, "leadId obrigatório"),
     status: z.string().min(1, "Status inválido"),
+  });
+
+  static updateDealStatusSchema = z.object({
+    companyId: z.string().min(1, "companyId obrigatório"),
+    leadId: z.string().min(1, "leadId obrigatório"),
+    dealStatus: z.enum(DEAL_STATUSES, { message: "Status inválido" }),
   });
 }

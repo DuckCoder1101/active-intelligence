@@ -42,6 +42,9 @@ export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 export const TEMPERATURES = ["frio", "morno", "quente"] as const;
 export type Temperature = (typeof TEMPERATURES)[number];
 
+export const DEAL_STATUSES = ["aberto", "vendido", "perdido"] as const;
+export type DealStatus = (typeof DEAL_STATUSES)[number];
+
 // Espelhado em frontend/shared/src/models/lead.model.ts — mantenha as duas
 // listas em sincronia.
 export const LEAD_PREFERENCES = [
@@ -99,6 +102,7 @@ export type LeadPreference = (typeof LEAD_PREFERENCES)[number];
 export interface LeadDocument {
   companyId: string;
   status: string;
+  dealStatus: DealStatus;
 
   // Sessão 1 — Contato
   name: string;

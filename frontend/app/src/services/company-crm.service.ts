@@ -4,6 +4,7 @@ import type {
   CrmColumn,
   CrmOrigin,
   CrmTag,
+  DealStatus,
   Lead,
   SaveLeadDTO,
 } from '@/models/lead.model';
@@ -32,6 +33,11 @@ export default class CompanyCrmService {
     boolean
   >(functions, 'updateLeadStatusHandler');
 
+  private static updateLeadDealStatusCallable = httpsCallable<
+    { companyId: string; leadId: string; dealStatus: DealStatus },
+    boolean
+  >(functions, 'updateLeadDealStatusHandler');
+
   static async listLeads(companyId: string): Promise<Lead[]> {
     const r = await this.listLeadsCallable({ companyId });
     return r.data;
@@ -52,6 +58,14 @@ export default class CompanyCrmService {
     status: string,
   ): Promise<void> {
     await this.updateLeadStatusCallable({ companyId, leadId, status });
+  }
+
+  static async updateLeadDealStatus(
+    companyId: string,
+    leadId: string,
+    dealStatus: DealStatus,
+  ): Promise<void> {
+    await this.updateLeadDealStatusCallable({ companyId, leadId, dealStatus });
   }
 
   // Tags

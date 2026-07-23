@@ -4,8 +4,12 @@ import { toast } from 'react-toastify';
 
 import { LeadCard } from '@/components/company/crm/lead-card.component';
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
-import { CRM_COLUMN_COLOR_PRESETS } from '@/models/lead.model';
-import type { CrmColumn, CrmTag, Lead } from '@/models/lead.model';
+import {
+  CRM_COLUMN_COLOR_PRESETS,
+  DEAL_STATUS_LABELS,
+  DEAL_STATUSES,
+} from '@/models/lead.model';
+import type { CrmColumn, CrmTag, DealStatus, Lead } from '@/models/lead.model';
 import {
   useAddCrmColumnMutation,
   useRemoveCrmColumnMutation,
@@ -50,12 +54,24 @@ export function CrmBoard({
 
   const [deletingColumnId, setDeletingColumnId] = useState<string | null>(null);
 
+  const [dealStatusFilter, setDealStatusFilter] = useState<
+    DealStatus | 'todos'
+  >('aberto');
+
+  const visibleLeads = useMemo(
+    () =>
+      dealStatusFilter === 'todos'
+        ? leads
+        : leads.filter((lead) => lead.dealStatus === dealStatusFilter),
+    [leads, dealStatusFilter],
+  );
+
   const leadsByColumn = useMemo(() => {
     const map: Record<string, Lead[]> = {};
     for (const col of columns) {
       map[col.columnId] = [];
     }
-    for (const lead of leads) {
+    for (const lead of visibleLeads) {
       if (lead.status in map) {
         map[lead.status].push(lead);
       } else if (columns.length > 0) {
@@ -63,7 +79,7 @@ export function CrmBoard({
       }
     }
     return map;
-  }, [columns, leads]);
+  }, [columns, visibleLeads]);
 
   const handleDrop = (columnId: string) => {
     if (!draggingLeadId) {
@@ -131,6 +147,22 @@ export function CrmBoard({
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-6 py-4">
         <h1 className="text-[18px] font-bold text-text sm:text-[20px]">CRM</h1>
+        <div className="flex items-center gap-1 rounded-full border border-border bg-bg/60 p-1">
+          {([...DEAL_STATUSES, 'todos'] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setDealStatusFilter(value)}
+              className={`rounded-full px-3 py-1 text-[11px] font-bold transition-colors ${
+                dealStatusFilter === value
+                  ? 'bg-orange text-white'
+                  : 'text-text-muted hover:text-text'
+              }`}
+            >
+              {value === 'todos' ? 'Todos' : DEAL_STATUS_LABELS[value]}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           onClick={onNewLead}

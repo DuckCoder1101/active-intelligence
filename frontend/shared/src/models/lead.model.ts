@@ -81,6 +81,14 @@ export const TEMPERATURE_LABELS: Record<Temperature, string> = {
   quente: '🔥 Quente',
 };
 
+export const DEAL_STATUSES = ['aberto', 'vendido', 'perdido'] as const;
+export type DealStatus = (typeof DEAL_STATUSES)[number];
+export const DEAL_STATUS_LABELS: Record<DealStatus, string> = {
+  aberto: 'Aberto',
+  vendido: 'Vendido',
+  perdido: 'Perdido',
+};
+
 export const LEAD_PREFERENCES = [
   'elevador',
   'portaria_24h_portao_eletronico',
@@ -245,6 +253,7 @@ export interface Lead {
   leadId: string;
   companyId: string;
   status: string;
+  dealStatus: DealStatus;
 
   name: string;
   phone: string;

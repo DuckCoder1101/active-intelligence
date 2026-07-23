@@ -3,6 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { MdClose, MdDeleteOutline } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
+import { LeadDealStatusModal } from './lead-deal-status-modal.component';
 import { LeadBusinessTab } from './lead-drawer-business-tab.component';
 import { LeadContactTab } from './lead-drawer-contact-tab.component';
 import { LeadProfileTab } from './lead-drawer-profile-tab.component';
@@ -11,22 +12,26 @@ import { LeadQualificationTab } from './lead-drawer-qualification-tab.component'
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { Tabs, type Tab } from '@/components/ui/tabs.component';
-import type {
-  BusinessType,
-  CrmOrigin,
-  CrmTag,
-  Lead,
-  LeadPreference,
-  PaymentMethod,
-  PropertyType,
-  Purpose,
-  SaveLeadDTO,
-  Temperature,
+import {
+  DEAL_STATUS_LABELS,
+  DEAL_STATUSES,
+  type BusinessType,
+  type CrmOrigin,
+  type CrmTag,
+  type DealStatus,
+  type Lead,
+  type LeadPreference,
+  type PaymentMethod,
+  type PropertyType,
+  type Purpose,
+  type SaveLeadDTO,
+  type Temperature,
 } from '@/models/lead.model';
 import type { UserProfile } from '@/models/user-profile.model';
 import {
   useDeleteLeadMutation,
   useSaveLeadMutation,
+  useUpdateLeadDealStatusMutation,
 } from '@/queries/company-crm.queries';
 
 export interface FormValues {
@@ -145,9 +150,15 @@ export function LeadDrawer({
 }: LeadDrawerProps) {
   const [activeTab, setActiveTab] = useState(TABS[0].id);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [dealStatus, setDealStatus] = useState<DealStatus>(
+    lead?.dealStatus ?? 'aberto',
+  );
+  const [pendingDealStatus, setPendingDealStatus] =
+    useState<DealStatus | null>(null);
 
   const saveLead = useSaveLeadMutation(companyId);
   const deleteLead = useDeleteLeadMutation(companyId);
+  const updateDealStatus = useUpdateLeadDealStatusMutation(companyId);
 
   const methods = useForm<FormValues>({ defaultValues: toFormValues(lead) });
   const {
@@ -249,6 +260,24 @@ export function LeadDrawer({
     });
   };
 
+  const handleConfirmDealStatus = () => {
+    if (!lead || !pendingDealStatus) {
+      return;
+    }
+    updateDealStatus.mutate(
+      { leadId: lead.leadId, dealStatus: pendingDealStatus },
+      {
+        onSuccess: () => {
+          toast.success(
+            `Lead marcado como ${DEAL_STATUS_LABELS[pendingDealStatus]}!`,
+          );
+          setDealStatus(pendingDealStatus);
+          setPendingDealStatus(null);
+        },
+      },
+    );
+  };
+
   const onInvalid = (invalidErrors: typeof errors) => {
     const firstInvalidTab = TABS.find((tab) =>
       TAB_ERROR_FIELDS[tab.id].some((field) => !!invalidErrors[field]),
@@ -267,17 +296,43 @@ export function LeadDrawer({
           className="fixed inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-hidden bg-card shadow-2xl"
         >
           {/* Header */}
-          <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-6 py-4">
             <h2 className="text-[15px] font-bold text-text">
               {lead ? 'Editar lead' : 'Novo lead'}
             </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-text-muted transition-colors hover:text-text"
-            >
-              <MdClose size={20} />
-            </button>
+            <div className="flex items-center gap-3">
+              {lead && (
+                <select
+                  value={dealStatus}
+                  onChange={(e) => {
+                    const value = e.target.value as DealStatus;
+                    if (value !== dealStatus) {
+                      setPendingDealStatus(value);
+                    }
+                  }}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] font-bold outline-none ${
+                    dealStatus === 'vendido'
+                      ? 'border-success/30 bg-success/10 text-success'
+                      : dealStatus === 'perdido'
+                        ? 'border-danger/30 bg-danger/10 text-danger'
+                        : 'border-border bg-bg text-text-muted'
+                  }`}
+                >
+                  {DEAL_STATUSES.map((value) => (
+                    <option key={value} value={value}>
+                      {DEAL_STATUS_LABELS[value]}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <button
+                type="button"
+                onClick={onClose}
+                className="text-text-muted transition-colors hover:text-text"
+              >
+                <MdClose size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Tabs */}
@@ -346,6 +401,16 @@ export function LeadDrawer({
           isDeleting={deleteLead.isPending}
           onConfirm={handleDelete}
           onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
+
+      {lead && pendingDealStatus && (
+        <LeadDealStatusModal
+          leadName={lead.name}
+          to={pendingDealStatus}
+          isSaving={updateDealStatus.isPending}
+          onConfirm={handleConfirmDealStatus}
+          onCancel={() => setPendingDealStatus(null)}
         />
       )}
     </div>

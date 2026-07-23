@@ -1,5 +1,6 @@
 import type {
   BusinessType,
+  DealStatus,
   LeadPreference,
   PaymentMethod,
   PropertyType,
@@ -11,6 +12,7 @@ export interface LeadDTO {
   leadId: string;
   companyId: string;
   status: string;
+  dealStatus: DealStatus;
 
   name: string;
   phone: string;

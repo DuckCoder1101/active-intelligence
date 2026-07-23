@@ -1,7 +1,7 @@
 import type { DragEvent } from 'react';
 import { MdOutlinePhone } from 'react-icons/md';
 
-import { TEMPERATURE_LABELS } from '@/models/lead.model';
+import { DEAL_STATUS_LABELS, TEMPERATURE_LABELS } from '@/models/lead.model';
 import type { CrmTag, Lead } from '@/models/lead.model';
 
 interface LeadCardProps {
@@ -31,6 +31,18 @@ export function LeadCard({ lead, tags, onClick, onDragStart }: LeadCardProps) {
           </span>
         )}
       </div>
+
+      {lead.dealStatus !== 'aberto' && (
+        <span
+          className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${
+            lead.dealStatus === 'vendido'
+              ? 'bg-success/10 text-success'
+              : 'bg-danger/10 text-danger'
+          }`}
+        >
+          {DEAL_STATUS_LABELS[lead.dealStatus]}
+        </span>
+      )}
 
       <div className="flex items-center gap-1.5 text-[11px] text-text-muted">
         <MdOutlinePhone size={12} />

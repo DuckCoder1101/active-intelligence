@@ -2,7 +2,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/https";
 
 import { database } from "functions-shared";
-import { LeadDocument } from "../types/lead.document";
+import { DealStatus, LeadDocument } from "../types/lead.document";
 import { LeadDTO, SaveLeadDTO } from "../types/lead.dto";
 
 function toDTO(id: string, data: LeadDocument): LeadDTO {
@@ -10,6 +10,7 @@ function toDTO(id: string, data: LeadDocument): LeadDTO {
     leadId: id,
     companyId: data.companyId,
     status: data.status,
+    dealStatus: data.dealStatus ?? "aberto",
     name: data.name,
     phone: data.phone,
     email: data.email,
@@ -91,6 +92,7 @@ export class LeadRepository {
     if (isNew) {
       payload.createdBy = createdBy;
       payload.createdAt = FieldValue.serverTimestamp();
+      payload.dealStatus = "aberto";
     }
 
     await ref.set(payload, { merge: true });
@@ -123,6 +125,19 @@ export class LeadRepository {
       throw new HttpsError("not-found", "Lead não encontrado.");
     }
     await ref.update({ status, updatedAt: FieldValue.serverTimestamp() });
+  }
+
+  static async updateDealStatus(
+    companyId: string,
+    leadId: string,
+    dealStatus: DealStatus,
+  ): Promise<void> {
+    const ref = this.col(companyId).doc(leadId);
+    const doc = await ref.get();
+    if (!doc.exists) {
+      throw new HttpsError("not-found", "Lead não encontrado.");
+    }
+    await ref.update({ dealStatus, updatedAt: FieldValue.serverTimestamp() });
   }
 
   static async delete(companyId: string, leadId: string): Promise<void> {

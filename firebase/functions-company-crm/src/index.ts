@@ -6,6 +6,7 @@ export * from "./handlers/saveLead";
 export * from "./handlers/listLeads";
 export * from "./handlers/deleteLead";
 export * from "./handlers/updateLeadStatus";
+export * from "./handlers/updateLeadDealStatus";
 
 export * from "./handlers/listTags";
 export * from "./handlers/saveTag";
