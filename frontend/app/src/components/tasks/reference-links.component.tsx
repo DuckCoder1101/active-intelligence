@@ -78,7 +78,7 @@ export function ReferenceLinks({ links, onChange, readonly = false }: ReferenceL
               href={link}
               target="_blank"
               rel="noreferrer"
-              className="flex-1 truncate text-[12px] text-blue-500 hover:underline"
+              className="flex-1 truncate text-[12px] text-primary hover:underline"
             >
               {link}
             </a>

@@ -329,7 +329,7 @@ export function CompanyMembersTab({ companyId }: Props) {
               <button
                 type="button"
                 onClick={() => setDeletingUser(u)}
-                className="shrink-0 rounded-lg p-1.5 text-text-muted transition-colors hover:bg-red-50 hover:text-red-500"
+                className="shrink-0 rounded-lg p-1.5 text-text-muted transition-colors hover:bg-danger/10 hover:text-danger"
                 title="Excluir usuário"
               >
                 <MdDeleteOutline size={15} />

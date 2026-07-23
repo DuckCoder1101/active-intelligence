@@ -85,7 +85,7 @@ export function CompanySidebar({
         <button
           type="button"
           onClick={onClose}
-          className="btn-icon text-slate-500 hover:text-slate-300"
+          className="btn-icon text-white/50 hover:text-white/80"
         >
           <MdClose size={18} />
         </button>
@@ -103,7 +103,7 @@ export function CompanySidebar({
             className="flex cursor-pointer items-center gap-2.5 border-l-[3px] border-transparent px-5 py-2.5 text-[12px] font-medium text-white transition-colors hover:bg-sidebar-hover"
             activeProps={{
               className:
-                'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-orange bg-orange/15 px-5 py-2.5 text-[12px] font-medium text-slate-100 transition-colors',
+                'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-orange bg-orange/15 px-5 py-2.5 text-[12px] font-medium text-white transition-colors',
             }}
           >
             <item.icon size={17} style={{ flexShrink: 0 }} />
