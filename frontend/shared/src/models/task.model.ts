@@ -1,19 +1,44 @@
-export const TASK_TYPES = [
-  'feed',
-  'stories',
-  'reels',
-  'carrossel',
-  'campanha',
-] as const;
+export interface TaskSubcategory {
+  subcategoryId: string;
+  name: string;
+  order: number;
+}
 
-export type TaskType = (typeof TASK_TYPES)[number];
+export interface TaskCategory {
+  categoryId: string;
+  name: string;
+  color: string;
+  order: number;
+  subcategories: TaskSubcategory[];
+}
+
+export interface SaveTaskCategoryDTO {
+  categoryId?: string;
+  name: string;
+  color: string;
+  order?: number;
+}
+
+export interface SaveTaskSubcategoryDTO {
+  categoryId: string;
+  subcategoryId?: string;
+  name: string;
+  order?: number;
+}
+
+export interface TaskTag {
+  tagId: string;
+  name: string;
+}
 
 export interface Task {
   taskId: string;
   companyId: string;
   title: string;
   description: string;
-  type: TaskType;
+  categoryId: string;
+  subcategoryId?: string;
+  tags: string[];
   status: string;
   dueDate: number;
   createdBy: string;
@@ -31,7 +56,9 @@ export interface SaveTaskDTO {
   companyId: string;
   title: string;
   description?: string;
-  type: TaskType;
+  categoryId: string;
+  subcategoryId?: string | null;
+  tags?: string[];
   status?: string;
   dueDate: number;
   assignedTo?: string[];
@@ -42,7 +69,8 @@ export interface SaveTaskDTO {
 export interface CreateClientTaskDTO {
   title: string;
   description?: string;
-  type: TaskType;
+  categoryId: string;
+  subcategoryId?: string | null;
   dueDate: number;
   referenceLinks?: string[];
   referenceImages?: string[];
@@ -54,12 +82,3 @@ export interface TaskUsage {
   limit: number | null;
   yearMonth: string;
 }
-
-export const TASK_TYPE_LABELS: Record<TaskType, string> = {
-  feed: 'Feed',
-  stories: 'Stories',
-  reels: 'Reels',
-  carrossel: 'Carrossel',
-  campanha: 'Campanha',
-};
-

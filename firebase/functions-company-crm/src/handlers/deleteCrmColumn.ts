@@ -8,6 +8,7 @@ import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 const schema = z.object({
   companyId: z.string().min(1),
+  funnelId: z.string().min(1),
   columnId: z.string().min(1),
 });
 
@@ -16,14 +17,18 @@ export const deleteCrmColumnHandler = onCallHandler(async (req) => {
   if (!success) {
     throw new HttpsError(
       "invalid-argument",
-      "columnId obrigatório",
+      "funnelId e columnId obrigatórios",
       error.issues,
     );
   }
 
   const { companyId } = requireCompanyAccess(req, data.companyId);
 
-  logger.info("deleteCrmColumn", { companyId, columnId: data.columnId });
+  logger.info("deleteCrmColumn", {
+    companyId,
+    funnelId: data.funnelId,
+    columnId: data.columnId,
+  });
 
-  return CrmColumnRepository.delete(companyId, data.columnId);
+  return CrmColumnRepository.delete(companyId, data.funnelId, data.columnId);
 });

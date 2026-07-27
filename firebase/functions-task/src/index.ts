@@ -13,3 +13,17 @@ export * from "./handlers/listCalendarTasks";
 export * from "./handlers/updateClientTaskImages";
 export * from "./handlers/approveClientTask";
 export * from "./triggers/deleteOldTaskMedia";
+
+export * from "./handlers/savePersonalTask";
+export * from "./handlers/deletePersonalTask";
+export * from "./handlers/listPersonalTasks";
+
+export * from "./handlers/listTaskCategories";
+export * from "./handlers/saveTaskCategory";
+export * from "./handlers/deleteTaskCategory";
+export * from "./handlers/saveTaskSubcategory";
+export * from "./handlers/deleteTaskSubcategory";
+
+export * from "./handlers/listTaskTags";
+export * from "./handlers/saveTaskTag";
+export * from "./handlers/deleteTaskTag";

@@ -10,43 +10,41 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as UserProfileRouteImport } from './routes/user/profile'
-import { Route as UserMycompanyRouteImport } from './routes/user/mycompany'
-import { Route as CompanyCompanyIdRouteImport } from './routes/company/$companyId'
+import { Route as PrivateRouteImport } from './routes/_private'
+import { Route as PrivateIndexRouteImport } from './routes/_private/index'
+import { Route as LibraryDataGuideIdRouteImport } from './routes/library-data/$guideId'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
-import { Route as CompanyCompanyIdIndexRouteImport } from './routes/company/$companyId/index'
-import { Route as CompanyCompanyIdTeamRouteImport } from './routes/company/$companyId/team'
-import { Route as CompanyCompanyIdScheduleRouteImport } from './routes/company/$companyId/schedule'
-import { Route as CompanyCompanyIdCrmRouteImport } from './routes/company/$companyId/crm'
-import { Route as CompanyCompanyIdAdAccountsRouteImport } from './routes/company/$companyId/ad-accounts'
+import { Route as PrivateUserProfileRouteImport } from './routes/_private/user/profile'
+import { Route as PrivateUserMycompanyRouteImport } from './routes/_private/user/mycompany'
+import { Route as PrivateCompanyCompanyIdRouteImport } from './routes/_private/company/$companyId'
+import { Route as PrivateCompanyCompanyIdIndexRouteImport } from './routes/_private/company/$companyId/index'
+import { Route as PrivateCompanyCompanyIdTeamRouteImport } from './routes/_private/company/$companyId/team'
+import { Route as PrivateCompanyCompanyIdScheduleRouteImport } from './routes/_private/company/$companyId/schedule'
+import { Route as PrivateCompanyCompanyIdCrmRouteImport } from './routes/_private/company/$companyId/crm'
+import { Route as PrivateCompanyCompanyIdAdAccountsRouteImport } from './routes/_private/company/$companyId/ad-accounts'
+import { Route as PrivateCompanyCompanyIdLibraryIndexRouteImport } from './routes/_private/company/$companyId/library/index'
+import { Route as PrivateCompanyCompanyIdLibraryGuideIdRouteImport } from './routes/_private/company/$companyId/library/$guideId'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const PrivateRoute = PrivateRouteImport.update({
+  id: '/_private',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivateIndexRoute = PrivateIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PrivateRoute,
 } as any)
-const UserProfileRoute = UserProfileRouteImport.update({
-  id: '/user/profile',
-  path: '/user/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserMycompanyRoute = UserMycompanyRouteImport.update({
-  id: '/user/mycompany',
-  path: '/user/mycompany',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompanyCompanyIdRoute = CompanyCompanyIdRouteImport.update({
-  id: '/company/$companyId',
-  path: '/company/$companyId',
+const LibraryDataGuideIdRoute = LibraryDataGuideIdRouteImport.update({
+  id: '/library-data/$guideId',
+  path: '/library-data/$guideId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSigninRoute = AuthSigninRouteImport.update({
@@ -69,81 +67,121 @@ const AuthCompleteAccountRoute = AuthCompleteAccountRouteImport.update({
   path: '/auth/complete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CompanyCompanyIdIndexRoute = CompanyCompanyIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => CompanyCompanyIdRoute,
+const PrivateUserProfileRoute = PrivateUserProfileRouteImport.update({
+  id: '/user/profile',
+  path: '/user/profile',
+  getParentRoute: () => PrivateRoute,
 } as any)
-const CompanyCompanyIdTeamRoute = CompanyCompanyIdTeamRouteImport.update({
-  id: '/team',
-  path: '/team',
-  getParentRoute: () => CompanyCompanyIdRoute,
+const PrivateUserMycompanyRoute = PrivateUserMycompanyRouteImport.update({
+  id: '/user/mycompany',
+  path: '/user/mycompany',
+  getParentRoute: () => PrivateRoute,
 } as any)
-const CompanyCompanyIdScheduleRoute =
-  CompanyCompanyIdScheduleRouteImport.update({
+const PrivateCompanyCompanyIdRoute = PrivateCompanyCompanyIdRouteImport.update({
+  id: '/company/$companyId',
+  path: '/company/$companyId',
+  getParentRoute: () => PrivateRoute,
+} as any)
+const PrivateCompanyCompanyIdIndexRoute =
+  PrivateCompanyCompanyIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
+  } as any)
+const PrivateCompanyCompanyIdTeamRoute =
+  PrivateCompanyCompanyIdTeamRouteImport.update({
+    id: '/team',
+    path: '/team',
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
+  } as any)
+const PrivateCompanyCompanyIdScheduleRoute =
+  PrivateCompanyCompanyIdScheduleRouteImport.update({
     id: '/schedule',
     path: '/schedule',
-    getParentRoute: () => CompanyCompanyIdRoute,
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
   } as any)
-const CompanyCompanyIdCrmRoute = CompanyCompanyIdCrmRouteImport.update({
-  id: '/crm',
-  path: '/crm',
-  getParentRoute: () => CompanyCompanyIdRoute,
-} as any)
-const CompanyCompanyIdAdAccountsRoute =
-  CompanyCompanyIdAdAccountsRouteImport.update({
+const PrivateCompanyCompanyIdCrmRoute =
+  PrivateCompanyCompanyIdCrmRouteImport.update({
+    id: '/crm',
+    path: '/crm',
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
+  } as any)
+const PrivateCompanyCompanyIdAdAccountsRoute =
+  PrivateCompanyCompanyIdAdAccountsRouteImport.update({
     id: '/ad-accounts',
     path: '/ad-accounts',
-    getParentRoute: () => CompanyCompanyIdRoute,
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
+  } as any)
+const PrivateCompanyCompanyIdLibraryIndexRoute =
+  PrivateCompanyCompanyIdLibraryIndexRouteImport.update({
+    id: '/library/',
+    path: '/library/',
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
+  } as any)
+const PrivateCompanyCompanyIdLibraryGuideIdRoute =
+  PrivateCompanyCompanyIdLibraryGuideIdRouteImport.update({
+    id: '/library/$guideId',
+    path: '/library/$guideId',
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof PrivateIndexRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
-  '/user/mycompany': typeof UserMycompanyRoute
-  '/user/profile': typeof UserProfileRoute
-  '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
-  '/company/$companyId/crm': typeof CompanyCompanyIdCrmRoute
-  '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
-  '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
-  '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
+  '/library-data/$guideId': typeof LibraryDataGuideIdRoute
+  '/company/$companyId': typeof PrivateCompanyCompanyIdRouteWithChildren
+  '/user/mycompany': typeof PrivateUserMycompanyRoute
+  '/user/profile': typeof PrivateUserProfileRoute
+  '/company/$companyId/ad-accounts': typeof PrivateCompanyCompanyIdAdAccountsRoute
+  '/company/$companyId/crm': typeof PrivateCompanyCompanyIdCrmRoute
+  '/company/$companyId/schedule': typeof PrivateCompanyCompanyIdScheduleRoute
+  '/company/$companyId/team': typeof PrivateCompanyCompanyIdTeamRoute
+  '/company/$companyId/': typeof PrivateCompanyCompanyIdIndexRoute
+  '/company/$companyId/library/$guideId': typeof PrivateCompanyCompanyIdLibraryGuideIdRoute
+  '/company/$companyId/library/': typeof PrivateCompanyCompanyIdLibraryIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/user/mycompany': typeof UserMycompanyRoute
-  '/user/profile': typeof UserProfileRoute
-  '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
-  '/company/$companyId/crm': typeof CompanyCompanyIdCrmRoute
-  '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
-  '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
-  '/company/$companyId': typeof CompanyCompanyIdIndexRoute
+  '/library-data/$guideId': typeof LibraryDataGuideIdRoute
+  '/': typeof PrivateIndexRoute
+  '/user/mycompany': typeof PrivateUserMycompanyRoute
+  '/user/profile': typeof PrivateUserProfileRoute
+  '/company/$companyId/ad-accounts': typeof PrivateCompanyCompanyIdAdAccountsRoute
+  '/company/$companyId/crm': typeof PrivateCompanyCompanyIdCrmRoute
+  '/company/$companyId/schedule': typeof PrivateCompanyCompanyIdScheduleRoute
+  '/company/$companyId/team': typeof PrivateCompanyCompanyIdTeamRoute
+  '/company/$companyId': typeof PrivateCompanyCompanyIdIndexRoute
+  '/company/$companyId/library/$guideId': typeof PrivateCompanyCompanyIdLibraryGuideIdRoute
+  '/company/$companyId/library': typeof PrivateCompanyCompanyIdLibraryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_private': typeof PrivateRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
-  '/user/mycompany': typeof UserMycompanyRoute
-  '/user/profile': typeof UserProfileRoute
-  '/company/$companyId/ad-accounts': typeof CompanyCompanyIdAdAccountsRoute
-  '/company/$companyId/crm': typeof CompanyCompanyIdCrmRoute
-  '/company/$companyId/schedule': typeof CompanyCompanyIdScheduleRoute
-  '/company/$companyId/team': typeof CompanyCompanyIdTeamRoute
-  '/company/$companyId/': typeof CompanyCompanyIdIndexRoute
+  '/library-data/$guideId': typeof LibraryDataGuideIdRoute
+  '/_private/': typeof PrivateIndexRoute
+  '/_private/company/$companyId': typeof PrivateCompanyCompanyIdRouteWithChildren
+  '/_private/user/mycompany': typeof PrivateUserMycompanyRoute
+  '/_private/user/profile': typeof PrivateUserProfileRoute
+  '/_private/company/$companyId/ad-accounts': typeof PrivateCompanyCompanyIdAdAccountsRoute
+  '/_private/company/$companyId/crm': typeof PrivateCompanyCompanyIdCrmRoute
+  '/_private/company/$companyId/schedule': typeof PrivateCompanyCompanyIdScheduleRoute
+  '/_private/company/$companyId/team': typeof PrivateCompanyCompanyIdTeamRoute
+  '/_private/company/$companyId/': typeof PrivateCompanyCompanyIdIndexRoute
+  '/_private/company/$companyId/library/$guideId': typeof PrivateCompanyCompanyIdLibraryGuideIdRoute
+  '/_private/company/$companyId/library/': typeof PrivateCompanyCompanyIdLibraryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -154,6 +192,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
+    | '/library-data/$guideId'
     | '/company/$companyId'
     | '/user/mycompany'
     | '/user/profile'
@@ -162,14 +201,17 @@ export interface FileRouteTypes {
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId/'
+    | '/company/$companyId/library/$guideId'
+    | '/company/$companyId/library/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/unauthorized'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
+    | '/library-data/$guideId'
+    | '/'
     | '/user/mycompany'
     | '/user/profile'
     | '/company/$companyId/ad-accounts'
@@ -177,34 +219,38 @@ export interface FileRouteTypes {
     | '/company/$companyId/schedule'
     | '/company/$companyId/team'
     | '/company/$companyId'
+    | '/company/$companyId/library/$guideId'
+    | '/company/$companyId/library'
   id:
     | '__root__'
-    | '/'
+    | '/_private'
     | '/unauthorized'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/company/$companyId'
-    | '/user/mycompany'
-    | '/user/profile'
-    | '/company/$companyId/ad-accounts'
-    | '/company/$companyId/crm'
-    | '/company/$companyId/schedule'
-    | '/company/$companyId/team'
-    | '/company/$companyId/'
+    | '/library-data/$guideId'
+    | '/_private/'
+    | '/_private/company/$companyId'
+    | '/_private/user/mycompany'
+    | '/_private/user/profile'
+    | '/_private/company/$companyId/ad-accounts'
+    | '/_private/company/$companyId/crm'
+    | '/_private/company/$companyId/schedule'
+    | '/_private/company/$companyId/team'
+    | '/_private/company/$companyId/'
+    | '/_private/company/$companyId/library/$guideId'
+    | '/_private/company/$companyId/library/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  PrivateRoute: typeof PrivateRouteWithChildren
   UnauthorizedRoute: typeof UnauthorizedRoute
   AuthCompleteAccountRoute: typeof AuthCompleteAccountRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthSigninRoute: typeof AuthSigninRoute
-  CompanyCompanyIdRoute: typeof CompanyCompanyIdRouteWithChildren
-  UserMycompanyRoute: typeof UserMycompanyRoute
-  UserProfileRoute: typeof UserProfileRoute
+  LibraryDataGuideIdRoute: typeof LibraryDataGuideIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -216,32 +262,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnauthorizedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_private': {
+      id: '/_private'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PrivateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_private/': {
+      id: '/_private/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PrivateIndexRouteImport
+      parentRoute: typeof PrivateRoute
     }
-    '/user/profile': {
-      id: '/user/profile'
-      path: '/user/profile'
-      fullPath: '/user/profile'
-      preLoaderRoute: typeof UserProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user/mycompany': {
-      id: '/user/mycompany'
-      path: '/user/mycompany'
-      fullPath: '/user/mycompany'
-      preLoaderRoute: typeof UserMycompanyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/company/$companyId': {
-      id: '/company/$companyId'
-      path: '/company/$companyId'
-      fullPath: '/company/$companyId'
-      preLoaderRoute: typeof CompanyCompanyIdRouteImport
+    '/library-data/$guideId': {
+      id: '/library-data/$guideId'
+      path: '/library-data/$guideId'
+      fullPath: '/library-data/$guideId'
+      preLoaderRoute: typeof LibraryDataGuideIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/signin': {
@@ -272,73 +311,133 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCompleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/company/$companyId/': {
-      id: '/company/$companyId/'
+    '/_private/user/profile': {
+      id: '/_private/user/profile'
+      path: '/user/profile'
+      fullPath: '/user/profile'
+      preLoaderRoute: typeof PrivateUserProfileRouteImport
+      parentRoute: typeof PrivateRoute
+    }
+    '/_private/user/mycompany': {
+      id: '/_private/user/mycompany'
+      path: '/user/mycompany'
+      fullPath: '/user/mycompany'
+      preLoaderRoute: typeof PrivateUserMycompanyRouteImport
+      parentRoute: typeof PrivateRoute
+    }
+    '/_private/company/$companyId': {
+      id: '/_private/company/$companyId'
+      path: '/company/$companyId'
+      fullPath: '/company/$companyId'
+      preLoaderRoute: typeof PrivateCompanyCompanyIdRouteImport
+      parentRoute: typeof PrivateRoute
+    }
+    '/_private/company/$companyId/': {
+      id: '/_private/company/$companyId/'
       path: '/'
       fullPath: '/company/$companyId/'
-      preLoaderRoute: typeof CompanyCompanyIdIndexRouteImport
-      parentRoute: typeof CompanyCompanyIdRoute
+      preLoaderRoute: typeof PrivateCompanyCompanyIdIndexRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
     }
-    '/company/$companyId/team': {
-      id: '/company/$companyId/team'
+    '/_private/company/$companyId/team': {
+      id: '/_private/company/$companyId/team'
       path: '/team'
       fullPath: '/company/$companyId/team'
-      preLoaderRoute: typeof CompanyCompanyIdTeamRouteImport
-      parentRoute: typeof CompanyCompanyIdRoute
+      preLoaderRoute: typeof PrivateCompanyCompanyIdTeamRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
     }
-    '/company/$companyId/schedule': {
-      id: '/company/$companyId/schedule'
+    '/_private/company/$companyId/schedule': {
+      id: '/_private/company/$companyId/schedule'
       path: '/schedule'
       fullPath: '/company/$companyId/schedule'
-      preLoaderRoute: typeof CompanyCompanyIdScheduleRouteImport
-      parentRoute: typeof CompanyCompanyIdRoute
+      preLoaderRoute: typeof PrivateCompanyCompanyIdScheduleRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
     }
-    '/company/$companyId/crm': {
-      id: '/company/$companyId/crm'
+    '/_private/company/$companyId/crm': {
+      id: '/_private/company/$companyId/crm'
       path: '/crm'
       fullPath: '/company/$companyId/crm'
-      preLoaderRoute: typeof CompanyCompanyIdCrmRouteImport
-      parentRoute: typeof CompanyCompanyIdRoute
+      preLoaderRoute: typeof PrivateCompanyCompanyIdCrmRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
     }
-    '/company/$companyId/ad-accounts': {
-      id: '/company/$companyId/ad-accounts'
+    '/_private/company/$companyId/ad-accounts': {
+      id: '/_private/company/$companyId/ad-accounts'
       path: '/ad-accounts'
       fullPath: '/company/$companyId/ad-accounts'
-      preLoaderRoute: typeof CompanyCompanyIdAdAccountsRouteImport
-      parentRoute: typeof CompanyCompanyIdRoute
+      preLoaderRoute: typeof PrivateCompanyCompanyIdAdAccountsRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
+    }
+    '/_private/company/$companyId/library/': {
+      id: '/_private/company/$companyId/library/'
+      path: '/library'
+      fullPath: '/company/$companyId/library/'
+      preLoaderRoute: typeof PrivateCompanyCompanyIdLibraryIndexRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
+    }
+    '/_private/company/$companyId/library/$guideId': {
+      id: '/_private/company/$companyId/library/$guideId'
+      path: '/library/$guideId'
+      fullPath: '/company/$companyId/library/$guideId'
+      preLoaderRoute: typeof PrivateCompanyCompanyIdLibraryGuideIdRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
     }
   }
 }
 
-interface CompanyCompanyIdRouteChildren {
-  CompanyCompanyIdAdAccountsRoute: typeof CompanyCompanyIdAdAccountsRoute
-  CompanyCompanyIdCrmRoute: typeof CompanyCompanyIdCrmRoute
-  CompanyCompanyIdScheduleRoute: typeof CompanyCompanyIdScheduleRoute
-  CompanyCompanyIdTeamRoute: typeof CompanyCompanyIdTeamRoute
-  CompanyCompanyIdIndexRoute: typeof CompanyCompanyIdIndexRoute
+interface PrivateCompanyCompanyIdRouteChildren {
+  PrivateCompanyCompanyIdAdAccountsRoute: typeof PrivateCompanyCompanyIdAdAccountsRoute
+  PrivateCompanyCompanyIdCrmRoute: typeof PrivateCompanyCompanyIdCrmRoute
+  PrivateCompanyCompanyIdScheduleRoute: typeof PrivateCompanyCompanyIdScheduleRoute
+  PrivateCompanyCompanyIdTeamRoute: typeof PrivateCompanyCompanyIdTeamRoute
+  PrivateCompanyCompanyIdIndexRoute: typeof PrivateCompanyCompanyIdIndexRoute
+  PrivateCompanyCompanyIdLibraryGuideIdRoute: typeof PrivateCompanyCompanyIdLibraryGuideIdRoute
+  PrivateCompanyCompanyIdLibraryIndexRoute: typeof PrivateCompanyCompanyIdLibraryIndexRoute
 }
 
-const CompanyCompanyIdRouteChildren: CompanyCompanyIdRouteChildren = {
-  CompanyCompanyIdAdAccountsRoute: CompanyCompanyIdAdAccountsRoute,
-  CompanyCompanyIdCrmRoute: CompanyCompanyIdCrmRoute,
-  CompanyCompanyIdScheduleRoute: CompanyCompanyIdScheduleRoute,
-  CompanyCompanyIdTeamRoute: CompanyCompanyIdTeamRoute,
-  CompanyCompanyIdIndexRoute: CompanyCompanyIdIndexRoute,
+const PrivateCompanyCompanyIdRouteChildren: PrivateCompanyCompanyIdRouteChildren =
+  {
+    PrivateCompanyCompanyIdAdAccountsRoute:
+      PrivateCompanyCompanyIdAdAccountsRoute,
+    PrivateCompanyCompanyIdCrmRoute: PrivateCompanyCompanyIdCrmRoute,
+    PrivateCompanyCompanyIdScheduleRoute: PrivateCompanyCompanyIdScheduleRoute,
+    PrivateCompanyCompanyIdTeamRoute: PrivateCompanyCompanyIdTeamRoute,
+    PrivateCompanyCompanyIdIndexRoute: PrivateCompanyCompanyIdIndexRoute,
+    PrivateCompanyCompanyIdLibraryGuideIdRoute:
+      PrivateCompanyCompanyIdLibraryGuideIdRoute,
+    PrivateCompanyCompanyIdLibraryIndexRoute:
+      PrivateCompanyCompanyIdLibraryIndexRoute,
+  }
+
+const PrivateCompanyCompanyIdRouteWithChildren =
+  PrivateCompanyCompanyIdRoute._addFileChildren(
+    PrivateCompanyCompanyIdRouteChildren,
+  )
+
+interface PrivateRouteChildren {
+  PrivateIndexRoute: typeof PrivateIndexRoute
+  PrivateCompanyCompanyIdRoute: typeof PrivateCompanyCompanyIdRouteWithChildren
+  PrivateUserMycompanyRoute: typeof PrivateUserMycompanyRoute
+  PrivateUserProfileRoute: typeof PrivateUserProfileRoute
 }
 
-const CompanyCompanyIdRouteWithChildren =
-  CompanyCompanyIdRoute._addFileChildren(CompanyCompanyIdRouteChildren)
+const PrivateRouteChildren: PrivateRouteChildren = {
+  PrivateIndexRoute: PrivateIndexRoute,
+  PrivateCompanyCompanyIdRoute: PrivateCompanyCompanyIdRouteWithChildren,
+  PrivateUserMycompanyRoute: PrivateUserMycompanyRoute,
+  PrivateUserProfileRoute: PrivateUserProfileRoute,
+}
+
+const PrivateRouteWithChildren =
+  PrivateRoute._addFileChildren(PrivateRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  PrivateRoute: PrivateRouteWithChildren,
   UnauthorizedRoute: UnauthorizedRoute,
   AuthCompleteAccountRoute: AuthCompleteAccountRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLogoutRoute: AuthLogoutRoute,
   AuthSigninRoute: AuthSigninRoute,
-  CompanyCompanyIdRoute: CompanyCompanyIdRouteWithChildren,
-  UserMycompanyRoute: UserMycompanyRoute,
-  UserProfileRoute: UserProfileRoute,
+  LibraryDataGuideIdRoute: LibraryDataGuideIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

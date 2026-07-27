@@ -1,8 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { MdAdd, MdClose, MdExpandMore } from 'react-icons/md';
-
-import { Badge } from '@/components/ui/badge.component';
+import { MdAdd, MdExpandMore } from 'react-icons/md';
 
 export interface MultiSelectOption {
   value: string;
@@ -91,10 +89,6 @@ export function MultiSelect({
     }
   };
 
-  const removeValue = (value: string) => {
-    onChange(selected.filter((v) => v !== value));
-  };
-
   const handleCreate = async () => {
     const name = newName.trim();
     if (!name || !onCreateOption) {return;}
@@ -111,6 +105,12 @@ export function MultiSelect({
   };
 
   const selectedOptions = options.filter((o) => selected.includes(o.value));
+  const summary =
+    selectedOptions.length === 0
+      ? 'Selecione...'
+      : selectedOptions.length === 1
+        ? selectedOptions[0].label
+        : `${selectedOptions.length} selecionados`;
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -128,30 +128,16 @@ export function MultiSelect({
         disabled={disabled}
         onClick={() => setOpen((prev) => !prev)}
         className={[
-          'flex min-h-9.5 w-full flex-wrap items-center gap-1.5 rounded-md border bg-card px-3 py-1.5 text-left text-sm outline-none transition-colors focus:border-primary disabled:opacity-60',
+          'flex h-9.5 w-full items-center gap-1.5 rounded-md border bg-card px-3 py-1.5 text-left text-sm outline-none transition-colors focus:border-primary disabled:opacity-60',
           error ? 'border-danger focus:border-danger' : 'border-border',
         ].join(' ')}
       >
-        {selectedOptions.length === 0 && (
-          <span className="text-text-muted">Selecione...</span>
-        )}
-        {selectedOptions.map((o) => (
-          <Badge key={o.value} variant="orange" className="gap-1 pr-1.5">
-            {o.label}
-            <span
-              role="button"
-              tabIndex={-1}
-              onClick={(e) => {
-                e.stopPropagation();
-                removeValue(o.value);
-              }}
-              className="rounded-full p-0.5 hover:bg-white/20"
-            >
-              <MdClose size={11} />
-            </span>
-          </Badge>
-        ))}
-        <MdExpandMore size={16} className="ml-auto shrink-0 text-text-muted" />
+        <span
+          className={`min-w-0 flex-1 truncate ${selectedOptions.length === 0 ? 'text-text-muted' : 'text-text'}`}
+        >
+          {summary}
+        </span>
+        <MdExpandMore size={16} className="shrink-0 text-text-muted" />
       </button>
 
       {open &&

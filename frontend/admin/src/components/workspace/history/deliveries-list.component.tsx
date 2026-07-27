@@ -2,8 +2,7 @@ import { useMemo } from 'react';
 import { MdOutlineInventory2 } from 'react-icons/md';
 
 import { formatDateShort } from '@/formatters/formatDate';
-import type { Task } from '@/models/task.model';
-import { TASK_TYPE_LABELS } from '@/models/task.model';
+import type { Task, TaskCategory } from '@/models/task.model';
 import { companyColor, companyInitials } from '@/utils/company-color.util';
 
 const MONTHS = [
@@ -29,6 +28,7 @@ interface CompanyResume {
 interface DeliveriesListProps {
   tasks: Task[];
   companyMap: Record<string, CompanyResume>;
+  categoryMap: Record<string, TaskCategory>;
 }
 
 function monthLabel(ts: number): string {
@@ -36,7 +36,7 @@ function monthLabel(ts: number): string {
   return `${MONTHS[d.getMonth()]} de ${d.getFullYear()}`;
 }
 
-export function DeliveriesList({ tasks, companyMap }: DeliveriesListProps) {
+export function DeliveriesList({ tasks, companyMap, categoryMap }: DeliveriesListProps) {
   const monthGroups = useMemo(() => {
     const groups: { label: string; items: Task[] }[] = [];
     let currentLabel = '';
@@ -83,8 +83,8 @@ export function DeliveriesList({ tasks, companyMap }: DeliveriesListProps) {
                   key={task.taskId}
                   className="flex items-center gap-3 px-4 py-3"
                 >
-                  <span className="w-16 shrink-0 text-[10px] font-bold uppercase tracking-wider text-text-muted">
-                    {TASK_TYPE_LABELS[task.type]}
+                  <span className="w-16 shrink-0 truncate text-[10px] font-bold uppercase tracking-wider text-text-muted">
+                    {categoryMap[task.categoryId]?.name ?? 'Sem categoria'}
                   </span>
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text">
                     {task.title}

@@ -7,15 +7,17 @@ import { companiesQueryOptions } from '@/queries/company.queries';
 
 export function ClientFilter() {
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
-  const { clients } = useSearch({ from: '/_admin/workspace' });
+  const { clients } = useSearch({ from: '/_private/workspace' });
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
 
   const selected = clients ? clients.split(',') : [];
-  const options: MultiSelectOption[] = companies.map((c) => ({
-    value: c.companyId,
-    label: c.displayName,
-  }));
+  const options: MultiSelectOption[] = companies
+    .filter((c) => c.companyStage !== 'inactive')
+    .map((c) => ({
+      value: c.companyId,
+      label: c.displayName,
+    }));
 
   return (
     <div className="w-full sm:w-72">

@@ -1,4 +1,4 @@
-export type CompanyStage = 'comercial' | 'operacional';
+export type CompanyStage = 'comercial' | 'operacional' | 'inactive';
 
 export type BusinessSector =
   | 'imobiliaria'

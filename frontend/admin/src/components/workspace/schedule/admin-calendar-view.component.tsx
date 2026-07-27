@@ -5,8 +5,7 @@ import { toast } from 'react-toastify';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { CompanyResume } from '@/models/company.model';
 import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
-import type { Task } from '@/models/task.model';
-import { TASK_TYPE_LABELS } from '@/models/task.model';
+import type { Task, TaskCategory } from '@/models/task.model';
 import { useUpdateTaskStatusMutation } from '@/queries/task.queries';
 
 const MONTHS = [
@@ -31,6 +30,7 @@ interface DayTasksModalProps {
   tasks: Task[];
   companies: CompanyResume[];
   columns: OperationalKanbanColumn[];
+  categoryMap: Record<string, TaskCategory>;
   updatingTaskId: string | null;
   onStatusChange: (task: Task, status: string) => void;
   onTaskClick: (task: Task) => void;
@@ -43,6 +43,7 @@ function DayTasksModal({
   tasks,
   companies,
   columns,
+  categoryMap,
   updatingTaskId,
   onStatusChange,
   onTaskClick,
@@ -139,7 +140,7 @@ function DayTasksModal({
                           {task.title}
                         </p>
                         <span className="shrink-0 rounded-md border border-border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-text-muted">
-                          {TASK_TYPE_LABELS[task.type]}
+                          {categoryMap[task.categoryId]?.name ?? 'Sem categoria'}
                         </span>
                       </div>
                       <p className="mt-0.5 pl-4 text-[11px] text-text-muted">
@@ -185,6 +186,7 @@ interface AdminCalendarViewProps {
   tasks: Task[];
   companies: CompanyResume[];
   columns: OperationalKanbanColumn[];
+  categories: TaskCategory[];
   onTaskClick: (task: Task) => void;
   onAddTask: (date: Date) => void;
 }
@@ -193,6 +195,7 @@ export function AdminCalendarView({
   tasks,
   companies,
   columns,
+  categories,
   onTaskClick,
   onAddTask,
 }: AdminCalendarViewProps) {
@@ -202,6 +205,11 @@ export function AdminCalendarView({
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const updateStatus = useUpdateTaskStatusMutation();
+
+  const categoryMap = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.categoryId, c])),
+    [categories],
+  );
 
   const prevMonth = () => {
     setSelectedDay(null);
@@ -396,6 +404,7 @@ export function AdminCalendarView({
           tasks={selectedTasks}
           companies={companies}
           columns={columns}
+          categoryMap={categoryMap}
           updatingTaskId={updateStatus.isPending ? updateStatus.variables.taskId : null}
           onStatusChange={handleStatusChange}
           onTaskClick={(task) => {

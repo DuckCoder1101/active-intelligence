@@ -1,5 +1,6 @@
 import type {
   BusinessType,
+  DealStatus,
   LeadPreference,
   PaymentMethod,
   PropertyType,
@@ -10,7 +11,9 @@ import type {
 export interface LeadDTO {
   leadId: string;
   companyId: string;
+  funnelId: string;
   status: string;
+  dealStatus: DealStatus;
 
   name: string;
   phone: string;
@@ -54,6 +57,7 @@ export interface LeadDTO {
 
 export interface SaveLeadDTO {
   leadId?: string;
+  funnelId: string;
   status?: string;
 
   name: string;

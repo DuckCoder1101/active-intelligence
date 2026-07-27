@@ -141,6 +141,23 @@
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
+    },
+    {
+      "source": "functions-library",
+      "codebase": "library",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "npm --prefix \"$RESOURCE_DIR\" install",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
     }
   ],
   "storage": {

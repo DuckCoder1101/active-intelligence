@@ -81,6 +81,14 @@ export const TEMPERATURE_LABELS: Record<Temperature, string> = {
   quente: '🔥 Quente',
 };
 
+export const DEAL_STATUSES = ['aberto', 'vendido', 'perdido'] as const;
+export type DealStatus = (typeof DEAL_STATUSES)[number];
+export const DEAL_STATUS_LABELS: Record<DealStatus, string> = {
+  aberto: 'Aberto',
+  vendido: 'Vendido',
+  perdido: 'Perdido',
+};
+
 export const LEAD_PREFERENCES = [
   'elevador',
   'portaria_24h_portao_eletronico',
@@ -244,7 +252,9 @@ export const LEAD_PREFERENCE_GROUPS: LeadPreferenceGroup[] = [
 export interface Lead {
   leadId: string;
   companyId: string;
+  funnelId: string;
   status: string;
+  dealStatus: DealStatus;
 
   name: string;
   phone: string;
@@ -287,7 +297,9 @@ export interface Lead {
 }
 
 export interface SaveLeadDTO {
+  companyId: string;
   leadId?: string;
+  funnelId: string;
   status?: string;
 
   name: string;
@@ -341,6 +353,13 @@ export interface CrmColumn {
   name: string;
   color: string;
   order: number;
+}
+
+export interface CrmFunnel {
+  funnelId: string;
+  name: string;
+  order: number;
+  isDefault: boolean;
 }
 
 export const CRM_COLUMN_COLOR_PRESETS = [

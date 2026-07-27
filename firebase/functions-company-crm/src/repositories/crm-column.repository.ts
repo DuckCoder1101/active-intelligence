@@ -9,8 +9,9 @@ import {
 import { CrmColumnDTO, SaveCrmColumnDTO } from "../types/crm-column.dto";
 
 export class CrmColumnRepository {
-  private static col(companyId: string) {
+  private static col(companyId: string, funnelId: string) {
     return database.collection("companies").doc(companyId)
+      .collection("crm_funnels").doc(funnelId)
       .collection("crm_columns");
   }
 
@@ -19,8 +20,11 @@ export class CrmColumnRepository {
       .collection("leads");
   }
 
-  static async listAll(companyId: string): Promise<CrmColumnDTO[]> {
-    const col = this.col(companyId);
+  static async listAll(
+    companyId: string,
+    funnelId: string,
+  ): Promise<CrmColumnDTO[]> {
+    const col = this.col(companyId, funnelId);
     const snap = await col.get();
 
     if (snap.empty) {
@@ -29,6 +33,7 @@ export class CrmColumnRepository {
         const ref = col.doc();
         batch.set(ref, {
           companyId,
+          funnelId,
           name: column.name,
           color: column.color,
           order: column.order,
@@ -63,9 +68,10 @@ export class CrmColumnRepository {
 
   static async save(
     companyId: string,
+    funnelId: string,
     data: SaveCrmColumnDTO,
   ): Promise<CrmColumnDTO> {
-    const col = this.col(companyId);
+    const col = this.col(companyId, funnelId);
     const snap = await col.get();
     const maxOrder = snap.docs.reduce(
       (max, doc) => Math.max(max, (doc.data() as CrmColumnDocument).order),
@@ -85,6 +91,7 @@ export class CrmColumnRepository {
     await ref.set(
       {
         companyId,
+        funnelId,
         name: data.name,
         color: data.color,
         order: data.order ?? maxOrder + 1,
@@ -105,9 +112,10 @@ export class CrmColumnRepository {
 
   static async delete(
     companyId: string,
+    funnelId: string,
     columnId: string,
   ): Promise<{ movedTo: string | null }> {
-    const col = this.col(companyId);
+    const col = this.col(companyId, funnelId);
     const snap = await col.get();
     const target = snap.docs.find((d) => d.id === columnId);
     if (!target) {
@@ -129,6 +137,7 @@ export class CrmColumnRepository {
     )[0];
 
     const leadSnap = await this.leadsCol(companyId)
+      .where("funnelId", "==", funnelId)
       .where("status", "==", columnId)
       .get();
 

@@ -2,6 +2,7 @@ import { Timestamp } from "firebase-admin/firestore";
 
 export interface CrmColumnDocument {
   companyId: string;
+  funnelId: string;
   name: string;
   color: string;
   order: number;

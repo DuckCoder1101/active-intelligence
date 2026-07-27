@@ -83,15 +83,21 @@ export function CompaniesTable({ companies, isLoading }: CompaniesTableProps) {
                 </div>
               </td>
               <td className="px-4 py-3">
-                <Badge
-                  variant={
-                    company.companyStage === 'operacional'
-                      ? 'orange'
-                      : 'default'
-                  }
-                >
-                  {company.companyStage}
-                </Badge>
+                <div className="flex flex-wrap gap-1.5">
+                  <Badge
+                    variant={
+                      company.companyStage === 'inactive'
+                        ? 'danger'
+                        : company.companyStage === 'operacional'
+                          ? 'orange'
+                          : 'default'
+                    }
+                  >
+                    {company.companyStage === 'inactive'
+                      ? 'inativo'
+                      : company.companyStage}
+                  </Badge>
+                </div>
               </td>
             </tr>
           ))}

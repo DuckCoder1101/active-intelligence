@@ -6,16 +6,21 @@ import {
   MdClose,
   MdOutlinePerson,
   MdOutlineCalendarToday,
+  MdOutlineWork,
+  MdPersonOutline,
 } from 'react-icons/md';
 
+import { PersonalTaskModal } from './personal-task-modal.component';
 import { ClientTaskModal } from './task-modal.component';
 
 import { formatDateShort } from '@/formatters/formatDate';
 import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
-import type { Task } from '@/models/task.model';
-import { TASK_TYPE_LABELS } from '@/models/task.model';
+import type { PersonalTask } from '@/models/personal-task.model';
+import type { Task, TaskCategory } from '@/models/task.model';
 
 const FALLBACK_COLUMN_COLOR = '#94a3b8';
+const PERSONAL_COLOR = '#8b5cf6';
+const PERSONAL_LABEL = 'Pessoal';
 
 const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 const MONTHS = [
@@ -34,21 +39,49 @@ const MONTHS = [
 ];
 const MAX_CHIPS = 2;
 
+type CalendarItem =
+  | { kind: 'agency'; task: Task }
+  | { kind: 'personal'; task: PersonalTask };
+
+function itemId(item: CalendarItem): string {
+  return item.kind === 'agency' ? item.task.taskId : item.task.personalTaskId;
+}
+
+function itemDueDate(item: CalendarItem): number {
+  return item.task.dueDate;
+}
+
+function itemVisual(
+  item: CalendarItem,
+  columns: OperationalKanbanColumn[],
+): { color: string; label: string } {
+  if (item.kind === 'personal') {
+    return { color: PERSONAL_COLOR, label: PERSONAL_LABEL };
+  }
+  const column = columns.find((c) => c.columnId === item.task.status);
+  return {
+    color: column?.color ?? FALLBACK_COLUMN_COLOR,
+    label: column?.name ?? 'Sem quadro',
+  };
+}
+
 interface DayModalProps {
   date: Date;
-  tasks: Task[];
+  items: CalendarItem[];
   columns: OperationalKanbanColumn[];
+  categories: TaskCategory[];
   onNewTask: () => void;
-  onTaskClick: (task: Task) => void;
+  onItemClick: (item: CalendarItem) => void;
   onClose: () => void;
 }
 
 function DayModal({
   date,
-  tasks,
+  items,
   columns,
+  categories,
   onNewTask,
-  onTaskClick,
+  onItemClick,
   onClose,
 }: DayModalProps) {
   const today = new Date();
@@ -83,9 +116,9 @@ function DayModal({
               {dateLabel}
             </h2>
             <p className="mt-0.5 text-[11px] text-text-muted">
-              {tasks.length === 0
+              {items.length === 0
                 ? 'Nenhuma tarefa nesse dia'
-                : `${tasks.length} tarefa${tasks.length > 1 ? 's' : ''}`}
+                : `${items.length} tarefa${items.length > 1 ? 's' : ''}`}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -115,7 +148,7 @@ function DayModal({
 
         {/* Task list */}
         <div className="max-h-[60vh] overflow-y-auto p-4">
-          {tasks.length === 0 ? (
+          {items.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-10">
               <p className="text-[13px] text-text-muted">
                 Nenhuma tarefa agendada para esse dia.
@@ -133,14 +166,14 @@ function DayModal({
             </div>
           ) : (
             <div className="space-y-2">
-              {tasks.map((task) => {
-                const column = columns.find((c) => c.columnId === task.status);
-                const color = column?.color ?? FALLBACK_COLUMN_COLOR;
+              {items.map((item) => {
+                const { color, label } = itemVisual(item, columns);
+                const task = item.task;
                 return (
                   <button
-                    key={task.taskId}
+                    key={itemId(item)}
                     type="button"
-                    onClick={() => onTaskClick(task)}
+                    onClick={() => onItemClick(item)}
                     className="w-full overflow-hidden rounded-xl border border-border bg-bg/60 text-left transition-all hover:-translate-y-px hover:shadow-md"
                   >
                     <div className="flex">
@@ -158,20 +191,23 @@ function DayModal({
                             className="mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold text-white"
                             style={{ backgroundColor: color }}
                           >
-                            {column?.name ?? 'Sem quadro'}
+                            {label}
                           </span>
                         </div>
 
                         {/* Meta */}
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 text-[10px] text-text-muted">
-                            <span className="rounded-md bg-card px-1.5 py-0.5 font-semibold">
-                              {TASK_TYPE_LABELS[task.type]}
-                            </span>
-                            {task.createdByName && (
+                            {item.kind === 'agency' && (
+                              <span className="rounded-md bg-card px-1.5 py-0.5 font-semibold">
+                                {categories.find((c) => c.categoryId === item.task.categoryId)
+                                  ?.name ?? 'Sem categoria'}
+                              </span>
+                            )}
+                            {item.kind === 'agency' && item.task.createdByName && (
                               <span className="flex items-center gap-1 truncate">
                                 <MdOutlinePerson size={11} />
-                                {task.createdByName}
+                                {item.task.createdByName}
                               </span>
                             )}
                           </div>
@@ -193,9 +229,81 @@ function DayModal({
   );
 }
 
+interface KindChooserProps {
+  onChoose: (kind: 'agency' | 'personal') => void;
+  onClose: () => void;
+}
+
+function TaskKindChooser({ onChoose, onClose }: KindChooserProps) {
+  return (
+    <div
+      className="modal-overlay bg-black/50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {onClose();}
+      }}
+    >
+      <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl">
+        <h2 className="mb-1 text-[15px] font-bold text-text">Nova tarefa</h2>
+        <p className="mb-5 text-[12px] text-text-sub">
+          Essa tarefa é um pedido de conteúdo pra agência ou um lembrete só seu?
+        </p>
+        <div className="space-y-2.5">
+          <button
+            type="button"
+            onClick={() => onChoose('agency')}
+            className="flex w-full items-center gap-3 rounded-xl border border-border bg-bg/60 p-3.5 text-left transition-colors hover:border-orange"
+          >
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange/10 text-orange">
+              <MdOutlineWork size={18} />
+            </span>
+            <span>
+              <span className="block text-[13px] font-bold text-text">
+                Tarefa para a agência
+              </span>
+              <span className="block text-[11px] text-text-muted">
+                Vira um pedido de conteúdo pra equipe produzir.
+              </span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onChoose('personal')}
+            className="flex w-full items-center gap-3 rounded-xl border border-border bg-bg/60 p-3.5 text-left transition-colors hover:border-violet-500"
+          >
+            <span
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-violet-500"
+              style={{ backgroundColor: `${PERSONAL_COLOR}1a` }}
+            >
+              <MdPersonOutline size={18} />
+            </span>
+            <span>
+              <span className="block text-[13px] font-bold text-text">
+                Tarefa pessoal
+              </span>
+              <span className="block text-[11px] text-text-muted">
+                Só aparece pra você, não vai pra agência.
+              </span>
+            </span>
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-4 w-full rounded-lg border border-border py-2 text-[12px] font-semibold text-text-sub transition-colors hover:bg-bg"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  );
+}
+
 interface Props {
+  companyId: string;
   tasks: Task[];
+  personalTasks: PersonalTask[];
   columns: OperationalKanbanColumn[];
+  categories: TaskCategory[];
   year: number;
   month: number;
   onPrevMonth: () => void;
@@ -204,9 +312,20 @@ interface Props {
   onTaskUpdated: (task: Task) => void;
 }
 
+type SubModal =
+  | 'choose'
+  | 'create-agency'
+  | 'create-personal'
+  | 'view-agency'
+  | 'view-personal'
+  | null;
+
 export function CompanyScheduleCalendar({
+  companyId,
   tasks,
+  personalTasks,
   columns,
+  categories,
   year,
   month,
   onPrevMonth,
@@ -216,24 +335,31 @@ export function CompanyScheduleCalendar({
 }: Props) {
   const today = new Date();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [subModal, setSubModal] = useState<'create' | 'view' | null>(null);
-  const [viewingTask, setViewingTask] = useState<Task | undefined>(undefined);
+  const [subModal, setSubModal] = useState<SubModal>(null);
+  const [viewingItem, setViewingItem] = useState<CalendarItem | undefined>(
+    undefined,
+  );
 
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const tasksByDay: Partial<Record<number, Task[]>> = {};
-  for (const task of tasks) {
-    const day = new Date(task.dueDate).getDate();
-    const arr = tasksByDay[day] ?? [];
-    arr.push(task);
-    tasksByDay[day] = arr;
+  const items: CalendarItem[] = [
+    ...tasks.map((task): CalendarItem => ({ kind: 'agency', task })),
+    ...personalTasks.map((task): CalendarItem => ({ kind: 'personal', task })),
+  ];
+
+  const itemsByDay: Partial<Record<number, CalendarItem[]>> = {};
+  for (const item of items) {
+    const day = new Date(itemDueDate(item)).getDate();
+    const arr = itemsByDay[day] ?? [];
+    arr.push(item);
+    itemsByDay[day] = arr;
   }
 
   const selectedDate =
     selectedDay !== null ? new Date(year, month, selectedDay) : null;
-  const selectedTasks =
-    selectedDay !== null ? (tasksByDay[selectedDay] ?? []) : [];
+  const selectedItems =
+    selectedDay !== null ? (itemsByDay[selectedDay] ?? []) : [];
 
   const handlePrev = () => {
     setSelectedDay(null);
@@ -244,14 +370,14 @@ export function CompanyScheduleCalendar({
     onNextMonth();
   };
 
-  const openCreate = () => setSubModal('create');
-  const openView = (task: Task) => {
-    setViewingTask(task);
-    setSubModal('view');
+  const openCreateChooser = () => setSubModal('choose');
+  const openView = (item: CalendarItem) => {
+    setViewingItem(item);
+    setSubModal(item.kind === 'agency' ? 'view-agency' : 'view-personal');
   };
   const closeSubModal = () => {
     setSubModal(null);
-    setViewingTask(undefined);
+    setViewingItem(undefined);
   };
   const closeDayModal = () => {
     setSelectedDay(null);
@@ -310,9 +436,9 @@ export function CompanyScheduleCalendar({
               today.getFullYear() === year &&
               today.getMonth() === month &&
               today.getDate() === day;
-            const dayTasks = tasksByDay[day] ?? [];
-            const visible = dayTasks.slice(0, MAX_CHIPS);
-            const overflow = dayTasks.length - MAX_CHIPS;
+            const dayItems = itemsByDay[day] ?? [];
+            const visible = dayItems.slice(0, MAX_CHIPS);
+            const overflow = dayItems.length - MAX_CHIPS;
             const colIndex = (firstDay + day - 1) % 7;
             const isLastCol = colIndex === 6;
 
@@ -337,22 +463,17 @@ export function CompanyScheduleCalendar({
 
                 {/* Task chips */}
                 <div className="space-y-0.5">
-                  {visible.map((task) => {
-                    const column = columns.find(
-                      (c) => c.columnId === task.status,
-                    );
+                  {visible.map((item) => {
+                    const { color } = itemVisual(item, columns);
 
                     return (
                       <div
-                        key={task.taskId}
+                        key={itemId(item)}
                         className="truncate rounded px-1.5 py-0.5 text-[10px] font-semibold text-white"
-                        style={{
-                          backgroundColor:
-                            column?.color ?? FALLBACK_COLUMN_COLOR,
-                        }}
-                        title={task.title}
+                        style={{ backgroundColor: color }}
+                        title={item.task.title}
                       >
-                        {task.title}
+                        {item.task.title}
                       </div>
                     );
                   })}
@@ -379,23 +500,42 @@ export function CompanyScheduleCalendar({
             <span className="text-[11px] text-text-muted">{col.name}</span>
           </div>
         ))}
+        <div className="flex items-center gap-1.5">
+          <span
+            className="h-2 w-2 rounded-full"
+            style={{ backgroundColor: PERSONAL_COLOR }}
+          />
+          <span className="text-[11px] text-text-muted">{PERSONAL_LABEL}</span>
+        </div>
       </div>
 
       {/* Day modal */}
       {selectedDay !== null && selectedDate !== null && subModal === null && (
         <DayModal
           date={selectedDate}
-          tasks={selectedTasks}
+          items={selectedItems}
           columns={columns}
-          onNewTask={openCreate}
-          onTaskClick={openView}
+          categories={categories}
+          onNewTask={openCreateChooser}
+          onItemClick={openView}
           onClose={closeDayModal}
         />
       )}
 
-      {/* Create task modal */}
-      {subModal === 'create' && (
+      {/* Kind chooser */}
+      {subModal === 'choose' && (
+        <TaskKindChooser
+          onChoose={(kind) =>
+            setSubModal(kind === 'agency' ? 'create-agency' : 'create-personal')
+          }
+          onClose={closeSubModal}
+        />
+      )}
+
+      {/* Create agency task modal */}
+      {subModal === 'create-agency' && (
         <ClientTaskModal
+          companyId={companyId}
           defaultDate={selectedDate ?? undefined}
           columns={columns}
           onClose={closeSubModal}
@@ -406,18 +546,42 @@ export function CompanyScheduleCalendar({
         />
       )}
 
-      {subModal === 'view' && viewingTask && (
-        <ClientTaskModal
-          task={viewingTask}
-          columns={columns}
+      {/* Create personal task modal */}
+      {subModal === 'create-personal' && (
+        <PersonalTaskModal
+          companyId={companyId}
+          defaultDate={selectedDate ?? undefined}
           onClose={closeSubModal}
-          onCreated={onTaskCreated}
-          onApproved={(task) => {
-            onTaskUpdated(task);
-            closeSubModal();
-          }}
+          onSaved={closeSubModal}
+          onDeleted={closeSubModal}
         />
       )}
+
+      {subModal === 'view-agency' &&
+        viewingItem?.kind === 'agency' && (
+          <ClientTaskModal
+            companyId={companyId}
+            task={viewingItem.task}
+            columns={columns}
+            onClose={closeSubModal}
+            onCreated={onTaskCreated}
+            onApproved={(task) => {
+              onTaskUpdated(task);
+              closeSubModal();
+            }}
+          />
+        )}
+
+      {subModal === 'view-personal' &&
+        viewingItem?.kind === 'personal' && (
+          <PersonalTaskModal
+            companyId={companyId}
+            personalTask={viewingItem.task}
+            onClose={closeSubModal}
+            onSaved={closeSubModal}
+            onDeleted={closeSubModal}
+          />
+        )}
     </div>
   );
 }

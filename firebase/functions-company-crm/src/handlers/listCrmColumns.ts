@@ -5,14 +5,20 @@ import { onCallHandler } from "functions-shared";
 import { CrmColumnRepository } from "../repositories/crm-column.repository";
 import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
-const schema = z.object({ companyId: z.string().min(1) });
+const schema = z.object({
+  companyId: z.string().min(1),
+  funnelId: z.string().min(1),
+});
 
 export const listCrmColumnsHandler = onCallHandler(async (req) => {
   const { success, data } = schema.safeParse(req.data);
   if (!success) {
-    throw new HttpsError("invalid-argument", "companyId obrigatório");
+    throw new HttpsError(
+      "invalid-argument",
+      "companyId e funnelId obrigatórios",
+    );
   }
 
   const { companyId } = requireCompanyAccess(req, data.companyId);
-  return CrmColumnRepository.listAll(companyId);
+  return CrmColumnRepository.listAll(companyId, data.funnelId);
 });

@@ -8,6 +8,7 @@ import {
   MdOutlineCreditCard,
   MdOutlinePsychology,
   MdOutlineApps,
+  MdOutlineLibraryBooks,
   MdOutlineSettings,
   MdOutlineGroup,
 } from 'react-icons/md';
@@ -99,6 +100,13 @@ export const ADMIN_MODULES: Section[] = [
         description: 'Produtos, planos e playbooks.',
         to: '/catalog',
         permission: 'manage-catalog',
+      },
+      {
+        icon: MdOutlineLibraryBooks,
+        label: 'Biblioteca',
+        description: 'Guias de conteúdo, playbooks e materiais.',
+        to: '/library',
+        permission: 'manage-library',
       },
     ],
   },

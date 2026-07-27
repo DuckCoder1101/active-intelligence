@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import {
   MdClose,
@@ -6,16 +7,21 @@ import {
 } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
+
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { ReferenceImages } from '@/components/tasks/reference-images.component';
 import { ReferenceLinks } from '@/components/tasks/reference-links.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { MultiSelect } from '@/components/ui/multi-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { AdminProfile } from '@/models/admin.model';
 import type { CompanyResume } from '@/models/company.model';
 import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
-import { TASK_TYPES, TASK_TYPE_LABELS } from '@/models/task.model';
-import type { Task, TaskType, SaveTaskDTO } from '@/models/task.model';
+import type { Task, TaskCategory, SaveTaskDTO } from '@/models/task.model';
+import {
+  taskTagsQueryOptions,
+  useSaveTaskTagMutation,
+} from '@/queries/task-category.queries';
 import { useDeleteTaskMutation, useSaveTaskMutation } from '@/queries/task.queries';
 
 interface TaskModalProps {
@@ -24,6 +30,7 @@ interface TaskModalProps {
   companies: CompanyResume[];
   admins: AdminProfile[];
   columns: OperationalKanbanColumn[];
+  categories: TaskCategory[];
   isOwner: boolean;
   currentUid: string;
   onClose: () => void;
@@ -38,6 +45,7 @@ export function TaskModal({
   companies,
   admins,
   columns,
+  categories,
   isOwner,
   currentUid,
   onClose,
@@ -46,6 +54,8 @@ export function TaskModal({
 }: TaskModalProps) {
   const saveTask = useSaveTaskMutation();
   const deleteTask = useDeleteTaskMutation();
+  const saveTag = useSaveTaskTagMutation();
+  const { data: tags = [] } = useQuery(taskTagsQueryOptions());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -58,7 +68,9 @@ export function TaskModal({
 
   const [title, setTitle] = useState(task?.title ?? '');
   const [companyId, setCompanyId] = useState(task?.companyId ?? (companies[0]?.companyId ?? ''));
-  const [type, setType] = useState<TaskType>(task?.type ?? 'feed');
+  const [categoryId, setCategoryId] = useState(task?.categoryId ?? (categories[0]?.categoryId ?? ''));
+  const [subcategoryId, setSubcategoryId] = useState(task?.subcategoryId ?? '');
+  const [selectedTags, setSelectedTags] = useState<string[]>(task?.tags ?? []);
   const [status, setStatus] = useState<string>(task?.status ?? (columns[0]?.columnId ?? 'requisitada'));
   const [dueDate, setDueDate] = useState(() => {
     if (task?.dueDate) {
@@ -100,7 +112,9 @@ export function TaskModal({
       companyId,
       title: title.trim(),
       description,
-      type,
+      categoryId,
+      subcategoryId: subcategoryId || null,
+      tags: selectedTags,
       status,
       dueDate: new Date(dueDate + 'T12:00:00').getTime(),
       ...(isOwner ? { assignedTo } : {}),
@@ -175,7 +189,7 @@ export function TaskModal({
                   setCompanyId(e.target.value);
                   if (fieldErrors.companyId) {setFieldErrors((p) => ({ ...p, companyId: '' }));}
                 }}
-                disabled={!canEdit || (isEditing && !isOwner)}
+                disabled={!canEdit}
                 error={fieldErrors.companyId}
               >
                 {companies.map((c) => (
@@ -185,23 +199,48 @@ export function TaskModal({
                 ))}
               </FormInput>
 
-              {/* Tipo */}
+              {/* Categoria */}
               <FormInput
                 as="select"
-                label="Tipo"
-                value={type}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  setType(e.target.value as TaskType)
-                }
+                label="Categoria"
+                value={categoryId}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  setCategoryId(e.target.value);
+                  setSubcategoryId('');
+                }}
                 disabled={!canEdit}
               >
-                {TASK_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {TASK_TYPE_LABELS[t]}
+                {categories.map((c) => (
+                  <option key={c.categoryId} value={c.categoryId}>
+                    {c.name}
                   </option>
                 ))}
               </FormInput>
             </div>
+
+            {(categories.find((c) => c.categoryId === categoryId)?.subcategories.length ?? 0) > 0 && (
+              <div className="grid grid-cols-2 gap-4">
+                {/* Subcategoria */}
+                <FormInput
+                  as="select"
+                  label="Subcategoria"
+                  value={subcategoryId}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    setSubcategoryId(e.target.value)
+                  }
+                  disabled={!canEdit}
+                >
+                  <option value="">Nenhuma</option>
+                  {categories
+                    .find((c) => c.categoryId === categoryId)
+                    ?.subcategories.map((s) => (
+                      <option key={s.subcategoryId} value={s.subcategoryId}>
+                        {s.name}
+                      </option>
+                    ))}
+                </FormInput>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               {/* Status */}
@@ -263,6 +302,20 @@ export function TaskModal({
               companyId={companyId}
               taskId={task?.taskId}
               readonly={!canEdit}
+            />
+
+            {/* Tags (só admin — nunca aparece no modal do cliente) */}
+            <MultiSelect
+              label="Tags"
+              options={tags.map((t) => ({ value: t.tagId, label: t.name }))}
+              selected={selectedTags}
+              onChange={setSelectedTags}
+              onCreateOption={async (name) => {
+                const created = await saveTag.mutateAsync(name);
+                return created.tagId;
+              }}
+              createLabel="Nova tag"
+              disabled={!canEdit}
             />
 
             {/* Atribuição (owner only) */}

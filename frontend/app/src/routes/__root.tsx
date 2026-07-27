@@ -12,6 +12,7 @@ import {
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { FirebaseError } from 'firebase/app';
+import { signOut } from 'firebase/auth';
 import { useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { ToastContainer } from 'react-toastify';
@@ -23,6 +24,7 @@ import appCss from '../styles.css?url';
 import { FcmNotificationsProvider } from '@/providers/fcm-notifications.provider';
 import { NotificationsProvider } from '@/providers/notifications.provider';
 import { ThemeProvider } from '@/providers/theme.provider';
+import { auth } from '@/utils/firebase.util';
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
@@ -72,14 +74,25 @@ function RootErrorBoundary({ error }: ErrorComponentProps) {
   const isPermissionDenied =
     error instanceof FirebaseError &&
     error.code === 'functions/permission-denied';
+  const isUnauthenticated =
+    error instanceof FirebaseError &&
+    error.code === 'functions/unauthenticated';
 
   useEffect(() => {
     if (isPermissionDenied) {
       router.navigate({ to: '/unauthorized', replace: true });
     }
-  }, [isPermissionDenied, router]);
+    if (isUnauthenticated) {
+      // Sessão local ficou com token que o backend não reconhece mais (ex:
+      // emulador de auth reiniciado) — sem isso o usuário fica preso nesta
+      // tela sem nenhum jeito de deslogar e tentar de novo.
+      signOut(auth).finally(() => {
+        router.navigate({ to: '/auth/signin', replace: true });
+      });
+    }
+  }, [isPermissionDenied, isUnauthenticated, router]);
 
-  if (isPermissionDenied) {
+  if (isPermissionDenied || isUnauthenticated) {
     return null;
   }
 
