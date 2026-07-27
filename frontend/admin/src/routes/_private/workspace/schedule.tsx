@@ -11,6 +11,7 @@ import {
 import { toast } from 'react-toastify';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
+import { MultiSelect } from '@/components/ui/multi-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { AdminCalendarView } from '@/components/workspace/schedule/admin-calendar-view.component';
 import { TaskCard } from '@/components/workspace/schedule/task-card.component';
@@ -27,6 +28,7 @@ import {
   useRemoveOperationalKanbanColumnMutation,
   useReorderOperationalKanbanColumnsMutation,
 } from '@/queries/operational-kanban.queries';
+import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
 import {
   taskKeys,
   tasksQueryOptions,
@@ -43,6 +45,7 @@ export const Route = createFileRoute('/_private/workspace/schedule')({
       ),
       context.queryClient.ensureQueryData(companiesQueryOptions()),
       context.queryClient.ensureQueryData(adminsQueryOptions()),
+      context.queryClient.ensureQueryData(taskCategoriesQueryOptions()),
     ]),
   component: WorkspaceSchedule,
 });
@@ -62,14 +65,25 @@ function WorkspaceSchedule() {
   );
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
   const { data: admins } = useSuspenseQuery(adminsQueryOptions());
+  const { data: categories } = useSuspenseQuery(taskCategoriesQueryOptions());
 
   const updateStatus = useUpdateTaskStatusMutation();
   const reorderColumns = useReorderOperationalKanbanColumnsMutation();
   const addColumn = useAddOperationalKanbanColumnMutation();
   const removeColumn = useRemoveOperationalKanbanColumnMutation();
 
+  const categoryMap = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.categoryId, c])),
+    [categories],
+  );
+
   // Filters
   const [filterAdmin, setFilterAdmin] = useState('');
+  const [filterCategoryId, setFilterCategoryId] = useState('');
+  const [filterSubcategoryId, setFilterSubcategoryId] = useState('');
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[] | null>(
+    null,
+  );
 
   // Task modal
   const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
@@ -123,9 +137,23 @@ function WorkspaceSchedule() {
           return false;
         }
       }
+      if (filterCategoryId && t.categoryId !== filterCategoryId) {
+        return false;
+      }
+      if (filterSubcategoryId && t.subcategoryId !== filterSubcategoryId) {
+        return false;
+      }
       return true;
     });
-  }, [tasks, selectedCompanyIds, filterAdmin]);
+  }, [tasks, selectedCompanyIds, filterAdmin, filterCategoryId, filterSubcategoryId]);
+
+  const displayedColumns = useMemo(
+    () =>
+      visibleColumnIds === null
+        ? columns
+        : columns.filter((c) => visibleColumnIds.includes(c.columnId)),
+    [columns, visibleColumnIds],
+  );
 
   const tasksByColumn = useMemo(() => {
     const map: Record<string, Task[]> = {};
@@ -259,6 +287,7 @@ function WorkspaceSchedule() {
           tasks={filtered}
           companies={companies}
           columns={columns}
+          categories={categories}
           onTaskClick={openTask}
           onAddTask={openNew}
         />
@@ -286,6 +315,55 @@ function WorkspaceSchedule() {
                 </select>
               </div>
 
+              {/* Filter: categoria */}
+              <div className="flex flex-col gap-1">
+                <span className="form-label">Categoria</span>
+                <select
+                  value={filterCategoryId}
+                  onChange={(e) => {
+                    setFilterCategoryId(e.target.value);
+                    setFilterSubcategoryId('');
+                  }}
+                  className="rounded-md border border-border bg-card px-3 py-2 text-sm text-text outline-none transition-colors focus:border-orange"
+                >
+                  <option value="">Todas</option>
+                  {categories.map((c) => (
+                    <option key={c.categoryId} value={c.categoryId}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Filter: subcategoria */}
+              {(categoryMap[filterCategoryId]?.subcategories.length ?? 0) > 0 && (
+                <div className="flex flex-col gap-1">
+                  <span className="form-label">Subcategoria</span>
+                  <select
+                    value={filterSubcategoryId}
+                    onChange={(e) => setFilterSubcategoryId(e.target.value)}
+                    className="rounded-md border border-border bg-card px-3 py-2 text-sm text-text outline-none transition-colors focus:border-orange"
+                  >
+                    <option value="">Todas</option>
+                    {categoryMap[filterCategoryId]?.subcategories.map((s) => (
+                      <option key={s.subcategoryId} value={s.subcategoryId}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Filter: colunas visíveis */}
+              <div className="w-48">
+                <MultiSelect
+                  label="Colunas visíveis"
+                  options={columns.map((c) => ({ value: c.columnId, label: c.name }))}
+                  selected={visibleColumnIds ?? columns.map((c) => c.columnId)}
+                  onChange={setVisibleColumnIds}
+                />
+              </div>
+
               <button
                 onClick={() => openNew()}
                 className="btn-primary shrink-0 px-4"
@@ -299,7 +377,7 @@ function WorkspaceSchedule() {
           {/* Kanban board */}
           <div className="flex flex-1 overflow-hidden">
             <div className="flex h-full gap-4 overflow-x-auto px-6 py-5">
-              {columns.map((col) => {
+              {displayedColumns.map((col) => {
                 const colTasks = tasksByColumn[col.columnId] ?? [];
                 const isDragOver = dragOverColumnId === col.columnId;
 
@@ -434,6 +512,7 @@ function WorkspaceSchedule() {
                         <TaskCard
                           key={task.taskId}
                           task={task}
+                          category={categoryMap[task.categoryId]}
                           company={companyMap[task.companyId]}
                           onClick={() => openTask(task)}
                           onDragStart={(e) => {
@@ -554,6 +633,7 @@ function WorkspaceSchedule() {
           companies={pickableCompanies}
           admins={admins}
           columns={columns}
+          categories={categories}
           isOwner={isOwner}
           currentUid={currentUid}
           onClose={() => setShowModal(false)}

@@ -17,21 +17,6 @@ import { TaskRepository } from "../repositories/task.repository";
 export const createClientTaskHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 
-  if (user.accessLevel !== "user") {
-    throw new HttpsError(
-      "permission-denied",
-      "Apenas usuários de empresa podem criar tarefas pelo portal.",
-    );
-  }
-
-  const companyId = user.companyId;
-  if (!companyId) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Usuário não vinculado a nenhuma empresa.",
-    );
-  }
-
   const { success, data, error } = TaskSchema.createClientTaskSchema.safeParse(
     req.data,
   );
@@ -42,9 +27,31 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
     );
   }
 
+  let companyId: string;
+
+  if (user.accessLevel === "user") {
+    if (!user.companyId) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Usuário não vinculado a nenhuma empresa.",
+      );
+    }
+    companyId = user.companyId;
+  } else if (user.accessLevel === "admin" || user.accessLevel === "owner") {
+    if (!data.companyId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "companyId é obrigatório para administradores.",
+      );
+    }
+    companyId = data.companyId;
+  } else {
+    throw new HttpsError("permission-denied", "Acesso negado.");
+  }
+
   logger.info("createClientTask", {
     companyId,
-    type: data.type,
+    categoryId: data.categoryId,
     uid: user.uid,
   });
 
@@ -56,7 +63,8 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
     companyId,
     title: data.title,
     description: data.description,
-    type: data.type,
+    categoryId: data.categoryId,
+    subcategoryId: data.subcategoryId,
     status: columns[0].columnId,
     dueDate: data.dueDate,
     assignedTo: [],

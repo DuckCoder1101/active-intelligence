@@ -18,16 +18,19 @@ import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-pas
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
 import { Route as PrivateWorkspaceRouteImport } from './routes/_private/workspace'
 import { Route as PrivateTeamRouteImport } from './routes/_private/team'
+import { Route as PrivateSettingsRouteImport } from './routes/_private/settings'
 import { Route as PrivateProjectsRouteImport } from './routes/_private/projects'
 import { Route as PrivateProfileRouteImport } from './routes/_private/profile'
 import { Route as PrivateLibraryRouteImport } from './routes/_private/library'
 import { Route as PrivateFinancesRouteImport } from './routes/_private/finances'
 import { Route as PrivateWorkspaceIndexRouteImport } from './routes/_private/workspace/index'
+import { Route as PrivateSettingsIndexRouteImport } from './routes/_private/settings/index'
 import { Route as PrivateLibraryIndexRouteImport } from './routes/_private/library/index'
 import { Route as PrivateCompaniesIndexRouteImport } from './routes/_private/companies/index'
 import { Route as PrivateWorkspaceScheduleRouteImport } from './routes/_private/workspace/schedule'
 import { Route as PrivateWorkspaceHistoryRouteImport } from './routes/_private/workspace/history'
 import { Route as PrivateWorkspaceClientsRouteImport } from './routes/_private/workspace/clients'
+import { Route as PrivateSettingsTaskCategoriesRouteImport } from './routes/_private/settings/task-categories'
 import { Route as PrivateLibraryGuideIdRouteImport } from './routes/_private/library/$guideId'
 import { Route as PrivateCompaniesCompany_idRouteImport } from './routes/_private/companies/$company_id'
 
@@ -75,6 +78,11 @@ const PrivateTeamRoute = PrivateTeamRouteImport.update({
   path: '/team',
   getParentRoute: () => PrivateRoute,
 } as any)
+const PrivateSettingsRoute = PrivateSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => PrivateRoute,
+} as any)
 const PrivateProjectsRoute = PrivateProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -99,6 +107,11 @@ const PrivateWorkspaceIndexRoute = PrivateWorkspaceIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PrivateWorkspaceRoute,
+} as any)
+const PrivateSettingsIndexRoute = PrivateSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PrivateSettingsRoute,
 } as any)
 const PrivateLibraryIndexRoute = PrivateLibraryIndexRouteImport.update({
   id: '/',
@@ -126,6 +139,12 @@ const PrivateWorkspaceClientsRoute = PrivateWorkspaceClientsRouteImport.update({
   path: '/clients',
   getParentRoute: () => PrivateWorkspaceRoute,
 } as any)
+const PrivateSettingsTaskCategoriesRoute =
+  PrivateSettingsTaskCategoriesRouteImport.update({
+    id: '/task-categories',
+    path: '/task-categories',
+    getParentRoute: () => PrivateSettingsRoute,
+  } as any)
 const PrivateLibraryGuideIdRoute = PrivateLibraryGuideIdRouteImport.update({
   id: '/$guideId',
   path: '/$guideId',
@@ -145,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/library': typeof PrivateLibraryRouteWithChildren
   '/profile': typeof PrivateProfileRoute
   '/projects': typeof PrivateProjectsRoute
+  '/settings': typeof PrivateSettingsRouteWithChildren
   '/team': typeof PrivateTeamRoute
   '/workspace': typeof PrivateWorkspaceRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
@@ -153,11 +173,13 @@ export interface FileRoutesByFullPath {
   '/auth/signin': typeof AuthSigninRoute
   '/companies/$company_id': typeof PrivateCompaniesCompany_idRoute
   '/library/$guideId': typeof PrivateLibraryGuideIdRoute
+  '/settings/task-categories': typeof PrivateSettingsTaskCategoriesRoute
   '/workspace/clients': typeof PrivateWorkspaceClientsRoute
   '/workspace/history': typeof PrivateWorkspaceHistoryRoute
   '/workspace/schedule': typeof PrivateWorkspaceScheduleRoute
   '/companies/': typeof PrivateCompaniesIndexRoute
   '/library/': typeof PrivateLibraryIndexRoute
+  '/settings/': typeof PrivateSettingsIndexRoute
   '/workspace/': typeof PrivateWorkspaceIndexRoute
 }
 export interface FileRoutesByTo {
@@ -173,11 +195,13 @@ export interface FileRoutesByTo {
   '/': typeof PrivateIndexRoute
   '/companies/$company_id': typeof PrivateCompaniesCompany_idRoute
   '/library/$guideId': typeof PrivateLibraryGuideIdRoute
+  '/settings/task-categories': typeof PrivateSettingsTaskCategoriesRoute
   '/workspace/clients': typeof PrivateWorkspaceClientsRoute
   '/workspace/history': typeof PrivateWorkspaceHistoryRoute
   '/workspace/schedule': typeof PrivateWorkspaceScheduleRoute
   '/companies': typeof PrivateCompaniesIndexRoute
   '/library': typeof PrivateLibraryIndexRoute
+  '/settings': typeof PrivateSettingsIndexRoute
   '/workspace': typeof PrivateWorkspaceIndexRoute
 }
 export interface FileRoutesById {
@@ -188,6 +212,7 @@ export interface FileRoutesById {
   '/_private/library': typeof PrivateLibraryRouteWithChildren
   '/_private/profile': typeof PrivateProfileRoute
   '/_private/projects': typeof PrivateProjectsRoute
+  '/_private/settings': typeof PrivateSettingsRouteWithChildren
   '/_private/team': typeof PrivateTeamRoute
   '/_private/workspace': typeof PrivateWorkspaceRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
@@ -197,11 +222,13 @@ export interface FileRoutesById {
   '/_private/': typeof PrivateIndexRoute
   '/_private/companies/$company_id': typeof PrivateCompaniesCompany_idRoute
   '/_private/library/$guideId': typeof PrivateLibraryGuideIdRoute
+  '/_private/settings/task-categories': typeof PrivateSettingsTaskCategoriesRoute
   '/_private/workspace/clients': typeof PrivateWorkspaceClientsRoute
   '/_private/workspace/history': typeof PrivateWorkspaceHistoryRoute
   '/_private/workspace/schedule': typeof PrivateWorkspaceScheduleRoute
   '/_private/companies/': typeof PrivateCompaniesIndexRoute
   '/_private/library/': typeof PrivateLibraryIndexRoute
+  '/_private/settings/': typeof PrivateSettingsIndexRoute
   '/_private/workspace/': typeof PrivateWorkspaceIndexRoute
 }
 export interface FileRouteTypes {
@@ -213,6 +240,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/profile'
     | '/projects'
+    | '/settings'
     | '/team'
     | '/workspace'
     | '/auth/complete-account'
@@ -221,11 +249,13 @@ export interface FileRouteTypes {
     | '/auth/signin'
     | '/companies/$company_id'
     | '/library/$guideId'
+    | '/settings/task-categories'
     | '/workspace/clients'
     | '/workspace/history'
     | '/workspace/schedule'
     | '/companies/'
     | '/library/'
+    | '/settings/'
     | '/workspace/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -241,11 +271,13 @@ export interface FileRouteTypes {
     | '/'
     | '/companies/$company_id'
     | '/library/$guideId'
+    | '/settings/task-categories'
     | '/workspace/clients'
     | '/workspace/history'
     | '/workspace/schedule'
     | '/companies'
     | '/library'
+    | '/settings'
     | '/workspace'
   id:
     | '__root__'
@@ -255,6 +287,7 @@ export interface FileRouteTypes {
     | '/_private/library'
     | '/_private/profile'
     | '/_private/projects'
+    | '/_private/settings'
     | '/_private/team'
     | '/_private/workspace'
     | '/auth/complete-account'
@@ -264,11 +297,13 @@ export interface FileRouteTypes {
     | '/_private/'
     | '/_private/companies/$company_id'
     | '/_private/library/$guideId'
+    | '/_private/settings/task-categories'
     | '/_private/workspace/clients'
     | '/_private/workspace/history'
     | '/_private/workspace/schedule'
     | '/_private/companies/'
     | '/_private/library/'
+    | '/_private/settings/'
     | '/_private/workspace/'
   fileRoutesById: FileRoutesById
 }
@@ -346,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateTeamRouteImport
       parentRoute: typeof PrivateRoute
     }
+    '/_private/settings': {
+      id: '/_private/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof PrivateSettingsRouteImport
+      parentRoute: typeof PrivateRoute
+    }
     '/_private/projects': {
       id: '/_private/projects'
       path: '/projects'
@@ -380,6 +422,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/workspace/'
       preLoaderRoute: typeof PrivateWorkspaceIndexRouteImport
       parentRoute: typeof PrivateWorkspaceRoute
+    }
+    '/_private/settings/': {
+      id: '/_private/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof PrivateSettingsIndexRouteImport
+      parentRoute: typeof PrivateSettingsRoute
     }
     '/_private/library/': {
       id: '/_private/library/'
@@ -416,6 +465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateWorkspaceClientsRouteImport
       parentRoute: typeof PrivateWorkspaceRoute
     }
+    '/_private/settings/task-categories': {
+      id: '/_private/settings/task-categories'
+      path: '/task-categories'
+      fullPath: '/settings/task-categories'
+      preLoaderRoute: typeof PrivateSettingsTaskCategoriesRouteImport
+      parentRoute: typeof PrivateSettingsRoute
+    }
     '/_private/library/$guideId': {
       id: '/_private/library/$guideId'
       path: '/$guideId'
@@ -447,6 +503,20 @@ const PrivateLibraryRouteWithChildren = PrivateLibraryRoute._addFileChildren(
   PrivateLibraryRouteChildren,
 )
 
+interface PrivateSettingsRouteChildren {
+  PrivateSettingsTaskCategoriesRoute: typeof PrivateSettingsTaskCategoriesRoute
+  PrivateSettingsIndexRoute: typeof PrivateSettingsIndexRoute
+}
+
+const PrivateSettingsRouteChildren: PrivateSettingsRouteChildren = {
+  PrivateSettingsTaskCategoriesRoute: PrivateSettingsTaskCategoriesRoute,
+  PrivateSettingsIndexRoute: PrivateSettingsIndexRoute,
+}
+
+const PrivateSettingsRouteWithChildren = PrivateSettingsRoute._addFileChildren(
+  PrivateSettingsRouteChildren,
+)
+
 interface PrivateWorkspaceRouteChildren {
   PrivateWorkspaceClientsRoute: typeof PrivateWorkspaceClientsRoute
   PrivateWorkspaceHistoryRoute: typeof PrivateWorkspaceHistoryRoute
@@ -469,6 +539,7 @@ interface PrivateRouteChildren {
   PrivateLibraryRoute: typeof PrivateLibraryRouteWithChildren
   PrivateProfileRoute: typeof PrivateProfileRoute
   PrivateProjectsRoute: typeof PrivateProjectsRoute
+  PrivateSettingsRoute: typeof PrivateSettingsRouteWithChildren
   PrivateTeamRoute: typeof PrivateTeamRoute
   PrivateWorkspaceRoute: typeof PrivateWorkspaceRouteWithChildren
   PrivateIndexRoute: typeof PrivateIndexRoute
@@ -481,6 +552,7 @@ const PrivateRouteChildren: PrivateRouteChildren = {
   PrivateLibraryRoute: PrivateLibraryRouteWithChildren,
   PrivateProfileRoute: PrivateProfileRoute,
   PrivateProjectsRoute: PrivateProjectsRoute,
+  PrivateSettingsRoute: PrivateSettingsRouteWithChildren,
   PrivateTeamRoute: PrivateTeamRoute,
   PrivateWorkspaceRoute: PrivateWorkspaceRouteWithChildren,
   PrivateIndexRoute: PrivateIndexRoute,

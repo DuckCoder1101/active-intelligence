@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { MdArrowBack, MdOutlineCameraAlt, MdDelete } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
-import { Topbar } from '@/components/layout/topbar.component';
 import { Modal } from '@/components/layout/modal.component';
+import { Topbar } from '@/components/layout/topbar.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { UserAvatar } from '@/components/ui/user-avatar.component';

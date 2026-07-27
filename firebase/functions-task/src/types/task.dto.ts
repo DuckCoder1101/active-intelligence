@@ -1,11 +1,11 @@
-import type { TaskType } from "./task.document";
-
 export interface TaskDTO {
   taskId: string;
   companyId: string;
   title: string;
   description: string;
-  type: TaskType;
+  categoryId: string;
+  subcategoryId?: string;
+  tags: string[];
   status: string;
   dueDate: number;
   createdBy: string;
@@ -23,7 +23,9 @@ export interface SaveTaskDTO {
   companyId: string;
   title: string;
   description?: string;
-  type: TaskType;
+  categoryId: string;
+  subcategoryId?: string | null;
+  tags?: string[];
   status?: string;
   dueDate: number;
   assignedTo?: string[];
@@ -35,7 +37,8 @@ export interface SaveTaskDTO {
 export interface CreateClientTaskDTO {
   title: string;
   description?: string;
-  type: TaskType;
+  categoryId: string;
+  subcategoryId?: string | null;
   dueDate: number;
   referenceLinks?: string[];
   referenceImages?: string[];

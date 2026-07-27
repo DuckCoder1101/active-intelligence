@@ -65,8 +65,8 @@ export const Route = createFileRoute('/_private/workspace')({
 function WorkspaceLayout() {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="flex flex-col gap-4 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div>
+      <div className="flex shrink-0 flex-col items-center gap-3 border-b border-border px-4 py-4 sm:flex-row sm:justify-center sm:gap-6 sm:px-6">
+        <div className="text-center sm:text-left">
           <h1 className="text-xl font-black tracking-tight text-text">
             Workspace
           </h1>
@@ -77,7 +77,7 @@ function WorkspaceLayout() {
         <ClientFilter />
       </div>
 
-      <div className="flex gap-1 overflow-x-auto border-b border-border px-4 sm:px-6">
+      <div className="flex shrink-0 justify-center gap-1 overflow-x-auto border-b border-border px-4 sm:px-6">
         {TABS.map((tab) =>
           tab.soon ? (
             <div

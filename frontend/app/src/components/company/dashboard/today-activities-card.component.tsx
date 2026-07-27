@@ -1,27 +1,14 @@
 import { Link } from '@tanstack/react-router';
-import type { ElementType } from 'react';
-import {
-  MdCampaign,
-  MdOutlineImage,
-  MdOutlineSlideshow,
-  MdOutlineViewCarousel,
-} from 'react-icons/md';
 
-import { TASK_TYPE_LABELS } from '@/models/task.model';
-import type { Task, TaskType } from '@/models/task.model';
+import type { Task, TaskCategory } from '@/models/task.model';
+
+const FALLBACK_CATEGORY_COLOR = '#94a3b8';
 
 interface TodayActivitiesCardProps {
   companyId: string;
   tasks: Task[];
+  categories: TaskCategory[];
 }
-
-const TYPE_ICONS: Record<TaskType, ElementType> = {
-  feed: MdOutlineImage,
-  stories: MdOutlineSlideshow,
-  reels: MdOutlineSlideshow,
-  carrossel: MdOutlineViewCarousel,
-  campanha: MdCampaign,
-};
 
 function formatTime(ts: number): string {
   return new Date(ts).toLocaleTimeString('pt-BR', {
@@ -30,7 +17,7 @@ function formatTime(ts: number): string {
   });
 }
 
-export function TodayActivitiesCard({ companyId, tasks }: TodayActivitiesCardProps) {
+export function TodayActivitiesCard({ companyId, tasks, categories }: TodayActivitiesCardProps) {
   return (
     <div className="card flex flex-1 flex-col p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between">
@@ -51,18 +38,21 @@ export function TodayActivitiesCard({ companyId, tasks }: TodayActivitiesCardPro
       ) : (
         <ul className="space-y-3.5">
           {tasks.map((task) => {
-            const Icon = TYPE_ICONS[task.type];
+            const category = categories.find((c) => c.categoryId === task.categoryId);
             return (
               <li key={task.taskId} className="flex items-start gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-bg text-text-sub">
-                  <Icon size={16} />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-bg">
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: category?.color ?? FALLBACK_CATEGORY_COLOR }}
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[12.5px] font-semibold text-text">
                     {task.title}
                   </p>
                   <p className="truncate text-[11px] text-text-muted">
-                    {task.description || TASK_TYPE_LABELS[task.type]}
+                    {task.description || category?.name || 'Sem categoria'}
                   </p>
                 </div>
                 <span className="shrink-0 text-[11px] font-semibold text-text-sub">

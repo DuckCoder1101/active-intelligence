@@ -1,3 +1,4 @@
+import { FinanceTransactionsTab } from '@components/finances/transactions-tab.component';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
 import {
@@ -6,7 +7,6 @@ import {
   MdOutlineReceiptLong,
 } from 'react-icons/md';
 
-import { FinanceTransactionsTab } from '@components/finances/transactions-tab.component';
 import { AdminPageContainer } from '@/components/ui/page-container.component';
 import { Tabs } from '@/components/ui/tabs.component';
 import { companiesQueryOptions } from '@/queries/company.queries';

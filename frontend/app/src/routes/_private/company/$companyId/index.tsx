@@ -20,6 +20,7 @@ import {
   leadsQueryOptions,
 } from '@/queries/company-crm.queries';
 import { operationalKanbanColumnsQueryOptions } from '@/queries/operational-kanban.queries';
+import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
 import {
   calendarTasksQueryOptions,
   clientTasksQueryOptions,
@@ -66,6 +67,7 @@ export const Route = createFileRoute('/_private/company/$companyId/')({
       context.queryClient.ensureQueryData(
         clientTasksQueryOptions(params.companyId),
       ),
+      context.queryClient.ensureQueryData(taskCategoriesQueryOptions()),
     ]);
   },
   component: CompanyDashboard,
@@ -100,6 +102,7 @@ function CompanyDashboard() {
   );
   const { data: clientData } = useQuery(clientTasksQueryOptions(companyId));
   const usage = clientData?.usage ?? { used: 0, limit: null, yearMonth: '' };
+  const { data: categories } = useSuspenseQuery(taskCategoriesQueryOptions());
 
   const tasks = useMemo(
     () => [...thisMonthTasks, ...nextMonthTasks],
@@ -171,7 +174,7 @@ function CompanyDashboard() {
 
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
           <SalesFunnel companyId={companyId} stages={funnelStages} />
-          <TodayActivitiesCard companyId={companyId} tasks={todayTasks} />
+          <TodayActivitiesCard companyId={companyId} tasks={todayTasks} categories={categories} />
           <UpcomingScheduleCard
             companyId={companyId}
             tasks={upcomingTasks}

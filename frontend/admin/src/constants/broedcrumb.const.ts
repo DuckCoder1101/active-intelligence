@@ -28,4 +28,8 @@ export const BROADCRUMB_ROUTE_MAP: {
     test: (p) => p.startsWith('/library'),
     crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Biblioteca' }],
   },
+  {
+    test: (P) => P.startsWith('/settings'),
+    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Configurações' }],
+  },
 ];

@@ -11,7 +11,13 @@ function toDTO(id: string, data: TaskDocument): TaskDTO {
     companyId: data.companyId,
     title: data.title,
     description: data.description,
-    type: data.type,
+    // Docs criados antes da migração pra categorias só têm `type` — os ids
+    // das categorias seedadas por default reaproveitam esses mesmos
+    // valores ("feed", "stories"...), então isso resolve sem precisar de
+    // script de migração.
+    categoryId: data.categoryId ?? data.type ?? "",
+    subcategoryId: data.subcategoryId ?? undefined,
+    tags: data.tags ?? [],
     status: data.status,
     dueDate: data.dueDate.toMillis(),
     createdBy: data.createdBy,
@@ -40,6 +46,8 @@ export class TaskRepository {
       ...rest,
       createdBy,
       dueDate: Timestamp.fromMillis(dueDate),
+      subcategoryId: rest.subcategoryId ?? null,
+      tags: rest.tags ?? [],
       assignedTo: rest.assignedTo ?? [],
       referenceLinks: rest.referenceLinks ?? [],
       referenceImages: images,

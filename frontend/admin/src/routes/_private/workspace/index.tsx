@@ -10,8 +10,8 @@ import { formatDateShort } from '@/formatters/formatDate';
 import { useWorkspaceFilter } from '@/hooks/use-workspace-filter.hook';
 import { APPROVED_COLUMN_ID } from '@/models/operational-kanban.model';
 import type { Task } from '@/models/task.model';
-import { TASK_TYPE_LABELS } from '@/models/task.model';
 import { companiesQueryOptions } from '@/queries/company.queries';
+import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
 import { tasksQueryOptions } from '@/queries/task.queries';
 import { companyColor, companyInitials } from '@/utils/company-color.util';
 import { getMyAttentionTasks, getStaleCompanies } from '@/utils/dashboard-insights.util';
@@ -24,6 +24,7 @@ export const Route = createFileRoute('/_private/workspace/')({
     Promise.all([
       context.queryClient.ensureQueryData(companiesQueryOptions()),
       context.queryClient.ensureQueryData(tasksQueryOptions()),
+      context.queryClient.ensureQueryData(taskCategoriesQueryOptions()),
     ]),
   component: WorkspaceOverview,
 });
@@ -34,8 +35,14 @@ function WorkspaceOverview() {
     useWorkspaceFilter();
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
   const { data: tasks } = useSuspenseQuery(tasksQueryOptions());
+  const { data: categories } = useSuspenseQuery(taskCategoriesQueryOptions());
 
   const [now] = useState(() => Date.now());
+
+  const categoryMap = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.categoryId, c])),
+    [categories],
+  );
 
   const companyMap = useMemo(
     () => Object.fromEntries(companies.map((c) => [c.companyId, c])),
@@ -140,6 +147,7 @@ function WorkspaceOverview() {
             title="Próximas tarefas"
             tasks={clientOpenTasks.slice(0, 5)}
             companyMap={companyMap}
+            categoryMap={categoryMap}
             emptyLabel="Nenhuma tarefa registrada para este cliente ainda."
           />
         </>
@@ -154,6 +162,7 @@ function WorkspaceOverview() {
             title="Próximas ações"
             tasks={myTasks.map((a) => a.task)}
             companyMap={companyMap}
+            categoryMap={categoryMap}
             emptyLabel="Tudo em dia por aqui."
           />
         </>
@@ -187,6 +196,7 @@ interface TaskListSectionProps {
   title: string;
   tasks: Task[];
   companyMap: Record<string, { companyId: string; displayName: string }>;
+  categoryMap: Record<string, { name: string }>;
   emptyLabel: string;
 }
 
@@ -194,6 +204,7 @@ function TaskListSection({
   title,
   tasks,
   companyMap,
+  categoryMap,
   emptyLabel,
 }: TaskListSectionProps) {
   return (
@@ -217,8 +228,8 @@ function TaskListSection({
                 to="/workspace/schedule"
                 className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-bg/40"
               >
-                <span className="w-16 shrink-0 text-[10px] font-bold uppercase tracking-wider text-text-muted">
-                  {TASK_TYPE_LABELS[task.type]}
+                <span className="w-16 shrink-0 truncate text-[10px] font-bold uppercase tracking-wider text-text-muted">
+                  {categoryMap[task.categoryId]?.name ?? 'Sem categoria'}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text">
                   {task.title}

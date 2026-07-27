@@ -7,11 +7,6 @@ const COMPANY_PATH_RE = /^\/company\/([^/]+)/;
 
 export const Route = createFileRoute('/_private')({
   beforeLoad: async ({ context, location }) => {
-    // O cookie de sessão (servidor) pode já ser válido antes do SDK do
-    // Firebase no cliente terminar de restaurar o usuário (ex: reload de
-    // página inteira após o login). Sem isso, o loader das rotas filhas
-    // dispara chamadas autenticadas antes do auth.currentUser existir e
-    // elas saem sem token -> functions/unauthenticated.
     await auth.authStateReady();
 
     const sessionUser = context.sessionUser ?? (await getSessionUser());

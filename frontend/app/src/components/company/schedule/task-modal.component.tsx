@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { MdClose, MdOutlineCalendarToday } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -11,8 +12,8 @@ import { useAuth } from '@/contexts/auth.context';
 import { formatDateLong } from '@/formatters/formatDate';
 import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
 import { PENDING_APPROVAL_COLUMN_ID, APPROVED_COLUMN_ID } from '@/models/operational-kanban.model';
-import type { Task, CreateClientTaskDTO, TaskType } from '@/models/task.model';
-import { TASK_TYPES, TASK_TYPE_LABELS } from '@/models/task.model';
+import type { Task, CreateClientTaskDTO } from '@/models/task.model';
+import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
 import {
   useApproveClientTaskMutation,
   useCreateClientTaskMutation,
@@ -25,6 +26,7 @@ function toInputDate(d: Date): string {
 }
 
 interface Props {
+  companyId: string;
   task?: Task;
   columns: OperationalKanbanColumn[];
   defaultDate?: Date;
@@ -34,6 +36,7 @@ interface Props {
 }
 
 export function ClientTaskModal({
+  companyId,
   task,
   columns,
   defaultDate,
@@ -42,16 +45,17 @@ export function ClientTaskModal({
   onApproved,
 }: Props) {
   const isView = !!task;
-  const { claims, userProfile: profile } = useAuth();
-  const companyId = (claims?.accessLevel === 'user' ? claims.companyId : undefined) ?? '';
+  const { userProfile: profile } = useAuth();
   const authorName = profile?.name ?? '';
 
   const createTask = useCreateClientTaskMutation();
   const approveTask = useApproveClientTaskMutation();
+  const { data: categories = [] } = useQuery(taskCategoriesQueryOptions());
 
   const [title, setTitle] = useState(task?.title ?? '');
   const [description, setDescription] = useState(task?.description ?? '');
-  const [type, setType] = useState<TaskType>(task?.type ?? 'feed');
+  const [categoryId, setCategoryId] = useState(task?.categoryId ?? (categories[0]?.categoryId ?? ''));
+  const [subcategoryId, setSubcategoryId] = useState(task?.subcategoryId ?? '');
   const [dueDateStr, setDueDateStr] = useState(
     defaultDate ? toInputDate(defaultDate) : '',
   );
@@ -81,7 +85,8 @@ export function ClientTaskModal({
     const dto: CreateClientTaskDTO = {
       title: title.trim(),
       description: description || undefined,
-      type,
+      categoryId,
+      subcategoryId: subcategoryId || undefined,
       dueDate,
       referenceLinks: links.length > 0 ? links : undefined,
       createdByName: authorName || undefined,
@@ -116,6 +121,11 @@ export function ClientTaskModal({
 
   const currentColumn = columns.find((c) => c.columnId === task?.status);
   const canApprove = isView && task?.status === PENDING_APPROVAL_COLUMN_ID;
+  const selectedCategory = categories.find((c) => c.categoryId === categoryId);
+  const taskCategory = categories.find((c) => c.categoryId === task?.categoryId);
+  const taskSubcategory = taskCategory?.subcategories.find(
+    (s) => s.subcategoryId === task?.subcategoryId,
+  );
 
   return (
     <div
@@ -164,9 +174,10 @@ export function ClientTaskModal({
                 )}
 
                 <div>
-                  <p className="form-label mb-1">Tipo</p>
+                  <p className="form-label mb-1">Categoria</p>
                   <p className="text-[13px] text-text-sub">
-                    {TASK_TYPE_LABELS[task.type]}
+                    {taskCategory?.name ?? 'Sem categoria'}
+                    {taskSubcategory ? ` · ${taskSubcategory.name}` : ''}
                   </p>
                 </div>
 
@@ -220,15 +231,16 @@ export function ClientTaskModal({
 
               <div className="grid grid-cols-2 gap-4">
                 <FormSelect
-                  label="Tipo"
-                  value={type}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    setType(e.target.value as TaskType)
-                  }
+                  label="Categoria"
+                  value={categoryId}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    setCategoryId(e.target.value);
+                    setSubcategoryId('');
+                  }}
                 >
-                  {TASK_TYPES.map((t) => (
-                    <option key={t} value={t}>
-                      {TASK_TYPE_LABELS[t]}
+                  {categories.map((c) => (
+                    <option key={c.categoryId} value={c.categoryId}>
+                      {c.name}
                     </option>
                   ))}
                 </FormSelect>
@@ -245,6 +257,23 @@ export function ClientTaskModal({
                   error={fieldErrors.dueDate}
                 />
               </div>
+
+              {(selectedCategory?.subcategories.length ?? 0) > 0 && (
+                <FormSelect
+                  label="Subcategoria"
+                  value={subcategoryId}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    setSubcategoryId(e.target.value)
+                  }
+                >
+                  <option value="">Nenhuma</option>
+                  {selectedCategory?.subcategories.map((s) => (
+                    <option key={s.subcategoryId} value={s.subcategoryId}>
+                      {s.name}
+                    </option>
+                  ))}
+                </FormSelect>
+              )}
 
               <FormInput
                 as="textarea"

@@ -10,6 +10,8 @@ import { CompanyScheduleCalendar } from '@/components/company/schedule/calendar.
 import { Spinner } from '@/components/ui/spinner.component';
 import type { Task } from '@/models/task.model';
 import { operationalKanbanColumnsQueryOptions } from '@/queries/operational-kanban.queries';
+import { personalTasksQueryOptions } from '@/queries/personal-task.queries';
+import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
 import {
   calendarTasksQueryOptions,
   clientTasksQueryOptions,
@@ -30,6 +32,10 @@ export const Route = createFileRoute('/_private/company/$companyId/schedule')({
         clientTasksQueryOptions(params.companyId),
       ),
       context.queryClient.ensureQueryData(operationalKanbanColumnsQueryOptions()),
+      context.queryClient.ensureQueryData(
+        personalTasksQueryOptions(params.companyId),
+      ),
+      context.queryClient.ensureQueryData(taskCategoriesQueryOptions()),
     ]);
   },
   component: CompanySchedule,
@@ -52,6 +58,10 @@ function CompanySchedule() {
     ...calendarTasksQueryOptions(companyId, year, month),
     placeholderData: keepPreviousData,
   });
+  const { data: personalTasks = [] } = useQuery(
+    personalTasksQueryOptions(companyId),
+  );
+  const { data: categories = [] } = useQuery(taskCategoriesQueryOptions());
 
   const addTask = (task: Task) => {
     queryClient.setQueryData(
@@ -124,8 +134,11 @@ function CompanySchedule() {
         </div>
       ) : (
         <CompanyScheduleCalendar
+          companyId={companyId}
           tasks={tasks}
+          personalTasks={personalTasks}
           columns={columns}
+          categories={categories}
           year={year}
           month={month}
           onPrevMonth={prevMonth}

@@ -13,6 +13,7 @@ import {
   companiesQueryOptions,
   workspaceAuditLogsQueryOptions,
 } from '@/queries/company.queries';
+import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
 import { tasksQueryOptions } from '@/queries/task.queries';
 
 type HistoryView = 'activity' | 'deliveries';
@@ -44,6 +45,7 @@ export const Route = createFileRoute('/_private/workspace/history')({
     Promise.all([
       context.queryClient.ensureQueryData(companiesQueryOptions()),
       context.queryClient.ensureQueryData(tasksQueryOptions()),
+      context.queryClient.ensureQueryData(taskCategoriesQueryOptions()),
     ]),
   component: WorkspaceHistory,
 });
@@ -53,6 +55,12 @@ function WorkspaceHistory() {
     useWorkspaceFilter();
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
   const { data: tasks } = useSuspenseQuery(tasksQueryOptions());
+  const { data: categories } = useSuspenseQuery(taskCategoriesQueryOptions());
+
+  const categoryMap = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.categoryId, c])),
+    [categories],
+  );
 
   const [view, setView] = useState<HistoryView>('activity');
   const [kind, setKind] = useState<ActivityKind>('all');
@@ -146,7 +154,11 @@ function WorkspaceHistory() {
           )}
         </>
       ) : (
-        <DeliveriesList tasks={deliveredTasks} companyMap={companyMap} />
+        <DeliveriesList
+          tasks={deliveredTasks}
+          companyMap={companyMap}
+          categoryMap={categoryMap}
+        />
       )}
     </AdminPageContainer>
   );

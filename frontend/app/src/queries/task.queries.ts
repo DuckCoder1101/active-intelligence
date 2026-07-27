@@ -61,7 +61,7 @@ export function useApproveClientTaskMutation() {
 export function useCreateClientTaskMutation() {
   return useMutation({
     mutationFn: async ({ dto, companyId, pendingFiles }: CreateClientTaskVars): Promise<Task> => {
-      const created = await TaskService.createClientTask(dto);
+      const created = await TaskService.createClientTask(dto, companyId);
 
       if (pendingFiles.length === 0) {
         return created;
@@ -70,7 +70,7 @@ export function useCreateClientTaskMutation() {
       const urls = await Promise.all(
         pendingFiles.map((f) => TaskService.uploadImage(companyId, created.taskId, f)),
       );
-      await TaskService.updateClientTaskImages(created.taskId, urls);
+      await TaskService.updateClientTaskImages(created.taskId, urls, companyId);
       return { ...created, referenceImages: urls };
     },
   });

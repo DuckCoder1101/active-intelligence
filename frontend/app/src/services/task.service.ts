@@ -53,10 +53,10 @@ export default class TaskService {
     await this.deleteCallable({ taskId });
   }
 
-  private static createClientTaskCallable = httpsCallable<CreateClientTaskDTO, Task>(
-    functions,
-    'createClientTaskHandler',
-  );
+  private static createClientTaskCallable = httpsCallable<
+    CreateClientTaskDTO & { companyId?: string },
+    Task
+  >(functions, 'createClientTaskHandler');
 
   private static listClientTasksCallable = httpsCallable<{ companyId?: string }, { tasks: Task[]; usage: TaskUsage }>(
     functions,
@@ -68,8 +68,11 @@ export default class TaskService {
     { tasks: Task[] }
   >(functions, 'listCalendarTasksHandler');
 
-  static async createClientTask(data: CreateClientTaskDTO): Promise<Task> {
-    const r = await this.createClientTaskCallable(data);
+  static async createClientTask(
+    data: CreateClientTaskDTO,
+    companyId?: string,
+  ): Promise<Task> {
+    const r = await this.createClientTaskCallable({ ...data, companyId });
     return r.data;
   }
 
@@ -84,12 +87,16 @@ export default class TaskService {
   }
 
   private static updateClientTaskImagesCallable = httpsCallable<
-    { taskId: string; referenceImages: string[] },
+    { taskId: string; referenceImages: string[]; companyId?: string },
     { success: boolean }
   >(functions, 'updateClientTaskImagesHandler');
 
-  static async updateClientTaskImages(taskId: string, referenceImages: string[]): Promise<void> {
-    await this.updateClientTaskImagesCallable({ taskId, referenceImages });
+  static async updateClientTaskImages(
+    taskId: string,
+    referenceImages: string[],
+    companyId?: string,
+  ): Promise<void> {
+    await this.updateClientTaskImagesCallable({ taskId, referenceImages, companyId });
   }
 
   private static approveClientTaskCallable = httpsCallable<
