@@ -7,7 +7,7 @@ import { companiesQueryOptions } from '@/queries/company.queries';
 
 export function ClientFilter() {
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
-  const { clients } = useSearch({ from: '/_admin/workspace' });
+  const { clients } = useSearch({ from: '/_private/workspace' });
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
 

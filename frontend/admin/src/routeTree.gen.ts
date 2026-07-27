@@ -10,46 +10,40 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
-import { Route as AdminRouteImport } from './routes/_admin'
-import { Route as AdminIndexRouteImport } from './routes/_admin/index'
-import { Route as GGuideIdRouteImport } from './routes/g/$guideId'
+import { Route as PrivateRouteImport } from './routes/_private'
+import { Route as PrivateIndexRouteImport } from './routes/_private/index'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthCompleteAccountRouteImport } from './routes/auth/complete-account'
-import { Route as AdminWorkspaceRouteImport } from './routes/_admin/workspace'
-import { Route as AdminTeamRouteImport } from './routes/_admin/team'
-import { Route as AdminProjectsRouteImport } from './routes/_admin/projects'
-import { Route as AdminProfileRouteImport } from './routes/_admin/profile'
-import { Route as AdminLibraryRouteImport } from './routes/_admin/library'
-import { Route as AdminFinancesRouteImport } from './routes/_admin/finances'
-import { Route as AdminWorkspaceIndexRouteImport } from './routes/_admin/workspace/index'
-import { Route as AdminLibraryIndexRouteImport } from './routes/_admin/library/index'
-import { Route as AdminCompaniesIndexRouteImport } from './routes/_admin/companies/index'
-import { Route as AdminWorkspaceScheduleRouteImport } from './routes/_admin/workspace/schedule'
-import { Route as AdminWorkspaceHistoryRouteImport } from './routes/_admin/workspace/history'
-import { Route as AdminWorkspaceClientsRouteImport } from './routes/_admin/workspace/clients'
-import { Route as AdminLibraryGuideIdRouteImport } from './routes/_admin/library/$guideId'
-import { Route as AdminCompaniesCompany_idRouteImport } from './routes/_admin/companies/$company_id'
+import { Route as PrivateWorkspaceRouteImport } from './routes/_private/workspace'
+import { Route as PrivateTeamRouteImport } from './routes/_private/team'
+import { Route as PrivateProjectsRouteImport } from './routes/_private/projects'
+import { Route as PrivateProfileRouteImport } from './routes/_private/profile'
+import { Route as PrivateLibraryRouteImport } from './routes/_private/library'
+import { Route as PrivateFinancesRouteImport } from './routes/_private/finances'
+import { Route as PrivateWorkspaceIndexRouteImport } from './routes/_private/workspace/index'
+import { Route as PrivateLibraryIndexRouteImport } from './routes/_private/library/index'
+import { Route as PrivateCompaniesIndexRouteImport } from './routes/_private/companies/index'
+import { Route as PrivateWorkspaceScheduleRouteImport } from './routes/_private/workspace/schedule'
+import { Route as PrivateWorkspaceHistoryRouteImport } from './routes/_private/workspace/history'
+import { Route as PrivateWorkspaceClientsRouteImport } from './routes/_private/workspace/clients'
+import { Route as PrivateLibraryGuideIdRouteImport } from './routes/_private/library/$guideId'
+import { Route as PrivateCompaniesCompany_idRouteImport } from './routes/_private/companies/$company_id'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/_admin',
+const PrivateRoute = PrivateRouteImport.update({
+  id: '/_private',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
+const PrivateIndexRoute = PrivateIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const GGuideIdRoute = GGuideIdRouteImport.update({
-  id: '/g/$guideId',
-  path: '/g/$guideId',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PrivateRoute,
 } as any)
 const AuthSigninRoute = AuthSigninRouteImport.update({
   id: '/auth/signin',
@@ -71,146 +65,144 @@ const AuthCompleteAccountRoute = AuthCompleteAccountRouteImport.update({
   path: '/auth/complete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminWorkspaceRoute = AdminWorkspaceRouteImport.update({
+const PrivateWorkspaceRoute = PrivateWorkspaceRouteImport.update({
   id: '/workspace',
   path: '/workspace',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => PrivateRoute,
 } as any)
-const AdminTeamRoute = AdminTeamRouteImport.update({
+const PrivateTeamRoute = PrivateTeamRouteImport.update({
   id: '/team',
   path: '/team',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => PrivateRoute,
 } as any)
-const AdminProjectsRoute = AdminProjectsRouteImport.update({
+const PrivateProjectsRoute = PrivateProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => PrivateRoute,
 } as any)
-const AdminProfileRoute = AdminProfileRouteImport.update({
+const PrivateProfileRoute = PrivateProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => PrivateRoute,
 } as any)
-const AdminLibraryRoute = AdminLibraryRouteImport.update({
+const PrivateLibraryRoute = PrivateLibraryRouteImport.update({
   id: '/library',
   path: '/library',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => PrivateRoute,
 } as any)
-const AdminFinancesRoute = AdminFinancesRouteImport.update({
+const PrivateFinancesRoute = PrivateFinancesRouteImport.update({
   id: '/finances',
   path: '/finances',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => PrivateRoute,
 } as any)
-const AdminWorkspaceIndexRoute = AdminWorkspaceIndexRouteImport.update({
+const PrivateWorkspaceIndexRoute = PrivateWorkspaceIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminWorkspaceRoute,
+  getParentRoute: () => PrivateWorkspaceRoute,
 } as any)
-const AdminLibraryIndexRoute = AdminLibraryIndexRouteImport.update({
+const PrivateLibraryIndexRoute = PrivateLibraryIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminLibraryRoute,
+  getParentRoute: () => PrivateLibraryRoute,
 } as any)
-const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
+const PrivateCompaniesIndexRoute = PrivateCompaniesIndexRouteImport.update({
   id: '/companies/',
   path: '/companies/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => PrivateRoute,
 } as any)
-const AdminWorkspaceScheduleRoute = AdminWorkspaceScheduleRouteImport.update({
-  id: '/schedule',
-  path: '/schedule',
-  getParentRoute: () => AdminWorkspaceRoute,
-} as any)
-const AdminWorkspaceHistoryRoute = AdminWorkspaceHistoryRouteImport.update({
+const PrivateWorkspaceScheduleRoute =
+  PrivateWorkspaceScheduleRouteImport.update({
+    id: '/schedule',
+    path: '/schedule',
+    getParentRoute: () => PrivateWorkspaceRoute,
+  } as any)
+const PrivateWorkspaceHistoryRoute = PrivateWorkspaceHistoryRouteImport.update({
   id: '/history',
   path: '/history',
-  getParentRoute: () => AdminWorkspaceRoute,
+  getParentRoute: () => PrivateWorkspaceRoute,
 } as any)
-const AdminWorkspaceClientsRoute = AdminWorkspaceClientsRouteImport.update({
+const PrivateWorkspaceClientsRoute = PrivateWorkspaceClientsRouteImport.update({
   id: '/clients',
   path: '/clients',
-  getParentRoute: () => AdminWorkspaceRoute,
+  getParentRoute: () => PrivateWorkspaceRoute,
 } as any)
-const AdminLibraryGuideIdRoute = AdminLibraryGuideIdRouteImport.update({
+const PrivateLibraryGuideIdRoute = PrivateLibraryGuideIdRouteImport.update({
   id: '/$guideId',
   path: '/$guideId',
-  getParentRoute: () => AdminLibraryRoute,
+  getParentRoute: () => PrivateLibraryRoute,
 } as any)
-const AdminCompaniesCompany_idRoute =
-  AdminCompaniesCompany_idRouteImport.update({
+const PrivateCompaniesCompany_idRoute =
+  PrivateCompaniesCompany_idRouteImport.update({
     id: '/companies/$company_id',
     path: '/companies/$company_id',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => PrivateRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AdminIndexRoute
+  '/': typeof PrivateIndexRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/finances': typeof AdminFinancesRoute
-  '/library': typeof AdminLibraryRouteWithChildren
-  '/profile': typeof AdminProfileRoute
-  '/projects': typeof AdminProjectsRoute
-  '/team': typeof AdminTeamRoute
-  '/workspace': typeof AdminWorkspaceRouteWithChildren
+  '/finances': typeof PrivateFinancesRoute
+  '/library': typeof PrivateLibraryRouteWithChildren
+  '/profile': typeof PrivateProfileRoute
+  '/projects': typeof PrivateProjectsRoute
+  '/team': typeof PrivateTeamRoute
+  '/workspace': typeof PrivateWorkspaceRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/g/$guideId': typeof GGuideIdRoute
-  '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
-  '/library/$guideId': typeof AdminLibraryGuideIdRoute
-  '/workspace/clients': typeof AdminWorkspaceClientsRoute
-  '/workspace/history': typeof AdminWorkspaceHistoryRoute
-  '/workspace/schedule': typeof AdminWorkspaceScheduleRoute
-  '/companies/': typeof AdminCompaniesIndexRoute
-  '/library/': typeof AdminLibraryIndexRoute
-  '/workspace/': typeof AdminWorkspaceIndexRoute
+  '/companies/$company_id': typeof PrivateCompaniesCompany_idRoute
+  '/library/$guideId': typeof PrivateLibraryGuideIdRoute
+  '/workspace/clients': typeof PrivateWorkspaceClientsRoute
+  '/workspace/history': typeof PrivateWorkspaceHistoryRoute
+  '/workspace/schedule': typeof PrivateWorkspaceScheduleRoute
+  '/companies/': typeof PrivateCompaniesIndexRoute
+  '/library/': typeof PrivateLibraryIndexRoute
+  '/workspace/': typeof PrivateWorkspaceIndexRoute
 }
 export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedRoute
-  '/finances': typeof AdminFinancesRoute
-  '/profile': typeof AdminProfileRoute
-  '/projects': typeof AdminProjectsRoute
-  '/team': typeof AdminTeamRoute
+  '/finances': typeof PrivateFinancesRoute
+  '/profile': typeof PrivateProfileRoute
+  '/projects': typeof PrivateProjectsRoute
+  '/team': typeof PrivateTeamRoute
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/g/$guideId': typeof GGuideIdRoute
-  '/': typeof AdminIndexRoute
-  '/companies/$company_id': typeof AdminCompaniesCompany_idRoute
-  '/library/$guideId': typeof AdminLibraryGuideIdRoute
-  '/workspace/clients': typeof AdminWorkspaceClientsRoute
-  '/workspace/history': typeof AdminWorkspaceHistoryRoute
-  '/workspace/schedule': typeof AdminWorkspaceScheduleRoute
-  '/companies': typeof AdminCompaniesIndexRoute
-  '/library': typeof AdminLibraryIndexRoute
-  '/workspace': typeof AdminWorkspaceIndexRoute
+  '/': typeof PrivateIndexRoute
+  '/companies/$company_id': typeof PrivateCompaniesCompany_idRoute
+  '/library/$guideId': typeof PrivateLibraryGuideIdRoute
+  '/workspace/clients': typeof PrivateWorkspaceClientsRoute
+  '/workspace/history': typeof PrivateWorkspaceHistoryRoute
+  '/workspace/schedule': typeof PrivateWorkspaceScheduleRoute
+  '/companies': typeof PrivateCompaniesIndexRoute
+  '/library': typeof PrivateLibraryIndexRoute
+  '/workspace': typeof PrivateWorkspaceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_admin': typeof AdminRouteWithChildren
+  '/_private': typeof PrivateRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
-  '/_admin/finances': typeof AdminFinancesRoute
-  '/_admin/library': typeof AdminLibraryRouteWithChildren
-  '/_admin/profile': typeof AdminProfileRoute
-  '/_admin/projects': typeof AdminProjectsRoute
-  '/_admin/team': typeof AdminTeamRoute
-  '/_admin/workspace': typeof AdminWorkspaceRouteWithChildren
+  '/_private/finances': typeof PrivateFinancesRoute
+  '/_private/library': typeof PrivateLibraryRouteWithChildren
+  '/_private/profile': typeof PrivateProfileRoute
+  '/_private/projects': typeof PrivateProjectsRoute
+  '/_private/team': typeof PrivateTeamRoute
+  '/_private/workspace': typeof PrivateWorkspaceRouteWithChildren
   '/auth/complete-account': typeof AuthCompleteAccountRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/signin': typeof AuthSigninRoute
-  '/g/$guideId': typeof GGuideIdRoute
-  '/_admin/': typeof AdminIndexRoute
-  '/_admin/companies/$company_id': typeof AdminCompaniesCompany_idRoute
-  '/_admin/library/$guideId': typeof AdminLibraryGuideIdRoute
-  '/_admin/workspace/clients': typeof AdminWorkspaceClientsRoute
-  '/_admin/workspace/history': typeof AdminWorkspaceHistoryRoute
-  '/_admin/workspace/schedule': typeof AdminWorkspaceScheduleRoute
-  '/_admin/companies/': typeof AdminCompaniesIndexRoute
-  '/_admin/library/': typeof AdminLibraryIndexRoute
-  '/_admin/workspace/': typeof AdminWorkspaceIndexRoute
+  '/_private/': typeof PrivateIndexRoute
+  '/_private/companies/$company_id': typeof PrivateCompaniesCompany_idRoute
+  '/_private/library/$guideId': typeof PrivateLibraryGuideIdRoute
+  '/_private/workspace/clients': typeof PrivateWorkspaceClientsRoute
+  '/_private/workspace/history': typeof PrivateWorkspaceHistoryRoute
+  '/_private/workspace/schedule': typeof PrivateWorkspaceScheduleRoute
+  '/_private/companies/': typeof PrivateCompaniesIndexRoute
+  '/_private/library/': typeof PrivateLibraryIndexRoute
+  '/_private/workspace/': typeof PrivateWorkspaceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -227,7 +219,6 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/g/$guideId'
     | '/companies/$company_id'
     | '/library/$guideId'
     | '/workspace/clients'
@@ -247,7 +238,6 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/g/$guideId'
     | '/'
     | '/companies/$company_id'
     | '/library/$guideId'
@@ -259,38 +249,36 @@ export interface FileRouteTypes {
     | '/workspace'
   id:
     | '__root__'
-    | '/_admin'
+    | '/_private'
     | '/unauthorized'
-    | '/_admin/finances'
-    | '/_admin/library'
-    | '/_admin/profile'
-    | '/_admin/projects'
-    | '/_admin/team'
-    | '/_admin/workspace'
+    | '/_private/finances'
+    | '/_private/library'
+    | '/_private/profile'
+    | '/_private/projects'
+    | '/_private/team'
+    | '/_private/workspace'
     | '/auth/complete-account'
     | '/auth/forgot-password'
     | '/auth/logout'
     | '/auth/signin'
-    | '/g/$guideId'
-    | '/_admin/'
-    | '/_admin/companies/$company_id'
-    | '/_admin/library/$guideId'
-    | '/_admin/workspace/clients'
-    | '/_admin/workspace/history'
-    | '/_admin/workspace/schedule'
-    | '/_admin/companies/'
-    | '/_admin/library/'
-    | '/_admin/workspace/'
+    | '/_private/'
+    | '/_private/companies/$company_id'
+    | '/_private/library/$guideId'
+    | '/_private/workspace/clients'
+    | '/_private/workspace/history'
+    | '/_private/workspace/schedule'
+    | '/_private/companies/'
+    | '/_private/library/'
+    | '/_private/workspace/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AdminRoute: typeof AdminRouteWithChildren
+  PrivateRoute: typeof PrivateRouteWithChildren
   UnauthorizedRoute: typeof UnauthorizedRoute
   AuthCompleteAccountRoute: typeof AuthCompleteAccountRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthSigninRoute: typeof AuthSigninRoute
-  GGuideIdRoute: typeof GGuideIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -302,26 +290,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnauthorizedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_admin': {
-      id: '/_admin'
+    '/_private': {
+      id: '/_private'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AdminRouteImport
+      preLoaderRoute: typeof PrivateRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_admin/': {
-      id: '/_admin/'
+    '/_private/': {
+      id: '/_private/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/g/$guideId': {
-      id: '/g/$guideId'
-      path: '/g/$guideId'
-      fullPath: '/g/$guideId'
-      preLoaderRoute: typeof GGuideIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PrivateIndexRouteImport
+      parentRoute: typeof PrivateRoute
     }
     '/auth/signin': {
       id: '/auth/signin'
@@ -351,173 +332,172 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCompleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_admin/workspace': {
-      id: '/_admin/workspace'
+    '/_private/workspace': {
+      id: '/_private/workspace'
       path: '/workspace'
       fullPath: '/workspace'
-      preLoaderRoute: typeof AdminWorkspaceRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof PrivateWorkspaceRouteImport
+      parentRoute: typeof PrivateRoute
     }
-    '/_admin/team': {
-      id: '/_admin/team'
+    '/_private/team': {
+      id: '/_private/team'
       path: '/team'
       fullPath: '/team'
-      preLoaderRoute: typeof AdminTeamRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof PrivateTeamRouteImport
+      parentRoute: typeof PrivateRoute
     }
-    '/_admin/projects': {
-      id: '/_admin/projects'
+    '/_private/projects': {
+      id: '/_private/projects'
       path: '/projects'
       fullPath: '/projects'
-      preLoaderRoute: typeof AdminProjectsRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof PrivateProjectsRouteImport
+      parentRoute: typeof PrivateRoute
     }
-    '/_admin/profile': {
-      id: '/_admin/profile'
+    '/_private/profile': {
+      id: '/_private/profile'
       path: '/profile'
       fullPath: '/profile'
-      preLoaderRoute: typeof AdminProfileRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof PrivateProfileRouteImport
+      parentRoute: typeof PrivateRoute
     }
-    '/_admin/library': {
-      id: '/_admin/library'
+    '/_private/library': {
+      id: '/_private/library'
       path: '/library'
       fullPath: '/library'
-      preLoaderRoute: typeof AdminLibraryRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof PrivateLibraryRouteImport
+      parentRoute: typeof PrivateRoute
     }
-    '/_admin/finances': {
-      id: '/_admin/finances'
+    '/_private/finances': {
+      id: '/_private/finances'
       path: '/finances'
       fullPath: '/finances'
-      preLoaderRoute: typeof AdminFinancesRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof PrivateFinancesRouteImport
+      parentRoute: typeof PrivateRoute
     }
-    '/_admin/workspace/': {
-      id: '/_admin/workspace/'
+    '/_private/workspace/': {
+      id: '/_private/workspace/'
       path: '/'
       fullPath: '/workspace/'
-      preLoaderRoute: typeof AdminWorkspaceIndexRouteImport
-      parentRoute: typeof AdminWorkspaceRoute
+      preLoaderRoute: typeof PrivateWorkspaceIndexRouteImport
+      parentRoute: typeof PrivateWorkspaceRoute
     }
-    '/_admin/library/': {
-      id: '/_admin/library/'
+    '/_private/library/': {
+      id: '/_private/library/'
       path: '/'
       fullPath: '/library/'
-      preLoaderRoute: typeof AdminLibraryIndexRouteImport
-      parentRoute: typeof AdminLibraryRoute
+      preLoaderRoute: typeof PrivateLibraryIndexRouteImport
+      parentRoute: typeof PrivateLibraryRoute
     }
-    '/_admin/companies/': {
-      id: '/_admin/companies/'
+    '/_private/companies/': {
+      id: '/_private/companies/'
       path: '/companies'
       fullPath: '/companies/'
-      preLoaderRoute: typeof AdminCompaniesIndexRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof PrivateCompaniesIndexRouteImport
+      parentRoute: typeof PrivateRoute
     }
-    '/_admin/workspace/schedule': {
-      id: '/_admin/workspace/schedule'
+    '/_private/workspace/schedule': {
+      id: '/_private/workspace/schedule'
       path: '/schedule'
       fullPath: '/workspace/schedule'
-      preLoaderRoute: typeof AdminWorkspaceScheduleRouteImport
-      parentRoute: typeof AdminWorkspaceRoute
+      preLoaderRoute: typeof PrivateWorkspaceScheduleRouteImport
+      parentRoute: typeof PrivateWorkspaceRoute
     }
-    '/_admin/workspace/history': {
-      id: '/_admin/workspace/history'
+    '/_private/workspace/history': {
+      id: '/_private/workspace/history'
       path: '/history'
       fullPath: '/workspace/history'
-      preLoaderRoute: typeof AdminWorkspaceHistoryRouteImport
-      parentRoute: typeof AdminWorkspaceRoute
+      preLoaderRoute: typeof PrivateWorkspaceHistoryRouteImport
+      parentRoute: typeof PrivateWorkspaceRoute
     }
-    '/_admin/workspace/clients': {
-      id: '/_admin/workspace/clients'
+    '/_private/workspace/clients': {
+      id: '/_private/workspace/clients'
       path: '/clients'
       fullPath: '/workspace/clients'
-      preLoaderRoute: typeof AdminWorkspaceClientsRouteImport
-      parentRoute: typeof AdminWorkspaceRoute
+      preLoaderRoute: typeof PrivateWorkspaceClientsRouteImport
+      parentRoute: typeof PrivateWorkspaceRoute
     }
-    '/_admin/library/$guideId': {
-      id: '/_admin/library/$guideId'
+    '/_private/library/$guideId': {
+      id: '/_private/library/$guideId'
       path: '/$guideId'
       fullPath: '/library/$guideId'
-      preLoaderRoute: typeof AdminLibraryGuideIdRouteImport
-      parentRoute: typeof AdminLibraryRoute
+      preLoaderRoute: typeof PrivateLibraryGuideIdRouteImport
+      parentRoute: typeof PrivateLibraryRoute
     }
-    '/_admin/companies/$company_id': {
-      id: '/_admin/companies/$company_id'
+    '/_private/companies/$company_id': {
+      id: '/_private/companies/$company_id'
       path: '/companies/$company_id'
       fullPath: '/companies/$company_id'
-      preLoaderRoute: typeof AdminCompaniesCompany_idRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof PrivateCompaniesCompany_idRouteImport
+      parentRoute: typeof PrivateRoute
     }
   }
 }
 
-interface AdminLibraryRouteChildren {
-  AdminLibraryGuideIdRoute: typeof AdminLibraryGuideIdRoute
-  AdminLibraryIndexRoute: typeof AdminLibraryIndexRoute
+interface PrivateLibraryRouteChildren {
+  PrivateLibraryGuideIdRoute: typeof PrivateLibraryGuideIdRoute
+  PrivateLibraryIndexRoute: typeof PrivateLibraryIndexRoute
 }
 
-const AdminLibraryRouteChildren: AdminLibraryRouteChildren = {
-  AdminLibraryGuideIdRoute: AdminLibraryGuideIdRoute,
-  AdminLibraryIndexRoute: AdminLibraryIndexRoute,
+const PrivateLibraryRouteChildren: PrivateLibraryRouteChildren = {
+  PrivateLibraryGuideIdRoute: PrivateLibraryGuideIdRoute,
+  PrivateLibraryIndexRoute: PrivateLibraryIndexRoute,
 }
 
-const AdminLibraryRouteWithChildren = AdminLibraryRoute._addFileChildren(
-  AdminLibraryRouteChildren,
+const PrivateLibraryRouteWithChildren = PrivateLibraryRoute._addFileChildren(
+  PrivateLibraryRouteChildren,
 )
 
-interface AdminWorkspaceRouteChildren {
-  AdminWorkspaceClientsRoute: typeof AdminWorkspaceClientsRoute
-  AdminWorkspaceHistoryRoute: typeof AdminWorkspaceHistoryRoute
-  AdminWorkspaceScheduleRoute: typeof AdminWorkspaceScheduleRoute
-  AdminWorkspaceIndexRoute: typeof AdminWorkspaceIndexRoute
+interface PrivateWorkspaceRouteChildren {
+  PrivateWorkspaceClientsRoute: typeof PrivateWorkspaceClientsRoute
+  PrivateWorkspaceHistoryRoute: typeof PrivateWorkspaceHistoryRoute
+  PrivateWorkspaceScheduleRoute: typeof PrivateWorkspaceScheduleRoute
+  PrivateWorkspaceIndexRoute: typeof PrivateWorkspaceIndexRoute
 }
 
-const AdminWorkspaceRouteChildren: AdminWorkspaceRouteChildren = {
-  AdminWorkspaceClientsRoute: AdminWorkspaceClientsRoute,
-  AdminWorkspaceHistoryRoute: AdminWorkspaceHistoryRoute,
-  AdminWorkspaceScheduleRoute: AdminWorkspaceScheduleRoute,
-  AdminWorkspaceIndexRoute: AdminWorkspaceIndexRoute,
+const PrivateWorkspaceRouteChildren: PrivateWorkspaceRouteChildren = {
+  PrivateWorkspaceClientsRoute: PrivateWorkspaceClientsRoute,
+  PrivateWorkspaceHistoryRoute: PrivateWorkspaceHistoryRoute,
+  PrivateWorkspaceScheduleRoute: PrivateWorkspaceScheduleRoute,
+  PrivateWorkspaceIndexRoute: PrivateWorkspaceIndexRoute,
 }
 
-const AdminWorkspaceRouteWithChildren = AdminWorkspaceRoute._addFileChildren(
-  AdminWorkspaceRouteChildren,
-)
+const PrivateWorkspaceRouteWithChildren =
+  PrivateWorkspaceRoute._addFileChildren(PrivateWorkspaceRouteChildren)
 
-interface AdminRouteChildren {
-  AdminFinancesRoute: typeof AdminFinancesRoute
-  AdminLibraryRoute: typeof AdminLibraryRouteWithChildren
-  AdminProfileRoute: typeof AdminProfileRoute
-  AdminProjectsRoute: typeof AdminProjectsRoute
-  AdminTeamRoute: typeof AdminTeamRoute
-  AdminWorkspaceRoute: typeof AdminWorkspaceRouteWithChildren
-  AdminIndexRoute: typeof AdminIndexRoute
-  AdminCompaniesCompany_idRoute: typeof AdminCompaniesCompany_idRoute
-  AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
+interface PrivateRouteChildren {
+  PrivateFinancesRoute: typeof PrivateFinancesRoute
+  PrivateLibraryRoute: typeof PrivateLibraryRouteWithChildren
+  PrivateProfileRoute: typeof PrivateProfileRoute
+  PrivateProjectsRoute: typeof PrivateProjectsRoute
+  PrivateTeamRoute: typeof PrivateTeamRoute
+  PrivateWorkspaceRoute: typeof PrivateWorkspaceRouteWithChildren
+  PrivateIndexRoute: typeof PrivateIndexRoute
+  PrivateCompaniesCompany_idRoute: typeof PrivateCompaniesCompany_idRoute
+  PrivateCompaniesIndexRoute: typeof PrivateCompaniesIndexRoute
 }
 
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminFinancesRoute: AdminFinancesRoute,
-  AdminLibraryRoute: AdminLibraryRouteWithChildren,
-  AdminProfileRoute: AdminProfileRoute,
-  AdminProjectsRoute: AdminProjectsRoute,
-  AdminTeamRoute: AdminTeamRoute,
-  AdminWorkspaceRoute: AdminWorkspaceRouteWithChildren,
-  AdminIndexRoute: AdminIndexRoute,
-  AdminCompaniesCompany_idRoute: AdminCompaniesCompany_idRoute,
-  AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
+const PrivateRouteChildren: PrivateRouteChildren = {
+  PrivateFinancesRoute: PrivateFinancesRoute,
+  PrivateLibraryRoute: PrivateLibraryRouteWithChildren,
+  PrivateProfileRoute: PrivateProfileRoute,
+  PrivateProjectsRoute: PrivateProjectsRoute,
+  PrivateTeamRoute: PrivateTeamRoute,
+  PrivateWorkspaceRoute: PrivateWorkspaceRouteWithChildren,
+  PrivateIndexRoute: PrivateIndexRoute,
+  PrivateCompaniesCompany_idRoute: PrivateCompaniesCompany_idRoute,
+  PrivateCompaniesIndexRoute: PrivateCompaniesIndexRoute,
 }
 
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+const PrivateRouteWithChildren =
+  PrivateRoute._addFileChildren(PrivateRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  AdminRoute: AdminRouteWithChildren,
+  PrivateRoute: PrivateRouteWithChildren,
   UnauthorizedRoute: UnauthorizedRoute,
   AuthCompleteAccountRoute: AuthCompleteAccountRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLogoutRoute: AuthLogoutRoute,
   AuthSigninRoute: AuthSigninRoute,
-  GGuideIdRoute: GGuideIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 
 export function buildPublicGuideUrl(guideId: string): string {
-  return `${window.location.origin}/g/${guideId}`;
+  return `${process.env.VITE_APP_URL!}/library-data/${guideId}`;
 }
 
 export async function copyPublicGuideLink(guideId: string): Promise<void> {

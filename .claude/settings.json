@@ -6,7 +6,10 @@
       "Bash(graphify query *)",
       "Bash(npm run lint *)",
       "Bash(graphify explain *)",
-      "Bash(graphify path *)"
+      "Bash(graphify path *)",
+      "Bash(curl -s http://localhost:*)",
+      "Bash(curl -sf http://localhost:*)",
+      "Bash(curl -s http://127.0.0.1:*)"
     ]
   },
   "hooks": {

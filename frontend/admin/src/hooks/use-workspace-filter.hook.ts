@@ -12,7 +12,7 @@ interface WorkspaceFilter {
 }
 
 export function useWorkspaceFilter(): WorkspaceFilter {
-  const { clients } = useSearch({ from: '/_admin/workspace' });
+  const { clients } = useSearch({ from: '/_private/workspace' });
   const { data: allCompanies } = useSuspenseQuery(companiesQueryOptions());
   const companies = useMemo(
     () => allCompanies.filter((c) => c.companyStage !== 'inactive'),

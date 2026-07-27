@@ -1,0 +1,175 @@
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import { useMemo, useState } from 'react';
+import {
+  MdOutlineHandshake,
+  MdOutlinePeopleAlt,
+  MdOutlineTrendingUp,
+} from 'react-icons/md';
+
+import { PerformancePanel } from '@/components/company/dashboard/performance-panel.component';
+import { SalesFunnel } from '@/components/company/dashboard/sales-funnel.component';
+import { StatCard } from '@/components/company/dashboard/stat-card.component';
+import { TaskQuotaCard } from '@/components/company/dashboard/task-quota-card.component';
+import { TodayActivitiesCard } from '@/components/company/dashboard/today-activities-card.component';
+import { UpcomingScheduleCard } from '@/components/company/dashboard/upcoming-schedule-card.component';
+import { useAuth } from '@/contexts/auth.context';
+import {
+  crmColumnsQueryOptions,
+  leadsQueryOptions,
+} from '@/queries/company-crm.queries';
+import { operationalKanbanColumnsQueryOptions } from '@/queries/operational-kanban.queries';
+import {
+  calendarTasksQueryOptions,
+  clientTasksQueryOptions,
+} from '@/queries/task.queries';
+import {
+  computeDailyLeadSeries,
+  computeFunnel,
+  computeLeadStats,
+  computeWeeklyMetrics,
+  getTasksOnDay,
+  getUpcomingTasks,
+} from '@/utils/dashboard-insights.util';
+
+function nextMonthOf(date: Date): { year: number; month: number } {
+  const next = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+  return { year: next.getFullYear(), month: next.getMonth() };
+}
+
+export const Route = createFileRoute('/_private/company/$companyId/')({
+  loader: ({ context, params }) => {
+    const today = new Date();
+    const { year: nextYear, month: nextMonth } = nextMonthOf(today);
+
+    return Promise.all([
+      context.queryClient.ensureQueryData(leadsQueryOptions(params.companyId)),
+      context.queryClient.ensureQueryData(
+        crmColumnsQueryOptions(params.companyId),
+      ),
+      context.queryClient.ensureQueryData(
+        calendarTasksQueryOptions(
+          params.companyId,
+          today.getFullYear(),
+          today.getMonth(),
+        ),
+      ),
+      context.queryClient.ensureQueryData(
+        calendarTasksQueryOptions(params.companyId, nextYear, nextMonth),
+      ),
+      context.queryClient.ensureQueryData(operationalKanbanColumnsQueryOptions()),
+      context.queryClient.ensureQueryData(
+        clientTasksQueryOptions(params.companyId),
+      ),
+    ]);
+  },
+  component: CompanyDashboard,
+  ssr: false,
+});
+
+function CompanyDashboard() {
+  const { companyId } = Route.useParams();
+  const { userProfile } = useAuth();
+  const firstName = userProfile?.name.split(' ')[0] ?? '';
+
+  const [now] = useState(() => Date.now());
+  const today = useMemo(() => new Date(now), [now]);
+  const { year: nextYear, month: nextMonth } = nextMonthOf(today);
+
+  const { data: leads } = useSuspenseQuery(leadsQueryOptions(companyId));
+  const { data: crmColumns } = useSuspenseQuery(
+    crmColumnsQueryOptions(companyId),
+  );
+  const { data: thisMonthTasks } = useSuspenseQuery(
+    calendarTasksQueryOptions(companyId, today.getFullYear(), today.getMonth()),
+  );
+  const { data: nextMonthTasks } = useSuspenseQuery(
+    calendarTasksQueryOptions(companyId, nextYear, nextMonth),
+  );
+  const { data: operationalColumns = [] } = useQuery(
+    operationalKanbanColumnsQueryOptions(),
+  );
+  const { data: clientData } = useQuery(clientTasksQueryOptions(companyId));
+  const usage = clientData?.usage ?? { used: 0, limit: null, yearMonth: '' };
+
+  const tasks = useMemo(
+    () => [...thisMonthTasks, ...nextMonthTasks],
+    [thisMonthTasks, nextMonthTasks],
+  );
+
+  const leadStats = useMemo(() => computeLeadStats(leads, now), [leads, now]);
+  const funnelStages = useMemo(
+    () => computeFunnel(leads, crmColumns),
+    [leads, crmColumns],
+  );
+  const todayTasks = useMemo(() => getTasksOnDay(tasks, now), [tasks, now]);
+  const upcomingTasks = useMemo(
+    () => getUpcomingTasks(tasks, now, 7),
+    [tasks, now],
+  );
+  const dailySeries = useMemo(
+    () => computeDailyLeadSeries(leads, now, 7),
+    [leads, now],
+  );
+  const leadsSparkline = useMemo(
+    () => computeDailyLeadSeries(leads, now, 14).map((p) => p.leadsNovos),
+    [leads, now],
+  );
+  const weeklyMetrics = useMemo(
+    () => computeWeeklyMetrics(leads, tasks, now),
+    [leads, tasks, now],
+  );
+
+  return (
+    <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-3xl font-black tracking-tight text-text">
+            Olá{firstName ? ', ' : ''}
+            {firstName}
+          </h1>
+          <p className="mt-1.5 text-[13px] text-text-sub">
+            Bem-vindo ao seu portal. Aqui você acompanha tudo sobre a sua empresa.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            icon={<MdOutlinePeopleAlt size={18} />}
+            label="Leads novos"
+            value={String(leadStats.newLeads.value)}
+            trend={leadStats.newLeads.trend}
+            sparklineValues={leadsSparkline}
+          />
+          <StatCard
+            icon={<MdOutlineHandshake size={18} />}
+            label="Negociações ativas"
+            value={String(leadStats.activeDeals.value)}
+            trend={leadStats.activeDeals.trend}
+          />
+          <StatCard
+            icon={<MdOutlineTrendingUp size={18} />}
+            label="Taxa de conversão"
+            value={`${leadStats.conversionRate.value}%`}
+            trend={leadStats.conversionRate.trend}
+          />
+          <TaskQuotaCard used={usage.used} limit={usage.limit} />
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <SalesFunnel companyId={companyId} stages={funnelStages} />
+          <TodayActivitiesCard companyId={companyId} tasks={todayTasks} />
+          <UpcomingScheduleCard
+            companyId={companyId}
+            tasks={upcomingTasks}
+            columns={operationalColumns}
+          />
+        </div>
+
+        <div className="mt-4">
+          <PerformancePanel series={dailySeries} metrics={weeklyMetrics} />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -7,9 +7,6 @@ interface GuideContentViewProps {
   guide: GuideContent;
 }
 
-// Layout de leitura da página pública (/g/$guideId) — mesmo componente do
-// Portal do Cliente (frontend/app), sem nada de admin (sem prompt de
-// roteiro, sem lista de clientes).
 export function GuideContentView({ guide }: GuideContentViewProps) {
   const tags = [
     ...guide.intentTags,

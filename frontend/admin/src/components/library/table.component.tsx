@@ -1,10 +1,17 @@
 import { useNavigate } from '@tanstack/react-router';
-import { MdOutlineMenuBook, MdOutlineLink, MdOutlineShare } from 'react-icons/md';
+import {
+  MdOutlineMenuBook,
+  MdOutlineLink,
+  MdOutlineShare,
+} from 'react-icons/md';
 
 import { Badge } from '@/components/ui/badge.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { Guide } from '@/models/guide.model';
-import { copyPublicGuideLink, sharePublicGuideLink } from '@/utils/shareLink.util';
+import {
+  copyPublicGuideLink,
+  sharePublicGuideLink,
+} from '@/utils/shareLink.util';
 
 interface GuidesTableProps {
   guides: Guide[];
