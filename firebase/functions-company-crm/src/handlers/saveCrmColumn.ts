@@ -8,6 +8,7 @@ import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 const schema = z.object({
   companyId: z.string().min(1),
+  funnelId: z.string().min(1),
   columnId: z.string().optional(),
   name: z.string().min(1, "Nome obrigatório").max(40, "Máximo 40 caracteres"),
   color: z.string().min(1, "Cor obrigatória"),
@@ -27,9 +28,10 @@ export const saveCrmColumnHandler = onCallHandler(async (req) => {
 
   logger.info("saveCrmColumn", {
     companyId,
+    funnelId: data.funnelId,
     action: data.columnId ? "update" : "create",
     columnId: data.columnId,
   });
 
-  return CrmColumnRepository.save(companyId, data);
+  return CrmColumnRepository.save(companyId, data.funnelId, data);
 });

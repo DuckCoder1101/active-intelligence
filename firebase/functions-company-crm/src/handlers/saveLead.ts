@@ -31,7 +31,7 @@ export const saveLeadHandler = onCallHandler(async (req) => {
 
   logger.info("saveLead", { companyId, leadId: data.leadId });
 
-  const columns = await CrmColumnRepository.listAll(companyId);
+  const columns = await CrmColumnRepository.listAll(companyId, data.funnelId);
   const defaultStatus = columns[0]?.columnId ?? "";
 
   return LeadRepository.save(companyId, uid, data, defaultStatus);

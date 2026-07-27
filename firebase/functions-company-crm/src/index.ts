@@ -20,4 +20,8 @@ export * from "./handlers/listCrmColumns";
 export * from "./handlers/saveCrmColumn";
 export * from "./handlers/deleteCrmColumn";
 
+export * from "./handlers/listCrmFunnels";
+export * from "./handlers/saveCrmFunnel";
+export * from "./handlers/deleteCrmFunnel";
+
 export * from "./handlers/listMyCompanyUsers";

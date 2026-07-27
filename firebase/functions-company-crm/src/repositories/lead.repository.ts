@@ -9,6 +9,7 @@ function toDTO(id: string, data: LeadDocument): LeadDTO {
   return {
     leadId: id,
     companyId: data.companyId,
+    funnelId: data.funnelId,
     status: data.status,
     dealStatus: data.dealStatus ?? "aberto",
     name: data.name,

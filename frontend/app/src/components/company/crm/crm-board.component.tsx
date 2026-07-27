@@ -19,6 +19,7 @@ import {
 
 interface CrmBoardProps {
   companyId: string;
+  funnelId: string;
   leads: Lead[];
   columns: CrmColumn[];
   tags: CrmTag[];
@@ -28,6 +29,7 @@ interface CrmBoardProps {
 
 export function CrmBoard({
   companyId,
+  funnelId,
   leads,
   columns,
   tags,
@@ -35,9 +37,9 @@ export function CrmBoard({
   onNewLead,
 }: CrmBoardProps) {
   const updateStatus = useUpdateLeadStatusMutation(companyId);
-  const reorderColumns = useReorderCrmColumnsMutation(companyId);
-  const addColumn = useAddCrmColumnMutation(companyId);
-  const removeColumn = useRemoveCrmColumnMutation(companyId);
+  const reorderColumns = useReorderCrmColumnsMutation(companyId, funnelId);
+  const addColumn = useAddCrmColumnMutation(companyId, funnelId);
+  const removeColumn = useRemoveCrmColumnMutation(companyId, funnelId);
 
   const [draggingLeadId, setDraggingLeadId] = useState<string | null>(null);
   const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null);

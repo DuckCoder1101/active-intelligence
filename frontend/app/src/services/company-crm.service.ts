@@ -2,6 +2,7 @@ import { httpsCallable } from 'firebase/functions';
 
 import type {
   CrmColumn,
+  CrmFunnel,
   CrmOrigin,
   CrmTag,
   DealStatus,
@@ -133,13 +134,14 @@ export default class CompanyCrmService {
 
   // Kanban columns
   private static listColumnsCallable = httpsCallable<
-    { companyId: string },
+    { companyId: string; funnelId: string },
     CrmColumn[]
   >(functions, 'listCrmColumnsHandler');
 
   private static saveColumnCallable = httpsCallable<
     {
       companyId: string;
+      funnelId: string;
       columnId?: string;
       name: string;
       color: string;
@@ -149,17 +151,21 @@ export default class CompanyCrmService {
   >(functions, 'saveCrmColumnHandler');
 
   private static deleteColumnCallable = httpsCallable<
-    { companyId: string; columnId: string },
+    { companyId: string; funnelId: string; columnId: string },
     { movedTo: string | null }
   >(functions, 'deleteCrmColumnHandler');
 
-  static async listColumns(companyId: string): Promise<CrmColumn[]> {
-    const r = await this.listColumnsCallable({ companyId });
+  static async listColumns(
+    companyId: string,
+    funnelId: string,
+  ): Promise<CrmColumn[]> {
+    const r = await this.listColumnsCallable({ companyId, funnelId });
     return r.data;
   }
 
   static async saveColumn(data: {
     companyId: string;
+    funnelId: string;
     columnId?: string;
     name: string;
     color: string;
@@ -171,9 +177,53 @@ export default class CompanyCrmService {
 
   static async deleteColumn(
     companyId: string,
+    funnelId: string,
     columnId: string,
   ): Promise<{ movedTo: string | null }> {
-    const r = await this.deleteColumnCallable({ companyId, columnId });
+    const r = await this.deleteColumnCallable({
+      companyId,
+      funnelId,
+      columnId,
+    });
+    return r.data;
+  }
+
+  // Funnels
+  private static listFunnelsCallable = httpsCallable<
+    { companyId: string },
+    CrmFunnel[]
+  >(functions, 'listCrmFunnelsHandler');
+
+  private static saveFunnelCallable = httpsCallable<
+    { companyId: string; funnelId?: string; name: string; order?: number },
+    CrmFunnel
+  >(functions, 'saveCrmFunnelHandler');
+
+  private static deleteFunnelCallable = httpsCallable<
+    { companyId: string; funnelId: string },
+    { movedTo: string | null }
+  >(functions, 'deleteCrmFunnelHandler');
+
+  static async listFunnels(companyId: string): Promise<CrmFunnel[]> {
+    const r = await this.listFunnelsCallable({ companyId });
+    return r.data;
+  }
+
+  static async saveFunnel(data: {
+    companyId: string;
+    funnelId?: string;
+    name: string;
+    order?: number;
+  }): Promise<CrmFunnel> {
+    const r = await this.saveFunnelCallable(data);
+    return r.data;
+  }
+
+  static async deleteFunnel(
+    companyId: string,
+    funnelId: string,
+  ): Promise<{ movedTo: string | null }> {
+    const r = await this.deleteFunnelCallable({ companyId, funnelId });
     return r.data;
   }
 

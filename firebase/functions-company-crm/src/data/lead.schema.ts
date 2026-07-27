@@ -17,6 +17,7 @@ export default class LeadSchema {
       .string()
       .nullish()
       .transform((v) => v ?? undefined),
+    funnelId: z.string().min(1, "Funil obrigatório"),
     status: z
       .string()
       .nullish()

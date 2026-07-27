@@ -11,6 +11,7 @@ import type {
 export interface LeadDTO {
   leadId: string;
   companyId: string;
+  funnelId: string;
   status: string;
   dealStatus: DealStatus;
 
@@ -56,6 +57,7 @@ export interface LeadDTO {
 
 export interface SaveLeadDTO {
   leadId?: string;
+  funnelId: string;
   status?: string;
 
   name: string;

@@ -16,6 +16,7 @@ import { UpcomingScheduleCard } from '@/components/company/dashboard/upcoming-sc
 import { useAuth } from '@/contexts/auth.context';
 import {
   crmColumnsQueryOptions,
+  crmFunnelsQueryOptions,
   leadsQueryOptions,
 } from '@/queries/company-crm.queries';
 import { operationalKanbanColumnsQueryOptions } from '@/queries/operational-kanban.queries';
@@ -38,14 +39,18 @@ function nextMonthOf(date: Date): { year: number; month: number } {
 }
 
 export const Route = createFileRoute('/_private/company/$companyId/')({
-  loader: ({ context, params }) => {
+  loader: async ({ context, params }) => {
     const today = new Date();
     const { year: nextYear, month: nextMonth } = nextMonthOf(today);
+
+    const funnels = await context.queryClient.ensureQueryData(
+      crmFunnelsQueryOptions(params.companyId),
+    );
 
     return Promise.all([
       context.queryClient.ensureQueryData(leadsQueryOptions(params.companyId)),
       context.queryClient.ensureQueryData(
-        crmColumnsQueryOptions(params.companyId),
+        crmColumnsQueryOptions(params.companyId, funnels[0].funnelId),
       ),
       context.queryClient.ensureQueryData(
         calendarTasksQueryOptions(
@@ -77,8 +82,12 @@ function CompanyDashboard() {
   const { year: nextYear, month: nextMonth } = nextMonthOf(today);
 
   const { data: leads } = useSuspenseQuery(leadsQueryOptions(companyId));
+  const { data: funnels } = useSuspenseQuery(
+    crmFunnelsQueryOptions(companyId),
+  );
+  const primaryFunnelId = funnels[0].funnelId;
   const { data: crmColumns } = useSuspenseQuery(
-    crmColumnsQueryOptions(companyId),
+    crmColumnsQueryOptions(companyId, primaryFunnelId),
   );
   const { data: thisMonthTasks } = useSuspenseQuery(
     calendarTasksQueryOptions(companyId, today.getFullYear(), today.getMonth()),
@@ -98,9 +107,13 @@ function CompanyDashboard() {
   );
 
   const leadStats = useMemo(() => computeLeadStats(leads, now), [leads, now]);
+  const primaryFunnelLeads = useMemo(
+    () => leads.filter((lead) => lead.funnelId === primaryFunnelId),
+    [leads, primaryFunnelId],
+  );
   const funnelStages = useMemo(
-    () => computeFunnel(leads, crmColumns),
-    [leads, crmColumns],
+    () => computeFunnel(primaryFunnelLeads, crmColumns),
+    [primaryFunnelLeads, crmColumns],
   );
   const todayTasks = useMemo(() => getTasksOnDay(tasks, now), [tasks, now]);
   const upcomingTasks = useMemo(

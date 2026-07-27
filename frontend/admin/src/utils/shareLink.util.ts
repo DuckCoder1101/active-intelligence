@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 
 export function buildPublicGuideUrl(guideId: string): string {
-  return `${process.env.VITE_APP_URL!}/library-data/${guideId}`;
+  return `${import.meta.env.VITE_APP_URL}/library-data/${guideId}`;
 }
 
 export async function copyPublicGuideLink(guideId: string): Promise<void> {
@@ -21,12 +21,7 @@ export async function sharePublicGuideLink(
   const url = buildPublicGuideUrl(guideId);
 
   if (navigator.share) {
-    try {
-      await navigator.share({ title: name, url });
-    } catch {
-      // Usuário cancelou o compartilhamento — nada a fazer.
-    }
-    return;
+    await navigator.share({ title: name, url }).catch();
   }
 
   await copyPublicGuideLink(guideId);

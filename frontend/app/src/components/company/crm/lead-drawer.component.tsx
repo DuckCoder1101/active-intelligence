@@ -131,6 +131,7 @@ function toFormValues(lead?: Lead): FormValues {
 
 interface LeadDrawerProps {
   companyId: string;
+  funnelId: string;
   lead?: Lead;
   origins: CrmOrigin[];
   tags: CrmTag[];
@@ -141,6 +142,7 @@ interface LeadDrawerProps {
 
 export function LeadDrawer({
   companyId,
+  funnelId,
   lead,
   origins,
   tags,
@@ -186,6 +188,7 @@ export function LeadDrawer({
 
     const dto: SaveLeadDTO = {
       companyId,
+      funnelId: lead?.funnelId ?? funnelId,
       leadId: lead?.leadId,
       name: values.name.trim(),
       phone: values.phone.trim(),

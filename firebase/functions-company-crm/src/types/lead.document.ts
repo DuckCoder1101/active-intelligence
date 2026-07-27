@@ -101,6 +101,7 @@ export type LeadPreference = (typeof LEAD_PREFERENCES)[number];
 
 export interface LeadDocument {
   companyId: string;
+  funnelId: string;
   status: string;
   dealStatus: DealStatus;
 

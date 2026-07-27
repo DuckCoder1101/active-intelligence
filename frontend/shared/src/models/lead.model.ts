@@ -252,6 +252,7 @@ export const LEAD_PREFERENCE_GROUPS: LeadPreferenceGroup[] = [
 export interface Lead {
   leadId: string;
   companyId: string;
+  funnelId: string;
   status: string;
   dealStatus: DealStatus;
 
@@ -296,7 +297,9 @@ export interface Lead {
 }
 
 export interface SaveLeadDTO {
+  companyId: string;
   leadId?: string;
+  funnelId: string;
   status?: string;
 
   name: string;
@@ -350,6 +353,13 @@ export interface CrmColumn {
   name: string;
   color: string;
   order: number;
+}
+
+export interface CrmFunnel {
+  funnelId: string;
+  name: string;
+  order: number;
+  isDefault: boolean;
 }
 
 export const CRM_COLUMN_COLOR_PRESETS = [
