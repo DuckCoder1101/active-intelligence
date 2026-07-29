@@ -13,7 +13,9 @@ import { StatCard } from '@/components/company/dashboard/stat-card.component';
 import { TaskQuotaCard } from '@/components/company/dashboard/task-quota-card.component';
 import { TodayActivitiesCard } from '@/components/company/dashboard/today-activities-card.component';
 import { UpcomingScheduleCard } from '@/components/company/dashboard/upcoming-schedule-card.component';
+import { WelcomeModal } from '@/components/company/dashboard/welcome-modal.component';
 import { useAuth } from '@/contexts/auth.context';
+import { useIsFirstTime } from '@/hooks/use-is-first-time.hook';
 import {
   crmColumnsQueryOptions,
   crmFunnelsQueryOptions,
@@ -76,8 +78,17 @@ export const Route = createFileRoute('/_private/company/$companyId/')({
 
 function CompanyDashboard() {
   const { companyId } = Route.useParams();
-  const { userProfile } = useAuth();
+  const { claims, userProfile } = useAuth();
   const firstName = userProfile?.name.split(' ')[0] ?? '';
+
+  // Boas-vindas é só pra cliente de verdade — admin/owner acessando o
+  // dashboard da empresa (preview) nunca deve ver o popup. Guardado só no
+  // front (localStorage), sem estado no backend.
+  const isClientUser = claims?.accessLevel === 'user';
+  const [isFirstTime, markWelcomeSeen] = useIsFirstTime(
+    userProfile ? `welcome-seen-${userProfile.uid}` : null,
+  );
+  const showWelcome = isClientUser && !!userProfile && isFirstTime;
 
   const [now] = useState(() => Date.now());
   const today = useMemo(() => new Date(now), [now]);
@@ -138,6 +149,8 @@ function CompanyDashboard() {
 
   return (
     <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8">
+      {showWelcome && <WelcomeModal onClose={markWelcomeSeen} />}
+
       <div className="mx-auto w-full max-w-6xl">
         <div className="mb-8">
           <h1 className="text-3xl font-black tracking-tight text-text">

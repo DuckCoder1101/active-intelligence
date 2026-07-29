@@ -59,15 +59,7 @@ export function SelectCreate({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <FormSelect
-        label={label}
-        value={value}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-          onChange(e.target.value)
-        }
-        disabled={disabled}
-        error={error}
-      >
+      <FormSelect label={label} value={value} onChange={onChange} disabled={disabled} error={error}>
         <option value="">Selecione...</option>
         {options.map((o) => (
           <option key={o.value} value={o.value}>

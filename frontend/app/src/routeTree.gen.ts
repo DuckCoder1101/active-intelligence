@@ -25,7 +25,10 @@ import { Route as PrivateCompanyCompanyIdTeamRouteImport } from './routes/_priva
 import { Route as PrivateCompanyCompanyIdScheduleRouteImport } from './routes/_private/company/$companyId/schedule'
 import { Route as PrivateCompanyCompanyIdCrmRouteImport } from './routes/_private/company/$companyId/crm'
 import { Route as PrivateCompanyCompanyIdAdAccountsRouteImport } from './routes/_private/company/$companyId/ad-accounts'
+import { Route as PrivateCompanyCompanyIdRealEstateIndexRouteImport } from './routes/_private/company/$companyId/real-estate/index'
 import { Route as PrivateCompanyCompanyIdLibraryIndexRouteImport } from './routes/_private/company/$companyId/library/index'
+import { Route as PrivateCompanyCompanyIdRealEstateNewRouteImport } from './routes/_private/company/$companyId/real-estate/new'
+import { Route as PrivateCompanyCompanyIdRealEstateRealEstateIdRouteImport } from './routes/_private/company/$companyId/real-estate/$realEstateId'
 import { Route as PrivateCompanyCompanyIdLibraryGuideIdRouteImport } from './routes/_private/company/$companyId/library/$guideId'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
@@ -112,10 +115,28 @@ const PrivateCompanyCompanyIdAdAccountsRoute =
     path: '/ad-accounts',
     getParentRoute: () => PrivateCompanyCompanyIdRoute,
   } as any)
+const PrivateCompanyCompanyIdRealEstateIndexRoute =
+  PrivateCompanyCompanyIdRealEstateIndexRouteImport.update({
+    id: '/real-estate/',
+    path: '/real-estate/',
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
+  } as any)
 const PrivateCompanyCompanyIdLibraryIndexRoute =
   PrivateCompanyCompanyIdLibraryIndexRouteImport.update({
     id: '/library/',
     path: '/library/',
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
+  } as any)
+const PrivateCompanyCompanyIdRealEstateNewRoute =
+  PrivateCompanyCompanyIdRealEstateNewRouteImport.update({
+    id: '/real-estate/new',
+    path: '/real-estate/new',
+    getParentRoute: () => PrivateCompanyCompanyIdRoute,
+  } as any)
+const PrivateCompanyCompanyIdRealEstateRealEstateIdRoute =
+  PrivateCompanyCompanyIdRealEstateRealEstateIdRouteImport.update({
+    id: '/real-estate/$realEstateId',
+    path: '/real-estate/$realEstateId',
     getParentRoute: () => PrivateCompanyCompanyIdRoute,
   } as any)
 const PrivateCompanyCompanyIdLibraryGuideIdRoute =
@@ -142,7 +163,10 @@ export interface FileRoutesByFullPath {
   '/company/$companyId/team': typeof PrivateCompanyCompanyIdTeamRoute
   '/company/$companyId/': typeof PrivateCompanyCompanyIdIndexRoute
   '/company/$companyId/library/$guideId': typeof PrivateCompanyCompanyIdLibraryGuideIdRoute
+  '/company/$companyId/real-estate/$realEstateId': typeof PrivateCompanyCompanyIdRealEstateRealEstateIdRoute
+  '/company/$companyId/real-estate/new': typeof PrivateCompanyCompanyIdRealEstateNewRoute
   '/company/$companyId/library/': typeof PrivateCompanyCompanyIdLibraryIndexRoute
+  '/company/$companyId/real-estate/': typeof PrivateCompanyCompanyIdRealEstateIndexRoute
 }
 export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedRoute
@@ -160,7 +184,10 @@ export interface FileRoutesByTo {
   '/company/$companyId/team': typeof PrivateCompanyCompanyIdTeamRoute
   '/company/$companyId': typeof PrivateCompanyCompanyIdIndexRoute
   '/company/$companyId/library/$guideId': typeof PrivateCompanyCompanyIdLibraryGuideIdRoute
+  '/company/$companyId/real-estate/$realEstateId': typeof PrivateCompanyCompanyIdRealEstateRealEstateIdRoute
+  '/company/$companyId/real-estate/new': typeof PrivateCompanyCompanyIdRealEstateNewRoute
   '/company/$companyId/library': typeof PrivateCompanyCompanyIdLibraryIndexRoute
+  '/company/$companyId/real-estate': typeof PrivateCompanyCompanyIdRealEstateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -181,7 +208,10 @@ export interface FileRoutesById {
   '/_private/company/$companyId/team': typeof PrivateCompanyCompanyIdTeamRoute
   '/_private/company/$companyId/': typeof PrivateCompanyCompanyIdIndexRoute
   '/_private/company/$companyId/library/$guideId': typeof PrivateCompanyCompanyIdLibraryGuideIdRoute
+  '/_private/company/$companyId/real-estate/$realEstateId': typeof PrivateCompanyCompanyIdRealEstateRealEstateIdRoute
+  '/_private/company/$companyId/real-estate/new': typeof PrivateCompanyCompanyIdRealEstateNewRoute
   '/_private/company/$companyId/library/': typeof PrivateCompanyCompanyIdLibraryIndexRoute
+  '/_private/company/$companyId/real-estate/': typeof PrivateCompanyCompanyIdRealEstateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -202,7 +232,10 @@ export interface FileRouteTypes {
     | '/company/$companyId/team'
     | '/company/$companyId/'
     | '/company/$companyId/library/$guideId'
+    | '/company/$companyId/real-estate/$realEstateId'
+    | '/company/$companyId/real-estate/new'
     | '/company/$companyId/library/'
+    | '/company/$companyId/real-estate/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/unauthorized'
@@ -220,7 +253,10 @@ export interface FileRouteTypes {
     | '/company/$companyId/team'
     | '/company/$companyId'
     | '/company/$companyId/library/$guideId'
+    | '/company/$companyId/real-estate/$realEstateId'
+    | '/company/$companyId/real-estate/new'
     | '/company/$companyId/library'
+    | '/company/$companyId/real-estate'
   id:
     | '__root__'
     | '/_private'
@@ -240,7 +276,10 @@ export interface FileRouteTypes {
     | '/_private/company/$companyId/team'
     | '/_private/company/$companyId/'
     | '/_private/company/$companyId/library/$guideId'
+    | '/_private/company/$companyId/real-estate/$realEstateId'
+    | '/_private/company/$companyId/real-estate/new'
     | '/_private/company/$companyId/library/'
+    | '/_private/company/$companyId/real-estate/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -367,11 +406,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateCompanyCompanyIdAdAccountsRouteImport
       parentRoute: typeof PrivateCompanyCompanyIdRoute
     }
+    '/_private/company/$companyId/real-estate/': {
+      id: '/_private/company/$companyId/real-estate/'
+      path: '/real-estate'
+      fullPath: '/company/$companyId/real-estate/'
+      preLoaderRoute: typeof PrivateCompanyCompanyIdRealEstateIndexRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
+    }
     '/_private/company/$companyId/library/': {
       id: '/_private/company/$companyId/library/'
       path: '/library'
       fullPath: '/company/$companyId/library/'
       preLoaderRoute: typeof PrivateCompanyCompanyIdLibraryIndexRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
+    }
+    '/_private/company/$companyId/real-estate/new': {
+      id: '/_private/company/$companyId/real-estate/new'
+      path: '/real-estate/new'
+      fullPath: '/company/$companyId/real-estate/new'
+      preLoaderRoute: typeof PrivateCompanyCompanyIdRealEstateNewRouteImport
+      parentRoute: typeof PrivateCompanyCompanyIdRoute
+    }
+    '/_private/company/$companyId/real-estate/$realEstateId': {
+      id: '/_private/company/$companyId/real-estate/$realEstateId'
+      path: '/real-estate/$realEstateId'
+      fullPath: '/company/$companyId/real-estate/$realEstateId'
+      preLoaderRoute: typeof PrivateCompanyCompanyIdRealEstateRealEstateIdRouteImport
       parentRoute: typeof PrivateCompanyCompanyIdRoute
     }
     '/_private/company/$companyId/library/$guideId': {
@@ -391,7 +451,10 @@ interface PrivateCompanyCompanyIdRouteChildren {
   PrivateCompanyCompanyIdTeamRoute: typeof PrivateCompanyCompanyIdTeamRoute
   PrivateCompanyCompanyIdIndexRoute: typeof PrivateCompanyCompanyIdIndexRoute
   PrivateCompanyCompanyIdLibraryGuideIdRoute: typeof PrivateCompanyCompanyIdLibraryGuideIdRoute
+  PrivateCompanyCompanyIdRealEstateRealEstateIdRoute: typeof PrivateCompanyCompanyIdRealEstateRealEstateIdRoute
+  PrivateCompanyCompanyIdRealEstateNewRoute: typeof PrivateCompanyCompanyIdRealEstateNewRoute
   PrivateCompanyCompanyIdLibraryIndexRoute: typeof PrivateCompanyCompanyIdLibraryIndexRoute
+  PrivateCompanyCompanyIdRealEstateIndexRoute: typeof PrivateCompanyCompanyIdRealEstateIndexRoute
 }
 
 const PrivateCompanyCompanyIdRouteChildren: PrivateCompanyCompanyIdRouteChildren =
@@ -404,8 +467,14 @@ const PrivateCompanyCompanyIdRouteChildren: PrivateCompanyCompanyIdRouteChildren
     PrivateCompanyCompanyIdIndexRoute: PrivateCompanyCompanyIdIndexRoute,
     PrivateCompanyCompanyIdLibraryGuideIdRoute:
       PrivateCompanyCompanyIdLibraryGuideIdRoute,
+    PrivateCompanyCompanyIdRealEstateRealEstateIdRoute:
+      PrivateCompanyCompanyIdRealEstateRealEstateIdRoute,
+    PrivateCompanyCompanyIdRealEstateNewRoute:
+      PrivateCompanyCompanyIdRealEstateNewRoute,
     PrivateCompanyCompanyIdLibraryIndexRoute:
       PrivateCompanyCompanyIdLibraryIndexRoute,
+    PrivateCompanyCompanyIdRealEstateIndexRoute:
+      PrivateCompanyCompanyIdRealEstateIndexRoute,
   }
 
 const PrivateCompanyCompanyIdRouteWithChildren =

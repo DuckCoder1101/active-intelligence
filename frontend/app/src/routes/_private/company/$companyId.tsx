@@ -22,9 +22,22 @@ export const Route = createFileRoute('/_private/company/$companyId')({
   component: CompanyLayout,
 });
 
+const SIDEBAR_COLLAPSED_KEY = 'company-sidebar-collapsed';
+
 function CompanyLayout() {
   const { companyId } = Route.useParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(
+    () => localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1',
+  );
+
+  const toggleCollapse = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, next ? '1' : '0');
+      return next;
+    });
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-bg">
@@ -39,6 +52,8 @@ function CompanyLayout() {
         companyId={companyId}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        collapsed={collapsed}
+        onToggleCollapse={toggleCollapse}
       />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">

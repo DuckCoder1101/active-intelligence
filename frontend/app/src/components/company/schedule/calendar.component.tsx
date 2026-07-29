@@ -258,7 +258,7 @@ function TaskKindChooser({ onChoose, onClose }: KindChooserProps) {
             </span>
             <span>
               <span className="block text-[13px] font-bold text-text">
-                Tarefa para a agência
+                Tarefa para Active
               </span>
               <span className="block text-[11px] text-text-muted">
                 Vira um pedido de conteúdo pra equipe produzir.
@@ -342,6 +342,11 @@ export function CompanyScheduleCalendar({
 
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStart = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
 
   const items: CalendarItem[] = [
     ...tasks.map((task): CalendarItem => ({ kind: 'agency', task })),
@@ -388,7 +393,7 @@ export function CompanyScheduleCalendar({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {/* Header: month nav + legend */}
       <div className="shrink-0 border-b border-border px-6 py-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center gap-3">
           <button
             type="button"
             onClick={handlePrev}
@@ -436,6 +441,7 @@ export function CompanyScheduleCalendar({
               today.getFullYear() === year &&
               today.getMonth() === month &&
               today.getDate() === day;
+            const isPastDay = new Date(year, month, day) < todayStart;
             const dayItems = itemsByDay[day] ?? [];
             const visible = dayItems.slice(0, MAX_CHIPS);
             const overflow = dayItems.length - MAX_CHIPS;
@@ -446,7 +452,7 @@ export function CompanyScheduleCalendar({
               <div
                 key={day}
                 onClick={() => setSelectedDay(day)}
-                className={`group min-h-28 cursor-pointer border-b border-border p-1.5 transition-colors hover:bg-bg/60 ${isLastCol ? '' : 'border-r'}`}
+                className={`group min-h-28 cursor-pointer border-b border-border p-1.5 transition-colors ${isPastDay ? 'bg-bg/20' : 'hover:bg-bg/60'} ${isLastCol ? '' : 'border-r'}`}
               >
                 {/* Day number */}
                 <div className="mb-1 flex justify-end pr-0.5">
@@ -454,7 +460,9 @@ export function CompanyScheduleCalendar({
                     className={`flex h-6 w-6 items-center justify-center rounded-full text-[12px] font-semibold transition-colors ${
                       isToday
                         ? 'bg-orange text-white'
-                        : 'text-text-sub group-hover:bg-border'
+                        : isPastDay
+                          ? 'text-text-muted/70'
+                          : 'text-text-sub group-hover:bg-border'
                     }`}
                   >
                     {day}

@@ -5,7 +5,10 @@ import { toast } from 'react-toastify';
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
-import type { PersonalTask, SavePersonalTaskDTO } from '@/models/personal-task.model';
+import type {
+  PersonalTask,
+  SavePersonalTaskDTO,
+} from '@/models/personal-task.model';
 import {
   useDeletePersonalTaskMutation,
   useSavePersonalTaskMutation,
@@ -36,7 +39,9 @@ export function PersonalTaskModal({
   const deleteTask = useDeletePersonalTaskMutation(companyId);
 
   const [title, setTitle] = useState(personalTask?.title ?? '');
-  const [description, setDescription] = useState(personalTask?.description ?? '');
+  const [description, setDescription] = useState(
+    personalTask?.description ?? '',
+  );
   const [dueDateStr, setDueDateStr] = useState(
     personalTask
       ? toInputDate(new Date(personalTask.dueDate))
@@ -49,7 +54,9 @@ export function PersonalTaskModal({
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {onClose();}
+      if (e.key === 'Escape') {
+        onClose();
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
@@ -57,10 +64,16 @@ export function PersonalTaskModal({
 
   const handleSubmit = () => {
     const errs: Record<string, string> = {};
-    if (!title.trim()) {errs.title = 'Título obrigatório';}
-    if (!dueDateStr) {errs.dueDate = 'Data obrigatória';}
+    if (!title.trim()) {
+      errs.title = 'Título obrigatório';
+    }
+    if (!dueDateStr) {
+      errs.dueDate = 'Data obrigatória';
+    }
     setFieldErrors(errs);
-    if (Object.keys(errs).length > 0) {return;}
+    if (Object.keys(errs).length > 0) {
+      return;
+    }
 
     const [year, month, day] = dueDateStr.split('-').map(Number);
     const dueDate = new Date(year, month - 1, day, 12).getTime();
@@ -74,7 +87,9 @@ export function PersonalTaskModal({
 
     saveTask.mutate(dto, {
       onSuccess: (saved) => {
-        toast.success(personalTask ? 'Tarefa atualizada!' : 'Tarefa pessoal criada!');
+        toast.success(
+          personalTask ? 'Tarefa atualizada!' : 'Tarefa pessoal criada!',
+        );
         onSaved(saved);
         onClose();
       },
@@ -82,7 +97,9 @@ export function PersonalTaskModal({
   };
 
   const handleDelete = () => {
-    if (!personalTask) {return;}
+    if (!personalTask) {
+      return;
+    }
     deleteTask.mutate(personalTask.personalTaskId, {
       onSuccess: () => {
         toast.success('Tarefa excluída!');
@@ -96,7 +113,9 @@ export function PersonalTaskModal({
     <div
       className="modal-overlay bg-black/50"
       onClick={(e) => {
-        if (e.target === e.currentTarget) {onClose();}
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
       }}
     >
       <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
@@ -121,11 +140,13 @@ export function PersonalTaskModal({
         <div className="flex-1 space-y-5 overflow-y-auto p-6">
           <FormInput
             label="Título *"
-            placeholder="Ex.: Ligar pro fornecedor"
+            placeholder="Ex.: Agendar visita apartamento."
             value={title}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setTitle(e.target.value);
-              if (fieldErrors.title) {setFieldErrors((p) => ({ ...p, title: '' }));}
+              if (fieldErrors.title) {
+                setFieldErrors((p) => ({ ...p, title: '' }));
+              }
             }}
             error={fieldErrors.title}
           />
@@ -136,7 +157,9 @@ export function PersonalTaskModal({
             value={dueDateStr}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setDueDateStr(e.target.value);
-              if (fieldErrors.dueDate) {setFieldErrors((p) => ({ ...p, dueDate: '' }));}
+              if (fieldErrors.dueDate) {
+                setFieldErrors((p) => ({ ...p, dueDate: '' }));
+              }
             }}
             error={fieldErrors.dueDate}
           />
@@ -166,7 +189,11 @@ export function PersonalTaskModal({
             )}
           </div>
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="btn-ghost-border">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-ghost-border"
+            >
               Cancelar
             </button>
             <button

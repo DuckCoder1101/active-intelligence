@@ -8,12 +8,12 @@ import {
   MdLockReset,
   MdDeleteOutline,
 } from 'react-icons/md';
-import { IMaskInput } from 'react-imask';
 import { toast } from 'react-toastify';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { PhoneInput } from '@/components/ui/phone-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { formatPhone } from '@/formatters/formatPhone';
 import type { UserProfile } from '@/models/user-profile.model';
@@ -209,16 +209,7 @@ function EditUserModal({
           name="phone"
           control={control}
           render={({ field }) => (
-            <FormInput
-              as={IMaskInput}
-              mask={[{ mask: '(00) 0000-0000' }, { mask: '(00) 00000-0000' }]}
-              label="Celular"
-              type="tel"
-              placeholder="(00) 00000-0000"
-              error={errors.phone?.message}
-              {...field}
-              onAccept={(value: string) => field.onChange(value)}
-            />
+            <PhoneInput label="Celular" error={errors.phone?.message} {...field} />
           )}
         />
       </form>

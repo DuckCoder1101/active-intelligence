@@ -1,4 +1,4 @@
-import { useFormContext, useWatch } from 'react-hook-form';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 import type { FormValues } from './lead-drawer.component';
 
@@ -18,14 +18,20 @@ export function LeadQualificationTab() {
 
   return (
     <div className="space-y-4">
-      <FormSelect label="Forma de pagamento" {...register('paymentMethod')}>
-        <option value="">Selecione...</option>
-        {PAYMENT_METHODS.map((p) => (
-          <option key={p} value={p}>
-            {PAYMENT_METHOD_LABELS[p]}
-          </option>
-        ))}
-      </FormSelect>
+      <Controller
+        name="paymentMethod"
+        control={control}
+        render={({ field }) => (
+          <FormSelect label="Forma de pagamento" {...field}>
+            <option value="">Selecione...</option>
+            {PAYMENT_METHODS.map((p) => (
+              <option key={p} value={p}>
+                {PAYMENT_METHOD_LABELS[p]}
+              </option>
+            ))}
+          </FormSelect>
+        )}
+      />
 
       <label className="flex items-center gap-2 text-[13px] text-text">
         <input
@@ -57,14 +63,20 @@ export function LeadQualificationTab() {
         Já consultou outro corretor?
       </label>
 
-      <FormSelect label="Temperatura" {...register('temperature')}>
-        <option value="">Selecione...</option>
-        {TEMPERATURES.map((t) => (
-          <option key={t} value={t}>
-            {TEMPERATURE_LABELS[t]}
-          </option>
-        ))}
-      </FormSelect>
+      <Controller
+        name="temperature"
+        control={control}
+        render={({ field }) => (
+          <FormSelect label="Temperatura" {...field}>
+            <option value="">Selecione...</option>
+            {TEMPERATURES.map((t) => (
+              <option key={t} value={t}>
+                {TEMPERATURE_LABELS[t]}
+              </option>
+            ))}
+          </FormSelect>
+        )}
+      />
     </div>
   );
 }

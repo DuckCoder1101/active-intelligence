@@ -233,8 +233,8 @@ export function ClientTaskModal({
                 <FormSelect
                   label="Categoria"
                   value={categoryId}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                    setCategoryId(e.target.value);
+                  onChange={(value) => {
+                    setCategoryId(value);
                     setSubcategoryId('');
                   }}
                 >
@@ -259,13 +259,7 @@ export function ClientTaskModal({
               </div>
 
               {(selectedCategory?.subcategories.length ?? 0) > 0 && (
-                <FormSelect
-                  label="Subcategoria"
-                  value={subcategoryId}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    setSubcategoryId(e.target.value)
-                  }
-                >
+                <FormSelect label="Subcategoria" value={subcategoryId} onChange={setSubcategoryId}>
                   <option value="">Nenhuma</option>
                   {selectedCategory?.subcategories.map((s) => (
                     <option key={s.subcategoryId} value={s.subcategoryId}>

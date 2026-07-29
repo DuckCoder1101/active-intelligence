@@ -1,4 +1,4 @@
-import { useFormContext, useWatch } from 'react-hook-form';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 import type { FormValues } from './lead-drawer.component';
 
@@ -21,13 +21,19 @@ export function LeadBusinessTab() {
 
   return (
     <div className="space-y-4">
-      <FormSelect label="Tipo do negócio *" {...register('businessType')}>
-        {BUSINESS_TYPES.map((t) => (
-          <option key={t} value={t}>
-            {BUSINESS_TYPE_LABELS[t]}
-          </option>
-        ))}
-      </FormSelect>
+      <Controller
+        name="businessType"
+        control={control}
+        render={({ field }) => (
+          <FormSelect label="Tipo do negócio *" {...field}>
+            {BUSINESS_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {BUSINESS_TYPE_LABELS[t]}
+              </option>
+            ))}
+          </FormSelect>
+        )}
+      />
       {businessType === 'outro' && (
         <FormInput
           label="Especifique o tipo de negócio"
@@ -35,14 +41,20 @@ export function LeadBusinessTab() {
         />
       )}
 
-      <FormSelect label="Tipo do imóvel" {...register('propertyType')}>
-        <option value="">Selecione...</option>
-        {PROPERTY_TYPES.map((t) => (
-          <option key={t} value={t}>
-            {PROPERTY_TYPE_LABELS[t]}
-          </option>
-        ))}
-      </FormSelect>
+      <Controller
+        name="propertyType"
+        control={control}
+        render={({ field }) => (
+          <FormSelect label="Tipo do imóvel" {...field}>
+            <option value="">Selecione...</option>
+            {PROPERTY_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {PROPERTY_TYPE_LABELS[t]}
+              </option>
+            ))}
+          </FormSelect>
+        )}
+      />
       {propertyType === 'outro' && (
         <FormInput
           label="Especifique o tipo de imóvel"
@@ -50,14 +62,20 @@ export function LeadBusinessTab() {
         />
       )}
 
-      <FormSelect label="Finalidade" {...register('purpose')}>
-        <option value="">Selecione...</option>
-        {PURPOSES.map((p) => (
-          <option key={p} value={p}>
-            {PURPOSE_LABELS[p]}
-          </option>
-        ))}
-      </FormSelect>
+      <Controller
+        name="purpose"
+        control={control}
+        render={({ field }) => (
+          <FormSelect label="Finalidade" {...field}>
+            <option value="">Selecione...</option>
+            {PURPOSES.map((p) => (
+              <option key={p} value={p}>
+                {PURPOSE_LABELS[p]}
+              </option>
+            ))}
+          </FormSelect>
+        )}
+      />
     </div>
   );
 }

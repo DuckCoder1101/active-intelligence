@@ -12,7 +12,11 @@ import { IMaskInput } from 'react-imask';
 import { toast } from 'react-toastify';
 
 import { SaveBar } from '@/components/layout/save-bar.component';
+import { CepInput } from '@/components/ui/cep-input.component';
+import { CnpjInput } from '@/components/ui/cnpj-input.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { FormSelect } from '@/components/ui/form-select.component';
+import { PhoneInput } from '@/components/ui/phone-input.component';
 import { Section } from '@/components/ui/section.component';
 import { BRAZILIAN_STATES } from '@/constants/brazilian-states.const';
 import { formatCNPJ } from '@/formatters/formatCnpj';
@@ -192,15 +196,10 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                   'CNPJ deve ter 14 dígitos',
               }}
               render={({ field }) => (
-                <FormInput
-                  as={IMaskInput}
-                  mask="00.000.000/0000-00"
+                <CnpjInput
                   label="CNPJ *"
-                  type="tel"
-                  placeholder="00.000.000/0000-00"
                   error={errors.legalInformation?.documentNumber?.message}
                   {...field}
-                  onAccept={(value: string) => field.onChange(value)}
                 />
               )}
             />
@@ -223,31 +222,25 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                 control={control}
                 rules={{ required: 'Telefone obrigatório' }}
                 render={({ field }) => (
-                  <FormInput
-                    as={IMaskInput}
-                    mask={[
-                      { mask: '(00) 0000-0000' },
-                      { mask: '(00) 00000-0000' },
-                    ]}
+                  <PhoneInput
                     label="Telefone *"
-                    type="tel"
-                    placeholder="(00) 00000-0000"
                     error={errors.contact?.phone?.message}
                     {...field}
-                    onAccept={(value: string) => field.onChange(value)}
                   />
                 )}
               />
             </div>
-            <FormInput
-              as="select"
-              label="Estágio"
-              {...register('companyStage')}
-            >
-              <option value="comercial">Comercial</option>
-              <option value="operacional">Operacional</option>
-              <option value="inactive">Inativo</option>
-            </FormInput>
+            <Controller
+              name="companyStage"
+              control={control}
+              render={({ field }) => (
+                <FormSelect label="Estágio" {...field} value={field.value ?? ''}>
+                  <option value="comercial">Comercial</option>
+                  <option value="operacional">Operacional</option>
+                  <option value="inactive">Inativo</option>
+                </FormSelect>
+              )}
+            />
           </div>
         </Section>
 
@@ -255,17 +248,19 @@ export function ClientInfoTab({ company, onSaved }: Props) {
         <Section icon={MdOutlineBarChart} title="Mercado">
           <div className="space-y-4">
             <div className="form-grid">
-              <FormInput
-                as="select"
-                label="Setor de atuação"
-                {...register('business.businessSector')}
-              >
-                <option value="imobiliaria">Imobiliária</option>
-                <option value="construtora">Construtora</option>
-                <option value="incorporadora">Incorporadora</option>
-                <option value="corretor_autonomo">Corretor Autônomo</option>
-                <option value="outro">Outro</option>
-              </FormInput>
+              <Controller
+                name="business.businessSector"
+                control={control}
+                render={({ field }) => (
+                  <FormSelect label="Setor de atuação" {...field} value={field.value ?? ''}>
+                    <option value="imobiliaria">Imobiliária</option>
+                    <option value="construtora">Construtora</option>
+                    <option value="incorporadora">Incorporadora</option>
+                    <option value="corretor_autonomo">Corretor Autônomo</option>
+                    <option value="outro">Outro</option>
+                  </FormSelect>
+                )}
+              />
               <FormInput
                 label="Segmento personalizado"
                 placeholder={
@@ -296,20 +291,22 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                   />
                 )}
               />
-              <FormInput
-                as="select"
-                label="Faixa de faturamento"
-                {...register('business.revenueRange')}
-              >
-                <option value="">Não informado</option>
-                <option value="UpTo500K">Até R$ 500K</option>
-                <option value="From500KTo2M">R$ 500K a R$ 2M</option>
-                <option value="From2MTo5M">R$ 2M a R$ 5M</option>
-                <option value="From5MTo10M">R$ 5M a R$ 10M</option>
-                <option value="From10MTo30M">R$ 10M a R$ 30M</option>
-                <option value="From30MTo100M">R$ 30M a R$ 100M</option>
-                <option value="Above100M">Acima de R$ 100M</option>
-              </FormInput>
+              <Controller
+                name="business.revenueRange"
+                control={control}
+                render={({ field }) => (
+                  <FormSelect label="Faixa de faturamento" {...field} value={field.value ?? ''}>
+                    <option value="">Não informado</option>
+                    <option value="UpTo500K">Até R$ 500K</option>
+                    <option value="From500KTo2M">R$ 500K a R$ 2M</option>
+                    <option value="From2MTo5M">R$ 2M a R$ 5M</option>
+                    <option value="From5MTo10M">R$ 5M a R$ 10M</option>
+                    <option value="From10MTo30M">R$ 10M a R$ 30M</option>
+                    <option value="From30MTo100M">R$ 30M a R$ 100M</option>
+                    <option value="Above100M">Acima de R$ 100M</option>
+                  </FormSelect>
+                )}
+              />
             </div>
             <div className="form-grid">
               <FormInput
@@ -376,15 +373,10 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                     'CEP deve ter 8 dígitos',
                 }}
                 render={({ field }) => (
-                  <FormInput
-                    as={IMaskInput}
-                    mask="00000-000"
+                  <CepInput
                     label="CEP"
-                    type="tel"
-                    placeholder="00000-000"
                     error={errors.location?.zipCode?.message}
                     {...field}
-                    onAccept={(value: string) => field.onChange(value)}
                   />
                 )}
               />
@@ -396,19 +388,20 @@ export function ClientInfoTab({ company, onSaved }: Props) {
                   required: 'Cidade obrigatória',
                 })}
               />
-              <FormInput
-                as="select"
-                label="Estado *"
-                {...register('location.state', {
-                  required: 'Estado obrigatório',
-                })}
-              >
-                {BRAZILIAN_STATES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </FormInput>
+              <Controller
+                name="location.state"
+                control={control}
+                rules={{ required: 'Estado obrigatório' }}
+                render={({ field }) => (
+                  <FormSelect label="Estado *" {...field}>
+                    {BRAZILIAN_STATES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </FormSelect>
+                )}
+              />
             </div>
           </div>
         </Section>

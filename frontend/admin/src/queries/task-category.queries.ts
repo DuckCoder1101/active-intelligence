@@ -79,7 +79,8 @@ export function useDeleteTaskSubcategoryMutation() {
 export function useSaveTaskTagMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (name: string) => TaskCategoryService.saveTag(name),
+    mutationFn: ({ name, color }: { name: string; color: string }) =>
+      TaskCategoryService.saveTag(name, color),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskCategoryKeys.tags });
     },

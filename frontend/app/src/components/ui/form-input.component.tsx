@@ -35,7 +35,8 @@ export function FormInput({
           ref={ref}
           id={generatedId}
           className={[
-            'w-full rounded-md border bg-card px-3 py-2 text-sm text-text outline-none placeholder:text-text-muted transition-colors focus:border-primary',
+            'w-full rounded-md border bg-card text-sm text-text outline-none placeholder:text-text-muted transition-colors focus:border-primary',
+            Tag === 'textarea' ? 'px-3 py-2' : 'h-9.5 px-3',
             error ? 'border-danger focus:border-danger' : 'border-border',
             rightSlot ? 'pr-9' : '',
             className ?? '',

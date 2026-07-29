@@ -347,19 +347,27 @@ export function LeadDrawer({
             />
           </div>
 
-          {/* Scrollable form body */}
+          {/* Scrollable form body — every tab stays mounted (just hidden)
+              so RHF keeps validating/registering fields on tabs the user
+              isn't currently looking at. */}
           <div className="flex-1 overflow-y-auto p-6">
-            {activeTab === 'contact' && (
+            <div className={activeTab === 'contact' ? '' : 'hidden'}>
               <LeadContactTab
                 companyId={companyId}
                 origins={origins}
                 tags={tags}
                 teammates={teammates}
               />
-            )}
-            {activeTab === 'business' && <LeadBusinessTab />}
-            {activeTab === 'profile' && <LeadProfileTab />}
-            {activeTab === 'qualification' && <LeadQualificationTab />}
+            </div>
+            <div className={activeTab === 'business' ? '' : 'hidden'}>
+              <LeadBusinessTab />
+            </div>
+            <div className={activeTab === 'profile' ? '' : 'hidden'}>
+              <LeadProfileTab />
+            </div>
+            <div className={activeTab === 'qualification' ? '' : 'hidden'}>
+              <LeadQualificationTab />
+            </div>
           </div>
 
           {/* Fixed footer */}

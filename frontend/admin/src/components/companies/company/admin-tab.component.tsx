@@ -234,16 +234,18 @@ export function ClientFinancialTab({ company, onSaved }: Props) {
 
         <Section icon={MdOutlineDescription} title="Contrato">
           <div className="space-y-4">
-            <FormSelect
-              label="Tipo de contrato *"
-              {...register('contractType', {
-                required: true,
-              })}
-            >
-              <option value="">Selecione...</option>
-              <option value="mrr">Recorrente (MRR)</option>
-              <option value="tcv">Fechado (TCV)</option>
-            </FormSelect>
+            <Controller
+              name="contractType"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <FormSelect label="Tipo de contrato *" {...field} value={field.value ?? ''}>
+                  <option value="">Selecione...</option>
+                  <option value="mrr">Recorrente (MRR)</option>
+                  <option value="tcv">Fechado (TCV)</option>
+                </FormSelect>
+              )}
+            />
 
             {contractType === 'mrr' && (
               <div className="space-y-4 border-t border-border pt-4">
@@ -262,18 +264,24 @@ export function ClientFinancialTab({ company, onSaved }: Props) {
                       />
                     )}
                   />
-                  <FormSelect
-                    label="Forma de pagamento *"
-                    error={errors.mrr?.paymentMethod?.message}
-                    {...register('mrr.paymentMethod', {
-                      required: 'Forma de pagamento obrigatória',
-                    })}
-                  >
-                    <option value="">Selecione...</option>
-                    <option value="pix">PIX</option>
-                    <option value="boleto">Boleto</option>
-                    <option value="cartao">Cartão</option>
-                  </FormSelect>
+                  <Controller
+                    name="mrr.paymentMethod"
+                    control={control}
+                    rules={{ required: 'Forma de pagamento obrigatória' }}
+                    render={({ field }) => (
+                      <FormSelect
+                        label="Forma de pagamento *"
+                        error={errors.mrr?.paymentMethod?.message}
+                        {...field}
+                        value={field.value ?? ''}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="pix">PIX</option>
+                        <option value="boleto">Boleto</option>
+                        <option value="cartao">Cartão</option>
+                      </FormSelect>
+                    )}
+                  />
                 </div>
                 <div className="form-grid">
                   <FormInput
@@ -331,31 +339,43 @@ export function ClientFinancialTab({ company, onSaved }: Props) {
                     />
                   )}
                 />
-                <FormSelect
-                  label="Forma de pagamento *"
-                  error={errors.tcv?.paymentType?.message}
-                  {...register('tcv.paymentType', {
-                    required: 'Forma de pagamento obrigatória',
-                  })}
-                >
-                  <option value="">Selecione...</option>
-                  <option value="avista">À vista</option>
-                  <option value="parcelado">Parcelado</option>
-                </FormSelect>
+                <Controller
+                  name="tcv.paymentType"
+                  control={control}
+                  rules={{ required: 'Forma de pagamento obrigatória' }}
+                  render={({ field }) => (
+                    <FormSelect
+                      label="Forma de pagamento *"
+                      error={errors.tcv?.paymentType?.message}
+                      {...field}
+                      value={field.value ?? ''}
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="avista">À vista</option>
+                      <option value="parcelado">Parcelado</option>
+                    </FormSelect>
+                  )}
+                />
 
                 {tcvPaymentType === 'avista' && (
-                  <FormSelect
-                    label="Método (à vista) *"
-                    error={errors.tcv?.paymentMethod?.message}
-                    {...register('tcv.paymentMethod', {
-                      required: 'Método de pagamento obrigatório',
-                    })}
-                  >
-                    <option value="">Selecione...</option>
-                    <option value="pix">PIX</option>
-                    <option value="cartao">Cartão</option>
-                    <option value="boleto">Boleto</option>
-                  </FormSelect>
+                  <Controller
+                    name="tcv.paymentMethod"
+                    control={control}
+                    rules={{ required: 'Método de pagamento obrigatório' }}
+                    render={({ field }) => (
+                      <FormSelect
+                        label="Método (à vista) *"
+                        error={errors.tcv?.paymentMethod?.message}
+                        {...field}
+                        value={field.value ?? ''}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="pix">PIX</option>
+                        <option value="cartao">Cartão</option>
+                        <option value="boleto">Boleto</option>
+                      </FormSelect>
+                    )}
+                  />
                 )}
 
                 {tcvPaymentType === 'parcelado' && (
@@ -411,17 +431,20 @@ export function ClientFinancialTab({ company, onSaved }: Props) {
         </Section>
 
         <Section icon={MdOutlinePersonOutline} title="Responsável">
-          <FormSelect
-            label="Responsável administrativo"
-            {...register('administrativeResponsibleUid')}
-          >
-            <option value="">Não definido</option>
-            {admins.map((admin) => (
-              <option key={admin.uid} value={admin.uid}>
-                {admin.name}
-              </option>
-            ))}
-          </FormSelect>
+          <Controller
+            name="administrativeResponsibleUid"
+            control={control}
+            render={({ field }) => (
+              <FormSelect label="Responsável administrativo" {...field} value={field.value ?? ''}>
+                <option value="">Não definido</option>
+                {admins.map((admin) => (
+                  <option key={admin.uid} value={admin.uid}>
+                    {admin.name}
+                  </option>
+                ))}
+              </FormSelect>
+            )}
+          />
         </Section>
       </form>
 

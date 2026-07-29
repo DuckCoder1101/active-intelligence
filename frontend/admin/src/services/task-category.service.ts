@@ -68,10 +68,10 @@ export default class TaskCategoryService {
     'listTaskTagsHandler',
   );
 
-  private static saveTagCallable = httpsCallable<{ name: string }, TaskTag>(
-    functions,
-    'saveTaskTagHandler',
-  );
+  private static saveTagCallable = httpsCallable<
+    { name: string; color: string },
+    TaskTag
+  >(functions, 'saveTaskTagHandler');
 
   private static deleteTagCallable = httpsCallable<
     { tagId: string },
@@ -83,8 +83,8 @@ export default class TaskCategoryService {
     return r.data;
   }
 
-  static async saveTag(name: string): Promise<TaskTag> {
-    const r = await this.saveTagCallable({ name });
+  static async saveTag(name: string, color: string): Promise<TaskTag> {
+    const r = await this.saveTagCallable({ name, color });
     return r.data;
   }
 

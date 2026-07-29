@@ -4,6 +4,7 @@ import { MdAdd } from 'react-icons/md';
 
 import { TransactionModal } from '@/components/finances/transaction-modal.component';
 import { Badge } from '@/components/ui/badge.component';
+import { FormSelect } from '@/components/ui/form-select.component';
 import { formatCurrency } from '@/formatters/formatCurrency';
 import { formatDateShort } from '@/formatters/formatDate';
 import {
@@ -78,10 +79,9 @@ export function FinanceTransactionsTab() {
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1">
             <span className="form-label">Tipo</span>
-            <select
+            <FormSelect
               value={filterType}
-              onChange={(e) => setFilterType(e.target.value as '' | TransactionType)}
-              className="rounded-md border border-border bg-card px-3 py-2 text-sm text-text outline-none transition-colors focus:border-orange"
+              onChange={(value) => setFilterType(value as '' | TransactionType)}
             >
               <option value="">Todos</option>
               {TRANSACTION_TYPES.map((t) => (
@@ -89,23 +89,20 @@ export function FinanceTransactionsTab() {
                   {TRANSACTION_TYPE_LABELS[t]}
                 </option>
               ))}
-            </select>
+            </FormSelect>
           </div>
 
           <div className="flex flex-col gap-1">
             <span className="form-label">Status</span>
-            <select
+            <FormSelect
               value={filterStatus}
-              onChange={(e) =>
-                setFilterStatus(e.target.value as '' | TransactionStatus)
-              }
-              className="rounded-md border border-border bg-card px-3 py-2 text-sm text-text outline-none transition-colors focus:border-orange"
+              onChange={(value) => setFilterStatus(value as '' | TransactionStatus)}
             >
               <option value="">Todos</option>
               <option value="previsto">Previsto</option>
               <option value="realizado">Realizado</option>
               <option value="atrasado">Atrasado</option>
-            </select>
+            </FormSelect>
           </div>
 
           <input

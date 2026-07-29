@@ -11,10 +11,13 @@ import {
   type FinancialFormValues,
 } from '@/components/companies/company/admin-tab.component';
 import { Modal } from '@/components/layout/modal.component';
+import { CepInput } from '@/components/ui/cep-input.component';
+import { CnpjInput } from '@/components/ui/cnpj-input.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { FormSelect } from '@/components/ui/form-select.component';
 import { MoneyInput } from '@/components/ui/money-input.component';
 import { MultiSelect } from '@/components/ui/multi-select.component';
+import { PhoneInput } from '@/components/ui/phone-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { Tabs } from '@/components/ui/tabs.component';
 import { BRAZILIAN_STATES } from '@/constants/brazilian-states.const';
@@ -267,15 +270,10 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
                 'CNPJ deve ter 14 dígitos',
             }}
             render={({ field }) => (
-              <FormInput
-                as={IMaskInput}
-                mask="00.000.000/0000-00"
+              <CnpjInput
                 label="CNPJ *"
-                type="tel"
-                placeholder="00.000.000/0000-00"
                 error={errors.legalInformation?.documentNumber?.message}
                 {...field}
-                onAccept={(value: string) => field.onChange(value)}
               />
             )}
           />
@@ -298,42 +296,42 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
               control={control}
               rules={{ required: 'Telefone obrigatório' }}
               render={({ field }) => (
-                <FormInput
-                  as={IMaskInput}
-                  mask={[
-                    { mask: '(00) 0000-0000' },
-                    { mask: '(00) 00000-0000' },
-                  ]}
+                <PhoneInput
                   label="Telefone *"
-                  type="tel"
-                  placeholder="(00) 00000-0000"
                   error={errors.contact?.phone?.message}
                   {...field}
-                  onAccept={(value: string) => field.onChange(value)}
                 />
               )}
             />
           </div>
-          <FormInput as="select" label="Estágio" {...register('companyStage')}>
-            <option value="comercial">Comercial</option>
-            <option value="operacional">Operacional</option>
-          </FormInput>
+          <Controller
+            name="companyStage"
+            control={control}
+            render={({ field }) => (
+              <FormSelect label="Estágio" {...field} value={field.value ?? ''}>
+                <option value="comercial">Comercial</option>
+                <option value="operacional">Operacional</option>
+              </FormSelect>
+            )}
+          />
         </div>
 
         {/* Mercado */}
         <div className={activeTab === 'mercado' ? 'space-y-4' : 'hidden'}>
           <div className="form-grid">
-            <FormInput
-              as="select"
-              label="Setor de atuação"
-              {...register('business.businessSector')}
-            >
-              <option value="imobiliaria">Imobiliária</option>
-              <option value="construtora">Construtora</option>
-              <option value="incorporadora">Incorporadora</option>
-              <option value="corretor_autonomo">Corretor Autônomo</option>
-              <option value="outro">Outro</option>
-            </FormInput>
+            <Controller
+              name="business.businessSector"
+              control={control}
+              render={({ field }) => (
+                <FormSelect label="Setor de atuação" {...field} value={field.value ?? ''}>
+                  <option value="imobiliaria">Imobiliária</option>
+                  <option value="construtora">Construtora</option>
+                  <option value="incorporadora">Incorporadora</option>
+                  <option value="corretor_autonomo">Corretor Autônomo</option>
+                  <option value="outro">Outro</option>
+                </FormSelect>
+              )}
+            />
             <FormInput
               label="Segmento personalizado"
               placeholder={businessSector === 'outro' ? 'Ex: Loteamentos' : '—'}
@@ -362,20 +360,22 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
                 />
               )}
             />
-            <FormInput
-              as="select"
-              label="Faixa de faturamento"
-              {...register('business.revenueRange')}
-            >
-              <option value="">Não informado</option>
-              <option value="UpTo500K">Até R$ 500K</option>
-              <option value="From500KTo2M">R$ 500K a R$ 2M</option>
-              <option value="From2MTo5M">R$ 2M a R$ 5M</option>
-              <option value="From5MTo10M">R$ 5M a R$ 10M</option>
-              <option value="From10MTo30M">R$ 10M a R$ 30M</option>
-              <option value="From30MTo100M">R$ 30M a R$ 100M</option>
-              <option value="Above100M">Acima de R$ 100M</option>
-            </FormInput>
+            <Controller
+              name="business.revenueRange"
+              control={control}
+              render={({ field }) => (
+                <FormSelect label="Faixa de faturamento" {...field} value={field.value ?? ''}>
+                  <option value="">Não informado</option>
+                  <option value="UpTo500K">Até R$ 500K</option>
+                  <option value="From500KTo2M">R$ 500K a R$ 2M</option>
+                  <option value="From2MTo5M">R$ 2M a R$ 5M</option>
+                  <option value="From5MTo10M">R$ 5M a R$ 10M</option>
+                  <option value="From10MTo30M">R$ 10M a R$ 30M</option>
+                  <option value="From30MTo100M">R$ 30M a R$ 100M</option>
+                  <option value="Above100M">Acima de R$ 100M</option>
+                </FormSelect>
+              )}
+            />
           </div>
           <div className="form-grid">
             <FormInput
@@ -440,15 +440,10 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
                   'CEP deve ter 8 dígitos',
               }}
               render={({ field }) => (
-                <FormInput
-                  as={IMaskInput}
-                  mask="00000-000"
+                <CepInput
                   label="CEP"
-                  type="tel"
-                  placeholder="00000-000"
                   error={errors.location?.zipCode?.message}
                   {...field}
-                  onAccept={(value: string) => field.onChange(value)}
                 />
               )}
             />
@@ -458,19 +453,20 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
               error={errors.location?.city?.message}
               {...register('location.city', { required: 'Cidade obrigatória' })}
             />
-            <FormInput
-              as="select"
-              label="Estado *"
-              {...register('location.state', {
-                required: 'Estado obrigatório',
-              })}
-            >
-              {BRAZILIAN_STATES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </FormInput>
+            <Controller
+              name="location.state"
+              control={control}
+              rules={{ required: 'Estado obrigatório' }}
+              render={({ field }) => (
+                <FormSelect label="Estado *" {...field}>
+                  {BRAZILIAN_STATES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </FormSelect>
+              )}
+            />
           </div>
         </div>
 
@@ -548,14 +544,17 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
               )}
             />
 
-            <FormSelect
-              label="Tipo de contrato"
-              {...register('financial.contractType')}
-            >
-              <option value="">Selecione...</option>
-              <option value="mrr">Recorrente (MRR)</option>
-              <option value="tcv">Fechado (TCV)</option>
-            </FormSelect>
+            <Controller
+              name="financial.contractType"
+              control={control}
+              render={({ field }) => (
+                <FormSelect label="Tipo de contrato" {...field} value={field.value ?? ''}>
+                  <option value="">Selecione...</option>
+                  <option value="mrr">Recorrente (MRR)</option>
+                  <option value="tcv">Fechado (TCV)</option>
+                </FormSelect>
+              )}
+            />
 
             {contractType === 'mrr' && (
               <div className="space-y-4 border-t border-border pt-4">
@@ -574,18 +573,24 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
                       />
                     )}
                   />
-                  <FormSelect
-                    label="Forma de pagamento *"
-                    error={errors.financial?.mrr?.paymentMethod?.message}
-                    {...register('financial.mrr.paymentMethod', {
-                      required: 'Forma de pagamento obrigatória',
-                    })}
-                  >
-                    <option value="">Selecione...</option>
-                    <option value="pix">PIX</option>
-                    <option value="boleto">Boleto</option>
-                    <option value="cartao">Cartão</option>
-                  </FormSelect>
+                  <Controller
+                    name="financial.mrr.paymentMethod"
+                    control={control}
+                    rules={{ required: 'Forma de pagamento obrigatória' }}
+                    render={({ field }) => (
+                      <FormSelect
+                        label="Forma de pagamento *"
+                        error={errors.financial?.mrr?.paymentMethod?.message}
+                        {...field}
+                        value={field.value ?? ''}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="pix">PIX</option>
+                        <option value="boleto">Boleto</option>
+                        <option value="cartao">Cartão</option>
+                      </FormSelect>
+                    )}
+                  />
                 </div>
                 <div className="form-grid">
                   <FormInput
@@ -643,31 +648,43 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
                     />
                   )}
                 />
-                <FormSelect
-                  label="Forma de pagamento *"
-                  error={errors.financial?.tcv?.paymentType?.message}
-                  {...register('financial.tcv.paymentType', {
-                    required: 'Forma de pagamento obrigatória',
-                  })}
-                >
-                  <option value="">Selecione...</option>
-                  <option value="avista">À vista</option>
-                  <option value="parcelado">Parcelado</option>
-                </FormSelect>
+                <Controller
+                  name="financial.tcv.paymentType"
+                  control={control}
+                  rules={{ required: 'Forma de pagamento obrigatória' }}
+                  render={({ field }) => (
+                    <FormSelect
+                      label="Forma de pagamento *"
+                      error={errors.financial?.tcv?.paymentType?.message}
+                      {...field}
+                      value={field.value ?? ''}
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="avista">À vista</option>
+                      <option value="parcelado">Parcelado</option>
+                    </FormSelect>
+                  )}
+                />
 
                 {tcvPaymentType === 'avista' && (
-                  <FormSelect
-                    label="Método (à vista) *"
-                    error={errors.financial?.tcv?.paymentMethod?.message}
-                    {...register('financial.tcv.paymentMethod', {
-                      required: 'Método de pagamento obrigatório',
-                    })}
-                  >
-                    <option value="">Selecione...</option>
-                    <option value="pix">PIX</option>
-                    <option value="cartao">Cartão</option>
-                    <option value="boleto">Boleto</option>
-                  </FormSelect>
+                  <Controller
+                    name="financial.tcv.paymentMethod"
+                    control={control}
+                    rules={{ required: 'Método de pagamento obrigatório' }}
+                    render={({ field }) => (
+                      <FormSelect
+                        label="Método (à vista) *"
+                        error={errors.financial?.tcv?.paymentMethod?.message}
+                        {...field}
+                        value={field.value ?? ''}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="pix">PIX</option>
+                        <option value="cartao">Cartão</option>
+                        <option value="boleto">Boleto</option>
+                      </FormSelect>
+                    )}
+                  />
                 )}
 
                 {tcvPaymentType === 'parcelado' && (
@@ -722,17 +739,24 @@ export function CreateCompanyModal({ onClose, onSaved }: CompanyModalProps) {
               </div>
             )}
 
-            <FormSelect
-              label="Responsável administrativo"
-              {...register('financial.administrativeResponsibleUid')}
-            >
-              <option value="">Não definido</option>
-              {admins.map((admin) => (
-                <option key={admin.uid} value={admin.uid}>
-                  {admin.name}
-                </option>
-              ))}
-            </FormSelect>
+            <Controller
+              name="financial.administrativeResponsibleUid"
+              control={control}
+              render={({ field }) => (
+                <FormSelect
+                  label="Responsável administrativo"
+                  {...field}
+                  value={field.value ?? ''}
+                >
+                  <option value="">Não definido</option>
+                  {admins.map((admin) => (
+                    <option key={admin.uid} value={admin.uid}>
+                      {admin.name}
+                    </option>
+                  ))}
+                </FormSelect>
+              )}
+            />
           </div>
         )}
       </form>

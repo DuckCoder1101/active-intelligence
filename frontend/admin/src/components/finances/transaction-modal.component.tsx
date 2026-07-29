@@ -179,13 +179,20 @@ export function TransactionModal({
             className="flex-1 space-y-4 overflow-y-auto p-6"
           >
             <div className="form-grid">
-              <FormSelect label="Tipo *" {...register('type', { required: true })}>
-                {TRANSACTION_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {TRANSACTION_TYPE_LABELS[t]}
-                  </option>
-                ))}
-              </FormSelect>
+              <Controller
+                name="type"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <FormSelect label="Tipo *" {...field}>
+                    {TRANSACTION_TYPES.map((t) => (
+                      <option key={t} value={t}>
+                        {TRANSACTION_TYPE_LABELS[t]}
+                      </option>
+                    ))}
+                  </FormSelect>
+                )}
+              />
 
               <Controller
                 name="amount"
@@ -234,30 +241,41 @@ export function TransactionModal({
               />
             </div>
 
-            <FormSelect label="Cliente" {...register('companyId')}>
-              <option value="">— sem cliente —</option>
-              {companies.map((c) => (
-                <option key={c.companyId} value={c.companyId}>
-                  {c.displayName}
-                </option>
-              ))}
-            </FormSelect>
+            <Controller
+              name="companyId"
+              control={control}
+              render={({ field }) => (
+                <FormSelect label="Cliente" {...field}>
+                  <option value="">— sem cliente —</option>
+                  {companies.map((c) => (
+                    <option key={c.companyId} value={c.companyId}>
+                      {c.displayName}
+                    </option>
+                  ))}
+                </FormSelect>
+              )}
+            />
 
             <div className="form-grid">
-              <FormSelect
-                label="Forma de pagamento *"
-                error={errors.paymentMethod?.message}
-                {...register('paymentMethod', {
-                  required: 'Forma de pagamento obrigatória',
-                })}
-              >
-                <option value="">Selecione...</option>
-                {PAYMENT_METHODS.map((m) => (
-                  <option key={m} value={m}>
-                    {PAYMENT_METHOD_LABELS[m]}
-                  </option>
-                ))}
-              </FormSelect>
+              <Controller
+                name="paymentMethod"
+                control={control}
+                rules={{ required: 'Forma de pagamento obrigatória' }}
+                render={({ field }) => (
+                  <FormSelect
+                    label="Forma de pagamento *"
+                    error={errors.paymentMethod?.message}
+                    {...field}
+                  >
+                    <option value="">Selecione...</option>
+                    {PAYMENT_METHODS.map((m) => (
+                      <option key={m} value={m}>
+                        {PAYMENT_METHOD_LABELS[m]}
+                      </option>
+                    ))}
+                  </FormSelect>
+                )}
+              />
 
               <Controller
                 name="accountId"
