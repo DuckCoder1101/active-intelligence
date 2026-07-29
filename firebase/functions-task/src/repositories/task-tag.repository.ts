@@ -13,7 +13,11 @@ export class TaskTagRepository {
     return snap.docs
       .map((doc) => {
         const data = doc.data() as TaskTagDocument;
-        return { tagId: doc.id, name: data.name };
+        return {
+          tagId: doc.id,
+          name: data.name,
+          color: data.color ?? "#94a3b8",
+        };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -22,9 +26,14 @@ export class TaskTagRepository {
     const ref = this.col.doc();
     await ref.set({
       name: data.name,
+      color: data.color,
       createdAt: FieldValue.serverTimestamp(),
     });
-    return { tagId: ref.id, name: data.name };
+    return {
+      tagId: ref.id,
+      name: data.name,
+      color: data.color,
+    };
   }
 
   static async delete(tagId: string): Promise<void> {

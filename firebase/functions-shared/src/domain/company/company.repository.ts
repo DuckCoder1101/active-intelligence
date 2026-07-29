@@ -6,7 +6,6 @@ import {
   RegisterCompanyDTO,
 } from "./company.type";
 import { CompanyDocument } from "./company.document";
-import { CompanyStage } from "./companyStage.emum";
 import { HttpsError } from "firebase-functions/https";
 
 export class CompanyRepository {
@@ -34,9 +33,9 @@ export class CompanyRepository {
       );
     }
 
-    const ref = companyId ?
-      this.companiesCollection.doc(companyId) :
-      this.companiesCollection.doc();
+    const ref = companyId
+      ? this.companiesCollection.doc(companyId)
+      : this.companiesCollection.doc();
 
     await ref.set(
       {
@@ -58,20 +57,6 @@ export class CompanyRepository {
     }
 
     await ref.delete();
-  }
-
-  static async setActive(companyId: string, active: boolean): Promise<void> {
-    const ref = this.companiesCollection.doc(companyId);
-    const doc = await ref.get();
-
-    if (!doc.exists) {
-      throw new HttpsError("not-found", "Empresa não encontrada!");
-    }
-
-    await ref.update({
-      companyStage: active ? CompanyStage.operacional : CompanyStage.inactive,
-      updatedAt: FieldValue.serverTimestamp(),
-    });
   }
 
   static async getCompanyById(companyId: string): Promise<CompanyFullDTO> {
@@ -158,8 +143,7 @@ export class CompanyRepository {
           );
         }
 
-        const newCount =
-          (usage?.yearMonth === yearMonth ? usage.count : 0) + 1;
+        const newCount = (usage?.yearMonth === yearMonth ? usage.count : 0) + 1;
         tx.update(ref, {
           taskUsage: { yearMonth, count: newCount },
           updatedAt: FieldValue.serverTimestamp(),
@@ -176,8 +160,7 @@ export class CompanyRepository {
     const yearMonth = CompanyRepository.currentYearMonth();
     const limit = company?.monthlyTaskLimit ?? null;
     const usage = company?.taskUsage;
-    const used =
-      usage?.yearMonth === yearMonth ? (usage.count ?? 0) : 0;
+    const used = usage?.yearMonth === yearMonth ? (usage.count ?? 0) : 0;
     return { used, limit, yearMonth };
   }
 

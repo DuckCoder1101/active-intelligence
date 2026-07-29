@@ -8,12 +8,8 @@ import type {
   CompanyOperationalRecord,
   SaveCompanyOperationalDTO,
 } from '@/models/company-operational.model';
-import type {
-  Company,
-  SaveCompanyDTO,
-} from '@/models/company.model';
+import type { Company, SaveCompanyDTO } from '@/models/company.model';
 import { functions } from '@/utils/firebase.util';
-
 
 export default class CompanyService {
   private static listCompaniesCallable = httpsCallable<void, Company[]>(
@@ -35,11 +31,6 @@ export default class CompanyService {
     { companyId: string },
     boolean
   >(functions, 'deleteCompanyHandler');
-
-  private static updateCompanyStatusCallable = httpsCallable<
-    { companyId: string; active: boolean },
-    boolean
-  >(functions, 'updateCompanyStatusHandler');
 
   private static listAuditLogsCallable = httpsCallable<
     { companyId: string },
@@ -77,13 +68,6 @@ export default class CompanyService {
 
   static async deleteCompany(companyId: string): Promise<void> {
     await this.deleteCompanyCallable({ companyId });
-  }
-
-  static async updateCompanyStatus(
-    companyId: string,
-    active: boolean,
-  ): Promise<void> {
-    await this.updateCompanyStatusCallable({ companyId, active });
   }
 
   static async listAuditLogs(companyId: string): Promise<AuditLogModel[]> {

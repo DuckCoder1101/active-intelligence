@@ -88,6 +88,12 @@ export type {
   SaveOperationalKanbanColumnDTO,
 } from "./domain/operational-kanban/operational-kanban.dtos";
 
+// domain: real-estate (usado por company-crm e real-estate)
+export { PROPERTY_TYPES } from "./domain/real-estate/propertyType.enum";
+export type { PropertyType } from "./domain/real-estate/propertyType.enum";
+export { PROPERTY_FEATURES } from "./domain/real-estate/propertyFeature.enum";
+export type { PropertyFeature } from "./domain/real-estate/propertyFeature.enum";
+
 // domain: notification (usado por admin e task)
 export { default as NotificationRepository } from "./domain/notification/notification.repository";
 export type {

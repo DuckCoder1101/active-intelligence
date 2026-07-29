@@ -41,6 +41,18 @@ service firebase.storage {
                     && (isAdmin() || request.auth.token.companyId == companyId);
     }
 
+    match /client/{companyId}/real_estate/{realEstateId}/images/{filename} {
+      allow read: if isAuthenticated()
+                  && (isAdmin() || request.auth.token.companyId == companyId);
+
+      allow create, update: if isAuthenticated()
+                            && (isAdmin() || request.auth.token.companyId == companyId)
+                            && isValidImage();
+
+      allow delete: if isAuthenticated()
+                    && (isAdmin() || request.auth.token.companyId == companyId);
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

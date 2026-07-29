@@ -2,7 +2,7 @@
   "name": "guara-admin-portal",
   "private": true,
   "type": "module",
-  "version": "1.16.0",
+  "version": "1.16.1",
   "scripts": {
     "predev": "test -f ../shared/sync.js && node ../shared/sync.js . || true",
     "dev": "vite dev --port 3000",
