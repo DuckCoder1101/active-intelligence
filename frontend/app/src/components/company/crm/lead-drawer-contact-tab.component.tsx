@@ -6,6 +6,7 @@ import type { FormValues } from './lead-drawer.component';
 
 import { FormInput } from '@/components/ui/form-input.component';
 import { FormSelect } from '@/components/ui/form-select.component';
+import { PhoneInput } from '@/components/ui/phone-input.component';
 import type { CrmOrigin, CrmTag } from '@/models/lead.model';
 import type { UserProfile } from '@/models/user-profile.model';
 import {
@@ -76,10 +77,13 @@ export function LeadContactTab({ companyId, origins, tags, teammates }: Props) {
       />
 
       <div className="grid grid-cols-2 gap-4">
-        <FormInput
-          label="Telefone *"
-          error={errors.phone?.message}
-          {...register('phone', { required: 'Telefone obrigatório' })}
+        <Controller
+          name="phone"
+          control={control}
+          rules={{ required: 'Telefone obrigatório' }}
+          render={({ field }) => (
+            <PhoneInput label="Telefone *" error={errors.phone?.message} {...field} />
+          )}
         />
         <FormInput label="E-mail" type="email" {...register('email')} />
       </div>
@@ -89,18 +93,21 @@ export function LeadContactTab({ companyId, origins, tags, teammates }: Props) {
           Origem *
         </p>
         <div className="flex gap-2">
-          <FormSelect
-            error={errors.originId?.message}
-            className="flex-1"
-            {...register('originId', { required: 'Origem obrigatória' })}
-          >
-            <option value="">Selecione...</option>
-            {origins.map((o) => (
-              <option key={o.originId} value={o.originId}>
-                {o.name}
-              </option>
-            ))}
-          </FormSelect>
+          <Controller
+            name="originId"
+            control={control}
+            rules={{ required: 'Origem obrigatória' }}
+            render={({ field }) => (
+              <FormSelect error={errors.originId?.message} className="flex-1" {...field}>
+                <option value="">Selecione...</option>
+                {origins.map((o) => (
+                  <option key={o.originId} value={o.originId}>
+                    {o.name}
+                  </option>
+                ))}
+              </FormSelect>
+            )}
+          />
           <button
             type="button"
             onClick={() => setShowNewOrigin((v) => !v)}

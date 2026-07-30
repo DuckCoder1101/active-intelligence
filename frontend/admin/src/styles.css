@@ -192,6 +192,28 @@ Link:disabled {
     @apply absolute inset-0 bg-black/50 backdrop-blur-sm;
   }
 
+  /* ── Module card (admin dashboard grid) ─────────────────────────────────── */
+
+  .module-card {
+    @apply flex items-center gap-3.5 rounded-xl border border-border bg-card p-4 transition-all;
+  }
+
+  .module-card.is-linked {
+    @apply hover:-translate-y-0.5 hover:shadow-md;
+  }
+
+  .module-card.is-disabled {
+    @apply opacity-70;
+  }
+
+  .module-card-icon {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange/10 text-orange;
+  }
+
+  .module-card-badge {
+    @apply rounded-full bg-orange/10 px-2 py-0.5 text-[10px] font-bold text-orange;
+  }
+
   /* ── Form helpers ─────────────────────────────────────────────────────── */
 
   /* Small uppercase section label */

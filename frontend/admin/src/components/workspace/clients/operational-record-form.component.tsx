@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 import { FormInput } from '@/components/ui/form-input.component';
@@ -40,6 +40,7 @@ export function OperationalRecordForm({
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<OperationalFormData>({
@@ -123,18 +124,21 @@ export function OperationalRecordForm({
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {RESPONSIBLE_AREAS.map((area) => (
-            <FormSelect
+            <Controller
               key={area.key}
-              label={area.label}
-              {...register(`responsibleUids.${area.key}`)}
-            >
-              <option value="">Sem responsável</option>
-              {admins.map((admin) => (
-                <option key={admin.uid} value={admin.uid}>
-                  {admin.name}
-                </option>
-              ))}
-            </FormSelect>
+              name={`responsibleUids.${area.key}`}
+              control={control}
+              render={({ field }) => (
+                <FormSelect label={area.label} {...field}>
+                  <option value="">Sem responsável</option>
+                  {admins.map((admin) => (
+                    <option key={admin.uid} value={admin.uid}>
+                      {admin.name}
+                    </option>
+                  ))}
+                </FormSelect>
+              )}
+            />
           ))}
         </div>
       </div>

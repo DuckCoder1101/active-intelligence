@@ -62,7 +62,7 @@ function AdminDashboard() {
           {userProfile?.name ? ` ${userProfile.name.split(' ')[0]}` : ''}
         </h1>
         <p className="mt-2 text-[13px] text-text-sub sm:text-[14px]">
-          Sistema operacional Guará. Tudo conectado em um só lugar.
+          Guará, tudo conectado em um só lugar.
         </p>
       </div>
 

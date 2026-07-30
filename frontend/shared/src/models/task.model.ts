@@ -29,6 +29,7 @@ export interface SaveTaskSubcategoryDTO {
 export interface TaskTag {
   tagId: string;
   name: string;
+  color: string;
 }
 
 export interface Task {

@@ -89,20 +89,25 @@ export interface FunnelStage {
   count: number;
 }
 
-/** Lead counts per CRM board column, in the company's configured order. */
+/**
+ * Cumulative lead counts per CRM board column, in the company's configured
+ * order: each stage counts every lead that reached it or any later stage,
+ * not just leads currently sitting there — so the funnel only narrows.
+ */
 export function computeFunnel(leads: Lead[], columns: CrmColumn[]): FunnelStage[] {
-  const counts = new Map<string, number>();
+  const directCounts = new Map<string, number>();
   for (const lead of leads) {
-    counts.set(lead.status, (counts.get(lead.status) ?? 0) + 1);
+    directCounts.set(lead.status, (directCounts.get(lead.status) ?? 0) + 1);
   }
-  return [...columns]
-    .sort((a, b) => a.order - b.order)
-    .map((col) => ({
-      columnId: col.columnId,
-      name: col.name,
-      color: col.color,
-      count: counts.get(col.columnId) ?? 0,
-    }));
+  const sorted = [...columns].sort((a, b) => a.order - b.order);
+  return sorted.map((col, i) => ({
+    columnId: col.columnId,
+    name: col.name,
+    color: col.color,
+    count: sorted
+      .slice(i)
+      .reduce((sum, c) => sum + (directCounts.get(c.columnId) ?? 0), 0),
+  }));
 }
 
 export function getTasksOnDay(tasks: Task[], day: number): Task[] {

@@ -7,16 +7,17 @@ interface SalesFunnelProps {
   stages: FunnelStage[];
 }
 
-const STAGE_HEIGHT = 30;
-const STAGE_GAP = 4;
-const SVG_WIDTH = 150;
-const MIN_WIDTH_RATIO = 0.3;
+const STAGE_HEIGHT = 34;
+const STAGE_GAP = 3;
+const SVG_WIDTH = 160;
+/** Fixed shape: each stage is this much narrower than the previous one,
+ * regardless of lead counts — only the printed numbers change with data. */
+const STAGE_WIDTH_STEP = 0.16;
+const MIN_WIDTH_RATIO = 0.32;
 
 export function SalesFunnel({ companyId, stages }: SalesFunnelProps) {
-  const maxCount = Math.max(...stages.map((s) => s.count), 1);
-
-  const widthFor = (count: number) => {
-    const ratio = MIN_WIDTH_RATIO + (1 - MIN_WIDTH_RATIO) * (count / maxCount);
+  const widthFor = (index: number) => {
+    const ratio = Math.max(MIN_WIDTH_RATIO, 1 - index * STAGE_WIDTH_STEP);
     return SVG_WIDTH * ratio;
   };
 
@@ -32,41 +33,52 @@ export function SalesFunnel({ companyId, stages }: SalesFunnelProps) {
           Configure os quadros do CRM para ver o funil.
         </p>
       ) : (
-        <div className="flex flex-1 items-center gap-6">
+        <div className="flex flex-1 items-center justify-center">
           <svg
             width={SVG_WIDTH}
             height={svgHeight}
             className="shrink-0"
-            aria-hidden="true"
+            role="img"
+            aria-label="Funil de vendas"
           >
             {stages.map((stage, i) => {
-              const topW = widthFor(stage.count);
+              const topW = widthFor(i);
               const bottomW =
-                i < stages.length - 1 ? widthFor(stages[i + 1].count) : topW * 0.88;
+                i < stages.length - 1 ? widthFor(i + 1) : topW * MIN_WIDTH_RATIO;
               const y = i * (STAGE_HEIGHT + STAGE_GAP);
               const topX = (SVG_WIDTH - topW) / 2;
               const bottomX = (SVG_WIDTH - bottomW) / 2;
               const points = `${topX},${y} ${topX + topW},${y} ${bottomX + bottomW},${y + STAGE_HEIGHT} ${bottomX},${y + STAGE_HEIGHT}`;
               return (
-                <polygon key={stage.columnId} points={points} fill={stage.color} />
+                <g key={stage.columnId}>
+                  <polygon points={points} fill={stage.color} />
+                  <text
+                    x={SVG_WIDTH / 2}
+                    y={y + STAGE_HEIGHT / 2}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    className="text-[13px] font-bold"
+                    fill="#fff"
+                  >
+                    {stage.count}
+                  </text>
+                </g>
               );
             })}
           </svg>
 
-          <ul className="min-w-0 flex-1 space-y-2.5">
+          <ul className="min-w-0 flex-1 space-y-2.5 pl-6">
             {stages.map((stage) => (
               <li
                 key={stage.columnId}
-                className="flex items-center justify-between gap-2 text-[12px]"
+                className="flex items-center gap-2 text-[12px]"
+                style={{ height: STAGE_HEIGHT + STAGE_GAP }}
               >
-                <span className="flex min-w-0 items-center gap-2">
-                  <span
-                    className="h-2 w-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: stage.color }}
-                  />
-                  <span className="truncate text-text-sub">{stage.name}</span>
-                </span>
-                <span className="shrink-0 font-bold text-text">{stage.count}</span>
+                <span
+                  className="h-2 w-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: stage.color }}
+                />
+                <span className="truncate text-text-sub">{stage.name}</span>
               </li>
             ))}
           </ul>

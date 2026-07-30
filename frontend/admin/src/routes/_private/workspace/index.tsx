@@ -24,7 +24,10 @@ export const Route = createFileRoute('/_private/workspace/')({
     Promise.all([
       context.queryClient.ensureQueryData(companiesQueryOptions()),
       context.queryClient.ensureQueryData(tasksQueryOptions()),
-      context.queryClient.ensureQueryData(taskCategoriesQueryOptions()),
+      context.queryClient.ensureQueryData({
+        ...taskCategoriesQueryOptions(),
+        revalidateIfStale: true,
+      }),
     ]),
   component: WorkspaceOverview,
 });

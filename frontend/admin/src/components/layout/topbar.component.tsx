@@ -3,6 +3,7 @@ import {
   MdOutlineDarkMode,
   MdOutlineLightMode,
   MdOutlineLogout,
+  MdOutlineSettings,
 } from 'react-icons/md';
 
 import { Breadcrumb } from '@/components/layout/breadcrumb.component';
@@ -11,12 +12,20 @@ import { UserAvatar } from '@/components/ui/user-avatar.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useTheme } from '@/contexts/theme.context';
 import { useSignoutMutation } from '@/queries/user.queries';
+import type { RouteAccessLevel } from '@/types/route-access.type';
+import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
+
+const SETTINGS_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+  permissions: ['manage-settings'],
+};
 
 export function Topbar() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { userProfile: profile } = useAuth();
+  const { userProfile: profile, claims } = useAuth();
   const signout = useSignoutMutation();
+  const canAccessSettings = checkRouteAccess(claims, SETTINGS_ACCESS);
 
   const logout = () => {
     signout.mutate(undefined, {
@@ -43,6 +52,12 @@ export function Topbar() {
 
       <div className="flex items-center gap-4">
         <NotificationBell />
+
+        {canAccessSettings && (
+          <Link to="/settings" title="Configurações" className="btn-icon">
+            <MdOutlineSettings size={17} />
+          </Link>
+        )}
 
         <button
           type="button"

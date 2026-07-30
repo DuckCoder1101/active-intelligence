@@ -30,7 +30,8 @@ export const ADMIN_MODULES: Section[] = [
       {
         icon: MdOutlineViewKanban,
         label: 'Workspace',
-        description: 'Central de operação por cliente: tarefas, prazos e cronograma.',
+        description:
+          'Central de operação por cliente: tarefas, prazos e cronograma.',
         to: '/workspace',
         permission: 'manage-projects',
       },
@@ -44,7 +45,8 @@ export const ADMIN_MODULES: Section[] = [
         icon: MdOutlineDescription,
         label: 'Propostas',
         description: 'Combos e propostas em PDF.',
-        // to: '/proposals',
+        to: '/proposals',
+        soon: true,
         permission: 'manage-proposals',
       },
       {
@@ -52,6 +54,7 @@ export const ADMIN_MODULES: Section[] = [
         label: 'Contratos',
         description: 'Contratos gerados com IA.',
         to: '/contracts',
+        soon: true,
         permission: 'manage-contracts',
       },
       {
@@ -59,6 +62,7 @@ export const ADMIN_MODULES: Section[] = [
         label: 'Diagnósticos',
         description: 'Briefings com análise por IA.',
         to: '/diagnostics',
+        soon: true,
         permission: 'manage-diagnostics',
       },
     ],
@@ -99,6 +103,7 @@ export const ADMIN_MODULES: Section[] = [
         label: 'Catálogo',
         description: 'Produtos, planos e playbooks.',
         to: '/catalog',
+        soon: true,
         permission: 'manage-catalog',
       },
       {

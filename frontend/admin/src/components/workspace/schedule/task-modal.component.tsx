@@ -12,10 +12,12 @@ import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.com
 import { ReferenceImages } from '@/components/tasks/reference-images.component';
 import { ReferenceLinks } from '@/components/tasks/reference-links.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { FormSelect } from '@/components/ui/form-select.component';
 import { MultiSelect } from '@/components/ui/multi-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { AdminProfile } from '@/models/admin.model';
 import type { CompanyResume } from '@/models/company.model';
+import { COLUMN_COLOR_PRESETS } from '@/models/operational-kanban.model';
 import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
 import type { Task, TaskCategory, SaveTaskDTO } from '@/models/task.model';
 import {
@@ -166,6 +168,24 @@ export function TaskModal({
 
           {/* Body */}
           <div className="flex-1 overflow-y-auto p-6 space-y-5">
+            {/* Tags (só admin — nunca aparece no modal do cliente) */}
+            <MultiSelect
+              label="Tags"
+              options={tags.map((t) => ({ value: t.tagId, label: t.name, color: t.color }))}
+              selected={selectedTags}
+              onChange={setSelectedTags}
+              onCreateOption={async (name, color) => {
+                const created = await saveTag.mutateAsync({
+                  name,
+                  color: color ?? COLUMN_COLOR_PRESETS[0].value,
+                });
+                return created.tagId;
+              }}
+              createLabel="Nova tag"
+              colorPresets={COLUMN_COLOR_PRESETS}
+              disabled={!canEdit}
+            />
+
             {/* Título */}
             <FormInput
               label="Título *"
@@ -181,12 +201,11 @@ export function TaskModal({
 
             <div className="grid grid-cols-2 gap-4">
               {/* Empresa */}
-              <FormInput
-                as="select"
+              <FormSelect
                 label="Empresa *"
                 value={companyId}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setCompanyId(e.target.value);
+                onChange={(value) => {
+                  setCompanyId(value);
                   if (fieldErrors.companyId) {setFieldErrors((p) => ({ ...p, companyId: '' }));}
                 }}
                 disabled={!canEdit}
@@ -197,15 +216,14 @@ export function TaskModal({
                     {c.displayName}
                   </option>
                 ))}
-              </FormInput>
+              </FormSelect>
 
               {/* Categoria */}
-              <FormInput
-                as="select"
+              <FormSelect
                 label="Categoria"
                 value={categoryId}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setCategoryId(e.target.value);
+                onChange={(value) => {
+                  setCategoryId(value);
                   setSubcategoryId('');
                 }}
                 disabled={!canEdit}
@@ -215,19 +233,16 @@ export function TaskModal({
                     {c.name}
                   </option>
                 ))}
-              </FormInput>
+              </FormSelect>
             </div>
 
             {(categories.find((c) => c.categoryId === categoryId)?.subcategories.length ?? 0) > 0 && (
               <div className="grid grid-cols-2 gap-4">
                 {/* Subcategoria */}
-                <FormInput
-                  as="select"
+                <FormSelect
                   label="Subcategoria"
                   value={subcategoryId}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    setSubcategoryId(e.target.value)
-                  }
+                  onChange={setSubcategoryId}
                   disabled={!canEdit}
                 >
                   <option value="">Nenhuma</option>
@@ -238,34 +253,25 @@ export function TaskModal({
                         {s.name}
                       </option>
                     ))}
-                </FormInput>
+                </FormSelect>
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
               {/* Status */}
-              <FormInput
-                as="select"
-                label="Quadro"
-                value={status}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  setStatus(e.target.value)
-                }
-                disabled={!canEdit}
-              >
+              <FormSelect label="Quadro" value={status} onChange={setStatus} disabled={!canEdit}>
                 {columns.map((col) => (
                   <option key={col.columnId} value={col.columnId}>
                     {col.name}
                   </option>
                 ))}
-              </FormInput>
+              </FormSelect>
 
               {/* Data de entrega */}
               <FormInput
                 label="Data de entrega *"
                 type="date"
                 value={dueDate}
-                min={new Date().toISOString().split('T')[0]}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setDueDate(e.target.value);
                   if (fieldErrors.dueDate) {setFieldErrors((p) => ({ ...p, dueDate: '' }));}
@@ -302,20 +308,6 @@ export function TaskModal({
               companyId={companyId}
               taskId={task?.taskId}
               readonly={!canEdit}
-            />
-
-            {/* Tags (só admin — nunca aparece no modal do cliente) */}
-            <MultiSelect
-              label="Tags"
-              options={tags.map((t) => ({ value: t.tagId, label: t.name }))}
-              selected={selectedTags}
-              onChange={setSelectedTags}
-              onCreateOption={async (name) => {
-                const created = await saveTag.mutateAsync(name);
-                return created.tagId;
-              }}
-              createLabel="Nova tag"
-              disabled={!canEdit}
             />
 
             {/* Atribuição (owner only) */}

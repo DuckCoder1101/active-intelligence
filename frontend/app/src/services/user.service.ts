@@ -42,6 +42,7 @@ export default class UserService {
     'deleteAccountHandler',
   );
 
+
   static async getMe(): Promise<UserProfile> {
     const result = await this.getMeCallable();
     return result.data;

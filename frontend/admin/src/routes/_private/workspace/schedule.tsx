@@ -1,16 +1,11 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState, useMemo, useRef } from 'react';
-import {
-  MdAdd,
-  MdDeleteOutline,
-  MdCheck,
-  MdCalendarMonth,
-  MdDashboard,
-} from 'react-icons/md';
+import { MdAdd, MdDeleteOutline, MdCheck } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
+import { FormSelect } from '@/components/ui/form-select.component';
 import { MultiSelect } from '@/components/ui/multi-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { AdminCalendarView } from '@/components/workspace/schedule/admin-calendar-view.component';
@@ -35,8 +30,15 @@ import {
   useUpdateTaskStatusMutation,
 } from '@/queries/task.queries';
 
+export interface ScheduleSearchParams {
+  view?: 'kanban' | 'calendario';
+}
+
 export const Route = createFileRoute('/_private/workspace/schedule')({
   ssr: false,
+  validateSearch: (search): ScheduleSearchParams => ({
+    view: search.view === 'calendario' ? 'calendario' : undefined,
+  }),
   loader: ({ context }) =>
     Promise.all([
       context.queryClient.ensureQueryData(tasksQueryOptions()),
@@ -45,7 +47,10 @@ export const Route = createFileRoute('/_private/workspace/schedule')({
       ),
       context.queryClient.ensureQueryData(companiesQueryOptions()),
       context.queryClient.ensureQueryData(adminsQueryOptions()),
-      context.queryClient.ensureQueryData(taskCategoriesQueryOptions()),
+      context.queryClient.ensureQueryData({
+        ...taskCategoriesQueryOptions(),
+        revalidateIfStale: true,
+      }),
     ]),
   component: WorkspaceSchedule,
 });
@@ -90,8 +95,9 @@ function WorkspaceSchedule() {
   const [newTaskDate, setNewTaskDate] = useState<Date | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
 
-  // View: kanban or calendar
-  const [view, setView] = useState<'kanban' | 'calendario'>('kanban');
+  // View: kanban or calendar — controlado via search param, trocado pelo
+  // menu em linha no header do Workspace (ver workspace.tsx).
+  const { view = 'kanban' } = Route.useSearch();
 
   // Card drag and drop
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -257,31 +263,8 @@ function WorkspaceSchedule() {
 
   const deletingColumn = columns.find((c) => c.columnId === deletingColumnId);
 
-  const TABS = [
-    { id: 'kanban' as const, label: 'Kanban', icon: MdDashboard },
-    { id: 'calendario' as const, label: 'Calendário', icon: MdCalendarMonth },
-  ];
-
   return (
-    <div className="flex min-h-0 flex-1 overflow-hidden">
-      <div className="flex w-44 shrink-0 flex-col gap-1 border-r border-border bg-card px-2 py-3">
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setView(id)}
-            className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-[13px] font-semibold transition-colors ${
-              view === id
-                ? 'bg-orange/10 text-orange'
-                : 'text-text-sub hover:bg-bg hover:text-text'
-            }`}
-          >
-            <Icon size={16} />
-            {label}
-          </button>
-        ))}
-      </div>
-
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {view === 'calendario' && (
         <AdminCalendarView
           tasks={filtered}
@@ -301,30 +284,25 @@ function WorkspaceSchedule() {
               {/* Filter: admin */}
               <div className="flex flex-col gap-1">
                 <span className="form-label">Responsável</span>
-                <select
-                  value={filterAdmin}
-                  onChange={(e) => setFilterAdmin(e.target.value)}
-                  className="rounded-md border border-border bg-card px-3 py-2 text-sm text-text outline-none transition-colors focus:border-orange"
-                >
+                <FormSelect value={filterAdmin} onChange={setFilterAdmin}>
                   <option value="">Todos</option>
                   {admins.map((a) => (
                     <option key={a.uid} value={a.uid}>
                       {a.uid === currentUid ? 'Eu' : a.name}
                     </option>
                   ))}
-                </select>
+                </FormSelect>
               </div>
 
               {/* Filter: categoria */}
               <div className="flex flex-col gap-1">
                 <span className="form-label">Categoria</span>
-                <select
+                <FormSelect
                   value={filterCategoryId}
-                  onChange={(e) => {
-                    setFilterCategoryId(e.target.value);
+                  onChange={(value) => {
+                    setFilterCategoryId(value);
                     setFilterSubcategoryId('');
                   }}
-                  className="rounded-md border border-border bg-card px-3 py-2 text-sm text-text outline-none transition-colors focus:border-orange"
                 >
                   <option value="">Todas</option>
                   {categories.map((c) => (
@@ -332,25 +310,21 @@ function WorkspaceSchedule() {
                       {c.name}
                     </option>
                   ))}
-                </select>
+                </FormSelect>
               </div>
 
               {/* Filter: subcategoria */}
               {(categoryMap[filterCategoryId]?.subcategories.length ?? 0) > 0 && (
                 <div className="flex flex-col gap-1">
                   <span className="form-label">Subcategoria</span>
-                  <select
-                    value={filterSubcategoryId}
-                    onChange={(e) => setFilterSubcategoryId(e.target.value)}
-                    className="rounded-md border border-border bg-card px-3 py-2 text-sm text-text outline-none transition-colors focus:border-orange"
-                  >
+                  <FormSelect value={filterSubcategoryId} onChange={setFilterSubcategoryId}>
                     <option value="">Todas</option>
                     {categoryMap[filterCategoryId]?.subcategories.map((s) => (
                       <option key={s.subcategoryId} value={s.subcategoryId}>
                         {s.name}
                       </option>
                     ))}
-                  </select>
+                  </FormSelect>
                 </div>
               )}
 

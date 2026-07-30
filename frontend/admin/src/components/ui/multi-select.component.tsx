@@ -1,8 +1,14 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { MdAdd, MdExpandMore } from 'react-icons/md';
+import { MdAdd, MdCheck, MdExpandMore } from 'react-icons/md';
 
 export interface MultiSelectOption {
+  value: string;
+  label: string;
+  color?: string;
+}
+
+interface ColorPreset {
   value: string;
   label: string;
 }
@@ -12,10 +18,11 @@ interface Props {
   options: MultiSelectOption[];
   selected: string[];
   onChange: (values: string[]) => void;
-  onCreateOption?: (name: string) => Promise<string>;
+  onCreateOption?: (name: string, color?: string) => Promise<string>;
   createLabel?: string;
   error?: string;
   disabled?: boolean;
+  colorPresets?: readonly ColorPreset[];
 }
 
 export function MultiSelect({
@@ -27,11 +34,15 @@ export function MultiSelect({
   createLabel = 'Adicionar novo',
   error,
   disabled,
+  colorPresets,
 }: Props) {
   const generatedId = useId();
   const [open, setOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState('');
+  const [newColor, setNewColor] = useState(
+    colorPresets?.[0]?.value ?? '#94a3b8',
+  );
   const [isCreating, setIsCreating] = useState(false);
   const [position, setPosition] = useState<{
     top: number;
@@ -44,12 +55,18 @@ export function MultiSelect({
   const addInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!open) {return;}
+    if (!open) {
+      return;
+    }
 
     const updatePosition = () => {
       const rect = triggerRef.current?.getBoundingClientRect();
       if (rect) {
-        setPosition({ top: rect.bottom + 6, left: rect.left, width: rect.width });
+        setPosition({
+          top: rect.bottom + 6,
+          left: rect.left,
+          width: rect.width,
+        });
       }
     };
 
@@ -91,13 +108,19 @@ export function MultiSelect({
 
   const handleCreate = async () => {
     const name = newName.trim();
-    if (!name || !onCreateOption) {return;}
+    if (!name || !onCreateOption) {
+      return;
+    }
 
     setIsCreating(true);
     try {
-      const createdId = await onCreateOption(name);
+      const createdId = await onCreateOption(
+        name,
+        colorPresets ? newColor : undefined,
+      );
       onChange([...selected, createdId]);
       setNewName('');
+      setNewColor(colorPresets?.[0]?.value ?? '#94a3b8');
       setIsAdding(false);
     } finally {
       setIsCreating(false);
@@ -132,6 +155,12 @@ export function MultiSelect({
           error ? 'border-danger focus:border-danger' : 'border-border',
         ].join(' ')}
       >
+        {selectedOptions.length === 1 && selectedOptions[0].color && (
+          <span
+            className="h-2 w-2 shrink-0 rounded-full"
+            style={{ backgroundColor: selectedOptions[0].color }}
+          />
+        )}
         <span
           className={`min-w-0 flex-1 truncate ${selectedOptions.length === 0 ? 'text-text-muted' : 'text-text'}`}
         >
@@ -169,6 +198,12 @@ export function MultiSelect({
                   onChange={() => toggleValue(o.value)}
                   className="accent-orange"
                 />
+                {o.color && (
+                  <span
+                    className="h-2 w-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: o.color }}
+                  />
+                )}
                 {o.label}
               </label>
             ))}
@@ -178,42 +213,72 @@ export function MultiSelect({
 
       {onCreateOption &&
         (isAdding ? (
-          <div className="flex items-center gap-1.5">
-            <input
-              ref={addInputRef}
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  void handleCreate();
-                }
-                if (e.key === 'Escape') {
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5">
+              <input
+                ref={addInputRef}
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    void handleCreate();
+                  }
+                  if (e.key === 'Escape') {
+                    setIsAdding(false);
+                    setNewName('');
+                  }
+                }}
+                placeholder={createLabel}
+                className="w-full rounded-md border border-border bg-card px-2.5 py-1.5 text-[13px] text-text outline-none focus:border-primary"
+              />
+              <button
+                type="button"
+                disabled={!newName.trim() || isCreating}
+                onClick={() => void handleCreate()}
+                className="shrink-0 rounded-md bg-orange px-3 py-1.5 text-[12px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+              >
+                Adicionar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
                   setIsAdding(false);
                   setNewName('');
-                }
-              }}
-              placeholder={createLabel}
-              className="w-full rounded-md border border-border bg-card px-2.5 py-1.5 text-[13px] text-text outline-none focus:border-primary"
-            />
-            <button
-              type="button"
-              disabled={!newName.trim() || isCreating}
-              onClick={() => void handleCreate()}
-              className="shrink-0 rounded-md bg-orange px-3 py-1.5 text-[12px] font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
-            >
-              Adicionar
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setIsAdding(false);
-                setNewName('');
-              }}
-              className="shrink-0 rounded-md border border-border px-3 py-1.5 text-[12px] font-semibold text-text-sub transition-colors hover:bg-bg"
-            >
-              Cancelar
-            </button>
+                }}
+                className="shrink-0 rounded-md border border-border px-3 py-1.5 text-[12px] font-semibold text-text-sub transition-colors hover:bg-bg"
+              >
+                Cancelar
+              </button>
+            </div>
+            {colorPresets && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <input
+                  type="color"
+                  title="Escolher cor"
+                  value={newColor}
+                  onChange={(e) => setNewColor(e.target.value)}
+                  className="h-5 w-5 shrink-0 cursor-pointer rounded-full border-none bg-transparent p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-none"
+                />
+                {colorPresets.map((preset) => (
+                  <button
+                    key={preset.value}
+                    type="button"
+                    title={preset.label}
+                    onClick={() => setNewColor(preset.value)}
+                    className="relative h-4 w-4 rounded-full transition-transform hover:scale-110"
+                    style={{ backgroundColor: preset.value }}
+                  >
+                    {newColor === preset.value && (
+                      <MdCheck
+                        size={10}
+                        className="absolute inset-0 m-auto text-white"
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <button

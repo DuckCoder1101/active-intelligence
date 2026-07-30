@@ -1,10 +1,11 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { IMaskInput } from 'react-imask';
 
 import { AuthLayout } from '@/components/auth/auth-layout.component';
+import { CpfInput } from '@/components/ui/cpf-input.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { PhoneInput } from '@/components/ui/phone-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useCompleteAccountMutation } from '@/queries/user.queries';
@@ -88,15 +89,7 @@ function SignUpPage() {
           control={control}
           rules={{ required: 'CPF obrigatório' }}
           render={({ field }) => (
-            <FormInput
-              as={IMaskInput}
-              mask="000.000.000-00"
-              label="CPF"
-              type="tel"
-              placeholder="000.000.000-00"
-              error={errors.cpf?.message}
-              {...field}
-            />
+            <CpfInput label="CPF" error={errors.cpf?.message} {...field} />
           )}
         />
 
@@ -104,15 +97,7 @@ function SignUpPage() {
           name="phone"
           control={control}
           render={({ field }) => (
-            <FormInput
-              as={IMaskInput}
-              mask="(00) 00000-0000"
-              label="Celular"
-              type="tel"
-              placeholder="(00) 00000-0000"
-              error={errors.phone?.message}
-              {...field}
-            />
+            <PhoneInput label="Celular" error={errors.phone?.message} {...field} />
           )}
         />
 

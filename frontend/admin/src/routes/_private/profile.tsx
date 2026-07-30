@@ -1,11 +1,12 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useRef, useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { MdArrowBack, MdOutlineCameraAlt, MdDelete } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 import { Modal } from '@/components/layout/modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { PhoneInput } from '@/components/ui/phone-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { UserAvatar } from '@/components/ui/user-avatar.component';
 import { useAuth } from '@/contexts/auth.context';
@@ -39,6 +40,7 @@ function UserProfile() {
 
   const {
     register,
+    control,
     reset,
     handleSubmit,
     formState: { errors },
@@ -172,10 +174,12 @@ function UserProfile() {
                     error={errors.name?.message}
                     {...register('name', { required: 'Nome obrigatório' })}
                   />
-                  <FormInput
-                    label="Telefone"
-                    placeholder="(00) 00000-0000"
-                    {...register('phone')}
+                  <Controller
+                    name="phone"
+                    control={control}
+                    render={({ field }) => (
+                      <PhoneInput label="Telefone" {...field} />
+                    )}
                   />
                 </div>
                 <div className="form-grid">
