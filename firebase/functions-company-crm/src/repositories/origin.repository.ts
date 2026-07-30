@@ -13,30 +13,31 @@ export class OriginRepository {
 
   static async listAll(companyId: string): Promise<OriginDTO[]> {
     const col = this.col(companyId);
-    const snap = await col.get();
 
-    if (snap.empty) {
-      const batch = database.batch();
-      const seededRefs = DEFAULT_ORIGIN_NAMES.map((name) => {
-        const ref = col.doc();
-        batch.set(ref, {
-          companyId,
-          name,
-          createdAt: FieldValue.serverTimestamp(),
+    return database.runTransaction(async (transaction) => {
+      const snap = await transaction.get(col);
+
+      if (snap.empty) {
+        const seededRefs = DEFAULT_ORIGIN_NAMES.map((name) => {
+          const ref = col.doc();
+          transaction.set(ref, {
+            companyId,
+            name,
+            createdAt: FieldValue.serverTimestamp(),
+          });
+          return { ref, name };
         });
-        return { ref, name };
-      });
-      await batch.commit();
 
-      return seededRefs.map(({ ref, name }) => ({ originId: ref.id, name }));
-    }
+        return seededRefs.map(({ ref, name }) => ({ originId: ref.id, name }));
+      }
 
-    return snap.docs
-      .map((doc) => {
-        const data = doc.data() as OriginDocument;
-        return { originId: doc.id, name: data.name };
-      })
-      .sort((a, b) => a.name.localeCompare(b.name));
+      return snap.docs
+        .map((doc) => {
+          const data = doc.data() as OriginDocument;
+          return { originId: doc.id, name: data.name };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+    });
   }
 
   static async save(

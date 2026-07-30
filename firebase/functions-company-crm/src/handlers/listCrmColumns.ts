@@ -1,9 +1,8 @@
 import { HttpsError } from "firebase-functions/https";
 import { z } from "zod";
 
-import { onCallHandler } from "functions-shared";
+import { onCallHandler, requireCompanyAccess } from "functions-shared";
 import { CrmColumnRepository } from "../repositories/crm-column.repository";
-import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 const schema = z.object({
   companyId: z.string().min(1),
@@ -19,6 +18,6 @@ export const listCrmColumnsHandler = onCallHandler(async (req) => {
     );
   }
 
-  const { companyId } = requireCompanyAccess(req, data.companyId);
+  const { companyId } = requireCompanyAccess(req, data.companyId, "ao CRM");
   return CrmColumnRepository.listAll(companyId, data.funnelId);
 });

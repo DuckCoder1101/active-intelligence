@@ -1,12 +1,7 @@
-import { Timestamp } from "firebase-admin/firestore";
-
-export interface FinanceCategoryDocument {
-  name: string;
-  nameIndex: string;
-  createdAt: Timestamp;
-}
-
-export interface FinanceCategoryDTO {
-  categoryId: string;
-  name: string;
-}
+export const FINANCE_CATEGORY_TYPES = [
+  "receita",
+  "custo",
+  "despesa",
+  "investimento",
+] as const;
+export type FinanceCategoryType = (typeof FINANCE_CATEGORY_TYPES)[number];

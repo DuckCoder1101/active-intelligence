@@ -10,6 +10,7 @@ import {
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
+  permissions: ["manage-clients" as const],
 };
 
 export const listCompanyUsersHandler = onCallHandler(async (req) => {

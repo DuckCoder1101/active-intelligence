@@ -1,7 +1,6 @@
 import { QueryDocumentSnapshot } from "firebase-admin/firestore";
-import { logger } from "firebase-functions";
 
-import { AdminRepository, CompanyAuditDocument } from "functions-shared";
+import { CompanyAuditDocument } from "functions-shared";
 
 export interface AuditLogDTO {
   id: string;
@@ -15,35 +14,30 @@ export interface AuditLogDTO {
   createdAt: number;
 }
 
-export async function mapAuditLogDoc(
+const UNKNOWN_NAME = "(desconhecido)";
+
+/** UIDs de admin cujo nome ainda precisa ser resolvido (actor sem nome denormalizado + todo target). */
+export function collectAuditAdminUids(docs: QueryDocumentSnapshot[]): string[] {
+  const uids = new Set<string>();
+  for (const doc of docs) {
+    const audit = doc.data() as CompanyAuditDocument;
+    if (!audit.actorName) uids.add(audit.actorUid);
+    if (audit.targetUid) uids.add(audit.targetUid);
+  }
+  return [...uids];
+}
+
+export function mapAuditLogDoc(
   doc: QueryDocumentSnapshot,
-): Promise<AuditLogDTO> {
+  nameByUid: Map<string, string>,
+): AuditLogDTO {
   const audit = doc.data() as CompanyAuditDocument;
 
-  const [actorName, targetName] = await Promise.all([
-    audit.actorName ?
-      Promise.resolve(audit.actorName) :
-      AdminRepository.getResumeByUid(audit.actorUid)
-        .then((r) => r.name)
-        .catch((err) => {
-          logger.warn("mapAuditLogDoc: falha ao resolver actor", {
-            uid: audit.actorUid,
-            err: String(err),
-          });
-          return "(desconhecido)";
-        }),
-    audit.targetUid ?
-      AdminRepository.getResumeByUid(audit.targetUid)
-        .then((r) => r.name)
-        .catch((err) => {
-          logger.warn("mapAuditLogDoc: falha ao resolver target", {
-            uid: audit.targetUid,
-            err: String(err),
-          });
-          return "(desconhecido)";
-        }) :
-      Promise.resolve(null),
-  ]);
+  const actorName =
+    audit.actorName ?? nameByUid.get(audit.actorUid) ?? UNKNOWN_NAME;
+  const targetName = audit.targetUid ?
+    (nameByUid.get(audit.targetUid) ?? UNKNOWN_NAME) :
+    null;
 
   return {
     id: doc.id,

@@ -137,40 +137,12 @@ export function useSaveTagMutation(companyId: string) {
   });
 }
 
-export function useDeleteTagMutation(companyId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (tagId: string) =>
-      CompanyCrmService.deleteTag(companyId, tagId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: companyCrmKeys.tags(companyId),
-      });
-    },
-  });
-}
-
 export function useSaveOriginMutation(companyId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (name: string) =>
       CompanyCrmService.saveOrigin(companyId, name),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: companyCrmKeys.origins(companyId),
-      });
-    },
-  });
-}
-
-export function useDeleteOriginMutation(companyId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (originId: string) =>
-      CompanyCrmService.deleteOrigin(companyId, originId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: companyCrmKeys.origins(companyId),

@@ -26,38 +26,41 @@ export class CrmFunnelRepository {
 
   static async listAll(companyId: string): Promise<CrmFunnelDTO[]> {
     const col = this.col(companyId);
-    const snap = await col.get();
 
-    if (snap.empty) {
-      const ref = col.doc();
-      await ref.set({
-        companyId,
-        name: DEFAULT_CRM_FUNNEL_NAME,
-        order: 0,
-        isDefault: true,
-        createdAt: FieldValue.serverTimestamp(),
-      });
-      return [
-        {
-          funnelId: ref.id,
+    return database.runTransaction(async (transaction) => {
+      const snap = await transaction.get(col);
+
+      if (snap.empty) {
+        const ref = col.doc();
+        transaction.set(ref, {
+          companyId,
           name: DEFAULT_CRM_FUNNEL_NAME,
           order: 0,
           isDefault: true,
-        },
-      ];
-    }
+          createdAt: FieldValue.serverTimestamp(),
+        });
+        return [
+          {
+            funnelId: ref.id,
+            name: DEFAULT_CRM_FUNNEL_NAME,
+            order: 0,
+            isDefault: true,
+          },
+        ];
+      }
 
-    return snap.docs
-      .map((doc) => {
-        const data = doc.data() as CrmFunnelDocument;
-        return {
-          funnelId: doc.id,
-          name: data.name,
-          order: data.order,
-          isDefault: data.isDefault ?? false,
-        };
-      })
-      .sort((a, b) => a.order - b.order);
+      return snap.docs
+        .map((doc) => {
+          const data = doc.data() as CrmFunnelDocument;
+          return {
+            funnelId: doc.id,
+            name: data.name,
+            order: data.order,
+            isDefault: data.isDefault ?? false,
+          };
+        })
+        .sort((a, b) => a.order - b.order);
+    });
   }
 
   static async save(
@@ -77,7 +80,7 @@ export class CrmFunnelRepository {
     if (!isNew) {
       const existing = await ref.get();
       if (!existing.exists) {
-        throw new HttpsError("permission-denied", "Funil não encontrado.");
+        throw new HttpsError("not-found", "Funil não encontrado.");
       }
     }
 

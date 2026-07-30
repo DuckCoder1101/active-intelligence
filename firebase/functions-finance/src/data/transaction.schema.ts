@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FINANCE_CATEGORY_TYPES } from "../types/category.type";
 import {
   PAYMENT_METHODS,
   TRANSACTION_TYPES,
@@ -11,11 +12,11 @@ export default class TransactionSchema {
       .nullish()
       .transform((v) => v ?? undefined),
     type: z.enum(TRANSACTION_TYPES, { message: "Tipo inválido" }),
-    categoryId: z.string().min(1, "Categoria obrigatória"),
-    subcategory: z
+    category: z.enum(FINANCE_CATEGORY_TYPES, { message: "Categoria inválida" }),
+    subcategoryId: z
       .string()
       .nullish()
-      .transform((v) => v?.trim() || undefined),
+      .transform((v) => v || undefined),
     companyId: z
       .string()
       .nullish()

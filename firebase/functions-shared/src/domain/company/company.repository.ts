@@ -24,28 +24,35 @@ export class CompanyRepository {
     ...companyData
   }: RegisterCompanyDTO): Promise<void> {
     const cnpjIndex = companyData.legalInformation.documentNumber;
-    const existingId = await this.findByCnpj(cnpjIndex);
-
-    if (existingId && existingId !== companyId) {
-      throw new HttpsError(
-        "already-exists",
-        "CNPJ já cadastrado para outra empresa!",
-      );
-    }
 
     const ref = companyId
       ? this.companiesCollection.doc(companyId)
       : this.companiesCollection.doc();
 
-    await ref.set(
-      {
-        ...companyData,
-        cnpjIndex,
-        createdAt: FieldValue.serverTimestamp(),
-        updatedAt: FieldValue.serverTimestamp(),
-      },
-      { merge: true },
-    );
+    await database.runTransaction(async (tx) => {
+      const existingSnap = await tx.get(
+        this.companiesCollection.where("cnpjIndex", "==", cnpjIndex).limit(1),
+      );
+      const existingId = existingSnap.empty ? null : existingSnap.docs[0].id;
+
+      if (existingId && existingId !== ref.id) {
+        throw new HttpsError(
+          "already-exists",
+          "CNPJ já cadastrado para outra empresa!",
+        );
+      }
+
+      tx.set(
+        ref,
+        {
+          ...companyData,
+          cnpjIndex,
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+    });
   }
 
   static async deleteCompany(companyId: string): Promise<void> {

@@ -2,7 +2,9 @@ import { httpsCallable } from 'firebase/functions';
 
 import type {
   FinanceAccount,
-  FinanceCategory,
+  FinanceSubcategory,
+  SaveFinanceAccountDTO,
+  SaveFinanceSubcategoryDTO,
   SaveTransactionDTO,
   Transaction,
 } from '@/models/finance.model';
@@ -36,15 +38,20 @@ export default class FinanceService {
     Transaction
   >(functions, 'deleteTransactionHandler');
 
-  private static listCategoriesCallable = httpsCallable<
+  private static listSubcategoriesCallable = httpsCallable<
     void,
-    FinanceCategory[]
-  >(functions, 'listCategoriesHandler');
+    FinanceSubcategory[]
+  >(functions, 'listSubcategoriesHandler');
 
-  private static saveCategoryCallable = httpsCallable<
-    { name: string },
-    FinanceCategory
-  >(functions, 'saveCategoryHandler');
+  private static saveSubcategoryCallable = httpsCallable<
+    SaveFinanceSubcategoryDTO,
+    FinanceSubcategory
+  >(functions, 'saveSubcategoryHandler');
+
+  private static deleteSubcategoryCallable = httpsCallable<
+    { subcategoryId: string },
+    void
+  >(functions, 'deleteSubcategoryHandler');
 
   private static listAccountsCallable = httpsCallable<void, FinanceAccount[]>(
     functions,
@@ -52,9 +59,14 @@ export default class FinanceService {
   );
 
   private static saveAccountCallable = httpsCallable<
-    { name: string },
+    SaveFinanceAccountDTO,
     FinanceAccount
   >(functions, 'saveAccountHandler');
+
+  private static deleteAccountCallable = httpsCallable<
+    { accountId: string },
+    void
+  >(functions, 'deleteAccountHandler');
 
   static async listTransactions(): Promise<Transaction[]> {
     const r = await this.listTransactionsCallable();
@@ -78,14 +90,20 @@ export default class FinanceService {
     await this.deleteTransactionCallable({ transactionId });
   }
 
-  static async listCategories(): Promise<FinanceCategory[]> {
-    const r = await this.listCategoriesCallable();
+  static async listSubcategories(): Promise<FinanceSubcategory[]> {
+    const r = await this.listSubcategoriesCallable();
     return r.data;
   }
 
-  static async saveCategory(name: string): Promise<FinanceCategory> {
-    const r = await this.saveCategoryCallable({ name });
+  static async saveSubcategory(
+    dto: SaveFinanceSubcategoryDTO,
+  ): Promise<FinanceSubcategory> {
+    const r = await this.saveSubcategoryCallable(dto);
     return r.data;
+  }
+
+  static async deleteSubcategory(subcategoryId: string): Promise<void> {
+    await this.deleteSubcategoryCallable({ subcategoryId });
   }
 
   static async listAccounts(): Promise<FinanceAccount[]> {
@@ -93,8 +111,12 @@ export default class FinanceService {
     return r.data;
   }
 
-  static async saveAccount(name: string): Promise<FinanceAccount> {
-    const r = await this.saveAccountCallable({ name });
+  static async saveAccount(dto: SaveFinanceAccountDTO): Promise<FinanceAccount> {
+    const r = await this.saveAccountCallable(dto);
     return r.data;
+  }
+
+  static async deleteAccount(accountId: string): Promise<void> {
+    await this.deleteAccountCallable({ accountId });
   }
 }

@@ -8,6 +8,7 @@ import { FormSelect } from '@/components/ui/form-select.component';
 import { formatCurrency } from '@/formatters/formatCurrency';
 import { formatDateShort } from '@/formatters/formatDate';
 import {
+  FINANCE_CATEGORY_TYPE_LABELS,
   PAYMENT_METHOD_LABELS,
   TRANSACTION_STATUS_LABELS,
   TRANSACTION_TYPES,
@@ -21,7 +22,7 @@ import type {
 import { companiesQueryOptions } from '@/queries/company.queries';
 import {
   financeAccountsQueryOptions,
-  financeCategoriesQueryOptions,
+  financeSubcategoriesQueryOptions,
   transactionsQueryOptions,
 } from '@/queries/finance.queries';
 
@@ -37,7 +38,7 @@ const STATUS_BADGE_VARIANT: Record<
 export function FinanceTransactionsTab() {
   const { data: transactions } = useSuspenseQuery(transactionsQueryOptions());
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
-  const { data: categories } = useSuspenseQuery(financeCategoriesQueryOptions());
+  const { data: subcategories } = useSuspenseQuery(financeSubcategoriesQueryOptions());
   const { data: accounts } = useSuspenseQuery(financeAccountsQueryOptions());
 
   const [filterType, setFilterType] = useState<'' | TransactionType>('');
@@ -68,7 +69,8 @@ export function FinanceTransactionsTab() {
         (t) =>
           !term ||
           t.companyName?.toLowerCase().includes(term) ||
-          t.categoryName.toLowerCase().includes(term) ||
+          FINANCE_CATEGORY_TYPE_LABELS[t.category].toLowerCase().includes(term) ||
+          t.subcategoryName?.toLowerCase().includes(term) ||
           t.description?.toLowerCase().includes(term),
       );
   }, [transactions, filterType, filterStatus, search]);
@@ -149,9 +151,9 @@ export function FinanceTransactionsTab() {
                   {formatDateShort(t.dueDate)}
                 </td>
                 <td className="px-4 py-2.5 text-text">
-                  {t.categoryName}
-                  {t.subcategory && (
-                    <span className="text-text-muted"> — {t.subcategory}</span>
+                  {FINANCE_CATEGORY_TYPE_LABELS[t.category]}
+                  {t.subcategoryName && (
+                    <span className="text-text-muted"> — {t.subcategoryName}</span>
                   )}
                 </td>
                 <td className="px-4 py-2.5 text-text-sub">
@@ -184,7 +186,7 @@ export function FinanceTransactionsTab() {
         <TransactionModal
           transaction={selectedTransaction}
           companies={companies}
-          categories={categories}
+          subcategories={subcategories}
           accounts={accounts}
           onClose={() => setShowModal(false)}
           onSaved={() => setShowModal(false)}

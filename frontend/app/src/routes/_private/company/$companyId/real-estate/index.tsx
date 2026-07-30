@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { MdAdd } from 'react-icons/md';
+import { useState } from 'react';
+import { MdAdd, MdSearch } from 'react-icons/md';
 
 import { RealEstateList } from '@/components/company/real-estate/list.component';
 import { realEstateQueryOptions } from '@/queries/real-estate.queries';
@@ -19,6 +20,14 @@ export const Route = createFileRoute(
 function CompanyRealEstate() {
   const { companyId } = Route.useParams();
   const { data: items } = useSuspenseQuery(realEstateQueryOptions(companyId));
+  const [search, setSearch] = useState('');
+
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredItems = normalizedSearch
+    ? items.filter((item) =>
+        item.code.toLowerCase().includes(normalizedSearch),
+      )
+    : items;
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -42,7 +51,29 @@ function CompanyRealEstate() {
           </Link>
         </div>
 
-        <RealEstateList companyId={companyId} items={items} />
+        <div className="relative mb-4 max-w-xs">
+          <MdSearch
+            size={16}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
+          />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por código..."
+            className="w-full rounded-md border border-border bg-card py-2 pl-9 pr-3 text-sm text-text outline-none placeholder:text-text-muted transition-colors focus:border-primary"
+          />
+        </div>
+
+        <RealEstateList
+          companyId={companyId}
+          items={filteredItems}
+          emptyMessage={
+            normalizedSearch
+              ? `Nenhum imóvel encontrado para o código "${search}".`
+              : undefined
+          }
+        />
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { HttpsError } from "firebase-functions/https";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, WriteBatch } from "firebase-admin/firestore";
 
 import { database } from "functions-shared";
 import {
@@ -13,6 +13,23 @@ import {
   TaskCategoryDTO,
   TaskSubcategoryDTO,
 } from "../types/task-category.dto";
+
+// Firestore permite no máximo 500 operações por batch. Categorias/subcategorias
+// com muitas tarefas vinculadas precisam ser aplicadas em vários batches — perde
+// a atomicidade de um único commit, mas é o jeito padrão de contornar o limite.
+const FIRESTORE_BATCH_LIMIT = 500;
+
+async function commitInChunks(
+  writers: Array<(batch: WriteBatch) => void>,
+): Promise<void> {
+  for (let i = 0; i < writers.length; i += FIRESTORE_BATCH_LIMIT) {
+    const batch = database.batch();
+    for (const writer of writers.slice(i, i + FIRESTORE_BATCH_LIMIT)) {
+      writer(batch);
+    }
+    await batch.commit();
+  }
+}
 
 export class TaskCategoryRepository {
   private static col = database.collection("task_categories");
@@ -132,19 +149,21 @@ export class TaskCategoryRepository {
       .get();
     const subcategoriesSnap = await this.subcategoriesCol(categoryId).get();
 
-    const batch = database.batch();
-    for (const doc of taskSnap.docs) {
-      batch.update(doc.ref, {
-        categoryId: fallback.id,
-        subcategoryId: null,
-        updatedAt: FieldValue.serverTimestamp(),
-      });
-    }
-    for (const doc of subcategoriesSnap.docs) {
-      batch.delete(doc.ref);
-    }
-    batch.delete(this.col.doc(categoryId));
-    await batch.commit();
+    const writers: Array<(batch: WriteBatch) => void> = [
+      ...taskSnap.docs.map(
+        (doc) => (batch: WriteBatch) =>
+          batch.update(doc.ref, {
+            categoryId: fallback.id,
+            subcategoryId: null,
+            updatedAt: FieldValue.serverTimestamp(),
+          }),
+      ),
+      ...subcategoriesSnap.docs.map(
+        (doc) => (batch: WriteBatch) => batch.delete(doc.ref),
+      ),
+      (batch: WriteBatch) => batch.delete(this.col.doc(categoryId)),
+    ];
+    await commitInChunks(writers);
 
     return { movedTo: taskSnap.size > 0 ? fallback.id : null };
   }
@@ -202,14 +221,16 @@ export class TaskCategoryRepository {
       .where("subcategoryId", "==", subcategoryId)
       .get();
 
-    const batch = database.batch();
-    for (const doc of taskSnap.docs) {
-      batch.update(doc.ref, {
-        subcategoryId: null,
-        updatedAt: FieldValue.serverTimestamp(),
-      });
-    }
-    batch.delete(ref);
-    await batch.commit();
+    const writers: Array<(batch: WriteBatch) => void> = [
+      ...taskSnap.docs.map(
+        (doc) => (batch: WriteBatch) =>
+          batch.update(doc.ref, {
+            subcategoryId: null,
+            updatedAt: FieldValue.serverTimestamp(),
+          }),
+      ),
+      (batch: WriteBatch) => batch.delete(ref),
+    ];
+    await commitInChunks(writers);
   }
 }

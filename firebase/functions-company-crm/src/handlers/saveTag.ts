@@ -2,9 +2,8 @@ import { HttpsError } from "firebase-functions/https";
 import { z } from "zod";
 import { logger } from "firebase-functions";
 
-import { onCallHandler } from "functions-shared";
+import { onCallHandler, requireCompanyAccess } from "functions-shared";
 import { TagRepository } from "../repositories/tag.repository";
-import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 const schema = z.object({
   companyId: z.string().min(1),
@@ -20,7 +19,7 @@ export const saveTagHandler = onCallHandler(async (req) => {
     );
   }
 
-  const { companyId } = requireCompanyAccess(req, data.companyId);
+  const { companyId } = requireCompanyAccess(req, data.companyId, "ao CRM");
 
   logger.info("saveTag", { companyId, name: data.name });
 

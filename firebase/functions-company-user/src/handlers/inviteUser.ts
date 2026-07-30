@@ -8,6 +8,7 @@ import { CompanyUserSchema } from "../data/company-user.schema";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
+  permissions: ["manage-clients" as const],
 };
 
 export const inviteCompanyUserHandler = onCallHandler(async (req) => {

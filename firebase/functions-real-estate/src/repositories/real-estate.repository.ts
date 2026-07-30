@@ -94,20 +94,6 @@ export class RealEstateRepository {
       .doc("real_estate");
   }
 
-  private static async nextCode(companyId: string): Promise<string> {
-    const ref = this.counterRef(companyId);
-
-    const seq = await database.runTransaction(async (tx) => {
-      const snap = await tx.get(ref);
-      const current = (snap.data()?.value as number | undefined) ?? 0;
-      const next = current + 1;
-      tx.set(ref, { value: next }, { merge: true });
-      return next;
-    });
-
-    return `I-${String(seq).padStart(3, "0")}`;
-  }
-
   static async save(
     companyId: string,
     createdBy: string,
@@ -119,32 +105,44 @@ export class RealEstateRepository {
     // de mídia antes do primeiro save) — quem decide se é criação ou edição é
     // a existência do documento, não a presença do id.
     const ref = realEstateId ? col.doc(realEstateId) : col.doc();
-    const existing = await ref.get();
-    const isNew = !existing.exists;
+    const counterRef = this.counterRef(companyId);
 
-    const payload: Record<string, unknown> = {
-      ...rest,
-      companyId,
-      furnishings: rest.furnishings ?? "nao",
-      acceptsFinancing: rest.acceptsFinancing ?? false,
-      acceptsExchange: rest.acceptsExchange ?? false,
-      negotiable: rest.negotiable ?? false,
-      features: rest.features ?? [],
-      photos: rest.photos ?? [],
-      portals: rest.portals ?? [],
-      visibleOnWebsite: rest.visibleOnWebsite ?? false,
-      featured: rest.featured ?? false,
-      updatedAt: FieldValue.serverTimestamp(),
-    };
+    // Existência + alocação de código + escrita precisam ser atômicas: dois
+    // saves concorrentes tratando o mesmo id ainda inexistente como "novo"
+    // não podem alocar código duplicado nem correr na escrita final.
+    await database.runTransaction(async (transaction) => {
+      const existing = await transaction.get(ref);
+      const isNew = !existing.exists;
 
-    if (isNew) {
-      payload.createdBy = createdBy;
-      payload.createdAt = FieldValue.serverTimestamp();
-      payload.status = rest.status ?? "disponivel";
-      payload.code = await this.nextCode(companyId);
-    }
+      const payload: Record<string, unknown> = {
+        ...rest,
+        companyId,
+        furnishings: rest.furnishings ?? "nao",
+        acceptsFinancing: rest.acceptsFinancing ?? false,
+        acceptsExchange: rest.acceptsExchange ?? false,
+        negotiable: rest.negotiable ?? false,
+        features: rest.features ?? [],
+        photos: rest.photos ?? [],
+        portals: rest.portals ?? [],
+        visibleOnWebsite: rest.visibleOnWebsite ?? false,
+        featured: rest.featured ?? false,
+        updatedAt: FieldValue.serverTimestamp(),
+      };
 
-    await ref.set(payload, { merge: true });
+      if (isNew) {
+        const counterSnap = await transaction.get(counterRef);
+        const current = (counterSnap.data()?.value as number | undefined) ?? 0;
+        const next = current + 1;
+        transaction.set(counterRef, { value: next }, { merge: true });
+
+        payload.createdBy = createdBy;
+        payload.createdAt = FieldValue.serverTimestamp();
+        payload.status = rest.status ?? "disponivel";
+        payload.code = `I-${String(next).padStart(3, "0")}`;
+      }
+
+      transaction.set(ref, payload, { merge: true });
+    });
 
     const snap = await ref.get();
     return toDTO(snap.id, snap.data() as RealEstateDocument);

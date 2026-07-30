@@ -4,12 +4,16 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import type { SaveTransactionDTO } from '@/models/finance.model';
+import type {
+  SaveFinanceAccountDTO,
+  SaveFinanceSubcategoryDTO,
+  SaveTransactionDTO,
+} from '@/models/finance.model';
 import FinanceService from '@/services/finance.service';
 
 export const financeKeys = {
   transactions: ['finance-transactions'] as const,
-  categories: ['finance-categories'] as const,
+  subcategories: ['finance-subcategories'] as const,
   accounts: ['finance-accounts'] as const,
 };
 
@@ -19,10 +23,10 @@ export const transactionsQueryOptions = () =>
     queryFn: () => FinanceService.listTransactions(),
   });
 
-export const financeCategoriesQueryOptions = () =>
+export const financeSubcategoriesQueryOptions = () =>
   queryOptions({
-    queryKey: financeKeys.categories,
-    queryFn: () => FinanceService.listCategories(),
+    queryKey: financeKeys.subcategories,
+    queryFn: () => FinanceService.listSubcategories(),
   });
 
 export const financeAccountsQueryOptions = () =>
@@ -67,13 +71,26 @@ export function useDeleteTransactionMutation() {
   });
 }
 
-export function useSaveFinanceCategoryMutation() {
+export function useSaveFinanceSubcategoryMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (name: string) => FinanceService.saveCategory(name),
+    mutationFn: (dto: SaveFinanceSubcategoryDTO) =>
+      FinanceService.saveSubcategory(dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.categories });
+      queryClient.invalidateQueries({ queryKey: financeKeys.subcategories });
+    },
+  });
+}
+
+export function useDeleteFinanceSubcategoryMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (subcategoryId: string) =>
+      FinanceService.deleteSubcategory(subcategoryId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: financeKeys.subcategories });
     },
   });
 }
@@ -82,7 +99,18 @@ export function useSaveFinanceAccountMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (name: string) => FinanceService.saveAccount(name),
+    mutationFn: (dto: SaveFinanceAccountDTO) => FinanceService.saveAccount(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: financeKeys.accounts });
+    },
+  });
+}
+
+export function useDeleteFinanceAccountMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (accountId: string) => FinanceService.deleteAccount(accountId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: financeKeys.accounts });
     },

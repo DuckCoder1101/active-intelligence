@@ -25,45 +25,46 @@ export class CrmColumnRepository {
     funnelId: string,
   ): Promise<CrmColumnDTO[]> {
     const col = this.col(companyId, funnelId);
-    const snap = await col.get();
 
-    if (snap.empty) {
-      const batch = database.batch();
-      const seededRefs = DEFAULT_CRM_COLUMNS.map((column) => {
-        const ref = col.doc();
-        batch.set(ref, {
-          companyId,
-          funnelId,
-          name: column.name,
-          color: column.color,
-          order: column.order,
-          createdAt: FieldValue.serverTimestamp(),
+    return database.runTransaction(async (transaction) => {
+      const snap = await transaction.get(col);
+
+      if (snap.empty) {
+        const seededRefs = DEFAULT_CRM_COLUMNS.map((column) => {
+          const ref = col.doc();
+          transaction.set(ref, {
+            companyId,
+            funnelId,
+            name: column.name,
+            color: column.color,
+            order: column.order,
+            createdAt: FieldValue.serverTimestamp(),
+          });
+          return { ref, column };
         });
-        return { ref, column };
-      });
-      await batch.commit();
 
-      return seededRefs
-        .map(({ ref, column }) => ({
-          columnId: ref.id,
-          name: column.name,
-          color: column.color,
-          order: column.order,
-        }))
+        return seededRefs
+          .map(({ ref, column }) => ({
+            columnId: ref.id,
+            name: column.name,
+            color: column.color,
+            order: column.order,
+          }))
+          .sort((a, b) => a.order - b.order);
+      }
+
+      return snap.docs
+        .map((doc) => {
+          const data = doc.data() as CrmColumnDocument;
+          return {
+            columnId: doc.id,
+            name: data.name,
+            color: data.color,
+            order: data.order,
+          };
+        })
         .sort((a, b) => a.order - b.order);
-    }
-
-    return snap.docs
-      .map((doc) => {
-        const data = doc.data() as CrmColumnDocument;
-        return {
-          columnId: doc.id,
-          name: data.name,
-          color: data.color,
-          order: data.order,
-        };
-      })
-      .sort((a, b) => a.order - b.order);
+    });
   }
 
   static async save(
@@ -84,7 +85,7 @@ export class CrmColumnRepository {
     if (!isNew) {
       const existing = await ref.get();
       if (!existing.exists) {
-        throw new HttpsError("permission-denied", "Quadro não encontrado.");
+        throw new HttpsError("not-found", "Quadro não encontrado.");
       }
     }
 

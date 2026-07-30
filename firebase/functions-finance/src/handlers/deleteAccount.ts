@@ -3,7 +3,7 @@ import { logger } from "firebase-functions";
 import { z } from "zod";
 
 import { onCallHandler, requireAccess } from "functions-shared";
-import { CategoryRepository } from "../repositories/category.repository";
+import { AccountRepository } from "../repositories/account.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
@@ -11,14 +11,10 @@ const ACCESS = {
 };
 
 const schema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Nome obrigatório")
-    .max(60, "Máximo 60 caracteres"),
+  accountId: z.string().min(1, "accountId obrigatório"),
 });
 
-export const saveCategoryHandler = onCallHandler(async (req) => {
+export const deleteAccountHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
   const { success, data, error } = schema.safeParse(req.data);
@@ -29,7 +25,7 @@ export const saveCategoryHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("saveCategory", { name: data.name });
+  logger.info("deleteAccount", { accountId: data.accountId });
 
-  return CategoryRepository.save(data.name);
+  await AccountRepository.delete(data.accountId);
 });

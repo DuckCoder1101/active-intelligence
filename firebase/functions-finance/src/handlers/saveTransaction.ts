@@ -8,7 +8,7 @@ import {
 } from "functions-shared";
 import TransactionSchema from "../data/transaction.schema";
 import { AccountRepository } from "../repositories/account.repository";
-import { CategoryRepository } from "../repositories/category.repository";
+import { SubcategoryRepository } from "../repositories/subcategory.repository";
 import { TransactionRepository } from "../repositories/transaction.repository";
 
 const ACCESS = {
@@ -29,13 +29,22 @@ export const saveTransactionHandler = onCallHandler(async (req) => {
     );
   }
 
-  const [category, account, company] = await Promise.all([
-    CategoryRepository.getById(data.categoryId),
+  const [subcategory, account, company] = await Promise.all([
+    data.subcategoryId ?
+      SubcategoryRepository.getById(data.subcategoryId) :
+      Promise.resolve(undefined),
     AccountRepository.getById(data.accountId),
     data.companyId ?
       CompanyRepository.getCompanyResumeById(data.companyId) :
       Promise.resolve(undefined),
   ]);
+
+  if (subcategory && subcategory.categoryType !== data.category) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Subcategoria não pertence à categoria selecionada.",
+    );
+  }
 
   logger.info("saveTransaction", {
     action: data.transactionId ? "update" : "create",
@@ -45,9 +54,9 @@ export const saveTransactionHandler = onCallHandler(async (req) => {
   const transaction = await TransactionRepository.save({
     transactionId: data.transactionId,
     type: data.type,
-    categoryId: category.categoryId,
-    categoryName: category.name,
-    subcategory: data.subcategory,
+    category: data.category,
+    subcategoryId: subcategory?.subcategoryId,
+    subcategoryName: subcategory?.name,
     companyId: company?.companyId,
     companyName: company?.displayName,
     amount: data.amount,

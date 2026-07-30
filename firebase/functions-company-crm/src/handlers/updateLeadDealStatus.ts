@@ -1,10 +1,9 @@
 import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 
-import { onCallHandler } from "functions-shared";
+import { onCallHandler, requireCompanyAccess } from "functions-shared";
 import LeadSchema from "../data/lead.schema";
 import { LeadRepository } from "../repositories/lead.repository";
-import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 export const updateLeadDealStatusHandler = onCallHandler(async (req) => {
   const { success, data, error } = LeadSchema.updateDealStatusSchema.safeParse(
@@ -17,7 +16,7 @@ export const updateLeadDealStatusHandler = onCallHandler(async (req) => {
     );
   }
 
-  const { companyId } = requireCompanyAccess(req, data.companyId);
+  const { companyId } = requireCompanyAccess(req, data.companyId, "ao CRM");
 
   logger.info("updateLeadDealStatus", {
     companyId,

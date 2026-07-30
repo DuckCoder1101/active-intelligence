@@ -24,16 +24,19 @@ const STATUS_BADGE_VARIANT: Record<
 interface RealEstateListProps {
   companyId: string;
   items: RealEstate[];
+  emptyMessage?: string;
 }
 
-export function RealEstateList({ companyId, items }: RealEstateListProps) {
+export function RealEstateList({
+  companyId,
+  items,
+  emptyMessage = 'Nenhum imóvel cadastrado ainda.',
+}: RealEstateListProps) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border py-16">
         <MdOutlineApartment size={28} className="text-text-muted" />
-        <p className="text-[13px] text-text-muted">
-          Nenhum imóvel cadastrado ainda.
-        </p>
+        <p className="text-[13px] text-text-muted">{emptyMessage}</p>
       </div>
     );
   }
@@ -65,7 +68,7 @@ export function RealEstateList({ companyId, items }: RealEstateListProps) {
             </div>
             <div className="flex flex-1 flex-col gap-1.5 p-3.5">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[11px] font-bold text-text-muted">
+                <span className="rounded-md bg-bg px-1.5 py-0.5 font-mono text-[12px] font-bold text-text">
                   {item.code}
                 </span>
                 <Badge variant={STATUS_BADGE_VARIANT[item.status]}>

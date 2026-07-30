@@ -150,4 +150,23 @@ export default class AdminRepository {
 
     return { uid, name: admin.name };
   }
+
+  /** Busca vários admins de uma vez (um único round-trip via getAll), pra evitar N+1 ao resolver nomes em listas. */
+  static async getNamesByUids(uids: string[]): Promise<Map<string, string>> {
+    const uniqueUids = [...new Set(uids)];
+    const map = new Map<string, string>();
+    if (uniqueUids.length === 0) return map;
+
+    const refs = uniqueUids.map((uid) => this.adminsCollection.doc(uid));
+    const docs = await database.getAll(...refs);
+
+    docs.forEach((doc, i) => {
+      if (doc.exists) {
+        const admin = doc.data() as AdminDocument;
+        map.set(uniqueUids[i], admin.name);
+      }
+    });
+
+    return map;
+  }
 }

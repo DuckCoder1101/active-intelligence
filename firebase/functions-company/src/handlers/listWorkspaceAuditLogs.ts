@@ -7,9 +7,10 @@ import {
   database,
   requireAccess,
   CompanyAuditDocument,
+  AdminRepository,
 } from "functions-shared";
 
-import { mapAuditLogDoc } from "../utils/audit-log.mapper";
+import { collectAuditAdminUids, mapAuditLogDoc } from "../utils/audit-log.mapper";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
@@ -69,5 +70,11 @@ export const listWorkspaceAuditLogsHandler = onCallHandler(async (req) => {
     docs = snapshot.docs;
   }
 
-  return Promise.all(docs.map(mapAuditLogDoc));
+  if (docs.length === 0) return [];
+
+  const nameByUid = await AdminRepository.getNamesByUids(
+    collectAuditAdminUids(docs),
+  );
+
+  return docs.map((doc) => mapAuditLogDoc(doc, nameByUid));
 });

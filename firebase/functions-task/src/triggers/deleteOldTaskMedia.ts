@@ -1,4 +1,5 @@
 import { onSchedule } from "firebase-functions/scheduler";
+import { logger } from "firebase-functions";
 import { bucket } from "functions-shared";
 import { TaskRepository } from "../repositories/task.repository";
 
@@ -20,7 +21,7 @@ export const deleteOldTaskMedia = onSchedule(
 
       const prefix = `client/${task.companyId}/tasks/${task.taskId}/`;
       await bucket.deleteFiles({ prefix }).catch((_err) => {
-        console.log("Erro ao deletar os arquivos da task: " + task.taskId);
+        logger.error("Erro ao deletar os arquivos da task: " + task.taskId);
       });
       await TaskRepository.clearMedia(task.taskId);
     }

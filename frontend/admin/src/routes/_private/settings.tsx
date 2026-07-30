@@ -1,15 +1,20 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, redirect, useBlocker } from '@tanstack/react-router';
 import { useState } from 'react';
-import { MdOutlineCategory } from 'react-icons/md';
+import { MdMenu, MdOutlineCategory, MdOutlinePayments } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 import type { SidebarNavItem } from '@/components/layout/sidebar.component';
 import { Sidebar } from '@/components/layout/sidebar.component';
 import { CategoriesPanel } from '@/components/settings/categories-panel.component';
+import { FinanceSettingsPanel } from '@/components/settings/finance-settings-panel.component';
 import { SubcategoriesPanel } from '@/components/settings/subcategories-panel.component';
 import { UnsavedChangesModal } from '@/components/settings/unsaved-changes-modal.component';
 import { Spinner } from '@/components/ui/spinner.component';
+import {
+  financeAccountsQueryOptions,
+  financeSubcategoriesQueryOptions,
+} from '@/queries/finance.queries';
 import {
   taskCategoriesQueryOptions,
   useDeleteTaskCategoryMutation,
@@ -27,7 +32,7 @@ const ROUTE_ACCESS: RouteAccessLevel = {
   permissions: ['manage-settings'],
 };
 
-type SettingsModuleKey = 'task-categories';
+type SettingsModuleKey = 'task-categories' | 'finance';
 
 const SIDEBAR_COLLAPSED_KEY = 'settings-sidebar-collapsed';
 
@@ -39,10 +44,14 @@ export const Route = createFileRoute('/_private/settings')({
     }
   },
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData({
-      ...taskCategoriesQueryOptions(),
-      revalidateIfStale: true,
-    }),
+    Promise.all([
+      context.queryClient.ensureQueryData({
+        ...taskCategoriesQueryOptions(),
+        revalidateIfStale: true,
+      }),
+      context.queryClient.ensureQueryData(financeSubcategoriesQueryOptions()),
+      context.queryClient.ensureQueryData(financeAccountsQueryOptions()),
+    ]),
   component: SettingsPage,
 });
 
@@ -51,6 +60,7 @@ function SettingsPage() {
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1',
   );
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
@@ -67,6 +77,13 @@ function SettingsPage() {
       label: 'Categorias de Tarefa',
       onClick: () => setSelectedModule('task-categories'),
       active: selectedModule === 'task-categories',
+    },
+    {
+      key: 'finance',
+      icon: MdOutlinePayments,
+      label: 'Financeiro',
+      onClick: () => setSelectedModule('finance'),
+      active: selectedModule === 'finance',
     },
   ];
 
@@ -254,16 +271,29 @@ function SettingsPage() {
         items={sidebarItems}
         collapsed={collapsed}
         onToggleCollapse={toggleCollapsed}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        className="lg:static"
       />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        {selectedModule === 'task-categories' && (
-          <>
-            <div className="shrink-0 border-b border-border px-6 py-4">
-              <h1 className="text-[18px] font-bold text-text">Categorias de Tarefa</h1>
-              <p className="mt-0.5 text-[12px] text-text-sub">
-                Categorias e subcategorias usadas no Kanban do Workspace.
-              </p>
+        {/* Ambos os módulos ficam sempre montados (só a visibilidade alterna) pra
+            trocar de módulo não descartar silenciosamente um rascunho não salvo. */}
+        <div className={selectedModule === 'task-categories' ? 'contents' : 'hidden'}>
+            <div className="flex shrink-0 items-center gap-3 border-b border-border px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                className="text-text-muted transition-colors hover:text-text lg:hidden"
+              >
+                <MdMenu size={20} />
+              </button>
+              <div>
+                <h1 className="text-[18px] font-bold text-text">Categorias de Tarefa</h1>
+                <p className="mt-0.5 text-[12px] text-text-sub">
+                  Categorias e subcategorias usadas no Kanban do Workspace.
+                </p>
+              </div>
             </div>
 
             <div className="flex flex-1 gap-8 overflow-y-auto px-6 py-6">
@@ -309,8 +339,11 @@ function SettingsPage() {
                 Salvar
               </button>
             </div>
-          </>
-        )}
+        </div>
+
+        <div className={selectedModule === 'finance' ? 'contents' : 'hidden'}>
+          <FinanceSettingsPanel />
+        </div>
       </div>
 
       {blocker.status === 'blocked' && (

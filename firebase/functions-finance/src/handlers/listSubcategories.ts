@@ -1,12 +1,12 @@
 import { onCallHandler, requireAccess } from "functions-shared";
-import { CategoryRepository } from "../repositories/category.repository";
+import { SubcategoryRepository } from "../repositories/subcategory.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
   permissions: ["manage-finance" as const],
 };
 
-export const listCategoriesHandler = onCallHandler(async (req) => {
+export const listSubcategoriesHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
-  return CategoryRepository.listAll();
+  return SubcategoryRepository.listAll();
 });

@@ -10,9 +10,9 @@ function toDTO(id: string, data: TransactionDocument): TransactionDTO {
     transactionId: id,
     type: data.type,
     status: data.status,
-    categoryId: data.categoryId,
-    categoryName: data.categoryName,
-    subcategory: data.subcategory,
+    category: data.category,
+    subcategoryId: data.subcategoryId,
+    subcategoryName: data.subcategoryName,
     companyId: data.companyId,
     companyName: data.companyName,
     amount: data.amount,
@@ -33,9 +33,9 @@ function toDTO(id: string, data: TransactionDocument): TransactionDTO {
 export interface SaveTransactionInput {
   transactionId?: string;
   type: TransactionDocument["type"];
-  categoryId: string;
-  categoryName: string;
-  subcategory?: string;
+  category: TransactionDocument["category"];
+  subcategoryId?: string;
+  subcategoryName?: string;
   companyId?: string;
   companyName?: string;
   amount: number;
@@ -54,6 +54,13 @@ export class TransactionRepository {
     const { transactionId, dueDate, createdBy, ...rest } = data;
     const ref = transactionId ? this.col.doc(transactionId) : this.col.doc();
     const isNew = !transactionId;
+
+    if (!isNew) {
+      const existing = await ref.get();
+      if (!existing.exists) {
+        throw new HttpsError("not-found", "Lançamento não encontrado.");
+      }
+    }
 
     const payload: Record<string, unknown> = {
       ...rest,

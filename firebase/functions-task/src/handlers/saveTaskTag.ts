@@ -5,7 +5,10 @@ import { onCallHandler, requireAccess } from "functions-shared";
 import TaskTagSchema from "../data/task-tag.schema";
 import { TaskTagRepository } from "../repositories/task-tag.repository";
 
-const ACCESS = { minAccessLevel: "admin" as const };
+const ACCESS = {
+  minAccessLevel: "admin" as const,
+  permissions: ["manage-settings" as const],
+};
 
 export const saveTaskTagHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);

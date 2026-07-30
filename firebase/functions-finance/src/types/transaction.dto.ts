@@ -1,3 +1,4 @@
+import type { FinanceCategoryType } from "./category.type";
 import type {
   PaymentMethod,
   TransactionOrigin,
@@ -9,9 +10,9 @@ export interface TransactionDTO {
   transactionId: string;
   type: TransactionType;
   status: TransactionStatus;
-  categoryId: string;
-  categoryName: string;
-  subcategory?: string;
+  category: FinanceCategoryType;
+  subcategoryId?: string;
+  subcategoryName?: string;
   companyId?: string;
   companyName?: string;
   amount: number;
@@ -31,8 +32,8 @@ export interface TransactionDTO {
 export interface SaveTransactionDTO {
   transactionId?: string;
   type: TransactionType;
-  categoryId: string;
-  subcategory?: string;
+  category: FinanceCategoryType;
+  subcategoryId?: string;
   companyId?: string;
   amount: number;
   paymentMethod: PaymentMethod;

@@ -3,7 +3,8 @@ import { logger } from "firebase-functions";
 import { z } from "zod";
 
 import { onCallHandler, requireAccess } from "functions-shared";
-import { AccountRepository } from "../repositories/account.repository";
+import { FINANCE_CATEGORY_TYPES } from "../types/category.type";
+import { SubcategoryRepository } from "../repositories/subcategory.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
@@ -11,18 +12,20 @@ const ACCESS = {
 };
 
 const schema = z.object({
-  accountId: z
+  subcategoryId: z
     .string()
     .nullish()
     .transform((v) => v ?? undefined),
+  categoryType: z.enum(FINANCE_CATEGORY_TYPES, { message: "Categoria inválida" }),
   name: z
     .string()
     .trim()
     .min(1, "Nome obrigatório")
     .max(60, "Máximo 60 caracteres"),
+  order: z.number().nullish().transform((v) => v ?? undefined),
 });
 
-export const saveAccountHandler = onCallHandler(async (req) => {
+export const saveSubcategoryHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
   const { success, data, error } = schema.safeParse(req.data);
@@ -33,10 +36,10 @@ export const saveAccountHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("saveAccount", {
-    action: data.accountId ? "update" : "create",
-    accountId: data.accountId,
+  logger.info("saveSubcategory", {
+    action: data.subcategoryId ? "update" : "create",
+    subcategoryId: data.subcategoryId,
   });
 
-  return AccountRepository.save(data);
+  return SubcategoryRepository.save(data);
 });

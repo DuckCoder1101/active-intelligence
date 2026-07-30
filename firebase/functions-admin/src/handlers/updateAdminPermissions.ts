@@ -34,9 +34,12 @@ export const updateAdminPermissionsHandler = onCallHandler(async (req) => {
     callerUid: callerUid,
   });
 
+  const targetUser = await auth.getUser(data.targetUid);
+  const existingClaims = targetUser.customClaims ?? {};
+
   await auth.setCustomUserClaims(data.targetUid, {
+    ...existingClaims,
     complete: true,
-    accessLevel: "admin",
     permissions: data.permissions,
   });
 

@@ -69,7 +69,7 @@ export class LeadRepository {
     if (!isNew) {
       const existing = await ref.get();
       if (!existing.exists) {
-        throw new HttpsError("permission-denied", "Lead não encontrado.");
+        throw new HttpsError("not-found", "Lead não encontrado.");
       }
     }
 
