@@ -7,7 +7,6 @@ import { TaskTagRepository } from "../repositories/task-tag.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
-  permissions: ["manage-settings" as const],
 };
 
 /**

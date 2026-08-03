@@ -3,12 +3,12 @@ import { PlanRepository } from "../repositories/plan.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
-  permissions: ["manage-catalog" as const],
+  permissions: ["manage-plans" as const],
 };
 
 /**
- * Lists all catalog plans.
- * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-catalog"]}).
+ * Lists all plans.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-plans"]}).
  * Schema: none.
  */
 export const listPlansHandler = onCallHandler(async (req) => {

@@ -94,7 +94,7 @@ para o shape exposto pela API. Duas exceções ainda não corrigidas: `functions
 - DTO `FinanceAccountDTO` no mesmo arquivo.
 
 ### `plans`
-- **Dono**: `functions-catalog/src/repositories/plan.repository.ts`
+- **Dono**: `functions-plans/src/repositories/plan.repository.ts`
 - **Tipo**: `plan.document.ts` → `PlanDocument`
   - `name: string`, `billingType: "mrr"|"tcv"`, `value: number`, `features: ("schedule"|"crm"|"real-estate"|"library")[]`, `taskLimit: number`, `createdAt`, `updatedAt`
 

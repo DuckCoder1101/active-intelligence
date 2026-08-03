@@ -177,8 +177,8 @@
       ]
     },
     {
-      "source": "functions-catalog",
-      "codebase": "catalog",
+      "source": "functions-plans",
+      "codebase": "plans",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
         "node_modules",

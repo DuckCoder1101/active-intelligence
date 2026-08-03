@@ -3,21 +3,21 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 
-import { PlanModal } from '@/components/catalog/plan-modal.component';
-import { PlansTable } from '@/components/catalog/plans-table.component';
+import { PlanModal } from '@/components/plans/plan-modal.component';
+import { PlansTable } from '@/components/plans/plans-table.component';
 import { ListToolbar } from '@/components/ui/list-toolbar.component';
 import { AdminPageContainer } from '@/components/ui/page-container.component';
 import type { Plan } from '@/models/plan.model';
 import { plansQueryOptions } from '@/queries/plan.queries';
 
-export const Route = createFileRoute('/_private/catalog/')({
+export const Route = createFileRoute('/_private/plans/')({
   ssr: false,
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(plansQueryOptions()),
-  component: CatalogPlans,
+  component: PlansPage,
 });
 
-function CatalogPlans() {
+function PlansPage() {
   const { data: plans } = useSuspenseQuery(plansQueryOptions());
   const [search, setSearch] = useState('');
   const [selectedPlan, setSelectedPlan] = useState<Plan | undefined>(undefined);

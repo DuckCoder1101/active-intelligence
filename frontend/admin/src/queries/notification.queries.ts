@@ -46,15 +46,7 @@ export function useMarkNotificationReadMutation() {
 
       queryClient.setQueryData<Notification[]>(
         notificationKeys.lists(),
-        (old) =>
-          old?.map((n) =>
-            n.notificationId === notificationId
-              ? {
-                  ...n,
-                  read: true,
-                }
-              : n,
-          ),
+        (old) => old?.filter((n) => n.notificationId !== notificationId),
       );
 
       return {
@@ -69,6 +61,7 @@ export function useMarkNotificationReadMutation() {
     },
 
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: notificationKeys.lists() });
       queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
     },
   });

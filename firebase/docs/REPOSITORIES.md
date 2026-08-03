@@ -55,7 +55,7 @@ arquivo, `HttpsError("not-found", "X não encontrado.")`). Campos completos de c
 |---|---|---|---|---|
 | `guide.repository.ts` | `GuideRepository` | `library/hub/guides` (singleton global) | ✅ dois mappers (`toDTO`, `toContentDTO`) | ⚠️ `col()`/`hubRef()` sem argumento (não é por empresa) |
 
-## `functions-catalog/src/repositories`
+## `functions-plans/src/repositories`
 
 | Arquivo | Classe | Collection | toDTO | Conformidade |
 |---|---|---|---|---|

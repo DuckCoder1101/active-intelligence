@@ -14,28 +14,28 @@ import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 
 const ROUTE_ACCESS: RouteAccessLevel = {
   minAccessLevel: 'admin',
-  permissions: ['manage-catalog'],
+  permissions: ['manage-plans'],
 };
 
 const TABS: SidebarNavItem[] = [
-  { key: 'plans', icon: MdOutlineInventory2, label: 'Planos', to: '/catalog', exact: true },
+  { key: 'plans', icon: MdOutlineInventory2, label: 'Planos', to: '/plans', exact: true },
   { key: 'products', icon: MdOutlineShoppingBag, label: 'Produtos', soon: true },
   { key: 'playbooks', icon: MdOutlinePlaylistAddCheck, label: 'Playbooks', soon: true },
 ];
 
-const SIDEBAR_COLLAPSED_KEY = 'catalog-sidebar-collapsed';
+const SIDEBAR_COLLAPSED_KEY = 'plans-sidebar-collapsed';
 
-export const Route = createFileRoute('/_private/catalog')({
+export const Route = createFileRoute('/_private/plans')({
   ssr: false,
   beforeLoad: ({ context }) => {
     if (!checkRouteAccess(context.sessionUser, ROUTE_ACCESS)) {
       throw redirect({ to: '/unauthorized' });
     }
   },
-  component: CatalogLayout,
+  component: PlansLayout,
 });
 
-function CatalogLayout() {
+function PlansLayout() {
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1',
   );
@@ -74,7 +74,7 @@ function CatalogLayout() {
             </button>
             <div>
               <h1 className="text-xl font-black tracking-tight text-text">
-                Catálogo
+                Planos
               </h1>
               <p className="text-[12px] text-text-sub">
                 Produtos, planos e playbooks.

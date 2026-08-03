@@ -7,12 +7,12 @@ import { PlanRepository } from "../repositories/plan.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
-  permissions: ["manage-catalog" as const],
+  permissions: ["manage-plans" as const],
 };
 
 /**
- * Deletes a catalog plan.
- * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-catalog"]}).
+ * Deletes a plan.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-plans"]}).
  * Schema: ../data/plan.schema -> PlanSchema.deleteSchema.
  */
 export const deletePlanHandler = onCallHandler(async (req) => {

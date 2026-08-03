@@ -7,12 +7,12 @@ import { PlanRepository } from "../repositories/plan.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
-  permissions: ["manage-catalog" as const],
+  permissions: ["manage-plans" as const],
 };
 
 /**
- * Creates/updates a catalog plan.
- * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-catalog"]}).
+ * Creates/updates a plan.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-plans"]}).
  * Schema: ../data/plan.schema -> PlanSchema.saveSchema.
  */
 export const savePlanHandler = onCallHandler(async (req) => {
