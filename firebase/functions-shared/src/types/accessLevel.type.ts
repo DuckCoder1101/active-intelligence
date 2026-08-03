@@ -13,6 +13,7 @@ export type AdminPermission =
   | "manage-finance"
   | "manage-intelligence"
   | "manage-plans"
+  | "manage-reviews"
   | "manage-library"
   | "manage-team"
   | "manage-settings";

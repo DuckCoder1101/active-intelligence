@@ -9,6 +9,7 @@ import {
   MdOutlinePsychology,
   MdOutlineApps,
   MdOutlineLibraryBooks,
+  MdOutlineReviews,
   MdOutlineSettings,
   MdOutlineGroup,
 } from 'react-icons/md';
@@ -111,6 +112,13 @@ export const ADMIN_MODULES: Section[] = [
         description: 'Guias de conteúdo, playbooks e materiais.',
         to: '/library',
         permission: 'manage-library',
+      },
+      {
+        icon: MdOutlineReviews,
+        label: 'Avaliações',
+        description: 'Feedback semanal das empresas clientes.',
+        to: '/reviews',
+        permission: 'manage-reviews',
       },
     ],
   },

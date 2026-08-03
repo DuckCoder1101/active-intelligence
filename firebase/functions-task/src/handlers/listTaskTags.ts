@@ -3,12 +3,11 @@ import { TaskTagRepository } from "../repositories/task-tag.repository";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
-  permissions: ["manage-settings" as const],
 };
 
 /**
  * Lists task tags.
- * Auth: `requireAccess(req, {minAccessLevel:"admin", permissions:["manage-settings"]})`.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin"})`.
  * Schema: none.
  */
 export const listTaskTagsHandler = onCallHandler(async (req) => {
