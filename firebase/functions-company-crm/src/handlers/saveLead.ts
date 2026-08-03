@@ -6,6 +6,13 @@ import LeadSchema from "../data/lead.schema";
 import { LeadRepository } from "../repositories/lead.repository";
 import { CrmColumnRepository } from "../repositories/crm-column.repository";
 
+/**
+ * Creates or updates a lead — THE reference handler.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: `../data/lead.schema` → `LeadSchema.saveSchema`.
+ * Validates priceMin ≤ priceMax as a business rule, and looks up the
+ * funnel's default kanban column (its first column) before saving.
+ */
 export const saveLeadHandler = onCallHandler(async (req) => {
   const { success, data, error } = LeadSchema.saveSchema.safeParse(req.data);
   if (!success) {

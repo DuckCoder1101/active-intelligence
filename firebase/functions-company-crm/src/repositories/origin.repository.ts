@@ -5,12 +5,20 @@ import { database } from "functions-shared";
 import { OriginDocument, DEFAULT_ORIGIN_NAMES } from "../types/origin.document";
 import { OriginDTO, SaveOriginDTO } from "../types/origin.dto";
 
+function toDTO(id: string, data: OriginDocument): OriginDTO {
+  return { originId: id, name: data.name };
+}
+
+/**
+ * Firestore: `companies/{companyId}/crm_origins`.
+ */
 export class OriginRepository {
   private static col(companyId: string) {
     return database.collection("companies").doc(companyId)
       .collection("crm_origins");
   }
 
+  /** Transactionally seeds `DEFAULT_ORIGIN_NAMES` on first read if the collection is empty. */
   static async listAll(companyId: string): Promise<OriginDTO[]> {
     const col = this.col(companyId);
 
@@ -32,10 +40,7 @@ export class OriginRepository {
       }
 
       return snap.docs
-        .map((doc) => {
-          const data = doc.data() as OriginDocument;
-          return { originId: doc.id, name: data.name };
-        })
+        .map((doc) => toDTO(doc.id, doc.data() as OriginDocument))
         .sort((a, b) => a.name.localeCompare(b.name));
     });
   }

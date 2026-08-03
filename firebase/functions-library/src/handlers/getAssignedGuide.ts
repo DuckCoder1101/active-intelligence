@@ -9,6 +9,11 @@ const schema = z.object({
   guideId: z.string().min(1),
 });
 
+/**
+ * Gets a single guide assigned to a company.
+ * Auth: `requireCompanyAccess(req, companyId, "à Biblioteca")`.
+ * Schema: inline `z.object({ companyId, guideId })`.
+ */
 export const getAssignedGuideHandler = onCallHandler(async (req) => {
   const { success, data } = schema.safeParse(req.data);
   if (!success) {

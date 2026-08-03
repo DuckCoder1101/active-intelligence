@@ -11,6 +11,12 @@ const ACCESS = {
   permissions: ["manage-team" as const],
 };
 
+/**
+ * Creates a Firebase Auth user and grants admin custom claims.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-team"]}).
+ * Schema: ../data/admin.schema -> AdminSchema.inviteAdminSchema.
+ * Deviation: calls auth.createUser/setCustomUserClaims directly instead of going through a repository.
+ */
 export const inviteAdminHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

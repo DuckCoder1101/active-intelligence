@@ -37,6 +37,11 @@ function toContentDTO(id: string, data: GuideDocument): GuideContentDTO {
   };
 }
 
+/**
+ * Firestore: `library/hub/guides` — a singleton-hub pattern (global, not
+ * per-company). Exposes two top-level DTO mappers: `toDTO` (admin view) and
+ * `toContentDTO` (company-facing content view, hides internal fields).
+ */
 export class GuideRepository {
   // Coleção raiz "library" com um doc singleton fixo ("hub") pendurando as
   // subcoleções de cada seção da Biblioteca (guides agora; playbooks,
@@ -49,6 +54,10 @@ export class GuideRepository {
     return database.collection("library").doc("hub");
   }
 
+  /**
+   * Transactional allocator: atomically reserves the next sequential number
+   * (G-001, G-002, ...) so two concurrent creates never reuse the same one.
+   */
   // Aloca atomicamente o próximo número sequencial (G-001, G-002, ...),
   // guardado no doc singleton "hub". Transação evita duas criações
   // simultâneas reutilizarem o mesmo número.
@@ -62,6 +71,7 @@ export class GuideRepository {
     });
   }
 
+  /** Public preview of the next sequence number — read-only, does not allocate/mutate it. */
   // Leitura informativa do próximo número (sem alocar) — usada para prever
   // o prefixo no modal de criação. O valor real só é atribuído em save().
   static async peekNextSequence(): Promise<number> {
@@ -140,6 +150,7 @@ export class GuideRepository {
     await ref.delete();
   }
 
+  /** Filters guides by `assignedCompanyIds` array-contains. */
   static async listByCompany(companyId: string): Promise<GuideContentDTO[]> {
     const snap = await this.col()
       .where("assignedCompanyIds", "array-contains", companyId)
@@ -149,6 +160,7 @@ export class GuideRepository {
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
+  /** Checks that the guide is assigned to `companyId` before returning it. */
   static async getForCompany(
     companyId: string,
     guideId: string,
@@ -167,6 +179,7 @@ export class GuideRepository {
     return toContentDTO(doc.id, data);
   }
 
+  /** Returns only the safe public-facing DTO subset; intentionally used by the unauthenticated `getPublicGuide` handler. */
   static async getPublic(guideId: string): Promise<GuideContentDTO> {
     const doc = await this.col().doc(guideId).get();
     if (!doc.exists) {

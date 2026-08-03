@@ -14,6 +14,12 @@ import {
 import TaskSchema from "../data/task.schema";
 import { TaskRepository } from "../repositories/task.repository";
 
+/**
+ * Client or admin creates a client-facing task, with usage-limit check and notification.
+ * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
+ * Schema: `../data/task.schema` → `TaskSchema.createClientTaskSchema`.
+ * Note: orchestrates multiple repositories (`CompanyRepository`, `OperationalKanbanRepository`, `AuditRepository`, `NotificationRepository`) beyond a single repository call.
+ */
 export const createClientTaskHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 

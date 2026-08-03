@@ -12,6 +12,11 @@ const schema = z.object({
   order: z.number().optional(),
 });
 
+/**
+ * Creates/updates a CRM funnel.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: inline `z.object({companyId, funnelId?, name, order?})`.
+ */
 export const saveCrmFunnelHandler = onCallHandler(async (req) => {
   const { success, data, error } = schema.safeParse(req.data);
   if (!success) {

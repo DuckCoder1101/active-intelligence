@@ -6,6 +6,11 @@ import { GuideRepository } from "../repositories/guide.repository";
 
 const schema = z.object({ companyId: z.string().min(1) });
 
+/**
+ * Lists guides assigned to a company.
+ * Auth: `requireCompanyAccess(req, companyId, "à Biblioteca")`.
+ * Schema: inline `z.object({ companyId })`.
+ */
 export const listAssignedGuidesHandler = onCallHandler(async (req) => {
   const { success, data } = schema.safeParse(req.data);
   if (!success) {

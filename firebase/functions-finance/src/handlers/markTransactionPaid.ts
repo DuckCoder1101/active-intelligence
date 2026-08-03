@@ -10,6 +10,11 @@ const ACCESS = {
   permissions: ["manage-finance" as const],
 };
 
+/**
+ * Marks a transaction as paid on a given date.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: ../data/transaction.schema -> TransactionSchema.markPaidSchema.
+ */
 export const markTransactionPaidHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

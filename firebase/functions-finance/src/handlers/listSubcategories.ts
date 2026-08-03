@@ -6,6 +6,11 @@ const ACCESS = {
   permissions: ["manage-finance" as const],
 };
 
+/**
+ * Lists finance subcategories.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: none.
+ */
 export const listSubcategoriesHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
   return SubcategoryRepository.listAll();

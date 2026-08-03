@@ -5,6 +5,11 @@ import { onCallHandler, CompanyUserRepository, requireCompanyAccess } from "func
 
 const schema = z.object({ companyId: z.string().min(1) });
 
+/**
+ * Lists a company's users (for CRM assignment).
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: inline `z.object({companyId})`.
+ */
 export const listMyCompanyUsersHandler = onCallHandler(async (req) => {
   const { success, data } = schema.safeParse(req.data);
   if (!success) {

@@ -17,6 +17,11 @@ const deleteCompanySchema = z.object({
   companyId: z.string().min(1),
 });
 
+/**
+ * Deletes a company.
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-clients".
+ * Schema: inline `z.object({ companyId })`.
+ */
 export const deleteCompanyHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

@@ -10,6 +10,11 @@ const schema = z.object({
   funnelId: z.string().min(1),
 });
 
+/**
+ * Deletes a CRM funnel.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: inline `z.object({companyId, funnelId})`.
+ */
 export const deleteCrmFunnelHandler = onCallHandler(async (req) => {
   const { success, data, error } = schema.safeParse(req.data);
   if (!success) {

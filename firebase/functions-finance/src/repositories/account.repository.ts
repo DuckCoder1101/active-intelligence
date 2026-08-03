@@ -5,8 +5,13 @@ import { database } from "functions-shared";
 import {
   FinanceAccountDocument,
   FinanceAccountDTO,
-} from "../types/account.type";
+} from "../types/account.document";
 
+function toDTO(id: string, data: FinanceAccountDocument): FinanceAccountDTO {
+  return { accountId: id, name: data.name };
+}
+
+/** Firestore: `finance_accounts` (top-level). Also reads `finance_transactions` to check usage before deletion. */
 export class AccountRepository {
   private static col = database.collection("finance_accounts");
   private static transactionsCol = database.collection("finance_transactions");
@@ -14,10 +19,7 @@ export class AccountRepository {
   static async listAll(): Promise<FinanceAccountDTO[]> {
     const snap = await this.col.get();
     return snap.docs
-      .map((doc) => {
-        const data = doc.data() as FinanceAccountDocument;
-        return { accountId: doc.id, name: data.name };
-      })
+      .map((doc) => toDTO(doc.id, doc.data() as FinanceAccountDocument))
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
@@ -26,10 +28,10 @@ export class AccountRepository {
     if (!snap.exists) {
       throw new HttpsError("not-found", "Conta não encontrada.");
     }
-    const data = snap.data() as FinanceAccountDocument;
-    return { accountId: snap.id, name: data.name };
+    return toDTO(snap.id, snap.data() as FinanceAccountDocument);
   }
 
+  /** Upserts when `accountId` is given; on create, dedupes by `nameIndex` — returns the existing account instead of creating a duplicate. */
   static async save(data: { accountId?: string; name: string }): Promise<FinanceAccountDTO> {
     const name = data.name.trim();
 
@@ -53,8 +55,7 @@ export class AccountRepository {
 
     if (!duplicate.empty) {
       const doc = duplicate.docs[0];
-      const existingData = doc.data() as FinanceAccountDocument;
-      return { accountId: doc.id, name: existingData.name };
+      return toDTO(doc.id, doc.data() as FinanceAccountDocument);
     }
 
     const ref = this.col.doc();
@@ -66,6 +67,7 @@ export class AccountRepository {
     return { accountId: ref.id, name };
   }
 
+  /** Blocks deletion (`failed-precondition`) if the account is referenced by any transaction. */
   static async delete(accountId: string): Promise<void> {
     const ref = this.col.doc(accountId);
     const snap = await ref.get();

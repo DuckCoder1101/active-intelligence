@@ -14,6 +14,11 @@ const schema = z.object({
   subcategoryId: z.string().min(1, "subcategoryId obrigatório"),
 });
 
+/**
+ * Deletes a finance subcategory.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: inline z.object({subcategoryId}).
+ */
 export const deleteSubcategoryHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

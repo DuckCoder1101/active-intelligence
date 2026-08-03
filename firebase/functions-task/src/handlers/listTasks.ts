@@ -5,6 +5,11 @@ import { TaskRepository } from "../repositories/task.repository";
 
 const ACCESS = { minAccessLevel: "admin" as const };
 
+/**
+ * Lists all internal tasks.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin"})`.
+ * Schema: none.
+ */
 export const listTasksHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
   const result = await TaskRepository.listAll();

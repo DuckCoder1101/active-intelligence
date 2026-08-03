@@ -25,6 +25,11 @@ const schema = z.object({
   order: z.number().nullish().transform((v) => v ?? undefined),
 });
 
+/**
+ * Creates/updates a finance subcategory.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: inline z.object({subcategoryId?, categoryType, name, order?}).
+ */
 export const saveSubcategoryHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

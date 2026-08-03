@@ -10,6 +10,11 @@ const ACCESS = {
   minAccessLevel: "admin" as const,
 };
 
+/**
+ * Lists all companies.
+ * Auth: `requireAccess` — minAccessLevel "admin".
+ * Schema: none.
+ */
 export const listCompaniesHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
   const result = await CompanyRepository.getAllCompanies();

@@ -10,6 +10,11 @@ const ACCESS = {
   permissions: ["manage-settings" as const],
 };
 
+/**
+ * Deletes a task tag.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin", permissions:["manage-settings"]})`.
+ * Schema: `../data/task-tag.schema` → `TaskTagSchema.deleteSchema`.
+ */
 export const deleteTaskTagHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

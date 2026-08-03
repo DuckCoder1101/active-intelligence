@@ -10,6 +10,11 @@ const schema = z.object({
   tagId: z.string().min(1),
 });
 
+/**
+ * Deletes a CRM tag.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: inline `z.object({companyId, tagId})`.
+ */
 export const deleteTagHandler = onCallHandler(async (req) => {
   const { success, data, error } = schema.safeParse(req.data);
   if (!success) {

@@ -6,6 +6,11 @@ const ACCESS = {
   permissions: ["manage-library" as const],
 };
 
+/**
+ * Lists all guides (admin).
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-library".
+ * Schema: none.
+ */
 export const listGuidesHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
   return GuideRepository.listAll();

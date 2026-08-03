@@ -14,6 +14,11 @@ const schema = z.object({
   accountId: z.string().min(1, "accountId obrigatório"),
 });
 
+/**
+ * Deletes a finance account.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: inline z.object({accountId}).
+ */
 export const deleteAccountHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

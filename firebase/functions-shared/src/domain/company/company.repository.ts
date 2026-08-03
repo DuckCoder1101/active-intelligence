@@ -8,6 +8,7 @@ import {
 import { CompanyDocument } from "./company.document";
 import { HttpsError } from "firebase-functions/https";
 
+/** Firestore: `companies` (top-level). Also owns the monthly task-usage counter embedded on each company doc. */
 export class CompanyRepository {
   private static companiesCollection = database.collection("companies");
 
@@ -19,6 +20,7 @@ export class CompanyRepository {
     return snap.empty ? null : snap.docs[0].id;
   }
 
+  /** Transactional upsert enforcing CNPJ uniqueness (`already-exists` if another company already has this CNPJ). */
   static async saveCompany({
     companyId,
     ...companyData
@@ -123,6 +125,7 @@ export class CompanyRepository {
     });
   }
 
+  /** Transactionally checks the company's monthly task limit and increments the counter; throws `resource-exhausted` once the limit is hit. */
   static async checkAndIncrementUsage(companyId: string): Promise<void> {
     const ref = this.companiesCollection.doc(companyId);
     const yearMonth = CompanyRepository.currentYearMonth();
@@ -130,7 +133,7 @@ export class CompanyRepository {
     await database.runTransaction(async (tx) => {
       const snap = await tx.get(ref);
       if (!snap.exists) {
-        throw new HttpsError("not-found", "Empresa não encontrada.");
+        throw new HttpsError("not-found", "Empresa não encontrada!");
       }
 
       const company = snap.data() as CompanyDocument;
@@ -159,6 +162,7 @@ export class CompanyRepository {
     });
   }
 
+  /** Read-only peek at the current month's usage/limit — does not throw if the company is missing (returns zeroed defaults). */
   static async getTaskUsage(
     companyId: string,
   ): Promise<{ used: number; limit: number | null; yearMonth: string }> {

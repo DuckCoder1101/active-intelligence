@@ -31,6 +31,11 @@ async function commitInChunks(
   }
 }
 
+/**
+ * Firestore: `task_categories` (top-level), with sub-collection
+ * `task_categories/{categoryId}/subcategories`; also reads `tasks` (top-level) to
+ * reassign/unlink tasks on delete.
+ */
 export class TaskCategoryRepository {
   private static col = database.collection("task_categories");
   private static tasksCol = database.collection("tasks");
@@ -51,6 +56,7 @@ export class TaskCategoryRepository {
     });
   }
 
+  /** Seeds `DEFAULT_TASK_CATEGORIES` if the collection is empty, then joins each category's subcategories. */
   static async listAll(): Promise<TaskCategoryDTO[]> {
     let snap = await this.col.orderBy("order", "asc").get();
 
@@ -121,6 +127,11 @@ export class TaskCategoryRepository {
     };
   }
 
+  /**
+   * Reassigns tasks in this category to a fallback category, deletes the
+   * subcategories, and deletes the category itself — all batched in chunks of
+   * `FIRESTORE_BATCH_LIMIT` (500) via `commitInChunks`.
+   */
   static async deleteCategory(
     categoryId: string,
   ): Promise<{ movedTo: string | null }> {
@@ -207,6 +218,7 @@ export class TaskCategoryRepository {
     return { subcategoryId: saved.id, name: newData.name, order: newData.order };
   }
 
+  /** Unlinks tasks pointing at this subcategory and deletes it, batched via `commitInChunks`. */
   static async deleteSubcategory(
     categoryId: string,
     subcategoryId: string,

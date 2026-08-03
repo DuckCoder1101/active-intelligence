@@ -32,6 +32,12 @@ const schema = z.object({
   assignedCompanyIds: optionalStringArray(),
 });
 
+/**
+ * Creates/updates a library guide (with script blocks, tags, assignment).
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-library".
+ * Schema: inline `z.object({...})` built with `optionalString`/`optionalStringArray`
+ * helpers from `../utils/zod.util`.
+ */
 export const saveGuideHandler = onCallHandler(async (req) => {
   const user = requireAccess(req, ACCESS);
 

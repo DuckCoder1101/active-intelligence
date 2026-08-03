@@ -9,6 +9,11 @@ const schema = z.object({
   funnelId: z.string().min(1),
 });
 
+/**
+ * Lists kanban columns for a funnel.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: inline `z.object({companyId, funnelId})`.
+ */
 export const listCrmColumnsHandler = onCallHandler(async (req) => {
   const { success, data } = schema.safeParse(req.data);
   if (!success) {

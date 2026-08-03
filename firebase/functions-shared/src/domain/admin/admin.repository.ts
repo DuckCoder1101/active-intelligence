@@ -10,6 +10,7 @@ import {
 } from "../user/user.dto";
 import { AdminPermission } from "../../types/accessLevel.type";
 
+/** Firestore: `admins` (top-level). Admin access level/permissions live in Firebase Auth custom claims, not this doc. */
 export default class AdminRepository {
   private static adminsCollection = database.collection("admins");
 
@@ -43,6 +44,7 @@ export default class AdminRepository {
     };
   }
 
+  /** Joins the `admins` docs with each uid's Firebase Auth custom claims (accessLevel/permissions). */
   static async listAll(): Promise<AdminProfileDTO[]> {
     const snapshot = await this.adminsCollection
       .orderBy("createdAt", "desc")
@@ -107,6 +109,7 @@ export default class AdminRepository {
     await ref.delete();
   }
 
+  /** Uids of admins that either are `owner` or hold the given permission — used by NotificationRepository to resolve targets. */
   static async listUidsWithPermission(
     permission: AdminPermission,
   ): Promise<string[]> {

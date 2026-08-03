@@ -17,6 +17,14 @@ const ACCESS = {
 
 const schema = z.object({ companyId: z.string().min(1) });
 
+/**
+ * Lists audit log entries for one company.
+ * Auth: `requireAccess` — minAccessLevel "admin".
+ * Schema: inline `z.object({ companyId })`.
+ * Deviates from the standard flow: queries Firestore directly
+ * (`companies/{companyId}/audits`) instead of going through a repository —
+ * `AuditRepository` in functions-shared is write-only.
+ */
 export const listAuditLogsHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

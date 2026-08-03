@@ -22,6 +22,11 @@ const schema = z.object({
     .max(60, "Máximo 60 caracteres"),
 });
 
+/**
+ * Creates/updates a finance account.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: inline z.object({accountId?, name}).
+ */
 export const saveAccountHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

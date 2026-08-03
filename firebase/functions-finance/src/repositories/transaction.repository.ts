@@ -47,9 +47,11 @@ export interface SaveTransactionInput {
   createdBy: string;
 }
 
+/** Firestore: `finance_transactions` (top-level). */
 export class TransactionRepository {
   private static col = database.collection("finance_transactions");
 
+  /** Upserts a transaction; on create, defaults `status` to `"previsto"` and `origin` to `"manual"`. */
   static async save(data: SaveTransactionInput): Promise<TransactionDTO> {
     const { transactionId, dueDate, createdBy, ...rest } = data;
     const ref = transactionId ? this.col.doc(transactionId) : this.col.doc();
@@ -96,6 +98,7 @@ export class TransactionRepository {
     );
   }
 
+  /** Sets `status` to `"realizado"` and records `paidDate`. */
   static async markPaid(
     transactionId: string,
     paidDate: number,
@@ -116,6 +119,7 @@ export class TransactionRepository {
     return toDTO(updated.id, updated.data() as TransactionDocument);
   }
 
+  /** Returns the transaction's DTO before removing it. */
   static async delete(transactionId: string): Promise<TransactionDTO> {
     const ref = this.col.doc(transactionId);
     const snap = await ref.get();

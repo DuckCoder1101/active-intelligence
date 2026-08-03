@@ -10,6 +10,11 @@ const ACCESS = {
   permissions: ["manage-settings" as const],
 };
 
+/**
+ * Deletes a task category.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin", permissions:["manage-settings"]})`.
+ * Schema: `../data/task-category.schema` → `TaskCategorySchema.deleteCategorySchema`.
+ */
 export const deleteTaskCategoryHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

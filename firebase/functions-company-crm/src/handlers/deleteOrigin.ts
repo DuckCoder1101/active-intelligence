@@ -10,6 +10,11 @@ const schema = z.object({
   originId: z.string().min(1),
 });
 
+/**
+ * Deletes a lead origin/source.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: inline `z.object({companyId, originId})`.
+ */
 export const deleteOriginHandler = onCallHandler(async (req) => {
   const { success, data, error } = schema.safeParse(req.data);
   if (!success) {

@@ -14,6 +14,11 @@ const schema = z.object({
     .transform((v) => v ?? undefined),
 });
 
+/**
+ * Updates reference images on a client task.
+ * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
+ * Schema: inline `z.object({taskId, referenceImages, companyId?})`.
+ */
 export const updateClientTaskImagesHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 

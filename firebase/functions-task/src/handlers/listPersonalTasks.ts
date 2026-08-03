@@ -4,6 +4,11 @@ import { logger } from "firebase-functions";
 import { onCallHandler, getAuthenticatedUser } from "functions-shared";
 import { PersonalTaskRepository } from "../repositories/personal-task.repository";
 
+/**
+ * Lists a user's personal tasks.
+ * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
+ * Schema: NONE — manual cast of `req.data`, no zod validation.
+ */
 export const listPersonalTasksHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 

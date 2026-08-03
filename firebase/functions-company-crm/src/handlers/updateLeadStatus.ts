@@ -5,6 +5,11 @@ import { onCallHandler, requireCompanyAccess } from "functions-shared";
 import LeadSchema from "../data/lead.schema";
 import { LeadRepository } from "../repositories/lead.repository";
 
+/**
+ * Updates a lead's pipeline/column status.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: `../data/lead.schema` → `LeadSchema.updateStatusSchema`.
+ */
 export const updateLeadStatusHandler = onCallHandler(async (req) => {
   const { success, data, error } = LeadSchema.updateStatusSchema.safeParse(
     req.data,

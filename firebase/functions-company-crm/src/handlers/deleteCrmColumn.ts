@@ -11,6 +11,11 @@ const schema = z.object({
   columnId: z.string().min(1),
 });
 
+/**
+ * Deletes a CRM kanban column.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: inline `z.object({companyId, funnelId, columnId})`.
+ */
 export const deleteCrmColumnHandler = onCallHandler(async (req) => {
   const { success, data, error } = schema.safeParse(req.data);
   if (!success) {

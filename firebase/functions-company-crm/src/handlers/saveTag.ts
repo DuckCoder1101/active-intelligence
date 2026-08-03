@@ -10,6 +10,11 @@ const schema = z.object({
   name: z.string().min(1, "Nome obrigatório").max(40, "Máximo 40 caracteres"),
 });
 
+/**
+ * Creates/updates a CRM tag.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: inline `z.object({companyId, name})`.
+ */
 export const saveTagHandler = onCallHandler(async (req) => {
   const { success, data, error } = schema.safeParse(req.data);
   if (!success) {

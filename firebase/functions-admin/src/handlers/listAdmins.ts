@@ -10,6 +10,11 @@ const ACCESS = {
   minAccessLevel: "admin" as const,
 };
 
+/**
+ * Lists all admin users.
+ * Auth: requireAccess(req, {minAccessLevel:"admin"}).
+ * Schema: none.
+ */
 export const listAdminsHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
   const result = await AdminRepository.listAll();

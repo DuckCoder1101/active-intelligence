@@ -11,6 +11,11 @@ const schema = z.object({
   month: z.number().int().min(0).max(11),
 });
 
+/**
+ * Lists tasks for a company/month for calendar view.
+ * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
+ * Schema: inline `z.object({companyId?, year, month})`.
+ */
 export const listCalendarTasksHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 

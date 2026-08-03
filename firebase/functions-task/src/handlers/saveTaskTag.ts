@@ -10,6 +10,11 @@ const ACCESS = {
   permissions: ["manage-settings" as const],
 };
 
+/**
+ * Creates/updates a task tag.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin", permissions:["manage-settings"]})`.
+ * Schema: `../data/task-tag.schema` → `TaskTagSchema.saveSchema`.
+ */
 export const saveTaskTagHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

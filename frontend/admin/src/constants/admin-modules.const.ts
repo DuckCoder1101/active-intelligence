@@ -103,7 +103,6 @@ export const ADMIN_MODULES: Section[] = [
         label: 'Catálogo',
         description: 'Produtos, planos e playbooks.',
         to: '/catalog',
-        soon: true,
         permission: 'manage-catalog',
       },
       {

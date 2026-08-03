@@ -21,6 +21,14 @@ const schema = z.object({
   limit: z.number().int().min(1).max(300).optional(),
 });
 
+/**
+ * Lists audit logs across multiple/all companies (workspace-wide).
+ * Auth: `requireAccess` — minAccessLevel "admin".
+ * Schema: inline `z.object({ companyIds?, limit? })`.
+ * Deviates from the standard flow: direct Firestore calls, including a
+ * `collectionGroup("audits")` query when no `companyIds` filter is given,
+ * with manual in-memory sort/merge across companies — no repository used.
+ */
 export const listWorkspaceAuditLogsHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

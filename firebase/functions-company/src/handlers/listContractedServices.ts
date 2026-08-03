@@ -9,6 +9,11 @@ const ACCESS = {
   permissions: ["manage-finance" as const],
 };
 
+/**
+ * Lists contracted-service catalog entries.
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-finance".
+ * Schema: none.
+ */
 export const listContractedServicesHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
   return ContractedServiceRepository.listAll();

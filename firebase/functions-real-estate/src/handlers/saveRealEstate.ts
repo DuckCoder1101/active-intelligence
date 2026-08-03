@@ -5,6 +5,11 @@ import { onCallHandler, requireCompanyAccess } from "functions-shared";
 import RealEstateSchema from "../data/real-estate.schema";
 import { RealEstateRepository } from "../repositories/real-estate.repository";
 
+/**
+ * Creates/updates a real-estate listing.
+ * Auth: `requireCompanyAccess(req, companyId, "aos imóveis")`.
+ * Schema: `../data/real-estate.schema` → `RealEstateSchema.saveSchema`.
+ */
 export const saveRealEstateHandler = onCallHandler(async (req) => {
   const { success, data, error } = RealEstateSchema.saveSchema.safeParse(
     req.data,

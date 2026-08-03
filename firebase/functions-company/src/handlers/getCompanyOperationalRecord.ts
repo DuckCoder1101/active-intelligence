@@ -15,6 +15,11 @@ const ACCESS = {
 
 const schema = z.object({ companyId: z.string().min(1) });
 
+/**
+ * Gets a company's operational record.
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-projects".
+ * Schema: inline `z.object({ companyId })`.
+ */
 export const getCompanyOperationalRecordHandler = onCallHandler(
   async (req) => {
     requireAccess(req, ACCESS);

@@ -7,7 +7,7 @@ import { FinanceCategoryType } from "../types/category.type";
 import {
   FinanceSubcategoryDocument,
   FinanceSubcategoryDTO,
-} from "../types/subcategory.type";
+} from "../types/subcategory.document";
 
 function toDTO(id: string, data: FinanceSubcategoryDocument): FinanceSubcategoryDTO {
   return {
@@ -18,6 +18,7 @@ function toDTO(id: string, data: FinanceSubcategoryDocument): FinanceSubcategory
   };
 }
 
+/** Firestore: `finance_subcategories` (top-level). Also reads `finance_transactions` to check usage before deletion. */
 export class SubcategoryRepository {
   private static col = database.collection("finance_subcategories");
   private static transactionsCol = database.collection("finance_transactions");
@@ -37,6 +38,7 @@ export class SubcategoryRepository {
     return toDTO(snap.id, snap.data() as FinanceSubcategoryDocument);
   }
 
+  /** Upserts; when `order` is omitted, auto-assigns the next order value within the given `categoryType`. */
   static async save(data: {
     subcategoryId?: string;
     categoryType: FinanceCategoryType;
@@ -82,6 +84,7 @@ export class SubcategoryRepository {
     return toDTO(saved.id, saved.data() as FinanceSubcategoryDocument);
   }
 
+  /** Blocks deletion (`failed-precondition`) if the subcategory is referenced by any transaction. */
   static async delete(subcategoryId: string): Promise<void> {
     const ref = this.col.doc(subcategoryId);
     const snap = await ref.get();

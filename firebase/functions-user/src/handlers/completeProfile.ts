@@ -11,6 +11,12 @@ import {
   AdminRepository,
 } from "functions-shared";
 
+/**
+ * Completes a newly invited user's profile: creates the domain record and marks Auth as complete.
+ * Auth: `getAuthenticatedUser(req)` (auth-only, no `requireAccess`).
+ * Schema: `functions-shared` → `UserSchema.completeProfileSchema`.
+ * Calls `auth.updateUser`/`setCustomUserClaims` directly and branches between `CompanyUserRepository`/`AdminRepository` by role.
+ */
 export const completeProfileHandler = onCallHandler(async (req) => {
   const { uid, email, accessLevel, companyId } = getAuthenticatedUser(req);
 

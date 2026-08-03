@@ -16,6 +16,13 @@ const ACCESS = {
   permissions: ["manage-finance" as const],
 };
 
+/**
+ * Creates/updates a financial transaction, enriching with account/subcategory/company data.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: ../data/transaction.schema -> TransactionSchema.saveSchema.
+ * Note: cross-repository enrichment (calls AccountRepository, SubcategoryRepository, CompanyRepository)
+ * before calling TransactionRepository.save.
+ */
 export const saveTransactionHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 

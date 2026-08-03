@@ -49,6 +49,9 @@ function toDTO(id: string, data: LeadDocument): LeadDTO {
   };
 }
 
+/**
+ * Firestore: `companies/{companyId}/leads`.
+ */
 export class LeadRepository {
   private static col(companyId: string) {
     return database.collection("companies").doc(companyId)

@@ -30,11 +30,20 @@ function chunk<T>(items: T[], size: number): T[][] {
   return chunks;
 }
 
+/**
+ * Firestore: `notifications` (top-level), reads `admins`/`company_users` to resolve
+ * target uids and FCM tokens for push delivery.
+ */
 export default class NotificationRepository {
   private static notificationsCollection = database.collection("notifications");
   private static adminsCollection = database.collection("admins");
   private static companyUsersCollection = database.collection("company_users");
 
+  /**
+   * Creates one notification doc for the resolved target uids and fires a push
+   * (best-effort — push failures are logged, never thrown). No-op if the filter
+   * resolves to zero uids.
+   */
   static async notify(
     filter: NotificationFilterDTO,
     data: NotificationContentDTO,
@@ -79,6 +88,11 @@ export default class NotificationRepository {
     return snapshot.data().count;
   }
 
+  /**
+   * Marks a notification as read for this uid: deletes the doc if it was the
+   * last target, otherwise just removes uid from `targetUids` (delivery is
+   * per-uid — a shared notification stays until every target has read it).
+   */
   static async markRead(uid: string, notificationId: string): Promise<void> {
     const ref = this.notificationsCollection.doc(notificationId);
     const doc = await ref.get();
@@ -101,6 +115,7 @@ export default class NotificationRepository {
     }
   }
 
+  /** Expands a filter (explicit uids + permission/accessLevel/company) into a deduped uid list. */
   private static async resolveTargetUids(
     filter: NotificationFilterDTO,
   ): Promise<string[]> {
@@ -120,6 +135,7 @@ export default class NotificationRepository {
     return [...new Set(uidLists.flat())];
   }
 
+  /** Best-effort FCM push in batches of 500 tokens; errors are logged, never thrown. */
   private static async sendPush(
     uids: string[],
     data: NotificationContentDTO,
@@ -150,6 +166,7 @@ export default class NotificationRepository {
     }
   }
 
+  /** Batches uids in groups of 100 (Firestore `getAll` limit) and collects FCM tokens across both `admins` and `company_users`. */
   private static async resolveFcmTokens(
     uids: string[],
   ): Promise<{ tokens: string[]; tokenOwners: Map<string, TokenOwner> }> {
@@ -189,6 +206,7 @@ export default class NotificationRepository {
     return { tokens, tokenOwners };
   }
 
+  /** Removes FCM tokens that came back as unregistered/invalid from `sendEachForMulticast`. */
   private static async pruneInvalidTokens(
     tokens: string[],
     responses: { success: boolean; error?: { code: string } }[],

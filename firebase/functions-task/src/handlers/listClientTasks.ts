@@ -8,6 +8,11 @@ import {
 } from "functions-shared";
 import { TaskRepository } from "../repositories/task.repository";
 
+/**
+ * Lists client tasks plus usage stats for a company.
+ * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
+ * Schema: NONE — casts `req.data` directly, no zod validation at all.
+ */
 export const listClientTasksHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 

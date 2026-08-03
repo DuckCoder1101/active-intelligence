@@ -13,6 +13,11 @@ const ACCESS = {
   permissions: ["manage-clients" as const],
 };
 
+/**
+ * Lists users belonging to a given company.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-clients"]}).
+ * Schema: inline z.object({companyId}), built inside the handler body instead of at module level.
+ */
 export const listCompanyUsersHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

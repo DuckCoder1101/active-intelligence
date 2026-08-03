@@ -5,6 +5,13 @@ import { database } from "functions-shared";
 import { TagDocument } from "../types/tag.document";
 import { TagDTO, SaveTagDTO } from "../types/tag.dto";
 
+function toDTO(id: string, data: TagDocument): TagDTO {
+  return { tagId: id, name: data.name };
+}
+
+/**
+ * Firestore: `companies/{companyId}/crm_tags`.
+ */
 export class TagRepository {
   private static col(companyId: string) {
     return database.collection("companies").doc(companyId)
@@ -14,10 +21,7 @@ export class TagRepository {
   static async listAll(companyId: string): Promise<TagDTO[]> {
     const snap = await this.col(companyId).get();
     return snap.docs
-      .map((doc) => {
-        const data = doc.data() as TagDocument;
-        return { tagId: doc.id, name: data.name };
-      })
+      .map((doc) => toDTO(doc.id, doc.data() as TagDocument))
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 

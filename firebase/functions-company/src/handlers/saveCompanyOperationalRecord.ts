@@ -13,6 +13,11 @@ const ACCESS = {
   permissions: ["manage-projects" as const],
 };
 
+/**
+ * Creates/updates a company's operational record.
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-projects".
+ * Schema: `functions-shared` → `CompanyOperationalSchema.saveSchema`.
+ */
 export const saveCompanyOperationalRecordHandler = onCallHandler(
   async (req) => {
     const { uid } = requireAccess(req, ACCESS);

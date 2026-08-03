@@ -78,6 +78,10 @@ function toDTO(id: string, data: RealEstateDocument): RealEstateDTO {
   };
 }
 
+/**
+ * Firestore: `companies/{companyId}/real_estate`, plus
+ * `companies/{companyId}/counters/real_estate` for atomic sequence allocation.
+ */
 export class RealEstateRepository {
   private static col(companyId: string) {
     return database
@@ -94,6 +98,10 @@ export class RealEstateRepository {
       .doc("real_estate");
   }
 
+  /**
+   * Transactional upsert: on create, atomically allocates the next sequential
+   * code (`I-001`, `I-002`, ...) from the counter doc before writing.
+   */
   static async save(
     companyId: string,
     createdBy: string,
