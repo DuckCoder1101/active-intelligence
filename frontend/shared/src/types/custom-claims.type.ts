@@ -5,6 +5,7 @@ export type CustomClaims =
       accessLevel?: 'user';
       complete?: boolean;
       companyId?: string;
+      lastReviewAt?: number;
     }
   | {
       accessLevel?: 'admin' | 'owner';

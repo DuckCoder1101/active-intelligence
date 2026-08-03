@@ -13,6 +13,12 @@ import {
   UserAccessLevel,
 } from "functions-shared";
 
+/**
+ * Deletes a user's own account, or (if caller is owner) another user's account — including the Auth record and avatar file.
+ * Auth: `getAuthenticatedUser(req)` + manual check `targetId !== uid && accessLevel !== "owner"`.
+ * Schema: `functions-shared` → `UserSchema.deleteAccountSchema`.
+ * Calls `auth.deleteUser` and `bucket.file(...).delete()` directly; branches repository by the target's access level.
+ */
 export const deleteAccountHandler = onCallHandler(async (req) => {
   const { uid, accessLevel } = getAuthenticatedUser(req);
 

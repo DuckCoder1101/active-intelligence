@@ -1,9 +1,9 @@
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { FieldErrors } from 'react-hook-form';
 import { MdArrowBack, MdDeleteOutline } from 'react-icons/md';
 import { toast } from 'react-toastify';
-import { Link, useNavigate } from '@tanstack/react-router';
 
 import { RealEstateDetailsTab } from './details-tab.component';
 import { RealEstateDocumentationTab } from './documentation-tab.component';
@@ -235,6 +235,14 @@ export function RealEstateForm({ companyId, realEstate }: RealEstateFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photos, setPhotos] = useState<string[]>(realEstate?.photos ?? []);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  // Tracks the id once the record has been created, even if `realEstate`
+  // (the prop) stays undefined because we haven't navigated away yet — e.g.
+  // when the create succeeds but the follow-up photo upload/save fails. Any
+  // retry after that point must reuse this id and go through the update
+  // path instead of creating a duplicate record.
+  const [savedRealEstateId, setSavedRealEstateId] = useState<
+    string | undefined
+  >(realEstate?.realEstateId);
 
   const saveRealEstate = useSaveRealEstateMutation(companyId);
   const deleteRealEstate = useDeleteRealEstateMutation(companyId);
@@ -262,7 +270,7 @@ export function RealEstateForm({ companyId, realEstate }: RealEstateFormProps) {
   const onSubmit = async (values: FormValues) => {
     const dto: SaveRealEstateDTO = {
       companyId,
-      realEstateId: realEstate?.realEstateId,
+      realEstateId: savedRealEstateId,
       title: values.title.trim() || undefined,
       description: values.description.trim() || undefined,
       propertyType: values.propertyType as PropertyType,
@@ -341,19 +349,36 @@ export function RealEstateForm({ companyId, realEstate }: RealEstateFormProps) {
     try {
       const saved = await saveRealEstate.mutateAsync(dto);
 
+      // A partir daqui o registro existe de fato — qualquer nova tentativa
+      // (inclusive um retry após falha no upload de fotos abaixo) deve
+      // atualizar esse mesmo registro em vez de criar um duplicado.
+      if (!savedRealEstateId) {
+        setSavedRealEstateId(saved.realEstateId);
+      }
+
       // Imóvel novo com fotos escolhidas antes do primeiro save: só agora
       // temos o id do documento, então o upload acontece aqui.
-      if (!realEstate && pendingFiles.length > 0) {
-        const uploaded: string[] = [];
-        for (const file of pendingFiles) {
-          uploaded.push(
-            await RealEstateService.uploadImage(
-              companyId,
-              saved.realEstateId,
-              file,
-            ),
-          );
-        }
+      if (pendingFiles.length > 0) {
+        const results = await Promise.allSettled(
+          pendingFiles.map((file) =>
+            RealEstateService.uploadImage(companyId, saved.realEstateId, file),
+          ),
+        );
+
+        const uploaded = results
+          .filter(
+            (result): result is PromiseFulfilledResult<string> =>
+              result.status === 'fulfilled',
+          )
+          .map((result) => result.value);
+
+        // Mantém pendentes só as que falharam, pra não perder o que já
+        // subiu com sucesso caso o usuário tente salvar de novo.
+        const stillPending = pendingFiles.filter(
+          (_, i) => results[i].status === 'rejected',
+        );
+        const failedCount = stillPending.length;
+
         const mergedPhotos = [...photos, ...uploaded];
         await saveRealEstate.mutateAsync({
           ...dto,
@@ -362,7 +387,15 @@ export function RealEstateForm({ companyId, realEstate }: RealEstateFormProps) {
           coverPhotoUrl: dto.coverPhotoUrl || mergedPhotos[0],
         });
         setPhotos(mergedPhotos);
-        setPendingFiles([]);
+        setPendingFiles(stillPending);
+
+        if (failedCount > 0) {
+          toast.error(
+            failedCount === 1
+              ? 'Falha ao enviar 1 imagem.'
+              : `Falha ao enviar ${failedCount} imagens.`,
+          );
+        }
       }
 
       toast.success(realEstate ? 'Imóvel atualizado!' : 'Imóvel cadastrado!');
@@ -439,7 +472,7 @@ export function RealEstateForm({ companyId, realEstate }: RealEstateFormProps) {
                       : 'Novo imóvel'}
                   </h1>
                   {realEstate && (
-                    <p className="text-[12px] font-semibold text-text-muted">
+                    <p className="mt-1 inline-block rounded-md bg-bg px-1.5 py-0.5 font-mono text-[13px] font-bold text-text">
                       {realEstate.code}
                     </p>
                   )}
@@ -501,7 +534,7 @@ export function RealEstateForm({ companyId, realEstate }: RealEstateFormProps) {
                 <div className={activeTab === 'media' ? '' : 'hidden'}>
                   <RealEstateMediaTab
                     companyId={companyId}
-                    realEstateId={realEstate?.realEstateId}
+                    realEstateId={realEstate?.realEstateId ?? savedRealEstateId}
                     photos={photos}
                     onPhotosChange={setPhotos}
                     pendingFiles={pendingFiles}

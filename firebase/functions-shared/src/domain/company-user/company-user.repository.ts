@@ -9,6 +9,7 @@ import {
 } from "../user/user.dto";
 import { FieldValue } from "firebase-admin/firestore";
 
+/** Firestore: `company_users` (top-level, one doc per uid; `companyId` is a field, not path nesting). */
 export default class CompanyUserRepository {
   private static usersCollection = database.collection("company_users");
 
@@ -50,6 +51,7 @@ export default class CompanyUserRepository {
     };
   }
 
+  /** Unlike its siblings, this does not check existence first — updating a missing uid is a silent no-op. */
   static async update({ targetId, ...data }: UpdateProfileDTO) {
     await this.usersCollection.doc(targetId).update({
       ...data,

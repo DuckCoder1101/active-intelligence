@@ -10,6 +10,11 @@ const ACCESS = {
   permissions: ["manage-settings" as const],
 };
 
+/**
+ * Creates/updates a task subcategory.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin", permissions:["manage-settings"]})`.
+ * Schema: `../data/task-category.schema` → `TaskCategorySchema.saveSubcategorySchema`.
+ */
 export const saveTaskSubcategoryHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

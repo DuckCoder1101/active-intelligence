@@ -11,6 +11,12 @@ const schema = z.object({
   accessLevel: z.enum(["admin", "owner"]),
 });
 
+/**
+ * Changes an admin's access level (admin/owner).
+ * Auth: requireAccess(req, {minAccessLevel:"owner"}); also blocks self-modification.
+ * Schema: inline z.object({targetUid, accessLevel}).
+ * Deviation: mutates Auth custom claims directly, no repository call.
+ */
 export const updateAdminAccessLevelHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 

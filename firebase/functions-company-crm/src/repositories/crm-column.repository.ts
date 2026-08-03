@@ -8,6 +8,19 @@ import {
 } from "../types/crm-column.document";
 import { CrmColumnDTO, SaveCrmColumnDTO } from "../types/crm-column.dto";
 
+function toDTO(id: string, data: CrmColumnDocument): CrmColumnDTO {
+  return {
+    columnId: id,
+    name: data.name,
+    color: data.color,
+    order: data.order,
+  };
+}
+
+/**
+ * Firestore: `companies/{companyId}/crm_funnels/{funnelId}/crm_columns`
+ * (also touches `companies/{companyId}/leads` via `leadsCol`).
+ */
 export class CrmColumnRepository {
   private static col(companyId: string, funnelId: string) {
     return database.collection("companies").doc(companyId)
@@ -20,50 +33,44 @@ export class CrmColumnRepository {
       .collection("leads");
   }
 
+  /** Transactionally seeds `DEFAULT_CRM_COLUMNS` on first read if the collection is empty. */
   static async listAll(
     companyId: string,
     funnelId: string,
   ): Promise<CrmColumnDTO[]> {
     const col = this.col(companyId, funnelId);
-    const snap = await col.get();
 
-    if (snap.empty) {
-      const batch = database.batch();
-      const seededRefs = DEFAULT_CRM_COLUMNS.map((column) => {
-        const ref = col.doc();
-        batch.set(ref, {
-          companyId,
-          funnelId,
-          name: column.name,
-          color: column.color,
-          order: column.order,
-          createdAt: FieldValue.serverTimestamp(),
+    return database.runTransaction(async (transaction) => {
+      const snap = await transaction.get(col);
+
+      if (snap.empty) {
+        const seededRefs = DEFAULT_CRM_COLUMNS.map((column) => {
+          const ref = col.doc();
+          transaction.set(ref, {
+            companyId,
+            funnelId,
+            name: column.name,
+            color: column.color,
+            order: column.order,
+            createdAt: FieldValue.serverTimestamp(),
+          });
+          return { ref, column };
         });
-        return { ref, column };
-      });
-      await batch.commit();
 
-      return seededRefs
-        .map(({ ref, column }) => ({
-          columnId: ref.id,
-          name: column.name,
-          color: column.color,
-          order: column.order,
-        }))
+        return seededRefs
+          .map(({ ref, column }) => ({
+            columnId: ref.id,
+            name: column.name,
+            color: column.color,
+            order: column.order,
+          }))
+          .sort((a, b) => a.order - b.order);
+      }
+
+      return snap.docs
+        .map((doc) => toDTO(doc.id, doc.data() as CrmColumnDocument))
         .sort((a, b) => a.order - b.order);
-    }
-
-    return snap.docs
-      .map((doc) => {
-        const data = doc.data() as CrmColumnDocument;
-        return {
-          columnId: doc.id,
-          name: data.name,
-          color: data.color,
-          order: data.order,
-        };
-      })
-      .sort((a, b) => a.order - b.order);
+    });
   }
 
   static async save(
@@ -84,7 +91,7 @@ export class CrmColumnRepository {
     if (!isNew) {
       const existing = await ref.get();
       if (!existing.exists) {
-        throw new HttpsError("permission-denied", "Quadro não encontrado.");
+        throw new HttpsError("not-found", "Quadro não encontrado.");
       }
     }
 
@@ -101,15 +108,10 @@ export class CrmColumnRepository {
     );
 
     const saved = await ref.get();
-    const newData = saved.data() as CrmColumnDocument;
-    return {
-      columnId: saved.id,
-      name: newData.name,
-      color: newData.color,
-      order: newData.order,
-    };
+    return toDTO(saved.id, saved.data() as CrmColumnDocument);
   }
 
+  /** Reassigns leads in the deleted column to a fallback column; blocks deleting the last column. */
   static async delete(
     companyId: string,
     funnelId: string,
@@ -119,7 +121,7 @@ export class CrmColumnRepository {
     const snap = await col.get();
     const target = snap.docs.find((d) => d.id === columnId);
     if (!target) {
-      throw new HttpsError("not-found", "Quadro não encontrado!");
+      throw new HttpsError("not-found", "Quadro não encontrado.");
     }
 
     const remaining = snap.docs.filter((d) => d.id !== columnId);

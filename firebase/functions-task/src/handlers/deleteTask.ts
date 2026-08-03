@@ -9,6 +9,12 @@ const ACCESS = { minAccessLevel: "owner" as const };
 
 const schema = z.object({ taskId: z.string().min(1) });
 
+/**
+ * Deletes an internal task, cleaning up media in storage if present.
+ * Auth: `requireAccess(req, {minAccessLevel:"owner"})`.
+ * Schema: inline `z.object({taskId})`.
+ * Note: direct `bucket.deleteFiles` call after repository delete.
+ */
 export const deleteTaskHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

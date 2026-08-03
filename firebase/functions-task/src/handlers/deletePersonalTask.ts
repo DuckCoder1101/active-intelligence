@@ -5,6 +5,11 @@ import { onCallHandler, getAuthenticatedUser } from "functions-shared";
 import PersonalTaskSchema from "../data/personal-task.schema";
 import { PersonalTaskRepository } from "../repositories/personal-task.repository";
 
+/**
+ * Deletes a user's personal task.
+ * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
+ * Schema: `../data/personal-task.schema` → `PersonalTaskSchema.deleteSchema`.
+ */
 export const deletePersonalTaskHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 

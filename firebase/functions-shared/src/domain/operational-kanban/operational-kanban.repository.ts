@@ -12,10 +12,15 @@ import {
   SaveOperationalKanbanColumnDTO,
 } from "./operational-kanban.dtos";
 
+/**
+ * Firestore: `operational_kanban_columns` (top-level, global — not per-company).
+ * Also touches `tasks` when a column is deleted, to reassign orphaned tasks.
+ */
 export class OperationalKanbanRepository {
   private static col = database.collection("operational_kanban_columns");
   private static tasksCol = database.collection("tasks");
 
+  /** Seeds `DEFAULT_COLUMNS` on first read if the collection is empty. */
   static async listAll(): Promise<OperationalKanbanColumnDTO[]> {
     const snap = await this.col.orderBy("order", "asc").get();
 
@@ -90,6 +95,7 @@ export class OperationalKanbanRepository {
     };
   }
 
+  /** Blocks deleting a protected or the last remaining column; reassigns its tasks to the next column. */
   static async delete(columnId: string): Promise<{ movedTo: string | null }> {
     if (PROTECTED_COLUMN_IDS.includes(columnId)) {
       throw new HttpsError(

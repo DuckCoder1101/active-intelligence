@@ -6,6 +6,11 @@ const ACCESS = {
   permissions: ["manage-finance" as const],
 };
 
+/**
+ * Lists finance accounts.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: none.
+ */
 export const listAccountsHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
   return AccountRepository.listAll();

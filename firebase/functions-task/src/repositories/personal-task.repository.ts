@@ -18,6 +18,9 @@ function toDTO(id: string, data: PersonalTaskDocument): PersonalTaskDTO {
   };
 }
 
+/**
+ * Firestore: `companies/{companyId}/personal_tasks`.
+ */
 export class PersonalTaskRepository {
   private static col(companyId: string) {
     return database.collection("companies").doc(companyId)
@@ -36,6 +39,11 @@ export class PersonalTaskRepository {
     );
   }
 
+  /**
+   * Upsert, ownership-checked: an existing doc not owned by `uid` (or missing)
+   * throws `permission-denied` "Tarefa pessoal não encontrada." — a known
+   * inconsistency with the `not-found` code used elsewhere in this codebase.
+   */
   static async save(
     companyId: string,
     uid: string,
@@ -76,6 +84,11 @@ export class PersonalTaskRepository {
     return toDTO(saved.id, saved.data() as PersonalTaskDocument);
   }
 
+  /**
+   * Ownership-checked: a missing or not-owned doc throws `permission-denied`
+   * "Tarefa pessoal não encontrada." — a known inconsistency with the
+   * `not-found` code used elsewhere in this codebase.
+   */
   static async delete(
     companyId: string,
     uid: string,

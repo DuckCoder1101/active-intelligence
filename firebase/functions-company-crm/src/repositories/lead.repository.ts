@@ -49,6 +49,9 @@ function toDTO(id: string, data: LeadDocument): LeadDTO {
   };
 }
 
+/**
+ * Firestore: `companies/{companyId}/leads`.
+ */
 export class LeadRepository {
   private static col(companyId: string) {
     return database.collection("companies").doc(companyId)
@@ -69,7 +72,7 @@ export class LeadRepository {
     if (!isNew) {
       const existing = await ref.get();
       if (!existing.exists) {
-        throw new HttpsError("permission-denied", "Lead não encontrado.");
+        throw new HttpsError("not-found", "Lead não encontrado.");
       }
     }
 

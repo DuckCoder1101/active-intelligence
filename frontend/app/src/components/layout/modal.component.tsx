@@ -15,6 +15,8 @@ type ModalProps = {
   saveLabel?: string;
   /** Footer customizado — use quando o padrão não atender */
   footer?: React.ReactNode;
+  /** Quando `false`, remove Escape, clique no backdrop e o botão ✕ — modal só fecha via ação do formulário */
+  dismissable?: boolean;
 };
 
 export function Modal({
@@ -27,14 +29,17 @@ export function Modal({
   saveDisabled,
   saveLabel = 'Salvar',
   footer,
+  dismissable = true,
 }: ModalProps) {
   useEffect(() => {
+    if (!dismissable) {return;}
+
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {onClose();}
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
+  }, [onClose, dismissable]);
 
   const standardFooter = formId && (
     <div className="flex justify-end gap-3">
@@ -57,19 +62,24 @@ export function Modal({
 
   return (
     <div className="modal-overlay">
-      <div className="modal-backdrop" onClick={onClose} />
+      <div
+        className="modal-backdrop"
+        onClick={dismissable ? onClose : undefined}
+      />
       <div
         className={`relative z-10 flex w-full ${width} max-h-[90vh] flex-col overflow-hidden rounded-2xl bg-card shadow-2xl`}
       >
         <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-[16px] font-bold text-text">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-bg hover:text-text"
-          >
-            <MdClose size={16} />
-          </button>
+          {dismissable && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-bg hover:text-text"
+            >
+              <MdClose size={16} />
+            </button>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>

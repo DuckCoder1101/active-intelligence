@@ -66,10 +66,10 @@ export function NotificationBell() {
                     type="button"
                     onClick={() => markAsRead(notification.notificationId)}
                     title="Marcar como lida"
-                    className="flex shrink-0 items-center gap-1 rounded-lg border border-border px-2 py-1 text-[11px] font-semibold text-text-sub transition-colors hover:border-orange hover:bg-orange/10 hover:text-orange"
+                    aria-label="Marcar como lida"
+                    className="flex shrink-0 items-center justify-center rounded-full p-1 text-text-sub transition-colors hover:bg-orange/10 hover:text-orange"
                   >
-                    <MdCheck size={13} />
-                    Marcar como lida
+                    <MdCheck size={14} />
                   </button>
                 </div>
               ))

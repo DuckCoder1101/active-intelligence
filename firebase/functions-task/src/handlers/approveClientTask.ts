@@ -12,6 +12,12 @@ import {
 import TaskSchema from "../data/task.schema";
 import { TaskRepository } from "../repositories/task.repository";
 
+/**
+ * Client user approves a task pending approval, moving it to the approved column.
+ * Auth: `getAuthenticatedUser(req)` + manual role/company checks (not the standard `requireAccess`/`requireCompanyAccess` helper).
+ * Schema: `../data/task.schema` → `TaskSchema.approveClientTaskSchema`.
+ * Note: fires (non-awaited) `AuditRepository.log(...)` after the main await chain.
+ */
 export const approveClientTaskHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 

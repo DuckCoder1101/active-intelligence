@@ -5,6 +5,11 @@ import { onCallHandler, getAuthenticatedUser } from "functions-shared";
 import PersonalTaskSchema from "../data/personal-task.schema";
 import { PersonalTaskRepository } from "../repositories/personal-task.repository";
 
+/**
+ * Creates/updates a personal task.
+ * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
+ * Schema: `../data/personal-task.schema` → `PersonalTaskSchema.saveSchema`.
+ */
 export const savePersonalTaskHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 

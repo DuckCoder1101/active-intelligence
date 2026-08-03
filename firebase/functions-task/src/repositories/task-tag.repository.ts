@@ -5,6 +5,9 @@ import { database } from "functions-shared";
 import { TaskTagDocument } from "../types/task-tag.document";
 import { SaveTaskTagDTO, TaskTagDTO } from "../types/task-tag.dto";
 
+/**
+ * Firestore: `task_tags` (top-level).
+ */
 export class TaskTagRepository {
   private static col = database.collection("task_tags");
 
@@ -22,6 +25,7 @@ export class TaskTagRepository {
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
+  /** Always creates a new tag — no upsert-by-id. */
   static async save(data: SaveTaskTagDTO): Promise<TaskTagDTO> {
     const ref = this.col.doc();
     await ref.set({

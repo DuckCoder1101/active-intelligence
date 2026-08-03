@@ -11,6 +11,11 @@ const ACCESS = {
 
 const schema = z.object({ guideId: z.string().min(1) });
 
+/**
+ * Deletes a library guide.
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-library".
+ * Schema: inline `z.object({ guideId })`.
+ */
 export const deleteGuideHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

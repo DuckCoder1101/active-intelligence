@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { MdCheckCircleOutline, MdClose, MdDelete } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -7,18 +7,20 @@ import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.com
 import { FormInput } from '@/components/ui/form-input.component';
 import { FormSelect } from '@/components/ui/form-select.component';
 import { MoneyInput } from '@/components/ui/money-input.component';
-import { SelectCreate } from '@/components/ui/select-create.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { CompanyResume } from '@/models/company.model';
 import {
+  FINANCE_CATEGORY_TYPE_LABELS,
   PAYMENT_METHODS,
   PAYMENT_METHOD_LABELS,
   TRANSACTION_TYPES,
+  TRANSACTION_TYPE_CATEGORY_TYPES,
   TRANSACTION_TYPE_LABELS,
 } from '@/models/finance.model';
 import type {
   FinanceAccount,
-  FinanceCategory,
+  FinanceCategoryType,
+  FinanceSubcategory,
   PaymentMethod,
   SaveTransactionDTO,
   Transaction,
@@ -27,16 +29,14 @@ import type {
 import {
   useDeleteTransactionMutation,
   useMarkTransactionPaidMutation,
-  useSaveFinanceAccountMutation,
-  useSaveFinanceCategoryMutation,
   useSaveTransactionMutation,
 } from '@/queries/finance.queries';
 import { fromDateInput, toDateInput } from '@/utils/date.util';
 
 interface FormValues {
   type: TransactionType;
-  categoryId: string;
-  subcategory: string;
+  category: '' | FinanceCategoryType;
+  subcategoryId: string;
   companyId: string;
   amount: number | '';
   paymentMethod: '' | PaymentMethod;
@@ -48,8 +48,8 @@ interface FormValues {
 function defaultValues(transaction?: Transaction): FormValues {
   return {
     type: transaction?.type ?? 'saida',
-    categoryId: transaction?.categoryId ?? '',
-    subcategory: transaction?.subcategory ?? '',
+    category: transaction?.category ?? '',
+    subcategoryId: transaction?.subcategoryId ?? '',
     companyId: transaction?.companyId ?? '',
     amount: transaction?.amount ?? '',
     paymentMethod: transaction?.paymentMethod ?? '',
@@ -62,7 +62,7 @@ function defaultValues(transaction?: Transaction): FormValues {
 interface Props {
   transaction?: Transaction;
   companies: CompanyResume[];
-  categories: FinanceCategory[];
+  subcategories: FinanceSubcategory[];
   accounts: FinanceAccount[];
   onClose: () => void;
   onSaved: (transaction: Transaction) => void;
@@ -72,7 +72,7 @@ interface Props {
 export function TransactionModal({
   transaction,
   companies,
-  categories,
+  subcategories,
   accounts,
   onClose,
   onSaved,
@@ -82,8 +82,6 @@ export function TransactionModal({
   const saveTransaction = useSaveTransactionMutation();
   const markPaid = useMarkTransactionPaidMutation();
   const deleteTransaction = useDeleteTransactionMutation();
-  const saveCategory = useSaveFinanceCategoryMutation();
-  const saveAccount = useSaveFinanceAccountMutation();
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -91,10 +89,18 @@ export function TransactionModal({
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({ defaultValues: defaultValues(transaction) });
 
   const type = useWatch({ control, name: 'type' });
+  const category = useWatch({ control, name: 'category' });
+
+  const availableCategories = TRANSACTION_TYPE_CATEGORY_TYPES[type];
+  const availableSubcategories = useMemo(
+    () => subcategories.filter((s) => s.categoryType === category),
+    [subcategories, category],
+  );
 
   const canMarkPaid =
     isEditing && (transaction.status === 'previsto' || transaction.status === 'atrasado');
@@ -105,8 +111,8 @@ export function TransactionModal({
         ? { transactionId: transaction.transactionId }
         : {}),
       type: values.type,
-      categoryId: values.categoryId,
-      subcategory: values.subcategory.trim() || undefined,
+      category: values.category as FinanceCategoryType,
+      subcategoryId: values.subcategoryId || undefined,
       companyId: values.companyId || undefined,
       amount: Number(values.amount),
       paymentMethod: values.paymentMethod as PaymentMethod,
@@ -184,7 +190,21 @@ export function TransactionModal({
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <FormSelect label="Tipo *" {...field}>
+                  <FormSelect
+                    label="Tipo *"
+                    {...field}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (
+                        !TRANSACTION_TYPE_CATEGORY_TYPES[
+                          value as TransactionType
+                        ].includes(category as FinanceCategoryType)
+                      ) {
+                        setValue('category', '');
+                        setValue('subcategoryId', '');
+                      }
+                    }}
+                  >
                     {TRANSACTION_TYPES.map((t) => (
                       <option key={t} value={t}>
                         {TRANSACTION_TYPE_LABELS[t]}
@@ -212,32 +232,45 @@ export function TransactionModal({
 
             <div className="form-grid">
               <Controller
-                name="categoryId"
+                name="category"
                 control={control}
                 rules={{ required: 'Categoria obrigatória' }}
                 render={({ field }) => (
-                  <SelectCreate
+                  <FormSelect
                     label="Categoria *"
-                    options={categories.map((c) => ({
-                      value: c.categoryId,
-                      label: c.name,
-                    }))}
-                    value={field.value}
-                    onChange={field.onChange}
-                    createLabel="Nova categoria"
-                    error={errors.categoryId?.message}
-                    onCreateOption={async (name) => {
-                      const created = await saveCategory.mutateAsync(name);
-                      return created.categoryId;
+                    error={errors.category?.message}
+                    {...field}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      setValue('subcategoryId', '');
                     }}
-                  />
+                  >
+                    {availableCategories.map((c) => (
+                      <option key={c} value={c}>
+                        {FINANCE_CATEGORY_TYPE_LABELS[c]}
+                      </option>
+                    ))}
+                  </FormSelect>
                 )}
               />
 
-              <FormInput
-                label="Subcategoria"
-                placeholder="Ex.: Meta Ads"
-                {...register('subcategory')}
+              <Controller
+                name="subcategoryId"
+                control={control}
+                render={({ field }) => (
+                  <FormSelect
+                    label="Subcategoria"
+                    disabled={!category}
+                    placeholder={category ? 'Selecione...' : 'Escolha a categoria primeiro'}
+                    {...field}
+                  >
+                    {availableSubcategories.map((s) => (
+                      <option key={s.subcategoryId} value={s.subcategoryId}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </FormSelect>
+                )}
               />
             </div>
 
@@ -282,21 +315,18 @@ export function TransactionModal({
                 control={control}
                 rules={{ required: 'Conta obrigatória' }}
                 render={({ field }) => (
-                  <SelectCreate
+                  <FormSelect
                     label="Conta *"
-                    options={accounts.map((a) => ({
-                      value: a.accountId,
-                      label: a.name,
-                    }))}
-                    value={field.value}
-                    onChange={field.onChange}
-                    createLabel="Nova conta"
                     error={errors.accountId?.message}
-                    onCreateOption={async (name) => {
-                      const created = await saveAccount.mutateAsync(name);
-                      return created.accountId;
-                    }}
-                  />
+                    {...field}
+                  >
+                    <option value="">Selecione...</option>
+                    {accounts.map((a) => (
+                      <option key={a.accountId} value={a.accountId}>
+                        {a.name}
+                      </option>
+                    ))}
+                  </FormSelect>
                 )}
               />
             </div>
@@ -367,7 +397,7 @@ export function TransactionModal({
       {showDeleteConfirm && transaction && (
         <ConfirmDeleteModal
           title="Excluir lançamento"
-          description={`Excluir "${transaction.categoryName}"? Esta ação não pode ser desfeita.`}
+          description={`Excluir "${FINANCE_CATEGORY_TYPE_LABELS[transaction.category]}"? Esta ação não pode ser desfeita.`}
           isDeleting={deleteTransaction.isPending}
           onConfirm={handleDelete}
           onCancel={() => setShowDeleteConfirm(false)}

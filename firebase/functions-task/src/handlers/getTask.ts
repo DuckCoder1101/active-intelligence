@@ -9,6 +9,11 @@ const ACCESS = { minAccessLevel: "admin" as const };
 
 const schema = z.object({ taskId: z.string().min(1) });
 
+/**
+ * Gets a task by id.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin"})`.
+ * Schema: inline `z.object({taskId})`.
+ */
 export const getTaskHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

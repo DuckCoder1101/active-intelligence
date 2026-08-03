@@ -8,6 +8,7 @@ import {
   MdOutlineApartment,
   MdChevronLeft,
   MdChevronRight,
+  MdClose,
   MdOutlineSupportAgent,
 } from 'react-icons/md';
 
@@ -91,15 +92,29 @@ export function CompanySidebar({
   return (
     <aside
       className={[
-        'flex shrink-0 flex-col overflow-hidden bg-sidebar transition-[width,transform] duration-300 ease-in-out',
-        collapsed ? 'w-17.5' : 'w-60',
+        'flex shrink-0 flex-col overflow-hidden bg-sidebar transition-[width,translate] duration-300 ease-in-out',
+        collapsed ? 'w-60 lg:w-17.5' : 'w-60',
         'fixed inset-y-0 left-0 z-40',
         'lg:static lg:translate-x-0',
         isOpen ? 'translate-x-0' : '-translate-x-full',
       ].join(' ')}
     >
-      {/* Collapse toggle */}
-      <div className={`flex items-center px-3 pt-3 ${collapsed ? 'justify-center' : 'justify-end'}`}>
+      {/* Close button — mobile only; desktop has no explicit toggle to hide the sidebar */}
+      <div className="flex items-center justify-end px-3 pt-3 lg:hidden">
+        <button
+          type="button"
+          onClick={onClose}
+          title="Fechar menu"
+          className="btn-icon text-white/50 hover:text-white/80"
+        >
+          <MdClose size={18} />
+        </button>
+      </div>
+
+      {/* Collapse toggle — desktop only; on mobile the sidebar is always expanded and toggled via the hamburger button */}
+      <div
+        className={`hidden items-center px-3 pt-3 lg:flex ${collapsed ? 'justify-center' : 'justify-end'}`}
+      >
         <button
           type="button"
           onClick={onToggleCollapse}
@@ -122,12 +137,12 @@ export function CompanySidebar({
             title={collapsed ? item.label : undefined}
             className={[
               'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-transparent py-2.5 text-[12px] font-medium text-white transition-all duration-300 ease-in-out hover:bg-sidebar-hover',
-              collapsed ? 'justify-center px-0' : 'px-5',
+              collapsed ? 'px-5 lg:justify-center lg:px-0' : 'px-5',
             ].join(' ')}
             activeProps={{
               className: [
                 'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-orange bg-orange/15 py-2.5 text-[12px] font-medium text-white transition-all duration-300 ease-in-out',
-                collapsed ? 'justify-center px-0' : 'px-5',
+                collapsed ? 'px-5 lg:justify-center lg:px-0' : 'px-5',
               ].join(' '),
             }}
           >
@@ -135,7 +150,9 @@ export function CompanySidebar({
             <span
               className={[
                 'overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out',
-                collapsed ? 'max-w-0 opacity-0' : 'max-w-40 flex-1 opacity-100',
+                collapsed
+                  ? 'max-w-40 flex-1 opacity-100 lg:max-w-0 lg:flex-none lg:opacity-0'
+                  : 'max-w-40 flex-1 opacity-100',
               ].join(' ')}
             >
               {item.label}
@@ -153,14 +170,16 @@ export function CompanySidebar({
           title="Falar com o suporte"
           className={[
             'flex cursor-pointer items-center gap-2.5 py-2.5 text-[12px] font-medium text-white transition-all duration-300 ease-in-out hover:bg-sidebar-hover',
-            collapsed ? 'justify-center px-0' : 'px-5',
+            collapsed ? 'px-5 lg:justify-center lg:px-0' : 'px-5',
           ].join(' ')}
         >
           <MdOutlineSupportAgent size={17} style={{ flexShrink: 0 }} />
           <span
             className={[
               'overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out',
-              collapsed ? 'max-w-0 opacity-0' : 'max-w-40 flex-1 opacity-100',
+              collapsed
+                ? 'max-w-40 flex-1 opacity-100 lg:max-w-0 lg:flex-none lg:opacity-0'
+                : 'max-w-40 flex-1 opacity-100',
             ].join(' ')}
           >
             Suporte

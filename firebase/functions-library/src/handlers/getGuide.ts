@@ -11,6 +11,11 @@ const ACCESS = {
 
 const schema = z.object({ guideId: z.string().min(1) });
 
+/**
+ * Gets a guide by id (admin view).
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-library".
+ * Schema: inline `z.object({ guideId })`.
+ */
 export const getGuideHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

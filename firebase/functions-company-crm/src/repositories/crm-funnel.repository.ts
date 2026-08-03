@@ -9,6 +9,19 @@ import {
 import { CrmFunnelDTO, SaveCrmFunnelDTO } from "../types/crm-funnel.dto";
 import { CrmColumnRepository } from "./crm-column.repository";
 
+function toDTO(id: string, data: CrmFunnelDocument): CrmFunnelDTO {
+  return {
+    funnelId: id,
+    name: data.name,
+    order: data.order,
+    isDefault: data.isDefault ?? false,
+  };
+}
+
+/**
+ * Firestore: `companies/{companyId}/crm_funnels`
+ * (also touches its `crm_columns` sub-collection and `companies/{companyId}/leads`).
+ */
 export class CrmFunnelRepository {
   private static col(companyId: string) {
     return database.collection("companies").doc(companyId)
@@ -24,40 +37,36 @@ export class CrmFunnelRepository {
       .collection("leads");
   }
 
+  /** Transactionally seeds a default funnel on first read if the collection is empty. */
   static async listAll(companyId: string): Promise<CrmFunnelDTO[]> {
     const col = this.col(companyId);
-    const snap = await col.get();
 
-    if (snap.empty) {
-      const ref = col.doc();
-      await ref.set({
-        companyId,
-        name: DEFAULT_CRM_FUNNEL_NAME,
-        order: 0,
-        isDefault: true,
-        createdAt: FieldValue.serverTimestamp(),
-      });
-      return [
-        {
-          funnelId: ref.id,
+    return database.runTransaction(async (transaction) => {
+      const snap = await transaction.get(col);
+
+      if (snap.empty) {
+        const ref = col.doc();
+        transaction.set(ref, {
+          companyId,
           name: DEFAULT_CRM_FUNNEL_NAME,
           order: 0,
           isDefault: true,
-        },
-      ];
-    }
+          createdAt: FieldValue.serverTimestamp(),
+        });
+        return [
+          {
+            funnelId: ref.id,
+            name: DEFAULT_CRM_FUNNEL_NAME,
+            order: 0,
+            isDefault: true,
+          },
+        ];
+      }
 
-    return snap.docs
-      .map((doc) => {
-        const data = doc.data() as CrmFunnelDocument;
-        return {
-          funnelId: doc.id,
-          name: data.name,
-          order: data.order,
-          isDefault: data.isDefault ?? false,
-        };
-      })
-      .sort((a, b) => a.order - b.order);
+      return snap.docs
+        .map((doc) => toDTO(doc.id, doc.data() as CrmFunnelDocument))
+        .sort((a, b) => a.order - b.order);
+    });
   }
 
   static async save(
@@ -77,7 +86,7 @@ export class CrmFunnelRepository {
     if (!isNew) {
       const existing = await ref.get();
       if (!existing.exists) {
-        throw new HttpsError("permission-denied", "Funil não encontrado.");
+        throw new HttpsError("not-found", "Funil não encontrado.");
       }
     }
 
@@ -94,15 +103,14 @@ export class CrmFunnelRepository {
     );
 
     const saved = await ref.get();
-    const newData = saved.data() as CrmFunnelDocument;
-    return {
-      funnelId: saved.id,
-      name: newData.name,
-      order: newData.order,
-      isDefault: newData.isDefault ?? false,
-    };
+    return toDTO(saved.id, saved.data() as CrmFunnelDocument);
   }
 
+  /**
+   * Protects the default funnel and the last remaining funnel; cascades
+   * deleting the funnel's columns and reassigns its leads to the fallback
+   * funnel (calls `CrmColumnRepository.listAll` cross-repo).
+   */
   static async delete(
     companyId: string,
     funnelId: string,
@@ -111,7 +119,7 @@ export class CrmFunnelRepository {
     const snap = await col.get();
     const target = snap.docs.find((d) => d.id === funnelId);
     if (!target) {
-      throw new HttpsError("not-found", "Funil não encontrado!");
+      throw new HttpsError("not-found", "Funil não encontrado.");
     }
 
     if ((target.data() as CrmFunnelDocument).isDefault) {

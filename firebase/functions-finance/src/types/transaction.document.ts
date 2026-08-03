@@ -1,5 +1,7 @@
 import { Timestamp } from "firebase-admin/firestore";
 
+import { FinanceCategoryType } from "./category.type";
+
 export const TRANSACTION_TYPES = ["entrada", "saida"] as const;
 export type TransactionType = (typeof TRANSACTION_TYPES)[number];
 
@@ -20,9 +22,9 @@ export type TransactionOrigin = (typeof TRANSACTION_ORIGINS)[number];
 export interface TransactionDocument {
   type: TransactionType;
   status: TransactionStatus;
-  categoryId: string;
-  categoryName: string;
-  subcategory?: string;
+  category: FinanceCategoryType;
+  subcategoryId?: string;
+  subcategoryName?: string;
   companyId?: string;
   companyName?: string;
   amount: number;

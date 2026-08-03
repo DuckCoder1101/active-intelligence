@@ -8,8 +8,15 @@ import { CompanyUserSchema } from "../data/company-user.schema";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
+  permissions: ["manage-clients" as const],
 };
 
+/**
+ * Creates an Auth user and grants "user" claims scoped to a company.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-clients"]}).
+ * Schema: ../data/company-user.schema -> CompanyUserSchema.inviteUserSchema.
+ * Deviation: calls auth.createUser/setCustomUserClaims directly instead of going through a repository.
+ */
 export const inviteCompanyUserHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

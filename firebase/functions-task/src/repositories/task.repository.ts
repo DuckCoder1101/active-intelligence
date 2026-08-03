@@ -31,6 +31,11 @@ function toDTO(id: string, data: TaskDocument): TaskDTO {
   };
 }
 
+/**
+ * Firestore: `tasks` (top-level) — company-scoping is done via a
+ * `where("companyId", "==", ...)` filter, not path nesting, unlike most other
+ * per-tenant repos.
+ */
 export class TaskRepository {
   private static col = database.collection("tasks");
 
@@ -95,6 +100,7 @@ export class TaskRepository {
     await ref.update({ status, updatedAt: FieldValue.serverTimestamp() });
   }
 
+  /** Returns the deleted task's DTO before removing it. */
   static async delete(taskId: string): Promise<TaskDTO> {
     const ref = this.col.doc(taskId);
     const snap = await ref.get();
@@ -123,6 +129,7 @@ export class TaskRepository {
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
   }
 
+  /** Date-range query on `dueDate` for the given calendar month. */
   static async listByCompanyAndMonth(
     companyId: string,
     year: number,
@@ -139,6 +146,11 @@ export class TaskRepository {
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as TaskDocument));
   }
 
+  /**
+   * Checks `companyId` match and throws `permission-denied` "Sem permissão
+   * para editar esta tarefa." on mismatch — an intentional authorization
+   * check, not an inconsistency.
+   */
   static async updateImages(
     taskId: string,
     companyId: string,
@@ -147,7 +159,7 @@ export class TaskRepository {
     const ref = this.col.doc(taskId);
     const snap = await ref.get();
     if (!snap.exists) {
-      throw new HttpsError("not-found", "Tarefa não encontrada.");
+      throw new HttpsError("not-found", "Tarefa não encontrada!");
     }
 
     const data = snap.data() as TaskDocument;

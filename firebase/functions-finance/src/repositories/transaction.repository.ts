@@ -10,9 +10,9 @@ function toDTO(id: string, data: TransactionDocument): TransactionDTO {
     transactionId: id,
     type: data.type,
     status: data.status,
-    categoryId: data.categoryId,
-    categoryName: data.categoryName,
-    subcategory: data.subcategory,
+    category: data.category,
+    subcategoryId: data.subcategoryId,
+    subcategoryName: data.subcategoryName,
     companyId: data.companyId,
     companyName: data.companyName,
     amount: data.amount,
@@ -33,9 +33,9 @@ function toDTO(id: string, data: TransactionDocument): TransactionDTO {
 export interface SaveTransactionInput {
   transactionId?: string;
   type: TransactionDocument["type"];
-  categoryId: string;
-  categoryName: string;
-  subcategory?: string;
+  category: TransactionDocument["category"];
+  subcategoryId?: string;
+  subcategoryName?: string;
   companyId?: string;
   companyName?: string;
   amount: number;
@@ -47,13 +47,22 @@ export interface SaveTransactionInput {
   createdBy: string;
 }
 
+/** Firestore: `finance_transactions` (top-level). */
 export class TransactionRepository {
   private static col = database.collection("finance_transactions");
 
+  /** Upserts a transaction; on create, defaults `status` to `"previsto"` and `origin` to `"manual"`. */
   static async save(data: SaveTransactionInput): Promise<TransactionDTO> {
     const { transactionId, dueDate, createdBy, ...rest } = data;
     const ref = transactionId ? this.col.doc(transactionId) : this.col.doc();
     const isNew = !transactionId;
+
+    if (!isNew) {
+      const existing = await ref.get();
+      if (!existing.exists) {
+        throw new HttpsError("not-found", "Lançamento não encontrado.");
+      }
+    }
 
     const payload: Record<string, unknown> = {
       ...rest,
@@ -89,6 +98,7 @@ export class TransactionRepository {
     );
   }
 
+  /** Sets `status` to `"realizado"` and records `paidDate`. */
   static async markPaid(
     transactionId: string,
     paidDate: number,
@@ -109,6 +119,7 @@ export class TransactionRepository {
     return toDTO(updated.id, updated.data() as TransactionDocument);
   }
 
+  /** Returns the transaction's DTO before removing it. */
   static async delete(transactionId: string): Promise<TransactionDTO> {
     const ref = this.col.doc(transactionId);
     const snap = await ref.get();

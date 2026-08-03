@@ -13,6 +13,12 @@ import { TaskRepository } from "../repositories/task.repository";
 
 const ACCESS = { minAccessLevel: "admin" as const };
 
+/**
+ * Moves a task to a new kanban status, with assignment check and audit logging.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin"})`.
+ * Schema: `../data/task.schema` → `TaskSchema.updateStatusSchema`.
+ * Note: fire-and-forget `AuditRepository.log(...)` call after repository update.
+ */
 export const updateTaskStatusHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 

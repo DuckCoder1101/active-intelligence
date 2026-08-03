@@ -9,6 +9,7 @@ import {
   MdOutlinePsychology,
   MdOutlineApps,
   MdOutlineLibraryBooks,
+  MdOutlineReviews,
   MdOutlineSettings,
   MdOutlineGroup,
 } from 'react-icons/md';
@@ -45,7 +46,7 @@ export const ADMIN_MODULES: Section[] = [
         icon: MdOutlineDescription,
         label: 'Propostas',
         description: 'Combos e propostas em PDF.',
-        to: '/proposals',
+        to: 'https://activeops.lovable.app/pre-projeto/propostas',
         soon: true,
         permission: 'manage-proposals',
       },
@@ -53,7 +54,7 @@ export const ADMIN_MODULES: Section[] = [
         icon: MdOutlineAssignment,
         label: 'Contratos',
         description: 'Contratos gerados com IA.',
-        to: '/contracts',
+        to: 'https://activeops.lovable.app/pre-projeto/contratos',
         soon: true,
         permission: 'manage-contracts',
       },
@@ -61,7 +62,7 @@ export const ADMIN_MODULES: Section[] = [
         icon: MdOutlineFactCheck,
         label: 'Diagnósticos',
         description: 'Briefings com análise por IA.',
-        to: '/diagnostics',
+        to: 'https://activeops.lovable.app/pre-projeto/diagnosticos',
         soon: true,
         permission: 'manage-diagnostics',
       },
@@ -88,7 +89,7 @@ export const ADMIN_MODULES: Section[] = [
     ],
   },
   {
-    label: 'Inteligência & Catálogo',
+    label: 'Inteligência & Planos',
     description: 'Dados cruzados e produtos.',
     modules: [
       {
@@ -100,11 +101,10 @@ export const ADMIN_MODULES: Section[] = [
       },
       {
         icon: MdOutlineApps,
-        label: 'Catálogo',
+        label: 'Planos',
         description: 'Produtos, planos e playbooks.',
-        to: '/catalog',
-        soon: true,
-        permission: 'manage-catalog',
+        to: '/plans',
+        permission: 'manage-plans',
       },
       {
         icon: MdOutlineLibraryBooks,
@@ -112,6 +112,13 @@ export const ADMIN_MODULES: Section[] = [
         description: 'Guias de conteúdo, playbooks e materiais.',
         to: '/library',
         permission: 'manage-library',
+      },
+      {
+        icon: MdOutlineReviews,
+        label: 'Avaliações',
+        description: 'Feedback semanal das empresas clientes.',
+        to: '/reviews',
+        permission: 'manage-reviews',
       },
     ],
   },

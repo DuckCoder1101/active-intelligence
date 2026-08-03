@@ -12,6 +12,12 @@ import {
   AdminRepository,
 } from "functions-shared";
 
+/**
+ * Updates a user's own profile, or (if caller is owner) another user's profile.
+ * Auth: `getAuthenticatedUser(req)` + manual owner/target checks.
+ * Schema: `functions-shared` → `UserSchema.updateProfileSchema`.
+ * Calls `auth.getUser` directly mid-handler to check the TARGET's access level for authorization.
+ */
 export const updateProfileHandler = onCallHandler(async (req) => {
   const { uid: authorUid, accessLevel } = getAuthenticatedUser(req);
 

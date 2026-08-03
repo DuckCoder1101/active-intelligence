@@ -65,6 +65,13 @@ const ACCESS = {
   permissions: ["manage-clients" as const],
 };
 
+/**
+ * Creates/updates a company.
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-clients".
+ * Schema: `functions-shared` → `CompanySchema.registerSchema`.
+ * Note: validation errors are formatted via the local `formatZodErrors`/
+ * `FIELD_LABELS` helper for localized, per-field messages.
+ */
 export const saveCompanyHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

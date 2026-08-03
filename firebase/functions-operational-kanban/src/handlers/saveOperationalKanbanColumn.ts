@@ -9,6 +9,11 @@ import { OperationalKanbanSchema } from "../data/operational-kanban.schema";
 
 const ACCESS = { minAccessLevel: "owner" as const };
 
+/**
+ * Creates/updates an operational-kanban column.
+ * Auth: requireAccess(req, {minAccessLevel:"owner"}).
+ * Schema: ../data/operational-kanban.schema -> OperationalKanbanSchema.saveColumnSchema.
+ */
 export const saveOperationalKanbanColumnHandler =
   onCallHandler(async (req) => {
     requireAccess(req, ACCESS);

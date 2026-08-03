@@ -10,6 +10,13 @@ const schema = z.object({ guideId: z.string().min(1) });
 // link do guia é permanente e não exige login. A rota é segura porque
 // GuideRepository.getPublic() só devolve o subconjunto de campos de leitura
 // (GuideContentDTO), nunca assignedCompanyIds ou scriptPrompt.
+/**
+ * Gets the public-facing content of a guide via a permanent link.
+ * Auth: none — intentionally public; the permanent link doesn't require login.
+ * Schema: inline `z.object({ guideId })`.
+ * Safe because `GuideRepository.getPublic` only returns a safe DTO subset
+ * (`GuideContentDTO`), never internal fields like `assignedCompanyIds` or `scriptPrompt`.
+ */
 export const getPublicGuideHandler = onCallHandler(async (req) => {
   const { success, data } = schema.safeParse(req.data);
   if (!success) {

@@ -7,6 +7,12 @@ import AdminSchema from "../data/admin.schema";
 
 const ACCESS = { minAccessLevel: "owner" as const };
 
+/**
+ * Updates an admin's permission set.
+ * Auth: requireAccess(req, {minAccessLevel:"owner"}); also blocks self-modification.
+ * Schema: ../data/admin.schema -> AdminSchema.updatePermissionsSchema.
+ * Deviation: mutates Auth custom claims directly, no repository call.
+ */
 export const updateAdminPermissionsHandler = onCallHandler(async (req) => {
   const { uid: callerUid } = requireAccess(req, ACCESS);
 
@@ -34,9 +40,12 @@ export const updateAdminPermissionsHandler = onCallHandler(async (req) => {
     callerUid: callerUid,
   });
 
+  const targetUser = await auth.getUser(data.targetUid);
+  const existingClaims = targetUser.customClaims ?? {};
+
   await auth.setCustomUserClaims(data.targetUid, {
+    ...existingClaims,
     complete: true,
-    accessLevel: "admin",
     permissions: data.permissions,
   });
 

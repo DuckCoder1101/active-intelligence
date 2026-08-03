@@ -10,6 +10,11 @@ const ACCESS = {
   permissions: ["manage-finance" as const],
 };
 
+/**
+ * Deletes a financial transaction.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: ../data/transaction.schema -> TransactionSchema.deleteSchema.
+ */
 export const deleteTransactionHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

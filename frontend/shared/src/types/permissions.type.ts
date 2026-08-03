@@ -8,7 +8,8 @@ export type AdminPermission =
   | 'manage-creation'
   | 'manage-finance'
   | 'manage-intelligence'
-  | 'manage-catalog'
+  | 'manage-plans'
+  | 'manage-reviews'
   | 'manage-library'
   | 'manage-team'
   | 'manage-settings';

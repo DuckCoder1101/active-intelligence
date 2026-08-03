@@ -18,6 +18,11 @@ const schema = z.object({
     .max(60, "Máximo 60 caracteres"),
 });
 
+/**
+ * Creates a contracted-service catalog entry.
+ * Auth: `requireAccess` — minAccessLevel "admin", permission "manage-finance".
+ * Schema: inline `z.object({ name })`.
+ */
 export const saveContractedServiceHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

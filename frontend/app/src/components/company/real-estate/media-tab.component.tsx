@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MdAdd, MdDelete, MdStar, MdStarBorder } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -25,23 +25,15 @@ function PendingThumb({
   file: File;
   onRemove: () => void;
 }) {
-  const [url, setUrl] = useState<string | null>(null);
+  const url = useMemo(() => URL.createObjectURL(file), [file]);
 
   useEffect(() => {
-    const objectUrl = URL.createObjectURL(file);
-    setUrl(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [file]);
+    return () => URL.revokeObjectURL(url);
+  }, [url]);
 
   return (
     <div className="group relative aspect-square overflow-hidden rounded-md border border-dashed border-border">
-      {url && (
-        <img
-          src={url}
-          alt=""
-          className="h-full w-full object-cover opacity-70"
-        />
-      )}
+      <img src={url} alt="" className="h-full w-full object-cover opacity-70" />
       <span className="absolute bottom-1 left-1 rounded bg-black/50 px-1.5 py-0.5 text-[9px] font-semibold text-white">
         Pendente
       </span>
@@ -85,22 +77,38 @@ export function RealEstateMediaTab({
 
     setUploading(true);
     try {
-      const uploaded: string[] = [];
-      for (const file of Array.from(files)) {
-        const url = await RealEstateService.uploadImage(
-          companyId,
-          realEstateId,
-          file,
+      const results = await Promise.allSettled(
+        Array.from(files).map((file) =>
+          RealEstateService.uploadImage(companyId, realEstateId, file),
+        ),
+      );
+
+      const uploaded = results
+        .filter(
+          (result): result is PromiseFulfilledResult<string> =>
+            result.status === 'fulfilled',
+        )
+        .map((result) => result.value);
+      const failedCount = results.length - uploaded.length;
+
+      // Propaga os uploads que deram certo mesmo que outros tenham
+      // falhado — do contrário eles ficam órfãos no Storage e o estado
+      // do app perde o que já foi enviado com sucesso.
+      if (uploaded.length > 0) {
+        const next = [...photos, ...uploaded];
+        onPhotosChange(next);
+        if (!coverPhotoUrl && next.length > 0) {
+          setValue('coverPhotoUrl', next[0]);
+        }
+      }
+
+      if (failedCount > 0) {
+        toast.error(
+          failedCount === 1
+            ? 'Falha ao enviar 1 imagem.'
+            : `Falha ao enviar ${failedCount} imagens.`,
         );
-        uploaded.push(url);
       }
-      const next = [...photos, ...uploaded];
-      onPhotosChange(next);
-      if (!coverPhotoUrl && next.length > 0) {
-        setValue('coverPhotoUrl', next[0]);
-      }
-    } catch {
-      toast.error('Falha ao enviar imagem.');
     } finally {
       setUploading(false);
       e.target.value = '';

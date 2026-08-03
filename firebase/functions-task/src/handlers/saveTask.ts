@@ -13,6 +13,12 @@ import { TaskRepository } from "../repositories/task.repository";
 
 const ACCESS = { minAccessLevel: "admin" as const };
 
+/**
+ * Creates/updates an internal task with assignment rules and audit logging.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin"})`.
+ * Schema: `../data/task.schema` → `TaskSchema.saveSchema`.
+ * Note: extra business logic (assignment permission checks) and fire-and-forget `AuditRepository.log(...)` call after repository save.
+ */
 export const saveTaskHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 

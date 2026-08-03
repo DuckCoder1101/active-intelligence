@@ -8,6 +8,11 @@ import {
 
 const ACCESS = { minAccessLevel: "user" as const };
 
+/**
+ * Lists internal operational-kanban columns.
+ * Auth: requireAccess(req, {minAccessLevel:"user"}).
+ * Schema: none.
+ */
 export const listOperationalKanbanColumnsHandler =
   onCallHandler(async (req) => {
     requireAccess(req, ACCESS);

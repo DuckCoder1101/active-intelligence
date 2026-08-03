@@ -5,8 +5,16 @@ import { onCallHandler, requireAccess } from "functions-shared";
 import TaskTagSchema from "../data/task-tag.schema";
 import { TaskTagRepository } from "../repositories/task-tag.repository";
 
-const ACCESS = { minAccessLevel: "admin" as const };
+const ACCESS = {
+  minAccessLevel: "admin" as const,
+  permissions: ["manage-settings" as const],
+};
 
+/**
+ * Deletes a task tag.
+ * Auth: `requireAccess(req, {minAccessLevel:"admin", permissions:["manage-settings"]})`.
+ * Schema: `../data/task-tag.schema` → `TaskTagSchema.deleteSchema`.
+ */
 export const deleteTaskTagHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 

@@ -8,6 +8,7 @@ import {
 import { CompanyDocument } from "./company.document";
 import { HttpsError } from "firebase-functions/https";
 
+/** Firestore: `companies` (top-level). Also owns the monthly task-usage counter embedded on each company doc. */
 export class CompanyRepository {
   private static companiesCollection = database.collection("companies");
 
@@ -19,33 +20,41 @@ export class CompanyRepository {
     return snap.empty ? null : snap.docs[0].id;
   }
 
+  /** Transactional upsert enforcing CNPJ uniqueness (`already-exists` if another company already has this CNPJ). */
   static async saveCompany({
     companyId,
     ...companyData
   }: RegisterCompanyDTO): Promise<void> {
     const cnpjIndex = companyData.legalInformation.documentNumber;
-    const existingId = await this.findByCnpj(cnpjIndex);
-
-    if (existingId && existingId !== companyId) {
-      throw new HttpsError(
-        "already-exists",
-        "CNPJ já cadastrado para outra empresa!",
-      );
-    }
 
     const ref = companyId
       ? this.companiesCollection.doc(companyId)
       : this.companiesCollection.doc();
 
-    await ref.set(
-      {
-        ...companyData,
-        cnpjIndex,
-        createdAt: FieldValue.serverTimestamp(),
-        updatedAt: FieldValue.serverTimestamp(),
-      },
-      { merge: true },
-    );
+    await database.runTransaction(async (tx) => {
+      const existingSnap = await tx.get(
+        this.companiesCollection.where("cnpjIndex", "==", cnpjIndex).limit(1),
+      );
+      const existingId = existingSnap.empty ? null : existingSnap.docs[0].id;
+
+      if (existingId && existingId !== ref.id) {
+        throw new HttpsError(
+          "already-exists",
+          "CNPJ já cadastrado para outra empresa!",
+        );
+      }
+
+      tx.set(
+        ref,
+        {
+          ...companyData,
+          cnpjIndex,
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+    });
   }
 
   static async deleteCompany(companyId: string): Promise<void> {
@@ -116,6 +125,7 @@ export class CompanyRepository {
     });
   }
 
+  /** Transactionally checks the company's monthly task limit and increments the counter; throws `resource-exhausted` once the limit is hit. */
   static async checkAndIncrementUsage(companyId: string): Promise<void> {
     const ref = this.companiesCollection.doc(companyId);
     const yearMonth = CompanyRepository.currentYearMonth();
@@ -123,7 +133,7 @@ export class CompanyRepository {
     await database.runTransaction(async (tx) => {
       const snap = await tx.get(ref);
       if (!snap.exists) {
-        throw new HttpsError("not-found", "Empresa não encontrada.");
+        throw new HttpsError("not-found", "Empresa não encontrada!");
       }
 
       const company = snap.data() as CompanyDocument;
@@ -152,6 +162,7 @@ export class CompanyRepository {
     });
   }
 
+  /** Read-only peek at the current month's usage/limit — does not throw if the company is missing (returns zeroed defaults). */
   static async getTaskUsage(
     companyId: string,
   ): Promise<{ used: number; limit: number | null; yearMonth: string }> {

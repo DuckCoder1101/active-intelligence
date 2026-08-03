@@ -2,6 +2,7 @@ import { FinanceTransactionsTab } from '@components/finances/transactions-tab.co
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
 import {
+  MdMenu,
   MdOutlineBarChart,
   MdOutlineDashboard,
   MdOutlineReceiptLong,
@@ -13,7 +14,7 @@ import { AdminPageContainer } from '@/components/ui/page-container.component';
 import { companiesQueryOptions } from '@/queries/company.queries';
 import {
   financeAccountsQueryOptions,
-  financeCategoriesQueryOptions,
+  financeSubcategoriesQueryOptions,
   transactionsQueryOptions,
 } from '@/queries/finance.queries';
 import type { RouteAccessLevel } from '@/types/route-access.type';
@@ -34,7 +35,7 @@ export const Route = createFileRoute('/_private/finances')({
   loader: ({ context }) =>
     Promise.all([
       context.queryClient.ensureQueryData(transactionsQueryOptions()),
-      context.queryClient.ensureQueryData(financeCategoriesQueryOptions()),
+      context.queryClient.ensureQueryData(financeSubcategoriesQueryOptions()),
       context.queryClient.ensureQueryData(financeAccountsQueryOptions()),
       context.queryClient.ensureQueryData(companiesQueryOptions()),
     ]),
@@ -54,6 +55,7 @@ function FinancePage() {
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1',
   );
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
@@ -77,16 +79,27 @@ function FinancePage() {
         items={sidebarItems}
         collapsed={collapsed}
         onToggleCollapse={toggleCollapsed}
-        className="absolute inset-y-0 left-0 z-10"
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        className="lg:absolute lg:inset-y-0 lg:left-0 lg:z-10"
       />
 
       <div
-        className={`flex min-h-0 flex-1 flex-col overflow-hidden transition-[padding] duration-300 ease-in-out ${collapsed ? 'pl-17.5' : 'pl-56'}`}
+        className={`flex min-h-0 flex-1 flex-col overflow-hidden transition-[padding] duration-300 ease-in-out ${collapsed ? 'lg:pl-17.5' : 'lg:pl-56'}`}
       >
         <AdminPageContainer>
-          <h1 className="text-xl font-black tracking-tight text-text sm:text-2xl">
-            Financeiro
-          </h1>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="text-text-muted transition-colors hover:text-text lg:hidden"
+            >
+              <MdMenu size={20} />
+            </button>
+            <h1 className="text-xl font-black tracking-tight text-text sm:text-2xl">
+              Financeiro
+            </h1>
+          </div>
 
           <div className="mt-6">
             {activeTab === 'visao-geral' && (

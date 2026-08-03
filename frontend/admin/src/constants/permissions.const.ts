@@ -12,17 +12,22 @@ export const ADMIN_PERMISSIONS_META: AdminPermissionMeta[] = [
   {
     key: 'manage-intelligence',
     label: 'Inteligência',
-    group: 'Inteligência & Catálogo',
+    group: 'Inteligência & Planos',
   },
   {
-    key: 'manage-catalog',
-    label: 'Catálogo',
-    group: 'Inteligência & Catálogo',
+    key: 'manage-plans',
+    label: 'Planos',
+    group: 'Inteligência & Planos',
   },
   {
     key: 'manage-library',
     label: 'Biblioteca',
-    group: 'Inteligência & Catálogo',
+    group: 'Inteligência & Planos',
+  },
+  {
+    key: 'manage-reviews',
+    label: 'Avaliações',
+    group: 'Inteligência & Planos',
   },
   { key: 'manage-team', label: 'Administradores', group: 'Administração' },
   { key: 'manage-settings', label: 'Configurações', group: 'Administração' },

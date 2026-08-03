@@ -2,9 +2,8 @@ import { HttpsError } from "firebase-functions/https";
 import { z } from "zod";
 import { logger } from "firebase-functions";
 
-import { onCallHandler } from "functions-shared";
+import { onCallHandler, requireCompanyAccess } from "functions-shared";
 import { CrmFunnelRepository } from "../repositories/crm-funnel.repository";
-import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
 const schema = z.object({
   companyId: z.string().min(1),
@@ -13,6 +12,11 @@ const schema = z.object({
   order: z.number().optional(),
 });
 
+/**
+ * Creates/updates a CRM funnel.
+ * Auth: `requireCompanyAccess(req, data.companyId, "ao CRM")`.
+ * Schema: inline `z.object({companyId, funnelId?, name, order?})`.
+ */
 export const saveCrmFunnelHandler = onCallHandler(async (req) => {
   const { success, data, error } = schema.safeParse(req.data);
   if (!success) {
@@ -22,7 +26,7 @@ export const saveCrmFunnelHandler = onCallHandler(async (req) => {
     );
   }
 
-  const { companyId } = requireCompanyAccess(req, data.companyId);
+  const { companyId } = requireCompanyAccess(req, data.companyId, "ao CRM");
 
   logger.info("saveCrmFunnel", {
     companyId,

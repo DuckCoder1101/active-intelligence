@@ -7,9 +7,10 @@ import {
   database,
   requireAccess,
   CompanyAuditDocument,
+  AdminRepository,
 } from "functions-shared";
 
-import { mapAuditLogDoc } from "../utils/audit-log.mapper";
+import { collectAuditAdminUids, mapAuditLogDoc } from "../utils/audit-log.mapper";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
@@ -20,6 +21,14 @@ const schema = z.object({
   limit: z.number().int().min(1).max(300).optional(),
 });
 
+/**
+ * Lists audit logs across multiple/all companies (workspace-wide).
+ * Auth: `requireAccess` — minAccessLevel "admin".
+ * Schema: inline `z.object({ companyIds?, limit? })`.
+ * Deviates from the standard flow: direct Firestore calls, including a
+ * `collectionGroup("audits")` query when no `companyIds` filter is given,
+ * with manual in-memory sort/merge across companies — no repository used.
+ */
 export const listWorkspaceAuditLogsHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
@@ -69,5 +78,11 @@ export const listWorkspaceAuditLogsHandler = onCallHandler(async (req) => {
     docs = snapshot.docs;
   }
 
-  return Promise.all(docs.map(mapAuditLogDoc));
+  if (docs.length === 0) return [];
+
+  const nameByUid = await AdminRepository.getNamesByUids(
+    collectAuditAdminUids(docs),
+  );
+
+  return docs.map((doc) => mapAuditLogDoc(doc, nameByUid));
 });

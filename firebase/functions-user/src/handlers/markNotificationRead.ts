@@ -10,6 +10,11 @@ import NotificationSchema from "../data/notification.schema";
 
 const ACCESS = { minAccessLevel: "user" as const };
 
+/**
+ * Marks a notification as read.
+ * Auth: `requireAccess(req, {minAccessLevel:"user"})`.
+ * Schema: `../data/notification.schema` → `NotificationSchema.markReadSchema`.
+ */
 export const markNotificationReadHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 

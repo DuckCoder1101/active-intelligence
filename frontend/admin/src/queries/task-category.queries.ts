@@ -86,13 +86,3 @@ export function useSaveTaskTagMutation() {
     },
   });
 }
-
-export function useDeleteTaskTagMutation() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (tagId: string) => TaskCategoryService.deleteTag(tagId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taskCategoryKeys.tags });
-    },
-  });
-}

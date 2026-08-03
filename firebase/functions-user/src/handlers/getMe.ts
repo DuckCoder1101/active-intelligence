@@ -7,6 +7,12 @@ import {
   AdminRepository,
 } from "functions-shared";
 
+/**
+ * Gets the caller's own profile.
+ * Auth: `getAuthenticatedUser(req)` (auth-only).
+ * Schema: none.
+ * Branches repository by the caller's accessLevel.
+ */
 export const getMeHandler = onCallHandler(async (req) => {
   const { uid, accessLevel } = getAuthenticatedUser(req);
 

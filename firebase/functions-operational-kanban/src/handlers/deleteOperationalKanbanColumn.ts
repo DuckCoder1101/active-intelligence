@@ -12,6 +12,11 @@ const ACCESS = { minAccessLevel: "owner" as const };
 
 const schema = z.object({ columnId: z.string().min(1) });
 
+/**
+ * Deletes an internal operational-kanban column.
+ * Auth: requireAccess(req, {minAccessLevel:"owner"}).
+ * Schema: inline z.object({columnId}).
+ */
 export const deleteOperationalKanbanColumnHandler =
   onCallHandler(async (req) => {
     requireAccess(req, ACCESS);

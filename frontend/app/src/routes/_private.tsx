@@ -1,7 +1,11 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
+import { ReviewRequiredModal } from '@/components/reviews/review-required-modal.component';
+import { useAuth } from '@/contexts/auth.context';
+import { useFirstAccessAt } from '@/hooks/use-first-access-at.hook';
 import { getSessionUser } from '@/server/session';
 import { auth } from '@/utils/firebase.util';
+import { isReviewDue } from '@/utils/review-due.util';
 
 const COMPANY_PATH_RE = /^\/company\/([^/]+)/;
 
@@ -31,5 +35,19 @@ export const Route = createFileRoute('/_private')({
       sessionUser,
     };
   },
-  component: Outlet,
+  component: PrivateLayout,
 });
+
+function PrivateLayout() {
+  const { claims, userProfile } = useAuth();
+  const firstAccessAt = useFirstAccessAt(
+    userProfile ? `review-first-access-${userProfile.uid}` : null,
+  );
+
+  return (
+    <>
+      {isReviewDue(claims, firstAccessAt) && <ReviewRequiredModal />}
+      <Outlet />
+    </>
+  );
+}

@@ -6,6 +6,9 @@ import {
   ContractedServiceDTO,
 } from "../types/contracted-service.type";
 
+/**
+ * Firestore: `contracted_services` (top-level, global).
+ */
 export class ContractedServiceRepository {
   private static col = database.collection("contracted_services");
 
@@ -19,6 +22,7 @@ export class ContractedServiceRepository {
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
+  /** Dedupes by lowercased `nameIndex` — returns the existing doc instead of creating a duplicate if the name already exists. */
   static async save(name: string): Promise<ContractedServiceDTO> {
     const existing = await this.col
       .where("nameIndex", "==", name.trim().toLowerCase())

@@ -10,6 +10,7 @@ import {
 } from "../user/user.dto";
 import { AdminPermission } from "../../types/accessLevel.type";
 
+/** Firestore: `admins` (top-level). Admin access level/permissions live in Firebase Auth custom claims, not this doc. */
 export default class AdminRepository {
   private static adminsCollection = database.collection("admins");
 
@@ -43,6 +44,7 @@ export default class AdminRepository {
     };
   }
 
+  /** Joins the `admins` docs with each uid's Firebase Auth custom claims (accessLevel/permissions). */
   static async listAll(): Promise<AdminProfileDTO[]> {
     const snapshot = await this.adminsCollection
       .orderBy("createdAt", "desc")
@@ -107,6 +109,7 @@ export default class AdminRepository {
     await ref.delete();
   }
 
+  /** Uids of admins that either are `owner` or hold the given permission — used by NotificationRepository to resolve targets. */
   static async listUidsWithPermission(
     permission: AdminPermission,
   ): Promise<string[]> {
@@ -149,5 +152,24 @@ export default class AdminRepository {
     const admin = doc.data() as AdminDocument;
 
     return { uid, name: admin.name };
+  }
+
+  /** Busca vários admins de uma vez (um único round-trip via getAll), pra evitar N+1 ao resolver nomes em listas. */
+  static async getNamesByUids(uids: string[]): Promise<Map<string, string>> {
+    const uniqueUids = [...new Set(uids)];
+    const map = new Map<string, string>();
+    if (uniqueUids.length === 0) return map;
+
+    const refs = uniqueUids.map((uid) => this.adminsCollection.doc(uid));
+    const docs = await database.getAll(...refs);
+
+    docs.forEach((doc, i) => {
+      if (doc.exists) {
+        const admin = doc.data() as AdminDocument;
+        map.set(uniqueUids[i], admin.name);
+      }
+    });
+
+    return map;
   }
 }

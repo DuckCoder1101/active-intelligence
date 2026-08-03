@@ -2,9 +2,14 @@ import { z } from "zod";
 import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 
-import { onCallHandler, database, requireAccess } from "functions-shared";
+import {
+  onCallHandler,
+  database,
+  requireAccess,
+  AdminRepository,
+} from "functions-shared";
 
-import { mapAuditLogDoc } from "../utils/audit-log.mapper";
+import { collectAuditAdminUids, mapAuditLogDoc } from "../utils/audit-log.mapper";
 
 const ACCESS = {
   minAccessLevel: "admin" as const,
@@ -12,6 +17,14 @@ const ACCESS = {
 
 const schema = z.object({ companyId: z.string().min(1) });
 
+/**
+ * Lists audit log entries for one company.
+ * Auth: `requireAccess` — minAccessLevel "admin".
+ * Schema: inline `z.object({ companyId })`.
+ * Deviates from the standard flow: queries Firestore directly
+ * (`companies/{companyId}/audits`) instead of going through a repository —
+ * `AuditRepository` in functions-shared is write-only.
+ */
 export const listAuditLogsHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
@@ -32,5 +45,9 @@ export const listAuditLogsHandler = onCallHandler(async (req) => {
 
   if (snapshot.empty) return [];
 
-  return Promise.all(snapshot.docs.map(mapAuditLogDoc));
+  const nameByUid = await AdminRepository.getNamesByUids(
+    collectAuditAdminUids(snapshot.docs),
+  );
+
+  return snapshot.docs.map((doc) => mapAuditLogDoc(doc, nameByUid));
 });

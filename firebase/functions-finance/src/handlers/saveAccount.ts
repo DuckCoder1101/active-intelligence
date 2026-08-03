@@ -11,6 +11,10 @@ const ACCESS = {
 };
 
 const schema = z.object({
+  accountId: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? undefined),
   name: z
     .string()
     .trim()
@@ -18,6 +22,11 @@ const schema = z.object({
     .max(60, "Máximo 60 caracteres"),
 });
 
+/**
+ * Creates/updates a finance account.
+ * Auth: requireAccess(req, {minAccessLevel:"admin", permissions:["manage-finance"]}).
+ * Schema: inline z.object({accountId?, name}).
+ */
 export const saveAccountHandler = onCallHandler(async (req) => {
   requireAccess(req, ACCESS);
 
@@ -29,7 +38,10 @@ export const saveAccountHandler = onCallHandler(async (req) => {
     );
   }
 
-  logger.info("saveAccount", { name: data.name });
+  logger.info("saveAccount", {
+    action: data.accountId ? "update" : "create",
+    accountId: data.accountId,
+  });
 
-  return AccountRepository.save(data.name);
+  return AccountRepository.save(data);
 });

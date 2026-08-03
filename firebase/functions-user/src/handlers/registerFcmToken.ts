@@ -11,6 +11,12 @@ import NotificationSchema from "../data/notification.schema";
 
 const ACCESS = { minAccessLevel: "user" as const };
 
+/**
+ * Registers a device FCM push token for the caller.
+ * Auth: `requireAccess(req, {minAccessLevel:"user"})`.
+ * Schema: `../data/notification.schema` → `NotificationSchema.registerFcmTokenSchema`.
+ * Branches repository by the caller's accessLevel.
+ */
 export const registerFcmTokenHandler = onCallHandler(async (req) => {
   const caller = requireAccess(req, ACCESS);
 

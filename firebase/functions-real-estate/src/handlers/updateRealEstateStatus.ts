@@ -1,11 +1,15 @@
 import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 
-import { onCallHandler } from "functions-shared";
+import { onCallHandler, requireCompanyAccess } from "functions-shared";
 import RealEstateSchema from "../data/real-estate.schema";
 import { RealEstateRepository } from "../repositories/real-estate.repository";
-import { requireCompanyAccess } from "../utils/requireCompanyAccess";
 
+/**
+ * Updates a listing's status.
+ * Auth: `requireCompanyAccess(req, companyId, "aos imóveis")`.
+ * Schema: `../data/real-estate.schema` → `RealEstateSchema.updateStatusSchema`.
+ */
 export const updateRealEstateStatusHandler = onCallHandler(async (req) => {
   const { success, data, error } =
     RealEstateSchema.updateStatusSchema.safeParse(req.data);
@@ -16,7 +20,7 @@ export const updateRealEstateStatusHandler = onCallHandler(async (req) => {
     );
   }
 
-  const { companyId } = requireCompanyAccess(req, data.companyId);
+  const { companyId } = requireCompanyAccess(req, data.companyId, "aos imóveis");
 
   logger.info("updateRealEstateStatus", {
     companyId,
