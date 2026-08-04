@@ -19,7 +19,7 @@ export function UpcomingScheduleCard({
   const columnMap = new Map(columns.map((c) => [c.columnId, c]));
 
   return (
-    <div className="card flex flex-1 flex-col p-4 sm:p-5">
+    <div className="dashboard-card flex flex-1 flex-col p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-[14px] font-bold text-text">
           Cronograma – próximos 7 dias
@@ -49,7 +49,7 @@ export function UpcomingScheduleCard({
             return (
               <li key={task.taskId} className="flex items-center gap-3">
                 <div className="flex w-9 shrink-0 flex-col items-center leading-tight">
-                  <span className="text-[13px] font-black text-text">
+                  <span className="text-[13px] font-black tabular-nums text-text">
                     {String(d.getDate()).padStart(2, '0')}
                   </span>
                   <span className="text-[9px] font-bold uppercase text-text-muted">
@@ -60,9 +60,9 @@ export function UpcomingScheduleCard({
                   {task.title}
                 </p>
                 <span
-                  className="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold"
+                  className="shrink-0 rounded-md px-2.5 py-1 text-[11px] font-medium"
                   style={{
-                    backgroundColor: `${column?.color ?? FALLBACK_COLOR}1a`,
+                    backgroundColor: `${column?.color ?? FALLBACK_COLOR}26`,
                     color: column?.color ?? FALLBACK_COLOR,
                   }}
                 >

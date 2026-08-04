@@ -19,6 +19,7 @@ export const adminsQueryOptions = () =>
   queryOptions({
     queryKey: adminKeys.lists(),
     queryFn: () => AdminService.listAdmins(),
+    staleTime: 5 * 60_000,
   });
 
 export function useInviteAdminMutation() {

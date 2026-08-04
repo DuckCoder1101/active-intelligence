@@ -148,11 +148,20 @@ function CompanyDashboard() {
   );
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8">
+    <div className="relative flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8">
       {showWelcome && <WelcomeModal onClose={markWelcomeSeen} />}
 
-      <div className="mx-auto w-full max-w-6xl">
-        <div className="mb-8">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-24 right-0 h-80 w-80 rounded-full bg-primary-glow/20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-32 right-40 h-64 w-64 rounded-full bg-primary/20 blur-3xl"
+      />
+
+      <div className="relative mx-auto w-full max-w-6xl">
+        <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-black tracking-tight text-text">
             Olá{firstName ? ', ' : ''}
             {firstName}
@@ -162,7 +171,7 @@ function CompanyDashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 animate-fade-in sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             icon={<MdOutlinePeopleAlt size={18} />}
             label="Leads novos"
@@ -186,16 +195,22 @@ function CompanyDashboard() {
         </div>
 
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <SalesFunnel companyId={companyId} stages={funnelStages} />
-          <TodayActivitiesCard companyId={companyId} tasks={todayTasks} categories={categories} />
-          <UpcomingScheduleCard
-            companyId={companyId}
-            tasks={upcomingTasks}
-            columns={operationalColumns}
-          />
+          <div className="flex animate-fade-in" style={{ animationDelay: '60ms' }}>
+            <SalesFunnel companyId={companyId} stages={funnelStages} />
+          </div>
+          <div className="flex animate-fade-in" style={{ animationDelay: '120ms' }}>
+            <TodayActivitiesCard companyId={companyId} tasks={todayTasks} categories={categories} />
+          </div>
+          <div className="flex animate-fade-in" style={{ animationDelay: '180ms' }}>
+            <UpcomingScheduleCard
+              companyId={companyId}
+              tasks={upcomingTasks}
+              columns={operationalColumns}
+            />
+          </div>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 animate-fade-in" style={{ animationDelay: '240ms' }}>
           <PerformancePanel series={dailySeries} metrics={weeklyMetrics} />
         </div>
       </div>

@@ -20,6 +20,7 @@
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-surface: var(--primary-surface);
+  --color-primary-glow: var(--primary-glow);
 
   /* Status */
   --color-success: var(--success);
@@ -57,6 +58,7 @@
   --primary: #ff6a00;
   --primary-hover: #e65e00;
   --primary-surface: #fff1e6;
+  --primary-glow: #e02d80;
   --success: #1dbf73;
   --warning: #ffc83d;
   --danger: #e63946;
@@ -85,6 +87,7 @@
   --primary: #ff6a00;
   --primary-hover: #e65e00;
   --primary-surface: #2a1a0d;
+  --primary-glow: #e02d80;
   --success: #1dbf73;
   --warning: #ffc83d;
   --danger: #e63946;

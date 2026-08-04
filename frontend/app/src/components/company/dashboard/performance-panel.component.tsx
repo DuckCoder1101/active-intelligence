@@ -26,10 +26,10 @@ function MiniMetric({ label, value, trend }: MiniMetricProps) {
   return (
     <div>
       <p className="text-[11px] text-text-sub">{label}</p>
-      <p className="mt-1 text-lg font-black text-text">{value}</p>
+      <p className="mt-1 text-lg font-black tabular-nums text-text">{value}</p>
       {trend !== null && (
         <p
-          className={`text-[11px] font-semibold ${trend >= 0 ? 'text-success' : 'text-danger'}`}
+          className={`text-[11px] font-semibold tabular-nums ${trend >= 0 ? 'text-success' : 'text-danger'}`}
         >
           {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}%
         </p>
@@ -39,7 +39,8 @@ function MiniMetric({ label, value, trend }: MiniMetricProps) {
 }
 
 export function PerformancePanel({ series, metrics }: PerformancePanelProps) {
-  const gradientId = useId();
+  const fillGradientId = useId();
+  const strokeGradientId = useId();
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   const values = series.map((p) => p.leadsNovos);
@@ -60,7 +61,7 @@ export function PerformancePanel({ series, metrics }: PerformancePanelProps) {
   const hovered = hoverIndex !== null ? points[hoverIndex] : null;
 
   return (
-    <div className="card flex flex-col p-4 sm:p-5">
+    <div className="dashboard-card flex flex-col p-4 sm:p-5">
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-[14px] font-bold text-text">Desempenho geral</h2>
         <span className="text-[11px] text-text-muted">Últimos 7 dias</span>
@@ -98,16 +99,21 @@ export function PerformancePanel({ series, metrics }: PerformancePanelProps) {
           onMouseLeave={() => setHoverIndex(null)}
         >
           <defs>
-            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" style={{ stopColor: 'var(--color-orange)' }} stopOpacity="0.35" />
-              <stop offset="100%" style={{ stopColor: 'var(--color-orange)' }} stopOpacity="0" />
+            <linearGradient id={fillGradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" style={{ stopColor: 'var(--color-primary-glow)' }} stopOpacity="0.45" />
+              <stop offset="60%" style={{ stopColor: 'var(--color-primary)' }} stopOpacity="0.15" />
+              <stop offset="100%" style={{ stopColor: 'var(--color-primary)' }} stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id={strokeGradientId} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" style={{ stopColor: 'var(--color-primary)' }} />
+              <stop offset="100%" style={{ stopColor: 'var(--color-primary-glow)' }} />
             </linearGradient>
           </defs>
-          <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
+          <path d={areaPath} fill={`url(#${fillGradientId})`} stroke="none" />
           <path
             d={linePath}
             fill="none"
-            style={{ stroke: 'var(--color-orange)' }}
+            stroke={`url(#${strokeGradientId})`}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"

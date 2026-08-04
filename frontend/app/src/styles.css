@@ -20,6 +20,7 @@
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-surface: var(--primary-surface);
+  --color-primary-glow: var(--primary-glow);
 
   /* Status */
   --color-success: var(--success);
@@ -67,6 +68,7 @@
   --primary: #ff6a00;
   --primary-hover: #e65e00;
   --primary-surface: #fff1e6;
+  --primary-glow: #e02d80;
   --success: #1dbf73;
   --warning: #ffc83d;
   --danger: #e63946;
@@ -95,6 +97,7 @@
   --primary: #ff6a00;
   --primary-hover: #e65e00;
   --primary-surface: #2a1a0d;
+  --primary-glow: #e02d80;
   --success: #1dbf73;
   --warning: #ffc83d;
   --danger: #e63946;
@@ -190,6 +193,15 @@ Link:disabled {
 
   .card {
     @apply rounded-xl border border-border bg-card;
+  }
+
+  /* Card variant used on the client dashboard — subtle hover lift + glow border */
+  .dashboard-card {
+    @apply rounded-xl border border-border bg-card transition-all duration-200 ease-out;
+  }
+  .dashboard-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--color-primary) 40%, transparent);
   }
 
   /* ── Modal ────────────────────────────────────────────────────────────── */

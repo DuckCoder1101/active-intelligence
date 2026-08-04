@@ -14,7 +14,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { FirebaseError } from 'firebase/app';
 import { signOut } from 'firebase/auth';
 import { useEffect } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { MdOutlineReportProblem, MdOutlineSearchOff } from 'react-icons/md';
 import { ToastContainer } from 'react-toastify';
 import toastifyCss from 'react-toastify/dist/ReactToastify.css?url';
 
@@ -97,12 +97,38 @@ function RootErrorBoundary({ error }: ErrorComponentProps) {
   }
 
   return (
-    <div className="w-full min-h-screen flex justify-center items-center bg-bg">
-      <div className="p-8 rounded-md bg-card animate-slide-up text-center">
-        <strong className="text-text text-lg uppercase">Ocorreu um erro</strong>
-        <p className="text-text-sub text-sm mt-2">
-          Tente novamente mais tarde.
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-bg px-4">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-24 right-0 h-80 w-80 rounded-full bg-danger/15 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-24 left-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl"
+      />
+
+      <div className="relative w-full max-w-sm animate-slide-up rounded-2xl border border-border bg-card p-8 text-center shadow-2xl">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-danger/10 text-danger">
+          <MdOutlineReportProblem size={30} />
+        </div>
+
+        <h1 className="mt-5 text-lg font-black text-text">Algo deu errado</h1>
+        <p className="mt-2 text-[13px] text-text-sub">
+          Não conseguimos carregar esta página. Tente novamente em instantes.
         </p>
+
+        <div className="mt-6 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="btn-primary w-full justify-center"
+          >
+            Tentar novamente
+          </button>
+          <Link to="/user/mycompany" className="btn-ghost-border w-full justify-center">
+            Voltar para o painel
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -110,23 +136,34 @@ function RootErrorBoundary({ error }: ErrorComponentProps) {
 
 function NotFound() {
   return (
-    <div className="w-full min-h-screen flex justify-center items-center bg-bg">
-      <div className="p-8 rounded-md bg-card animate-slide-up">
-        <span className="flex justify-center items-center gap-1 animate-bounce">
-          <FaSearch size={15} />
-          <strong className="text-2xl text-center">404</strong>
-        </span>
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-bg px-4">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-24 right-0 h-80 w-80 rounded-full bg-primary-glow/20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-32 right-40 h-64 w-64 rounded-full bg-primary/20 blur-3xl"
+      />
 
-        <strong className="text-text text-center uppercase text-lg">
-          Página não encontrada!
-        </strong>
+      <div className="relative w-full max-w-sm animate-slide-up rounded-2xl border border-border bg-card p-8 text-center shadow-2xl">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-surface text-orange">
+          <MdOutlineSearchOff size={30} />
+        </div>
 
-        <p className="text-text-sub text-sm">
-          Que tal{' '}
-          <Link to="/user/mycompany" className="underline">
-            voltar para o painel?
-          </Link>
+        <p className="mt-5 bg-linear-to-r from-primary to-primary-glow bg-clip-text text-4xl font-black tabular-nums text-transparent">
+          404
         </p>
+        <h1 className="mt-1 text-lg font-black text-text">
+          Página não encontrada
+        </h1>
+        <p className="mt-2 text-[13px] text-text-sub">
+          O endereço pode estar errado ou a página foi movida.
+        </p>
+
+        <Link to="/user/mycompany" className="btn-primary mt-6 w-full justify-center">
+          Voltar para o painel
+        </Link>
       </div>
     </div>
   );

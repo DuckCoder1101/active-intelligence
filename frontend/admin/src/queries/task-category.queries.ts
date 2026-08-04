@@ -19,12 +19,14 @@ export const taskCategoriesQueryOptions = () =>
   queryOptions({
     queryKey: taskCategoryKeys.categories,
     queryFn: () => TaskCategoryService.listCategories(),
+    staleTime: 10 * 60_000,
   });
 
 export const taskTagsQueryOptions = () =>
   queryOptions({
     queryKey: taskCategoryKeys.tags,
     queryFn: () => TaskCategoryService.listTags(),
+    staleTime: 10 * 60_000,
   });
 
 export function useSaveTaskCategoryMutation() {

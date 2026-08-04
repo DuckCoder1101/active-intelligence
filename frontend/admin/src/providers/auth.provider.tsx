@@ -1,6 +1,7 @@
 import { AuthContext } from '@contexts/auth.context';
 import type { AuthContextState } from '@contexts/auth.context';
 import UserService from '@services/user.service';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { FirebaseError } from 'firebase/app';
 import { onIdTokenChanged } from 'firebase/auth';
@@ -9,6 +10,7 @@ import type { ReactNode } from 'react';
 import { toast } from 'react-toastify';
 
 import type { UserProfile } from '@/models/user-profile.model';
+import { userProfileKeys } from '@/queries/user.queries';
 import { createSession, deleteSession } from '@/server/session';
 import type { CustomClaims } from '@/types/custom-claims.type';
 import { auth } from '@/utils/firebase.util';
@@ -20,6 +22,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [authState, setAuthState] = useState<AuthContextState>({
     claims: null,
     userProfile: null,
@@ -37,8 +40,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }));
 
       try {
-        profile = await UserService.getMe();
-        profile.avatarUrl = await UserService.getAvatarUrl(profile.uid);
+        // Routed through the query cache so concurrent triggers (e.g. two
+        // `onIdTokenChanged` firings racing) dedupe into a single network
+        // call instead of each doing its own `getMe` + avatar round-trip.
+        profile = await queryClient.fetchQuery({
+          queryKey: userProfileKeys.detail(),
+          queryFn: async () => {
+            const p = await UserService.getMe();
+            p.avatarUrl = await UserService.getAvatarUrl(p.uid);
+            return p;
+          },
+        });
       } catch (err) {
         if (
           err instanceof FirebaseError &&
@@ -56,13 +68,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }));
       }
     },
-    [navigate],
+    [navigate, queryClient],
   );
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
       if (!user) {
         await deleteSession().catch(() => {});
+        queryClient.removeQueries({ queryKey: userProfileKeys.all });
         // Sem usuário no SDK, nenhuma chamada sai autenticada — manter claims
         // aqui deixaria a UI fingindo sessão ativa e as callables falhariam
         // com "unauthenticated" no backend.
@@ -94,7 +107,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
 
     return unsubscribe;
-  }, [downloadUserProfile]);
+  }, [downloadUserProfile, queryClient]);
 
   return (
     <AuthContext.Provider value={{ ...authState, downloadUserProfile }}>

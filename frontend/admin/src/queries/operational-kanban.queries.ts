@@ -20,6 +20,7 @@ export const operationalKanbanColumnsQueryOptions = () =>
   queryOptions({
     queryKey: operationalKanbanKeys.lists(),
     queryFn: () => OperationalKanbanService.listColumns(),
+    staleTime: 10 * 60_000,
   });
 
 function reorder(

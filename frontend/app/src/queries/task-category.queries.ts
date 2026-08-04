@@ -10,4 +10,5 @@ export const taskCategoriesQueryOptions = () =>
   queryOptions({
     queryKey: taskCategoryKeys.categories,
     queryFn: () => TaskCategoryService.listCategories(),
+    staleTime: 10 * 60_000,
   });

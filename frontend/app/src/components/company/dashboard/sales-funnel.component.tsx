@@ -25,7 +25,7 @@ export function SalesFunnel({ companyId, stages }: SalesFunnelProps) {
     stages.length * STAGE_HEIGHT + Math.max(stages.length - 1, 0) * STAGE_GAP;
 
   return (
-    <div className="card flex flex-1 flex-col p-4 sm:p-5">
+    <div className="dashboard-card flex flex-1 flex-col p-4 sm:p-5">
       <h2 className="mb-4 text-[14px] font-bold text-text">Funil de vendas</h2>
 
       {stages.length === 0 ? (
@@ -57,7 +57,7 @@ export function SalesFunnel({ companyId, stages }: SalesFunnelProps) {
                     y={y + STAGE_HEIGHT / 2}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    className="text-[13px] font-bold"
+                    className="text-[13px] font-bold tabular-nums"
                     fill="#fff"
                   >
                     {stage.count}
@@ -78,7 +78,12 @@ export function SalesFunnel({ companyId, stages }: SalesFunnelProps) {
                   className="h-2 w-2 shrink-0 rounded-full"
                   style={{ backgroundColor: stage.color }}
                 />
-                <span className="truncate text-text-sub">{stage.name}</span>
+                <span className="min-w-0 flex-1 truncate text-text-sub">
+                  {stage.name}
+                </span>
+                <span className="shrink-0 font-semibold tabular-nums text-text">
+                  {stage.count}
+                </span>
               </li>
             ))}
           </ul>

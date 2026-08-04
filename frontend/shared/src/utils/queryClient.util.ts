@@ -22,6 +22,19 @@ function isSilencedUnauthenticatedError(
 
 export function createQueryClient(): QueryClient {
   return new QueryClient({
+    defaultOptions: {
+      queries: {
+        // React Query default is `staleTime: 0`, which refetches on every
+        // mount/window-focus even when the cached data is seconds old. Most
+        // of this app's data (reference lists, profiles, dashboards) doesn't
+        // need second-by-second freshness, so a sane baseline here cuts a
+        // large share of redundant callable invocations across the board.
+        // Queries that genuinely need faster updates (e.g. unread counts)
+        // opt back in with a shorter `staleTime`/`refetchInterval` locally.
+        staleTime: 60_000,
+        refetchOnWindowFocus: false,
+      },
+    },
     queryCache: new QueryCache({
       onError: (error, query) => {
         if (isSilencedUnauthenticatedError(error, query)) {
