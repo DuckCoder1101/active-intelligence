@@ -38,30 +38,35 @@ export const crmTagsQueryOptions = (companyId: string) =>
   queryOptions({
     queryKey: companyCrmKeys.tags(companyId),
     queryFn: () => CompanyCrmService.listTags(companyId),
+    staleTime: 5 * 60_000,
   });
 
 export const crmOriginsQueryOptions = (companyId: string) =>
   queryOptions({
     queryKey: companyCrmKeys.origins(companyId),
     queryFn: () => CompanyCrmService.listOrigins(companyId),
+    staleTime: 5 * 60_000,
   });
 
 export const crmFunnelsQueryOptions = (companyId: string) =>
   queryOptions({
     queryKey: companyCrmKeys.funnels(companyId),
     queryFn: () => CompanyCrmService.listFunnels(companyId),
+    staleTime: 5 * 60_000,
   });
 
 export const crmColumnsQueryOptions = (companyId: string, funnelId: string) =>
   queryOptions({
     queryKey: companyCrmKeys.columns(companyId, funnelId),
     queryFn: () => CompanyCrmService.listColumns(companyId, funnelId),
+    staleTime: 5 * 60_000,
   });
 
 export const crmTeammatesQueryOptions = (companyId: string) =>
   queryOptions({
     queryKey: companyCrmKeys.teammates(companyId),
     queryFn: () => CompanyCrmService.listMyCompanyUsers(companyId),
+    staleTime: 5 * 60_000,
   });
 
 export function useSaveLeadMutation(companyId: string) {

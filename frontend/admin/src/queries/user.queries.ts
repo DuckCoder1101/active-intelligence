@@ -15,6 +15,11 @@ const INVALID_CREDENTIAL_CODES = [
   'auth/user-not-found',
 ];
 
+export const userProfileKeys = {
+  all: ['user-profile'] as const,
+  detail: () => [...userProfileKeys.all, 'detail'] as const,
+};
+
 interface SigninVars {
   email: string;
   password: string;

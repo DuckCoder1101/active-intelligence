@@ -77,7 +77,9 @@ export function FcmNotificationsProvider({
       const message = payload.notification?.body ?? payload.data?.message;
       if (message) {toast.info(message);}
 
-      queryClient.invalidateQueries({ queryKey: notificationKeys.lists() });
+      // Only invalidate the count here — `NotificationsProvider`'s safety-net
+      // effect refetches the list whenever the count changes, so invalidating
+      // both here would refetch the list twice per push.
       queryClient.invalidateQueries({
         queryKey: notificationKeys.unreadCount(),
       });

@@ -99,31 +99,69 @@ export function CompanySidebar({
         isOpen ? 'translate-x-0' : '-translate-x-full',
       ].join(' ')}
     >
-      {/* Close button — mobile only; desktop has no explicit toggle to hide the sidebar */}
-      <div className="flex items-center justify-end px-3 pt-3 lg:hidden">
+      {/* Logo + toggle — beside each other while the sidebar is open (mobile: close button; desktop expanded: collapse button) */}
+      <div
+        className={`flex items-center justify-between px-3 pt-4 ${collapsed ? 'lg:justify-center' : ''}`}
+      >
+        <Link
+          to="/"
+          onClick={onClose}
+          className={`relative block h-8 ${collapsed ? 'w-28 lg:w-8' : 'w-28'}`}
+        >
+          <img
+            src="/icons/icon-text.png"
+            alt="Ícone da Guará"
+            className={[
+              'absolute inset-0 m-auto h-6 transition-opacity duration-300 ease-in-out',
+              collapsed ? 'opacity-100 lg:opacity-0' : 'opacity-100',
+            ].join(' ')}
+          />
+          <img
+            src="/icons/favicon.png"
+            alt="Ícone da Guará"
+            className={[
+              'absolute inset-0 m-auto h-8 w-8 transition-opacity duration-300 ease-in-out',
+              collapsed ? 'opacity-0 lg:opacity-100' : 'opacity-0',
+            ].join(' ')}
+          />
+        </Link>
+
+        {/* Close button — mobile only; desktop has no explicit toggle to hide the sidebar */}
         <button
           type="button"
           onClick={onClose}
           title="Fechar menu"
-          className="btn-icon text-white/50 hover:text-white/80"
+          className="btn-icon text-white/50 hover:text-white/80 lg:hidden"
         >
           <MdClose size={18} />
         </button>
+
+        {/* Collapse toggle — desktop only, beside the logo while expanded; moves below the favicon once collapsed */}
+        {!collapsed && (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            title="Recolher menu"
+            className="animate-fade-in hidden btn-icon text-white/50 hover:text-white/80 lg:flex"
+          >
+            <MdChevronLeft size={18} />
+          </button>
+        )}
       </div>
 
-      {/* Collapse toggle — desktop only; on mobile the sidebar is always expanded and toggled via the hamburger button */}
-      <div
-        className={`hidden items-center px-3 pt-3 lg:flex ${collapsed ? 'justify-center' : 'justify-end'}`}
-      >
-        <button
-          type="button"
-          onClick={onToggleCollapse}
-          title={collapsed ? 'Expandir menu' : 'Recolher menu'}
-          className="btn-icon text-white/50 hover:text-white/80"
-        >
-          {collapsed ? <MdChevronRight size={18} /> : <MdChevronLeft size={18} />}
-        </button>
-      </div>
+      {/* Expand toggle — desktop only, shown below the favicon while collapsed */}
+      {collapsed && (
+        <div className="hidden justify-center pt-2 lg:flex">
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            title="Expandir menu"
+            className="animate-fade-in btn-icon text-white/50 hover:text-white/80 mt-3"
+          >
+            <MdChevronRight size={18} />
+          </button>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 py-2 justify-center mt-4">

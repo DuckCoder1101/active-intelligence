@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { formatPhone } from '@/formatters/formatPhone';
 import type { Company } from '@/models/company.model';
+import { formatCNPJ } from '@/formatters/formatCnpj';
 
 interface CompaniesTableProps {
   companies: Company[];
@@ -67,7 +68,7 @@ export function CompaniesTable({ companies, isLoading }: CompaniesTableProps) {
               </td>
               <td className="px-4 py-3">
                 <span className="text-[13px] text-text-sub">
-                  {company.legalInformation.documentNumber}
+                  {formatCNPJ(company.legalInformation.documentNumber)}
                 </span>
               </td>
               <td className="px-4 py-3">

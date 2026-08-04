@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FieldValue } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 
@@ -8,8 +9,10 @@ import {
   UserSchema,
   auth,
   bucket,
+  database,
   AdminRepository,
   CompanyUserRepository,
+  NotificationRepository,
   UserAccessLevel,
 } from "functions-shared";
 
@@ -58,13 +61,52 @@ export const deleteAccountHandler = onCallHandler(async (req) => {
 
   await Promise.all([auth.deleteUser(data.targetId), deleteAccountPromise]);
 
-  await bucket
-    .file(`users/${data.targetId}/avatar`)
-    .delete()
-    .catch((err) =>
-      logger.warn("deleteAccount: falha ao deletar avatar", {
+  await Promise.all([
+    bucket
+      .file(`users/${data.targetId}/avatar`)
+      .delete()
+      .catch((err) =>
+        logger.warn("deleteAccount: falha ao deletar avatar", {
+          targetUid: data.targetId,
+          err: String(err),
+        }),
+      ),
+    NotificationRepository.removeUidFromAll(data.targetId).catch((err) =>
+      logger.warn("deleteAccount: falha ao limpar notificações", {
         targetUid: data.targetId,
         err: String(err),
       }),
-    );
+    ),
+    unassignFromTasks(data.targetId).catch((err) =>
+      logger.warn("deleteAccount: falha ao limpar assignedTo em tasks", {
+        targetUid: data.targetId,
+        err: String(err),
+      }),
+    ),
+  ]);
 });
+
+/**
+ * `tasks` is owned by `functions-task` (a separate deploy unit that this
+ * codebase doesn't vendor), so this touches the collection directly via the
+ * shared Firestore instance instead of importing a `TaskRepository`.
+ */
+async function unassignFromTasks(uid: string): Promise<void> {
+  const tasksCollection = database.collection("tasks");
+
+  for (;;) {
+    const snap = await tasksCollection
+      .where("assignedTo", "array-contains", uid)
+      .limit(500)
+      .get();
+    if (snap.empty) return;
+
+    const batch = database.batch();
+    snap.docs.forEach((doc) =>
+      batch.update(doc.ref, { assignedTo: FieldValue.arrayRemove(uid) }),
+    );
+    await batch.commit();
+
+    if (snap.size < 500) return;
+  }
+}

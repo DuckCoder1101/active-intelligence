@@ -1,11 +1,22 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { MdLockOutline } from 'react-icons/md';
+
+import { useSignoutMutation } from '@/queries/user.queries';
 
 export const Route = createFileRoute('/unauthorized')({
   component: UnauthorizedComponent,
 });
 
 function UnauthorizedComponent() {
+  const navigate = useNavigate();
+  const signout = useSignoutMutation();
+
+  const handleLogout = () => {
+    signout.mutate(undefined, {
+      onSuccess: () => navigate({ to: '/auth/signin' }),
+    });
+  };
+
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-danger/10">
@@ -19,9 +30,14 @@ function UnauthorizedComponent() {
           Você não tem permissão para acessar esta página.
         </p>
       </div>
-      <Link to="/user/profile" className="btn-primary mt-2">
-        Voltar ao perfil
-      </Link>
+      <button
+        type="button"
+        onClick={handleLogout}
+        disabled={signout.isPending}
+        className="btn-primary mt-2"
+      >
+        Sair
+      </button>
     </div>
   );
 }

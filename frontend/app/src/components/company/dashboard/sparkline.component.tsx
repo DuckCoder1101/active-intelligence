@@ -10,7 +10,8 @@ const HEIGHT = 32;
 
 /** Decorative trend line for a stat card — no axes, no tooltip. */
 export function Sparkline({ values, className = '' }: SparklineProps) {
-  const gradientId = useId();
+  const fillId = useId();
+  const strokeId = useId();
 
   if (values.length < 2) {
     return null;
@@ -38,16 +39,20 @@ export function Sparkline({ values, className = '' }: SparklineProps) {
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+        <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id={strokeId} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="var(--color-primary)" />
+          <stop offset="100%" stopColor="var(--color-primary-glow)" />
         </linearGradient>
       </defs>
-      <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
+      <path d={areaPath} fill={`url(#${fillId})`} stroke="none" />
       <path
         d={linePath}
         fill="none"
-        stroke="currentColor"
+        stroke={`url(#${strokeId})`}
         strokeWidth={1.75}
         strokeLinecap="round"
         strokeLinejoin="round"

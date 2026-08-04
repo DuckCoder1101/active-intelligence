@@ -1,5 +1,5 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { database } from "../../utils/firebase";
+import { auth, bucket, database } from "../../utils/firebase";
 import {
   CompanyFullDTO,
   CompanyResumeDTO,
@@ -7,6 +7,7 @@ import {
 } from "./company.type";
 import { CompanyDocument } from "./company.document";
 import { HttpsError } from "firebase-functions/https";
+import { logger } from "firebase-functions";
 
 /** Firestore: `companies` (top-level). Also owns the monthly task-usage counter embedded on each company doc. */
 export class CompanyRepository {
@@ -57,6 +58,14 @@ export class CompanyRepository {
     });
   }
 
+  /**
+   * Deletes a company and cascades cleanup across every collection/Storage
+   * path scoped to it — subcollections, top-level docs keyed by `companyId`,
+   * the company's users (Firestore doc + Auth account + avatar), and Storage
+   * files under `client/{companyId}/`. Operates on raw Firestore paths
+   * instead of importing other codebases' repositories, since those live in
+   * separate deploy units that don't depend on `functions-shared`.
+   */
   static async deleteCompany(companyId: string): Promise<void> {
     const ref = this.companiesCollection.doc(companyId);
     const doc = await ref.get();
@@ -65,7 +74,118 @@ export class CompanyRepository {
       throw new HttpsError("not-found", "Empresa não encontrada!");
     }
 
-    await ref.delete();
+    await Promise.all([
+      this.deleteCompanyUsers(companyId),
+      this.deleteQueryInBatches(ref.collection("audits")),
+      this.deleteQueryInBatches(ref.collection("personal_tasks")),
+      this.deleteQueryInBatches(ref.collection("real_estate")),
+      this.deleteQueryInBatches(ref.collection("counters")),
+      this.deleteQueryInBatches(ref.collection("crm_origins")),
+      this.deleteQueryInBatches(ref.collection("crm_tags")),
+      this.deleteCrmFunnels(ref),
+      this.deleteQueryInBatches(ref.collection("leads")),
+      this.deleteQueryInBatches(
+        database.collection("tasks").where("companyId", "==", companyId),
+      ),
+      this.deleteQueryInBatches(
+        database
+          .collection("finance_transactions")
+          .where("companyId", "==", companyId),
+      ),
+      this.deleteQueryInBatches(
+        database
+          .collection("notifications")
+          .where("companyId", "==", companyId),
+      ),
+      database
+        .collection("company_operational")
+        .doc(companyId)
+        .delete()
+        .catch(() => undefined),
+    ]);
+
+    await Promise.all([ref.delete(), this.deleteCompanyStorage(companyId)]);
+  }
+
+  /** Deletes every doc matched by a query in chunks of 500 (Firestore batch limit), looping until exhausted. */
+  private static async deleteQueryInBatches(
+    query: FirebaseFirestore.Query,
+    batchSize = 500,
+  ): Promise<void> {
+    for (;;) {
+      const snap = await query.limit(batchSize).get();
+      if (snap.empty) return;
+
+      const batch = database.batch();
+      snap.docs.forEach((snapshotDoc) => batch.delete(snapshotDoc.ref));
+      await batch.commit();
+
+      if (snap.size < batchSize) return;
+    }
+  }
+
+  /** `crm_funnels` nests `crm_columns` per funnel, so each funnel's columns must be cleared before the funnel doc itself. */
+  private static async deleteCrmFunnels(
+    companyRef: FirebaseFirestore.DocumentReference,
+  ): Promise<void> {
+    const funnelsSnap = await companyRef.collection("crm_funnels").get();
+
+    await Promise.all(
+      funnelsSnap.docs.map((funnelDoc) =>
+        this.deleteQueryInBatches(funnelDoc.ref.collection("crm_columns")),
+      ),
+    );
+
+    await this.deleteQueryInBatches(companyRef.collection("crm_funnels"));
+  }
+
+  /** Deletes every `company_users` doc for this company along with its Auth account and avatar file (mirrors `deleteAccount`). */
+  private static async deleteCompanyUsers(companyId: string): Promise<void> {
+    const usersCollection = database.collection("company_users");
+    const snap = await usersCollection
+      .where("companyId", "==", companyId)
+      .get();
+
+    if (snap.empty) return;
+
+    await Promise.all(
+      snap.docs.map(async (userDoc) => {
+        const uid = userDoc.id;
+        await auth.deleteUser(uid).catch((err) =>
+          logger.warn("deleteCompany: falha ao deletar Auth do usuário", {
+            companyId,
+            uid,
+            err: String(err),
+          }),
+        );
+        await bucket
+          .file(`users/${uid}/avatar`)
+          .delete()
+          .catch((err) =>
+            logger.warn("deleteCompany: falha ao deletar avatar do usuário", {
+              companyId,
+              uid,
+              err: String(err),
+            }),
+          );
+      }),
+    );
+
+    await this.deleteQueryInBatches(
+      usersCollection.where("companyId", "==", companyId),
+    );
+  }
+
+  /** Best-effort cleanup of `client/{companyId}/` — covers task attachments and real-estate media alike. */
+  private static async deleteCompanyStorage(companyId: string): Promise<void> {
+    await bucket
+      .deleteFiles({ prefix: `client/${companyId}/` })
+      .catch((err) =>
+        logger.warn("deleteCompany: falha ao limpar storage", {
+          companyId,
+          err: String(err),
+        }),
+      );
   }
 
   static async getCompanyById(companyId: string): Promise<CompanyFullDTO> {

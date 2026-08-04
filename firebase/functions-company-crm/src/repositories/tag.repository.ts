@@ -18,6 +18,11 @@ export class TagRepository {
       .collection("crm_tags");
   }
 
+  private static leadsCol(companyId: string) {
+    return database.collection("companies").doc(companyId)
+      .collection("leads");
+  }
+
   static async listAll(companyId: string): Promise<TagDTO[]> {
     const snap = await this.col(companyId).get();
     return snap.docs
@@ -35,12 +40,25 @@ export class TagRepository {
     return { tagId: ref.id, name: data.name };
   }
 
+  /** Blocks deletion (`failed-precondition`) if the tag is referenced by any lead. */
   static async delete(companyId: string, tagId: string): Promise<void> {
     const ref = this.col(companyId).doc(tagId);
     const doc = await ref.get();
     if (!doc.exists) {
       throw new HttpsError("not-found", "Tag não encontrada.");
     }
+
+    const inUse = await this.leadsCol(companyId)
+      .where("tagIds", "array-contains", tagId)
+      .limit(1)
+      .get();
+    if (!inUse.empty) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Não é possível excluir uma tag em uso por leads.",
+      );
+    }
+
     await ref.delete();
   }
 }

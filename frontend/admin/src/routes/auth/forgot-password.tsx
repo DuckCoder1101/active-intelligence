@@ -5,6 +5,7 @@ import { MdOutlineEmail } from 'react-icons/md';
 
 import { AuthLayout } from '@/components/auth/auth-layout.component';
 import { FormInput } from '@/components/ui/form-input.component';
+import { Spinner } from '@/components/ui/spinner.component';
 import { useSendPasswordResetMutation } from '@/queries/user.queries';
 import { getSessionUser } from '@/server/session';
 
@@ -128,9 +129,14 @@ function ForgotPasswordPage() {
           disabled={sendPasswordReset.isPending}
           className="btn-auth"
         >
-          {sendPasswordReset.isPending
-            ? 'Enviando...'
-            : 'Enviar link de redefinição'}
+          {!sendPasswordReset.isPending ? (
+            <>Enviar link de redefinição</>
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              <Spinner size={16} />
+              Enviando...
+            </span>
+          )}
         </button>
       </form>
 

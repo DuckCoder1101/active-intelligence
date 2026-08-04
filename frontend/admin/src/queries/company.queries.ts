@@ -25,6 +25,7 @@ export const companiesQueryOptions = () =>
   queryOptions({
     queryKey: companyKeys.lists(),
     queryFn: () => CompanyService.listCompanies(),
+    staleTime: 5 * 60_000,
   });
 
 export const companyDetailQueryOptions = (companyId: string) =>

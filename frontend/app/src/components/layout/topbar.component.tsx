@@ -1,4 +1,5 @@
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 import {
   MdMenu,
   MdOutlineLogout,
@@ -8,6 +9,7 @@ import {
 
 import { NotificationBell } from '@/components/layout/notification-bell.component';
 import { UserAvatar } from '@/components/ui/user-avatar.component';
+import { ProfileModal } from '@/components/user/profile-modal.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useTheme } from '@/contexts/theme.context';
 import { useSignoutMutation } from '@/queries/user.queries';
@@ -21,6 +23,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const signout = useSignoutMutation();
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const handleLogout = () => {
     signout.mutate(undefined, {
@@ -42,22 +45,6 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           </button>
         )}
 
-        <div
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={() => navigate({ to: '/' })}
-        >
-          <img
-            src={
-              theme === 'light'
-                ? '/icons/icon-text-dark.png'
-                : '/icons/icon-text.png'
-            }
-            alt="Ícone da Guará"
-            className="w-25 mx-5"
-          />
-        </div>
-
-        <div className="hidden h-4 w-px bg-border sm:block" />
         <span className="hidden text-[11px] font-bold uppercase tracking-[1.2px] text-text-muted sm:block">
           Portal da empresa
         </span>
@@ -84,13 +71,14 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           type="button"
           onClick={handleLogout}
           title="Sair"
-          className="btn-icon"
+          className="btn-icon hidden lg:flex"
         >
           <MdOutlineLogout size={17} />
         </button>
 
-        <Link
-          to="/user/profile"
+        <button
+          type="button"
+          onClick={() => setIsProfileModalOpen(true)}
           title="Meu perfil"
           className="transition-opacity hover:opacity-80"
         >
@@ -100,8 +88,12 @@ export function Topbar({ onMenuClick }: TopbarProps) {
             className="h-8 w-8 bg-orange"
             initialsClassName="text-[10px]"
           />
-        </Link>
+        </button>
       </div>
+
+      {isProfileModalOpen && (
+        <ProfileModal onClose={() => setIsProfileModalOpen(false)} />
+      )}
     </header>
   );
 }

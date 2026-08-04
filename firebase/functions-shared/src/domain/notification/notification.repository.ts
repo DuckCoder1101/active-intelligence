@@ -60,10 +60,13 @@ export default class NotificationRepository {
     await this.sendPush(targetUids, data);
   }
 
+  private static readonly LIST_LIMIT = 50;
+
   static async listForUser(uid: string): Promise<NotificationDTO[]> {
     const snapshot = await this.notificationsCollection
       .where("targetUids", "array-contains", uid)
       .orderBy("createdAt", "desc")
+      .limit(this.LIST_LIMIT)
       .get();
 
     return snapshot.docs.map((doc) => {
@@ -112,6 +115,34 @@ export default class NotificationRepository {
       await ref.delete();
     } else {
       await ref.update({ targetUids: FieldValue.arrayRemove(uid) });
+    }
+  }
+
+  /**
+   * Removes `uid` from every notification that targets it — deletes the doc
+   * if it was the last target, otherwise just removes it from `targetUids`
+   * (same rule as `markRead`). Used when the account itself is deleted, so
+   * stale uids don't linger in `targetUids` forever.
+   */
+  static async removeUidFromAll(uid: string): Promise<void> {
+    const snapshot = await this.notificationsCollection
+      .where("targetUids", "array-contains", uid)
+      .get();
+
+    if (snapshot.empty) return;
+
+    for (const docChunk of chunk(snapshot.docs, 500)) {
+      const batch = database.batch();
+      docChunk.forEach((doc) => {
+        const data = doc.data() as NotificationDocument;
+        const remaining = data.targetUids.filter((target) => target !== uid);
+        if (remaining.length === 0) {
+          batch.delete(doc.ref);
+        } else {
+          batch.update(doc.ref, { targetUids: FieldValue.arrayRemove(uid) });
+        }
+      });
+      await batch.commit();
     }
   }
 

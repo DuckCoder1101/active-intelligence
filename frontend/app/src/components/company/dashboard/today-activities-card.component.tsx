@@ -19,7 +19,7 @@ function formatTime(ts: number): string {
 
 export function TodayActivitiesCard({ companyId, tasks, categories }: TodayActivitiesCardProps) {
   return (
-    <div className="card flex flex-1 flex-col p-4 sm:p-5">
+    <div className="dashboard-card flex flex-1 flex-col p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-[14px] font-bold text-text">Atividades do dia</h2>
         <Link
@@ -55,7 +55,7 @@ export function TodayActivitiesCard({ companyId, tasks, categories }: TodayActiv
                     {task.description || category?.name || 'Sem categoria'}
                   </p>
                 </div>
-                <span className="shrink-0 text-[11px] font-semibold text-text-sub">
+                <span className="shrink-0 text-[11px] font-semibold tabular-nums text-text-sub">
                   {formatTime(task.dueDate)}
                 </span>
               </li>

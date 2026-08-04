@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
 
-import { CompanySidebar } from '@/components/company/sidebar.component';
+import { CompanySidebar } from '@/components/layout/sidebar.component';
 import { Topbar } from '@/components/layout/topbar.component';
 
 export const Route = createFileRoute('/_private/company/$companyId')({
