@@ -32,6 +32,7 @@
 
   /* Animations */
   --animate-slide-up: slide-up 300ms ease-out both;
+  --animate-fade-in: fade-in 300ms ease-in-out both;
 }
 
 @keyframes slide-up {
@@ -42,6 +43,15 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_private/user/mycompany')({
       sessionUser.accessLevel === 'user' ? sessionUser.companyId : undefined;
 
     if (!companyId) {
-      throw redirect({ to: '/user/profile' });
+      throw redirect({ to: '/user/no-company' });
     }
 
     throw redirect({
