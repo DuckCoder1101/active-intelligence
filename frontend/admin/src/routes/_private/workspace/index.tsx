@@ -42,15 +42,11 @@ function WorkspaceOverview() {
 
   const [now] = useState(() => Date.now());
 
-  const categoryMap = useMemo(
-    () => Object.fromEntries(categories.map((c) => [c.categoryId, c])),
-    [categories],
+  const categoryMap = Object.fromEntries(
+    categories.map((c) => [c.categoryId, c]),
   );
 
-  const companyMap = useMemo(
-    () => Object.fromEntries(companies.map((c) => [c.companyId, c])),
-    [companies],
-  );
+  const companyMap = Object.fromEntries(companies.map((c) => [c.companyId, c]));
 
   const scopedCompanies = useMemo(() => {
     if (selectedCompanyIds.length === 0) {
@@ -78,19 +74,15 @@ function WorkspaceOverview() {
     [tasks, singleClient],
   );
 
-  const clientOpenTasks = useMemo(
-    () =>
-      clientTasks
-        .filter((t) => t.status !== APPROVED_COLUMN_ID)
-        .sort((a, b) => a.dueDate - b.dueDate),
-    [clientTasks],
-  );
+  const clientOpenTasks = clientTasks
+    .filter((t) => t.status !== APPROVED_COLUMN_ID)
+    .sort((a, b) => a.dueDate - b.dueDate);
 
   const clientOverdueCount = clientOpenTasks.filter(
     (t) => t.dueDate < now,
   ).length;
 
-  const clientDaysSince = useMemo(() => {
+  const clientDaysSince = (() => {
     if (!singleClient) {
       return undefined;
     }
@@ -99,7 +91,7 @@ function WorkspaceOverview() {
     );
     const lastActivityAt = Math.max(singleClient.createdAt, ...activityTimes);
     return Math.floor((now - lastActivityAt) / DAY_MS);
-  }, [singleClient, clientTasks, now]);
+  })();
 
   const heading = isSingleClient
     ? singleClient?.displayName

@@ -60,9 +60,8 @@ function WorkspaceHistory() {
   const { data: tasks } = useSuspenseQuery(tasksQueryOptions());
   const { data: categories } = useSuspenseQuery(taskCategoriesQueryOptions());
 
-  const categoryMap = useMemo(
-    () => Object.fromEntries(categories.map((c) => [c.categoryId, c])),
-    [categories],
+  const categoryMap = Object.fromEntries(
+    categories.map((c) => [c.categoryId, c]),
   );
 
   const [view, setView] = useState<HistoryView>('activity');
@@ -72,10 +71,7 @@ function WorkspaceHistory() {
     workspaceAuditLogsQueryOptions(selectedCompanyIds),
   );
 
-  const companyMap = useMemo(
-    () => Object.fromEntries(companies.map((c) => [c.companyId, c])),
-    [companies],
-  );
+  const companyMap = Object.fromEntries(companies.map((c) => [c.companyId, c]));
 
   const filteredLogs = useMemo(
     () => logs.filter((log) => matchesKind(log.action, kind)),

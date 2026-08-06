@@ -1,6 +1,5 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useMemo } from 'react';
 import { MdOpenInNew } from 'react-icons/md';
 
 import { AdminPageContainer } from '@/components/ui/page-container.component';
@@ -31,12 +30,10 @@ function WorkspaceClients() {
     useWorkspaceFilter();
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
 
-  const scopedCompanies = useMemo(() => {
-    if (selectedCompanyIds.length === 0) {
-      return companies.filter((c) => c.companyStage !== 'inactive');
-    }
-    return companies.filter((c) => selectedCompanyIds.includes(c.companyId));
-  }, [companies, selectedCompanyIds]);
+  const scopedCompanies =
+    selectedCompanyIds.length === 0
+      ? companies.filter((c) => c.companyStage !== 'inactive')
+      : companies.filter((c) => selectedCompanyIds.includes(c.companyId));
 
   return (
     <AdminPageContainer>

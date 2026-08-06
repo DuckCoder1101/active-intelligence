@@ -50,10 +50,7 @@ function DayTasksModal({
   onAddTask,
   onClose,
 }: DayTasksModalProps) {
-  const companyMap = useMemo(
-    () => Object.fromEntries(companies.map((c) => [c.companyId, c])),
-    [companies],
-  );
+  const companyMap = Object.fromEntries(companies.map((c) => [c.companyId, c]));
 
   const dateLabel = date.toLocaleDateString('pt-BR', {
     weekday: 'long',
@@ -206,9 +203,8 @@ export function AdminCalendarView({
 
   const updateStatus = useUpdateTaskStatusMutation();
 
-  const categoryMap = useMemo(
-    () => Object.fromEntries(categories.map((c) => [c.categoryId, c])),
-    [categories],
+  const categoryMap = Object.fromEntries(
+    categories.map((c) => [c.categoryId, c]),
   );
 
   const prevMonth = () => {

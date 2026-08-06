@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { MdCheckCircleOutline, MdClose, MdDelete } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -97,9 +97,8 @@ export function TransactionModal({
   const category = useWatch({ control, name: 'category' });
 
   const availableCategories = TRANSACTION_TYPE_CATEGORY_TYPES[type];
-  const availableSubcategories = useMemo(
-    () => subcategories.filter((s) => s.categoryType === category),
-    [subcategories, category],
+  const availableSubcategories = subcategories.filter(
+    (s) => s.categoryType === category,
   );
 
   const canMarkPaid =

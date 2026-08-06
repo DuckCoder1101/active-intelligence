@@ -97,7 +97,7 @@ function CompanyDashboard() {
   const showWelcome = isClientUser && !!userProfile && isFirstTime;
 
   const [now] = useState(() => Date.now());
-  const today = useMemo(() => new Date(now), [now]);
+  const today = new Date(now);
   const { year: nextYear, month: nextMonth } = nextMonthOf(today);
 
   const { data: leads } = useSuspenseQuery(leadsQueryOptions(companyId));

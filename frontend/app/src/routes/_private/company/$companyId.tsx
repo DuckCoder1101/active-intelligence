@@ -20,6 +20,7 @@ export const Route = createFileRoute('/_private/company/$companyId')({
     }
   },
   component: CompanyLayout,
+  ssr: false,
 });
 
 const SIDEBAR_COLLAPSED_KEY = 'company-sidebar-collapsed';

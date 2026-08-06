@@ -3,4 +3,4 @@ emulators-data/
 .vscode/
 graphify-out/
 *.gen.ts
-*.txt
+changelog/

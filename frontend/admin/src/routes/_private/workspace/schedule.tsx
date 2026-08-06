@@ -77,9 +77,8 @@ function WorkspaceSchedule() {
   const addColumn = useAddOperationalKanbanColumnMutation();
   const removeColumn = useRemoveOperationalKanbanColumnMutation();
 
-  const categoryMap = useMemo(
-    () => Object.fromEntries(categories.map((c) => [c.categoryId, c])),
-    [categories],
+  const categoryMap = Object.fromEntries(
+    categories.map((c) => [c.categoryId, c]),
   );
 
   // Filters
@@ -118,14 +117,10 @@ function WorkspaceSchedule() {
   // Delete column confirm
   const [deletingColumnId, setDeletingColumnId] = useState<string | null>(null);
 
-  const companyMap = useMemo(
-    () => Object.fromEntries(companies.map((c) => [c.companyId, c])),
-    [companies],
-  );
+  const companyMap = Object.fromEntries(companies.map((c) => [c.companyId, c]));
 
-  const pickableCompanies = useMemo(
-    () => companies.filter((c) => c.companyStage !== 'inactive'),
-    [companies],
+  const pickableCompanies = companies.filter(
+    (c) => c.companyStage !== 'inactive',
   );
 
   const filtered = useMemo(() => {
@@ -153,13 +148,10 @@ function WorkspaceSchedule() {
     });
   }, [tasks, selectedCompanyIds, filterAdmin, filterCategoryId, filterSubcategoryId]);
 
-  const displayedColumns = useMemo(
-    () =>
-      visibleColumnIds === null
-        ? columns
-        : columns.filter((c) => visibleColumnIds.includes(c.columnId)),
-    [columns, visibleColumnIds],
-  );
+  const displayedColumns =
+    visibleColumnIds === null
+      ? columns
+      : columns.filter((c) => visibleColumnIds.includes(c.columnId));
 
   const tasksByColumn = useMemo(() => {
     const map: Record<string, Task[]> = {};

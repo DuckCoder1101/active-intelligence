@@ -1,6 +1,6 @@
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
@@ -45,7 +45,7 @@ function AdminTeam() {
   const [editingAdmin, setEditingAdmin] = useState<AdminProfile | null>(null);
   const [deletingAdmin, setDeletingAdmin] = useState<AdminProfile | null>(null);
 
-  const filtered = useMemo(() => {
+  const filtered = (() => {
     if (!search.trim()) {
       return admins;
     }
@@ -56,7 +56,7 @@ function AdminTeam() {
         u.email.toLowerCase().includes(q) ||
         u.cpf.includes(q),
     );
-  }, [admins, search]);
+  })();
 
   const handleDeleteFromModal = () => {
     if (!editingAdmin) {
