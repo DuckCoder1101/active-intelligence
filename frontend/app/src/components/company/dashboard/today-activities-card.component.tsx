@@ -1,13 +1,10 @@
 import { Link } from '@tanstack/react-router';
 
-import type { Task, TaskCategory } from '@/models/task.model';
-
-const FALLBACK_CATEGORY_COLOR = '#94a3b8';
+import type { PersonalTask } from '@/models/personal-task.model';
 
 interface TodayActivitiesCardProps {
   companyId: string;
-  tasks: Task[];
-  categories: TaskCategory[];
+  tasks: PersonalTask[];
 }
 
 function formatTime(ts: number): string {
@@ -17,7 +14,10 @@ function formatTime(ts: number): string {
   });
 }
 
-export function TodayActivitiesCard({ companyId, tasks, categories }: TodayActivitiesCardProps) {
+export function TodayActivitiesCard({
+  companyId,
+  tasks,
+}: TodayActivitiesCardProps) {
   return (
     <div className="dashboard-card flex flex-1 flex-col p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between">
@@ -27,7 +27,7 @@ export function TodayActivitiesCard({ companyId, tasks, categories }: TodayActiv
           params={{ companyId }}
           className="text-[11px] font-semibold text-orange hover:opacity-70"
         >
-          Ver todas
+          Ver tarefas
         </Link>
       </div>
 
@@ -37,30 +37,27 @@ export function TodayActivitiesCard({ companyId, tasks, categories }: TodayActiv
         </p>
       ) : (
         <ul className="space-y-3.5">
-          {tasks.map((task) => {
-            const category = categories.find((c) => c.categoryId === task.categoryId);
-            return (
-              <li key={task.taskId} className="flex items-start gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-bg">
-                  <span
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: category?.color ?? FALLBACK_CATEGORY_COLOR }}
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[12.5px] font-semibold text-text">
-                    {task.title}
-                  </p>
-                  <p className="truncate text-[11px] text-text-muted">
-                    {task.description || category?.name || 'Sem categoria'}
-                  </p>
-                </div>
-                <span className="shrink-0 text-[11px] font-semibold tabular-nums text-text-sub">
-                  {formatTime(task.dueDate)}
-                </span>
-              </li>
-            );
-          })}
+          {tasks.map((task) => (
+            <li key={task.personalTaskId} className="flex items-start gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-bg">
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: task.color }}
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[12.5px] font-semibold text-text">
+                  {task.title}
+                </p>
+                <p className="truncate text-[11px] text-text-muted">
+                  {task.description || 'Tarefa pessoal'}
+                </p>
+              </div>
+              <span className="shrink-0 text-[11px] font-semibold tabular-nums text-text-sub">
+                {formatTime(task.dueDate)}
+              </span>
+            </li>
+          ))}
         </ul>
       )}
     </div>

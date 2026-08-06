@@ -14,6 +14,7 @@ function toDTO(id: string, data: CrmColumnDocument): CrmColumnDTO {
     name: data.name,
     color: data.color,
     order: data.order,
+    isFixed: data.isFixed ?? false,
   };
 }
 
@@ -44,27 +45,25 @@ export class CrmColumnRepository {
       const snap = await transaction.get(col);
 
       if (snap.empty) {
-        const seededRefs = DEFAULT_CRM_COLUMNS.map((column) => {
-          const ref = col.doc();
-          transaction.set(ref, {
+        for (const column of DEFAULT_CRM_COLUMNS) {
+          transaction.set(col.doc(column.id), {
             companyId,
             funnelId,
             name: column.name,
             color: column.color,
             order: column.order,
+            isFixed: column.isFixed,
             createdAt: FieldValue.serverTimestamp(),
           });
-          return { ref, column };
-        });
+        }
 
-        return seededRefs
-          .map(({ ref, column }) => ({
-            columnId: ref.id,
-            name: column.name,
-            color: column.color,
-            order: column.order,
-          }))
-          .sort((a, b) => a.order - b.order);
+        return DEFAULT_CRM_COLUMNS.map((column) => ({
+          columnId: column.id,
+          name: column.name,
+          color: column.color,
+          order: column.order,
+          isFixed: column.isFixed,
+        })).sort((a, b) => a.order - b.order);
       }
 
       return snap.docs
@@ -102,7 +101,9 @@ export class CrmColumnRepository {
         name: data.name,
         color: data.color,
         order: data.order ?? maxOrder + 1,
-        ...(isNew ? { createdAt: FieldValue.serverTimestamp() } : {}),
+        ...(isNew
+          ? { isFixed: false, createdAt: FieldValue.serverTimestamp() }
+          : {}),
       },
       { merge: true },
     );
@@ -122,6 +123,12 @@ export class CrmColumnRepository {
     const target = snap.docs.find((d) => d.id === columnId);
     if (!target) {
       throw new HttpsError("not-found", "Quadro não encontrado.");
+    }
+    if ((target.data() as CrmColumnDocument).isFixed) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Este quadro é fixo e não pode ser excluído.",
+      );
     }
 
     const remaining = snap.docs.filter((d) => d.id !== columnId);

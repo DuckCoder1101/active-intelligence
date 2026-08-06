@@ -211,7 +211,7 @@ Link:disabled {
   }
 
   .modal-backdrop {
-    @apply absolute inset-0 bg-black/50 backdrop-blur-sm;
+    @apply absolute inset-0 bg-black/50 backdrop-blur-lg;
   }
 
   /* ── Form helpers ─────────────────────────────────────────────────────── */

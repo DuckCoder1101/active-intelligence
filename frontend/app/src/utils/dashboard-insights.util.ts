@@ -110,7 +110,10 @@ export function computeFunnel(leads: Lead[], columns: CrmColumn[]): FunnelStage[
   }));
 }
 
-export function getTasksOnDay(tasks: Task[], day: number): Task[] {
+export function getTasksOnDay<T extends { dueDate: number }>(
+  tasks: T[],
+  day: number,
+): T[] {
   const start = startOfDay(day);
   const end = start + DAY_MS;
   return tasks

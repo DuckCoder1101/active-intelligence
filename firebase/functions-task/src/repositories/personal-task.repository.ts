@@ -2,7 +2,10 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/https";
 
 import { database } from "functions-shared";
-import { PersonalTaskDocument } from "../types/personal-task.document";
+import {
+  DEFAULT_PERSONAL_TASK_COLOR,
+  PersonalTaskDocument,
+} from "../types/personal-task.document";
 import { PersonalTaskDTO, SavePersonalTaskDTO } from "../types/personal-task.dto";
 
 function toDTO(id: string, data: PersonalTaskDocument): PersonalTaskDTO {
@@ -12,6 +15,7 @@ function toDTO(id: string, data: PersonalTaskDocument): PersonalTaskDTO {
     createdBy: data.createdBy,
     title: data.title,
     description: data.description,
+    color: data.color ?? DEFAULT_PERSONAL_TASK_COLOR,
     dueDate: data.dueDate.toMillis(),
     createdAt: data.createdAt?.toMillis() ?? 0,
     updatedAt: data.updatedAt?.toMillis() ?? 0,
@@ -73,6 +77,7 @@ export class PersonalTaskRepository {
         createdBy: uid,
         title: rest.title,
         description: rest.description,
+        color: rest.color ?? DEFAULT_PERSONAL_TASK_COLOR,
         dueDate: Timestamp.fromMillis(rest.dueDate),
         updatedAt: FieldValue.serverTimestamp(),
         ...(isNew ? { createdAt: FieldValue.serverTimestamp() } : {}),

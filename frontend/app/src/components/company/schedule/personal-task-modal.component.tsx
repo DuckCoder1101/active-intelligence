@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import { MdClose } from 'react-icons/md';
+import { MdCheck, MdClose } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
-import type {
-  PersonalTask,
-  SavePersonalTaskDTO,
+import {
+  DEFAULT_PERSONAL_TASK_COLOR,
+  PERSONAL_TASK_COLOR_PRESETS,
+  type PersonalTask,
+  type SavePersonalTaskDTO,
 } from '@/models/personal-task.model';
 import {
   useDeletePersonalTaskMutation,
@@ -16,6 +18,20 @@ import {
 
 function toInputDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function toInputTime(d: Date): string {
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+/** Rejects colors too close to black or white, which lose contrast against
+ * the white text/icons drawn on top of them in the calendar and dashboard. */
+function hasEnoughContrast(hex: string): boolean {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance >= 0.08 && luminance <= 0.92;
 }
 
 interface Props {
@@ -49,6 +65,12 @@ export function PersonalTaskModal({
         ? toInputDate(defaultDate)
         : '',
   );
+  const [timeStr, setTimeStr] = useState(
+    personalTask ? toInputTime(new Date(personalTask.dueDate)) : '',
+  );
+  const [color, setColor] = useState(
+    personalTask?.color ?? DEFAULT_PERSONAL_TASK_COLOR,
+  );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -76,12 +98,14 @@ export function PersonalTaskModal({
     }
 
     const [year, month, day] = dueDateStr.split('-').map(Number);
-    const dueDate = new Date(year, month - 1, day, 12).getTime();
+    const [hour, minute] = timeStr ? timeStr.split(':').map(Number) : [12, 0];
+    const dueDate = new Date(year, month - 1, day, hour, minute).getTime();
 
     const dto: SavePersonalTaskDTO = {
       personalTaskId: personalTask?.personalTaskId,
       title: title.trim(),
       description: description.trim() || undefined,
+      color,
       dueDate,
     };
 
@@ -151,18 +175,67 @@ export function PersonalTaskModal({
             error={fieldErrors.title}
           />
 
-          <FormInput
-            label="Data *"
-            type="date"
-            value={dueDateStr}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setDueDateStr(e.target.value);
-              if (fieldErrors.dueDate) {
-                setFieldErrors((p) => ({ ...p, dueDate: '' }));
+          <div className="grid grid-cols-2 gap-4">
+            <FormInput
+              label="Data *"
+              type="date"
+              value={dueDateStr}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setDueDateStr(e.target.value);
+                if (fieldErrors.dueDate) {
+                  setFieldErrors((p) => ({ ...p, dueDate: '' }));
+                }
+              }}
+              error={fieldErrors.dueDate}
+            />
+
+            <FormInput
+              label="Horário"
+              type="time"
+              value={timeStr}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setTimeStr(e.target.value)
               }
-            }}
-            error={fieldErrors.dueDate}
-          />
+            />
+          </div>
+
+          <div>
+            <p className="form-label mb-2">Cor</p>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <input
+                type="color"
+                title="Escolher cor"
+                value={color}
+                onChange={(e) => {
+                  if (!hasEnoughContrast(e.target.value)) {
+                    toast.error(
+                      'Escolha uma cor com mais contraste — evite preto ou branco.',
+                    );
+                    return;
+                  }
+                  setColor(e.target.value);
+                }}
+                className="h-6 w-6 shrink-0 cursor-pointer rounded-full border-none bg-transparent p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-none"
+              />
+              {PERSONAL_TASK_COLOR_PRESETS.map((preset) => (
+                <button
+                  key={preset.value}
+                  type="button"
+                  title={preset.label}
+                  onClick={() => setColor(preset.value)}
+                  className="relative h-5 w-5 rounded-full transition-transform hover:scale-110"
+                  style={{ backgroundColor: preset.value }}
+                >
+                  {color === preset.value && (
+                    <MdCheck
+                      size={12}
+                      className="absolute inset-0 m-auto text-white"
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <FormInput
             as="textarea"

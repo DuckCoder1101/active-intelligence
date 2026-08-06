@@ -6,6 +6,7 @@ import {
   MdClose,
   MdOutlinePerson,
   MdOutlineCalendarToday,
+  MdOutlineAccessTime,
   MdOutlineWork,
   MdPersonOutline,
 } from 'react-icons/md';
@@ -13,7 +14,7 @@ import {
 import { PersonalTaskModal } from './personal-task-modal.component';
 import { ClientTaskModal } from './task-modal.component';
 
-import { formatDateShort } from '@/formatters/formatDate';
+import { formatDateShort, formatTime } from '@/formatters/formatDate';
 import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
 import type { PersonalTask } from '@/models/personal-task.model';
 import type { Task, TaskCategory } from '@/models/task.model';
@@ -56,7 +57,7 @@ function itemVisual(
   columns: OperationalKanbanColumn[],
 ): { color: string; label: string } {
   if (item.kind === 'personal') {
-    return { color: PERSONAL_COLOR, label: PERSONAL_LABEL };
+    return { color: item.task.color, label: PERSONAL_LABEL };
   }
   const column = columns.find((c) => c.columnId === item.task.status);
   return {
@@ -211,9 +212,15 @@ function DayModal({
                               </span>
                             )}
                           </div>
-                          <span className="flex shrink-0 items-center gap-1 text-[10px] text-text-muted/70">
-                            <MdOutlineCalendarToday size={10} />
-                            {formatDateShort(task.dueDate)}
+                          <span className="flex shrink-0 items-center gap-2 text-[10px] text-text-muted/70">
+                            <span className="flex items-center gap-1">
+                              <MdOutlineCalendarToday size={10} />
+                              {formatDateShort(task.dueDate)}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MdOutlineAccessTime size={10} />
+                              {formatTime(task.dueDate)}
+                            </span>
                           </span>
                         </div>
                       </div>

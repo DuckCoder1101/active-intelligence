@@ -4,6 +4,7 @@ export interface PersonalTaskDTO {
   createdBy: string;
   title: string;
   description?: string;
+  color: string;
   dueDate: number;
   createdAt: number;
   updatedAt: number;
@@ -14,5 +15,6 @@ export interface SavePersonalTaskDTO {
   companyId?: string;
   title: string;
   description?: string;
+  color?: string;
   dueDate: number;
 }

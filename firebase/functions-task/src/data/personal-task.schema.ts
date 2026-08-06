@@ -15,6 +15,10 @@ export default class PersonalTaskSchema {
       .string()
       .nullish()
       .transform((v) => v ?? undefined),
+    color: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
     dueDate: z.number(),
   });
 
