@@ -2,26 +2,27 @@ import { HttpsError } from "firebase-functions/https";
 import { FieldValue } from "firebase-admin/firestore";
 
 import { database } from "../../utils/firebase";
+import { assertUniqueField } from "../../validations/assertUniqueField";
 import {
-  OperationalKanbanColumnDocument,
+  AdminTasksBoardColumnDocument,
   DEFAULT_COLUMNS,
   PROTECTED_COLUMN_IDS,
-} from "./operational-kanban.document";
+} from "./admin-tasks-board.document";
 import {
-  OperationalKanbanColumnDTO,
-  SaveOperationalKanbanColumnDTO,
-} from "./operational-kanban.dtos";
+  AdminTasksBoardColumnDTO,
+  SaveAdminTasksBoardColumnDTO,
+} from "./admin-tasks-board.dtos";
 
 /**
- * Firestore: `operational_kanban_columns` (top-level, global — not per-company).
+ * Firestore: `admin_tasks_board_columns` (top-level, global — not per-company).
  * Also touches `tasks` when a column is deleted, to reassign orphaned tasks.
  */
-export class OperationalKanbanRepository {
-  private static col = database.collection("operational_kanban_columns");
+export class AdminTasksBoardRepository {
+  private static col = database.collection("admin_tasks_board_columns");
   private static tasksCol = database.collection("tasks");
 
   /** Seeds `DEFAULT_COLUMNS` on first read if the collection is empty. */
-  static async listAll(): Promise<OperationalKanbanColumnDTO[]> {
+  static async listAll(): Promise<AdminTasksBoardColumnDTO[]> {
     const snap = await this.col.orderBy("order", "asc").get();
 
     if (snap.empty) {
@@ -40,7 +41,7 @@ export class OperationalKanbanRepository {
       const seeded = await this.col.orderBy("order", "asc").get();
 
       return seeded.docs.map((doc) => {
-        const data = doc.data() as OperationalKanbanColumnDocument;
+        const data = doc.data() as AdminTasksBoardColumnDocument;
         return {
           columnId: doc.id,
           name: data.name,
@@ -51,7 +52,7 @@ export class OperationalKanbanRepository {
     }
 
     return snap.docs.map((doc) => {
-      const data = doc.data() as OperationalKanbanColumnDocument;
+      const data = doc.data() as AdminTasksBoardColumnDocument;
       return {
         columnId: doc.id,
         name: data.name,
@@ -62,15 +63,20 @@ export class OperationalKanbanRepository {
   }
 
   static async save(
-    data: SaveOperationalKanbanColumnDTO,
-  ): Promise<OperationalKanbanColumnDTO> {
+    data: SaveAdminTasksBoardColumnDTO,
+  ): Promise<AdminTasksBoardColumnDTO> {
     const snap = await this.col.orderBy("order", "desc").limit(1).get();
     const maxOrder = snap.empty ?
       -1 :
-      (snap.docs[0].data() as OperationalKanbanColumnDocument).order;
+      (snap.docs[0].data() as AdminTasksBoardColumnDocument).order;
 
     const ref = data.columnId ? this.col.doc(data.columnId) : this.col.doc();
     const isNew = !data.columnId;
+
+    await assertUniqueField(this.col, "name", data.name, {
+      excludeId: ref.id,
+      label: "Esse nome de coluna",
+    });
 
     await ref.set(
       {
@@ -85,7 +91,7 @@ export class OperationalKanbanRepository {
     );
 
     const saved = await ref.get();
-    const newData = saved.data() as OperationalKanbanColumnDocument;
+    const newData = saved.data() as AdminTasksBoardColumnDocument;
 
     return {
       columnId: saved.id,

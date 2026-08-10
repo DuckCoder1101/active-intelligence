@@ -3,23 +3,23 @@ import { logger } from "firebase-functions";
 import {
   onCallHandler,
   requireAccess,
-  OperationalKanbanRepository,
+  AdminTasksBoardRepository,
 } from "functions-shared";
-import { OperationalKanbanSchema } from "../data/operational-kanban.schema";
+import { AdminTasksBoardSchema } from "../data/admin-tasks-board.schema";
 
 const ACCESS = { minAccessLevel: "owner" as const };
 
 /**
- * Creates/updates an operational-kanban column.
+ * Creates/updates an admin-tasks-board column.
  * Auth: requireAccess(req, {minAccessLevel:"owner"}).
- * Schema: ../data/operational-kanban.schema -> OperationalKanbanSchema.saveColumnSchema.
+ * Schema: ../data/admin-tasks-board.schema -> AdminTasksBoardSchema.saveColumnSchema.
  */
-export const saveOperationalKanbanColumnHandler =
+export const saveAdminTasksBoardColumnHandler =
   onCallHandler(async (req) => {
     requireAccess(req, ACCESS);
 
     const { success, data, error } =
-      OperationalKanbanSchema.saveColumnSchema.safeParse(req.data);
+      AdminTasksBoardSchema.saveColumnSchema.safeParse(req.data);
 
     if (!success) {
       throw new HttpsError(
@@ -28,10 +28,10 @@ export const saveOperationalKanbanColumnHandler =
       );
     }
 
-    logger.info("saveOperationalKanbanColumn", {
+    logger.info("saveAdminTasksBoardColumn", {
       action: data.columnId ? "update" : "create",
       columnId: data.columnId,
     });
 
-    return OperationalKanbanRepository.save(data);
+    return AdminTasksBoardRepository.save(data);
   });

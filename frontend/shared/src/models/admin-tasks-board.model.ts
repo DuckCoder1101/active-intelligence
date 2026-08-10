@@ -1,18 +1,18 @@
-export interface OperationalKanbanColumn {
+export interface AdminTasksBoardColumn {
   columnId: string;
   name: string;
   color: string;
   order: number;
 }
 
-export interface SaveOperationalKanbanColumnDTO {
+export interface SaveAdminTasksBoardColumnDTO {
   columnId?: string;
   name: string;
   color: string;
   order?: number;
 }
 
-// Espelha firebase/functions-shared/src/domain/operational-kanban/operational-kanban.document.ts —
+// Espelha firebase/functions-shared/src/domain/admin-tasks-board/admin-tasks-board.document.ts —
 // colunas fixas usadas pelo fluxo de aprovação do cliente.
 export const PENDING_APPROVAL_COLUMN_ID = 'aguardando_cliente';
 export const APPROVED_COLUMN_ID = 'entregue';

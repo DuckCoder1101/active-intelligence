@@ -8,11 +8,7 @@ interface GuideContentViewProps {
 }
 
 export function GuideContentView({ guide }: GuideContentViewProps) {
-  const tags = [
-    ...guide.intentTags,
-    ...guide.platformTags,
-    ...guide.formatTags,
-  ];
+  const tags = [...guide.intentTags, ...guide.platformTags];
 
   return (
     <div className="mx-auto w-full max-w-2xl">

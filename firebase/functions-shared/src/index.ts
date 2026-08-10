@@ -1,3 +1,6 @@
+// validations
+export { assertUniqueField } from "./validations/assertUniqueField";
+
 // utils
 export { onCallHandler } from "./utils/onCallHandler.util";
 export { requireAccess } from "./utils/requireAccess.util";
@@ -33,12 +36,12 @@ export { CompanyOperationalRepository } from "./domain/company/company-operation
 // domain: company-user (usado por user e company-user)
 export { default as CompanyUserRepository } from "./domain/company-user/company-user.repository";
 
-// domain: operational-kanban (usado por operational-kanban e task)
-export { OperationalKanbanRepository } from "./domain/operational-kanban/operational-kanban.repository";
+// domain: admin-tasks-board (usado por admin-tasks-board e task)
+export { AdminTasksBoardRepository } from "./domain/admin-tasks-board/admin-tasks-board.repository";
 export {
   PENDING_APPROVAL_COLUMN_ID,
   APPROVED_COLUMN_ID,
-} from "./domain/operational-kanban/operational-kanban.document";
+} from "./domain/admin-tasks-board/admin-tasks-board.document";
 
 // domain: real-estate (usado por company-crm e real-estate)
 export { PROPERTY_TYPES } from "./domain/real-estate/propertyType.enum";

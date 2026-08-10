@@ -13,6 +13,6 @@ export default class AdminSchema {
   });
 
   static inviteAdminSchema = z.object({
-    email: z.string().email("E-mail inválido!"),
+    email: z.string().email("E-mail inválido!").max(60, "E-mail muito longo!"),
   });
 }

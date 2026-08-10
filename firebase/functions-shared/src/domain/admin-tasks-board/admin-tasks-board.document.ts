@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase-admin/firestore";
 
-export interface OperationalKanbanColumnDocument {
+export interface AdminTasksBoardColumnDocument {
   name: string;
   color: string;
   order: number;

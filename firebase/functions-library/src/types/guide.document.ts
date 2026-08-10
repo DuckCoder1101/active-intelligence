@@ -15,8 +15,8 @@ export interface GuideDocument {
   driveUrl?: string;
   socialUrl?: string;
   intentTags: string[];
+  // Plataforma e formato de gravação, unificados num único campo de tags livres.
   platformTags: string[];
-  formatTags: string[];
   scriptPrompt: string;
   scriptGuide: ScriptGuideBlock[];
   assignedCompanyIds: string[];

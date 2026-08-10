@@ -71,7 +71,6 @@ type GuideFormValues = Required<
     SaveGuideDTO,
     | 'intentTags'
     | 'platformTags'
-    | 'formatTags'
     | 'scriptPrompt'
     | 'scriptGuide'
     | 'assignedCompanyIds'
@@ -81,7 +80,7 @@ type GuideFormValues = Required<
 
 function distinctTagOptions(
   guides: Guide[],
-  field: 'intentTags' | 'platformTags' | 'formatTags',
+  field: 'intentTags' | 'platformTags',
   selected: string[],
 ): MultiSelectOption[] {
   const values = new Set<string>(selected);
@@ -127,7 +126,6 @@ function GuideDetailPage() {
     socialUrl: guide.socialUrl,
     intentTags: guide.intentTags,
     platformTags: guide.platformTags,
-    formatTags: guide.formatTags,
     scriptPrompt: guide.scriptPrompt || DEFAULT_SCRIPT_PROMPT,
     scriptGuide:
       guide.scriptGuide.length > 0 ? guide.scriptGuide : DEFAULT_SCRIPT_GUIDE,
@@ -144,7 +142,6 @@ function GuideDetailPage() {
 
   const intentTags = useWatch({ control, name: 'intentTags' }) ?? [];
   const platformTags = useWatch({ control, name: 'platformTags' }) ?? [];
-  const formatTags = useWatch({ control, name: 'formatTags' }) ?? [];
   const scriptPrompt = useWatch({ control, name: 'scriptPrompt' }) ?? '';
 
   const onSubmit = (values: GuideFormValues) => {
@@ -241,7 +238,10 @@ function GuideDetailPage() {
             <FormInput
               label="Nome (opcional)"
               placeholder="Ex: Bastidores de obra"
-              {...register('name')}
+              {...register('name', {
+                minLength: { value: 5, message: 'Nome muito curto' },
+                maxLength: { value: 20, message: 'Máximo 20 caracteres' },
+              })}
             />
 
             <div className="form-grid">
@@ -283,7 +283,7 @@ function GuideDetailPage() {
               control={control}
               render={({ field }) => (
                 <MultiSelect
-                  label="Plataforma"
+                  label="Plataforma / Formato"
                   options={distinctTagOptions(
                     allGuides,
                     'platformTags',
@@ -291,26 +291,7 @@ function GuideDetailPage() {
                   )}
                   selected={field.value}
                   onChange={field.onChange}
-                  createLabel="Adicionar plataforma"
-                  onCreateOption={(name) => Promise.resolve(name.trim())}
-                />
-              )}
-            />
-
-            <Controller
-              name="formatTags"
-              control={control}
-              render={({ field }) => (
-                <MultiSelect
-                  label="Formato de gravação"
-                  options={distinctTagOptions(
-                    allGuides,
-                    'formatTags',
-                    formatTags,
-                  )}
-                  selected={field.value}
-                  onChange={field.onChange}
-                  createLabel="Adicionar formato"
+                  createLabel="Adicionar plataforma/formato"
                   onCreateOption={(name) => Promise.resolve(name.trim())}
                 />
               )}

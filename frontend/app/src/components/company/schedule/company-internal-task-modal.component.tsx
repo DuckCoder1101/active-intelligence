@@ -6,15 +6,15 @@ import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.com
 import { FormInput } from '@/components/ui/form-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import {
-  DEFAULT_PERSONAL_TASK_COLOR,
-  PERSONAL_TASK_COLOR_PRESETS,
-  type PersonalTask,
-  type SavePersonalTaskDTO,
-} from '@/models/personal-task.model';
+  DEFAULT_COMPANY_INTERNAL_TASK_COLOR,
+  COMPANY_INTERNAL_TASK_COLOR_PRESETS,
+  type CompanyInternalTask,
+  type SaveCompanyInternalTaskDTO,
+} from '@/models/company-internal-task.model';
 import {
-  useDeletePersonalTaskMutation,
-  useSavePersonalTaskMutation,
-} from '@/queries/personal-task.queries';
+  useDeleteCompanyInternalTaskMutation,
+  useSaveCompanyInternalTaskMutation,
+} from '@/queries/company-internal-task.queries';
 
 function toInputDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -36,40 +36,40 @@ function hasEnoughContrast(hex: string): boolean {
 
 interface Props {
   companyId: string;
-  personalTask?: PersonalTask;
+  internalTask?: CompanyInternalTask;
   defaultDate?: Date;
   onClose: () => void;
-  onSaved: (task: PersonalTask) => void;
-  onDeleted: (personalTaskId: string) => void;
+  onSaved: (task: CompanyInternalTask) => void;
+  onDeleted: (companyInternalTaskId: string) => void;
 }
 
-export function PersonalTaskModal({
+export function CompanyInternalTaskModal({
   companyId,
-  personalTask,
+  internalTask,
   defaultDate,
   onClose,
   onSaved,
   onDeleted,
 }: Props) {
-  const saveTask = useSavePersonalTaskMutation(companyId);
-  const deleteTask = useDeletePersonalTaskMutation(companyId);
+  const saveTask = useSaveCompanyInternalTaskMutation(companyId);
+  const deleteTask = useDeleteCompanyInternalTaskMutation(companyId);
 
-  const [title, setTitle] = useState(personalTask?.title ?? '');
+  const [title, setTitle] = useState(internalTask?.title ?? '');
   const [description, setDescription] = useState(
-    personalTask?.description ?? '',
+    internalTask?.description ?? '',
   );
   const [dueDateStr, setDueDateStr] = useState(
-    personalTask
-      ? toInputDate(new Date(personalTask.dueDate))
+    internalTask
+      ? toInputDate(new Date(internalTask.dueDate))
       : defaultDate
         ? toInputDate(defaultDate)
         : '',
   );
   const [timeStr, setTimeStr] = useState(
-    personalTask ? toInputTime(new Date(personalTask.dueDate)) : '',
+    internalTask ? toInputTime(new Date(internalTask.dueDate)) : '',
   );
   const [color, setColor] = useState(
-    personalTask?.color ?? DEFAULT_PERSONAL_TASK_COLOR,
+    internalTask?.color ?? DEFAULT_COMPANY_INTERNAL_TASK_COLOR,
   );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -101,8 +101,8 @@ export function PersonalTaskModal({
     const [hour, minute] = timeStr ? timeStr.split(':').map(Number) : [12, 0];
     const dueDate = new Date(year, month - 1, day, hour, minute).getTime();
 
-    const dto: SavePersonalTaskDTO = {
-      personalTaskId: personalTask?.personalTaskId,
+    const dto: SaveCompanyInternalTaskDTO = {
+      companyInternalTaskId: internalTask?.companyInternalTaskId,
       title: title.trim(),
       description: description.trim() || undefined,
       color,
@@ -112,7 +112,7 @@ export function PersonalTaskModal({
     saveTask.mutate(dto, {
       onSuccess: (saved) => {
         toast.success(
-          personalTask ? 'Tarefa atualizada!' : 'Tarefa pessoal criada!',
+          internalTask ? 'Tarefa atualizada!' : 'Tarefa interna criada!',
         );
         onSaved(saved);
         onClose();
@@ -121,13 +121,13 @@ export function PersonalTaskModal({
   };
 
   const handleDelete = () => {
-    if (!personalTask) {
+    if (!internalTask) {
       return;
     }
-    deleteTask.mutate(personalTask.personalTaskId, {
+    deleteTask.mutate(internalTask.companyInternalTaskId, {
       onSuccess: () => {
         toast.success('Tarefa excluída!');
-        onDeleted(personalTask.personalTaskId);
+        onDeleted(internalTask.companyInternalTaskId);
         onClose();
       },
     });
@@ -146,10 +146,10 @@ export function PersonalTaskModal({
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div className="flex items-center gap-2">
             <span className="rounded-full bg-violet-500/10 px-2.5 py-0.5 text-[10px] font-bold text-violet-500">
-              Pessoal
+              Interna
             </span>
             <h2 className="text-[15px] font-bold text-text">
-              {personalTask ? 'Tarefa pessoal' : 'Nova tarefa pessoal'}
+              {internalTask ? 'Tarefa interna' : 'Nova tarefa interna'}
             </h2>
           </div>
           <button
@@ -217,7 +217,7 @@ export function PersonalTaskModal({
                 }}
                 className="h-6 w-6 shrink-0 cursor-pointer rounded-full border-none bg-transparent p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-none"
               />
-              {PERSONAL_TASK_COLOR_PRESETS.map((preset) => (
+              {COMPANY_INTERNAL_TASK_COLOR_PRESETS.map((preset) => (
                 <button
                   key={preset.value}
                   type="button"
@@ -251,7 +251,7 @@ export function PersonalTaskModal({
 
         <div className="flex items-center justify-between gap-3 border-t border-border px-6 py-4">
           <div>
-            {personalTask && (
+            {internalTask && (
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(true)}
@@ -276,7 +276,7 @@ export function PersonalTaskModal({
               className="btn-primary"
             >
               {saveTask.isPending && <Spinner size={13} />}
-              {personalTask ? 'Salvar' : 'Criar tarefa'}
+              {internalTask ? 'Salvar' : 'Criar tarefa'}
             </button>
           </div>
         </div>
@@ -284,8 +284,8 @@ export function PersonalTaskModal({
 
       {showDeleteConfirm && (
         <ConfirmDeleteModal
-          title="Excluir tarefa pessoal"
-          description={`Excluir "${personalTask?.title}"? Essa ação não pode ser desfeita.`}
+          title="Excluir tarefa interna"
+          description={`Excluir "${internalTask?.title}"? Essa ação não pode ser desfeita.`}
           isDeleting={deleteTask.isPending}
           onConfirm={handleDelete}
           onCancel={() => setShowDeleteConfirm(false)}

@@ -2,26 +2,15 @@ import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 
 import { onCallHandler, getAuthenticatedUser } from "functions-shared";
-import PersonalTaskSchema from "../data/personal-task.schema";
-import { PersonalTaskRepository } from "../repositories/personal-task.repository";
+import { CompanyInternalTaskRepository } from "../repositories/company-internal-task.repository";
 
 /**
- * Deletes a user's personal task.
+ * Lists a user's company-internal tasks.
  * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
- * Schema: `../data/personal-task.schema` → `PersonalTaskSchema.deleteSchema`.
+ * Schema: NONE — manual cast of `req.data`, no zod validation.
  */
-export const deletePersonalTaskHandler = onCallHandler(async (req) => {
+export const listCompanyInternalTasksHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
-
-  const { success, data, error } = PersonalTaskSchema.deleteSchema.safeParse(
-    req.data,
-  );
-  if (!success) {
-    throw new HttpsError(
-      "invalid-argument",
-      error.issues.map((i) => i.message).join(", "),
-    );
-  }
 
   let companyId: string;
 
@@ -34,7 +23,8 @@ export const deletePersonalTaskHandler = onCallHandler(async (req) => {
     }
     companyId = user.companyId;
   } else if (user.accessLevel === "admin" || user.accessLevel === "owner") {
-    if (!data.companyId) {
+    const data = req.data as { companyId?: string } | null;
+    if (!data?.companyId) {
       throw new HttpsError(
         "invalid-argument",
         "companyId é obrigatório para administradores.",
@@ -45,12 +35,7 @@ export const deletePersonalTaskHandler = onCallHandler(async (req) => {
     throw new HttpsError("permission-denied", "Acesso negado.");
   }
 
-  logger.info("deletePersonalTask", {
-    companyId,
-    personalTaskId: data.personalTaskId,
-  });
+  logger.info("listCompanyInternalTasks", { companyId });
 
-  await PersonalTaskRepository.delete(companyId, user.uid, data.personalTaskId);
-
-  return true;
+  return CompanyInternalTaskRepository.listByUser(companyId, user.uid);
 });

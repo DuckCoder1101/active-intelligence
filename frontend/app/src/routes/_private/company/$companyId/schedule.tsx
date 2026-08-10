@@ -9,8 +9,8 @@ import { useState } from 'react';
 import { CompanyScheduleCalendar } from '@/components/company/schedule/calendar.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { Task } from '@/models/task.model';
-import { operationalKanbanColumnsQueryOptions } from '@/queries/operational-kanban.queries';
-import { personalTasksQueryOptions } from '@/queries/personal-task.queries';
+import { adminTasksBoardColumnsQueryOptions } from '@/queries/admin-tasks-board.queries';
+import { companyInternalTasksQueryOptions } from '@/queries/company-internal-task.queries';
 import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
 import {
   calendarTasksQueryOptions,
@@ -31,9 +31,9 @@ export const Route = createFileRoute('/_private/company/$companyId/schedule')({
       context.queryClient.ensureQueryData(
         clientTasksQueryOptions(params.companyId),
       ),
-      context.queryClient.ensureQueryData(operationalKanbanColumnsQueryOptions()),
+      context.queryClient.ensureQueryData(adminTasksBoardColumnsQueryOptions()),
       context.queryClient.ensureQueryData(
-        personalTasksQueryOptions(params.companyId),
+        companyInternalTasksQueryOptions(params.companyId),
       ),
       context.queryClient.ensureQueryData(taskCategoriesQueryOptions()),
     ]);
@@ -52,14 +52,14 @@ function CompanySchedule() {
 
   const { data: clientData } = useQuery(clientTasksQueryOptions(companyId));
   const usage = clientData?.usage ?? { used: 0, limit: null, yearMonth: '' };
-  const { data: columns = [] } = useQuery(operationalKanbanColumnsQueryOptions());
+  const { data: columns = [] } = useQuery(adminTasksBoardColumnsQueryOptions());
 
   const { data: tasks = [], isLoading } = useQuery({
     ...calendarTasksQueryOptions(companyId, year, month),
     placeholderData: keepPreviousData,
   });
-  const { data: personalTasks = [] } = useQuery(
-    personalTasksQueryOptions(companyId),
+  const { data: internalTasks = [] } = useQuery(
+    companyInternalTasksQueryOptions(companyId),
   );
   const { data: categories = [] } = useQuery(taskCategoriesQueryOptions());
 
@@ -136,7 +136,7 @@ function CompanySchedule() {
         <CompanyScheduleCalendar
           companyId={companyId}
           tasks={tasks}
-          personalTasks={personalTasks}
+          internalTasks={internalTasks}
           columns={columns}
           categories={categories}
           year={year}

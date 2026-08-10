@@ -10,7 +10,10 @@ import {
 } from "../types/real-estate.document";
 
 const ownerSchema = z.object({
-  name: z.string().min(1, "Nome do proprietário obrigatório"),
+  name: z
+    .string()
+    .min(5, "Nome do proprietário muito curto")
+    .max(50, "Máximo 50 caracteres"),
   phone: z.string().min(1, "Telefone do proprietário obrigatório"),
   email: z
     .email("E-mail inválido")
@@ -43,12 +46,13 @@ export default class RealEstateSchema {
 
     title: z
       .string()
+      .min(5, "Título muito curto")
       .max(60, "Título deve ter no máximo 60 caracteres")
       .nullish()
       .transform((v) => v ?? undefined),
     description: z
       .string()
-      .max(2500, "Descrição deve ter no máximo 2500 caracteres")
+      .max(2000, "Descrição deve ter no máximo 2000 caracteres")
       .nullish()
       .transform((v) => v ?? undefined),
     propertyType: z.enum(PROPERTY_TYPES, {

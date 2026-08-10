@@ -8,7 +8,7 @@ import { AdminPageContainer } from '@/components/ui/page-container.component';
 import { useAuth } from '@/contexts/auth.context';
 import { formatDateShort } from '@/formatters/formatDate';
 import { useWorkspaceFilter } from '@/hooks/use-workspace-filter.hook';
-import { APPROVED_COLUMN_ID } from '@/models/operational-kanban.model';
+import { APPROVED_COLUMN_ID } from '@/models/admin-tasks-board.model';
 import type { Task } from '@/models/task.model';
 import { companiesQueryOptions } from '@/queries/company.queries';
 import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';

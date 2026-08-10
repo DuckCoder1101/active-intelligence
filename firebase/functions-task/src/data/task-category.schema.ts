@@ -6,7 +6,7 @@ export default class TaskCategorySchema {
       .string()
       .nullish()
       .transform((v) => v ?? undefined),
-    name: z.string().min(1, "Nome obrigatório").max(40, "Máximo 40 caracteres"),
+    name: z.string().min(3, "Nome muito curto").max(30, "Máximo 30 caracteres"),
     color: z.string().min(1, "Cor obrigatória"),
     order: z.number().optional(),
   });
@@ -21,7 +21,7 @@ export default class TaskCategorySchema {
       .string()
       .nullish()
       .transform((v) => v ?? undefined),
-    name: z.string().min(1, "Nome obrigatório").max(40, "Máximo 40 caracteres"),
+    name: z.string().min(3, "Nome muito curto").max(30, "Máximo 30 caracteres"),
     order: z.number().optional(),
   });
 

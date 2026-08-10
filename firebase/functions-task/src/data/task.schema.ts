@@ -7,9 +7,13 @@ export default class TaskSchema {
       .nullish()
       .transform((v) => v ?? undefined),
     companyId: z.string().min(1, "Empresa obrigatória"),
-    title: z.string().min(1, "Título obrigatório"),
+    title: z
+      .string()
+      .min(5, "Título muito curto")
+      .max(30, "Máximo 30 caracteres"),
     description: z
       .string()
+      .max(300, "Máximo 300 caracteres")
       .nullish()
       .default("")
       .transform((v) => v ?? ""),
@@ -56,9 +60,13 @@ export default class TaskSchema {
       .string()
       .nullish()
       .transform((v) => v ?? undefined),
-    title: z.string().min(1, "Título obrigatório"),
+    title: z
+      .string()
+      .min(5, "Título muito curto")
+      .max(30, "Máximo 30 caracteres"),
     description: z
       .string()
+      .max(300, "Máximo 300 caracteres")
       .nullish()
       .default("")
       .transform((v) => v ?? ""),

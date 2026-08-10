@@ -3,21 +3,21 @@ import { logger } from "firebase-functions";
 import {
   onCallHandler,
   requireAccess,
-  OperationalKanbanRepository,
+  AdminTasksBoardRepository,
 } from "functions-shared";
 
 const ACCESS = { minAccessLevel: "user" as const };
 
 /**
- * Lists internal operational-kanban columns.
+ * Lists internal admin-tasks-board columns.
  * Auth: requireAccess(req, {minAccessLevel:"user"}).
  * Schema: none.
  */
-export const listOperationalKanbanColumnsHandler =
+export const listAdminTasksBoardColumnsHandler =
   onCallHandler(async (req) => {
     requireAccess(req, ACCESS);
-    const result = await OperationalKanbanRepository.listAll();
-    logger.info("listOperationalKanbanColumns: retornando N itens", {
+    const result = await AdminTasksBoardRepository.listAll();
+    logger.info("listAdminTasksBoardColumns: retornando N itens", {
       count: result.length,
     });
     return result;

@@ -1,8 +1,8 @@
 import { Timestamp } from "firebase-admin/firestore";
 
-export const DEFAULT_PERSONAL_TASK_COLOR = "#ff6a00";
+export const DEFAULT_COMPANY_INTERNAL_TASK_COLOR = "#ff6a00";
 
-export interface PersonalTaskDocument {
+export interface CompanyInternalTaskDocument {
   companyId: string;
   createdBy: string;
   title: string;

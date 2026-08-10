@@ -22,8 +22,8 @@ import {
   crmFunnelsQueryOptions,
   leadsQueryOptions,
 } from '@/queries/company-crm.queries';
-import { operationalKanbanColumnsQueryOptions } from '@/queries/operational-kanban.queries';
-import { personalTasksQueryOptions } from '@/queries/personal-task.queries';
+import { adminTasksBoardColumnsQueryOptions } from '@/queries/admin-tasks-board.queries';
+import { companyInternalTasksQueryOptions } from '@/queries/company-internal-task.queries';
 import {
   calendarTasksQueryOptions,
   clientTasksQueryOptions,
@@ -67,13 +67,13 @@ export const Route = createFileRoute('/_private/company/$companyId/')({
         calendarTasksQueryOptions(params.companyId, nextYear, nextMonth),
       ),
       context.queryClient.ensureQueryData(
-        operationalKanbanColumnsQueryOptions(),
+        adminTasksBoardColumnsQueryOptions(),
       ),
       context.queryClient.ensureQueryData(
         clientTasksQueryOptions(params.companyId),
       ),
       context.queryClient.ensureQueryData(
-        personalTasksQueryOptions(params.companyId),
+        companyInternalTasksQueryOptions(params.companyId),
       ),
     ]);
   },
@@ -113,12 +113,12 @@ function CompanyDashboard() {
     calendarTasksQueryOptions(companyId, nextYear, nextMonth),
   );
   const { data: operationalColumns = [] } = useQuery(
-    operationalKanbanColumnsQueryOptions(),
+    adminTasksBoardColumnsQueryOptions(),
   );
   const { data: clientData } = useQuery(clientTasksQueryOptions(companyId));
   const usage = clientData?.usage ?? { used: 0, limit: null, yearMonth: '' };
-  const { data: personalTasks } = useSuspenseQuery(
-    personalTasksQueryOptions(companyId),
+  const { data: internalTasks } = useSuspenseQuery(
+    companyInternalTasksQueryOptions(companyId),
   );
 
   const tasks = useMemo(
@@ -136,8 +136,8 @@ function CompanyDashboard() {
     [primaryFunnelLeads, crmColumns],
   );
   const todayTasks = useMemo(
-    () => getTasksOnDay(personalTasks, now),
-    [personalTasks, now],
+    () => getTasksOnDay(internalTasks, now),
+    [internalTasks, now],
   );
   const upcomingTasks = useMemo(
     () => getUpcomingTasks(tasks, now, 7),

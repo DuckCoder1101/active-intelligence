@@ -5,7 +5,7 @@ import { logger } from "firebase-functions";
 import {
   onCallHandler,
   requireAccess,
-  OperationalKanbanRepository,
+  AdminTasksBoardRepository,
 } from "functions-shared";
 
 const ACCESS = { minAccessLevel: "owner" as const };
@@ -13,11 +13,11 @@ const ACCESS = { minAccessLevel: "owner" as const };
 const schema = z.object({ columnId: z.string().min(1) });
 
 /**
- * Deletes an internal operational-kanban column.
+ * Deletes an internal admin-tasks-board column.
  * Auth: requireAccess(req, {minAccessLevel:"owner"}).
  * Schema: inline z.object({columnId}).
  */
-export const deleteOperationalKanbanColumnHandler =
+export const deleteAdminTasksBoardColumnHandler =
   onCallHandler(async (req) => {
     requireAccess(req, ACCESS);
 
@@ -30,7 +30,7 @@ export const deleteOperationalKanbanColumnHandler =
       );
     }
 
-    logger.info("deleteOperationalKanbanColumn", { columnId: data.columnId });
+    logger.info("deleteAdminTasksBoardColumn", { columnId: data.columnId });
 
-    return OperationalKanbanRepository.delete(data.columnId);
+    return AdminTasksBoardRepository.delete(data.columnId);
   });

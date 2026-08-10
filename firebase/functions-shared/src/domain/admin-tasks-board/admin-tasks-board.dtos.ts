@@ -1,11 +1,11 @@
-export interface OperationalKanbanColumnDTO {
+export interface AdminTasksBoardColumnDTO {
   columnId: string;
   name: string;
   color: string;
   order: number;
 }
 
-export interface SaveOperationalKanbanColumnDTO {
+export interface SaveAdminTasksBoardColumnDTO {
   columnId?: string;
   name: string;
   color: string;

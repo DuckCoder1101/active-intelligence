@@ -14,9 +14,9 @@ export * from "./handlers/updateClientTaskImages";
 export * from "./handlers/approveClientTask";
 export * from "./triggers/deleteOldTaskMedia";
 
-export * from "./handlers/savePersonalTask";
-export * from "./handlers/deletePersonalTask";
-export * from "./handlers/listPersonalTasks";
+export * from "./handlers/saveCompanyInternalTask";
+export * from "./handlers/deleteCompanyInternalTask";
+export * from "./handlers/listCompanyInternalTasks";
 
 export * from "./handlers/listTaskCategories";
 export * from "./handlers/saveTaskCategory";

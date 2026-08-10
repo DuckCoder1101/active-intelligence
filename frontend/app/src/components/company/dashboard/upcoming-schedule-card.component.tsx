@@ -1,12 +1,12 @@
 import { Link } from '@tanstack/react-router';
 
-import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
+import type { AdminTasksBoardColumn } from '@/models/admin-tasks-board.model';
 import type { Task } from '@/models/task.model';
 
 interface UpcomingScheduleCardProps {
   companyId: string;
   tasks: Task[];
-  columns: OperationalKanbanColumn[];
+  columns: AdminTasksBoardColumn[];
 }
 
 const FALLBACK_COLOR = '#94a3b8';

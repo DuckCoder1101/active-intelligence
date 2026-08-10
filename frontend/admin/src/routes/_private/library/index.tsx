@@ -31,7 +31,7 @@ function LibraryGuides() {
     return guides.filter(
       (g) =>
         g.name.toLowerCase().includes(q) ||
-        [...g.intentTags, ...g.platformTags, ...g.formatTags].some((tag) =>
+        [...g.intentTags, ...g.platformTags].some((tag) =>
           tag.toLowerCase().includes(q),
         ),
     );

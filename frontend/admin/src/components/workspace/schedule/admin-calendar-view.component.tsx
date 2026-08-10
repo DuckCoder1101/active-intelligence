@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 
 import { Spinner } from '@/components/ui/spinner.component';
 import type { CompanyResume } from '@/models/company.model';
-import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
+import type { AdminTasksBoardColumn } from '@/models/admin-tasks-board.model';
 import type { Task, TaskCategory } from '@/models/task.model';
 import { useUpdateTaskStatusMutation } from '@/queries/task.queries';
 
@@ -29,7 +29,7 @@ interface DayTasksModalProps {
   date: Date;
   tasks: Task[];
   companies: CompanyResume[];
-  columns: OperationalKanbanColumn[];
+  columns: AdminTasksBoardColumn[];
   categoryMap: Record<string, TaskCategory>;
   updatingTaskId: string | null;
   onStatusChange: (task: Task, status: string) => void;
@@ -182,7 +182,7 @@ function DayTasksModal({
 interface AdminCalendarViewProps {
   tasks: Task[];
   companies: CompanyResume[];
-  columns: OperationalKanbanColumn[];
+  columns: AdminTasksBoardColumn[];
   categories: TaskCategory[];
   onTaskClick: (task: Task) => void;
   onAddTask: (date: Date) => void;

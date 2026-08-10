@@ -8,7 +8,7 @@ import { ActivityTimeline } from '@/components/workspace/history/activity-timeli
 import { DeliveriesList } from '@/components/workspace/history/deliveries-list.component';
 import { useWorkspaceFilter } from '@/hooks/use-workspace-filter.hook';
 import type { AuditAction } from '@/models/audit.model';
-import { APPROVED_COLUMN_ID } from '@/models/operational-kanban.model';
+import { APPROVED_COLUMN_ID } from '@/models/admin-tasks-board.model';
 import {
   companiesQueryOptions,
   workspaceAuditLogsQueryOptions,

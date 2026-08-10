@@ -1,10 +1,10 @@
 import { Link } from '@tanstack/react-router';
 
-import type { PersonalTask } from '@/models/personal-task.model';
+import type { CompanyInternalTask } from '@/models/company-internal-task.model';
 
 interface TodayActivitiesCardProps {
   companyId: string;
-  tasks: PersonalTask[];
+  tasks: CompanyInternalTask[];
 }
 
 function formatTime(ts: number): string {
@@ -38,7 +38,7 @@ export function TodayActivitiesCard({
       ) : (
         <ul className="space-y-3.5">
           {tasks.map((task) => (
-            <li key={task.personalTaskId} className="flex items-start gap-3">
+            <li key={task.companyInternalTaskId} className="flex items-start gap-3">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-bg">
                 <span
                   className="h-2.5 w-2.5 rounded-full"

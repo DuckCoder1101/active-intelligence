@@ -79,7 +79,7 @@ function toDTO(id: string, data: RealEstateDocument): RealEstateDTO {
 }
 
 /**
- * Firestore: `companies/{companyId}/real_estate`, plus
+ * Firestore: `companies/{companyId}/real_estates`, plus
  * `companies/{companyId}/counters/real_estate` for atomic sequence allocation.
  */
 export class RealEstateRepository {
@@ -87,7 +87,7 @@ export class RealEstateRepository {
     return database
       .collection("companies")
       .doc(companyId)
-      .collection("real_estate");
+      .collection("real_estates");
   }
 
   private static counterRef(companyId: string) {

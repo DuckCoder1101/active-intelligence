@@ -6,28 +6,28 @@ import {
 import { toast } from 'react-toastify';
 
 import type {
-  OperationalKanbanColumn,
-  SaveOperationalKanbanColumnDTO,
-} from '@/models/operational-kanban.model';
-import OperationalKanbanService from '@/services/operational-kanban.service';
+  AdminTasksBoardColumn,
+  SaveAdminTasksBoardColumnDTO,
+} from '@/models/admin-tasks-board.model';
+import AdminTasksBoardService from '@/services/admin-tasks-board.service';
 
-export const operationalKanbanKeys = {
-  all: ['operational-kanban'] as const,
-  lists: () => [...operationalKanbanKeys.all, 'list'] as const,
+export const adminTasksBoardKeys = {
+  all: ['admin-tasks-board'] as const,
+  lists: () => [...adminTasksBoardKeys.all, 'list'] as const,
 };
 
-export const operationalKanbanColumnsQueryOptions = () =>
+export const adminTasksBoardColumnsQueryOptions = () =>
   queryOptions({
-    queryKey: operationalKanbanKeys.lists(),
-    queryFn: () => OperationalKanbanService.listColumns(),
+    queryKey: adminTasksBoardKeys.lists(),
+    queryFn: () => AdminTasksBoardService.listColumns(),
     staleTime: 10 * 60_000,
   });
 
 function reorder(
-  columns: OperationalKanbanColumn[],
+  columns: AdminTasksBoardColumn[],
   fromId: string,
   toId: string,
-): OperationalKanbanColumn[] {
+): AdminTasksBoardColumn[] {
   const fromIndex = columns.findIndex((c) => c.columnId === fromId);
   const toIndex = columns.findIndex((c) => c.columnId === toId);
   if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) {
@@ -40,9 +40,9 @@ function reorder(
 }
 
 function diffOrders(
-  original: OperationalKanbanColumn[],
-  reordered: OperationalKanbanColumn[],
-): OperationalKanbanColumn[] {
+  original: AdminTasksBoardColumn[],
+  reordered: AdminTasksBoardColumn[],
+): AdminTasksBoardColumn[] {
   return reordered.filter((c) => {
     const before = original.find((o) => o.columnId === c.columnId);
     return before && before.order !== c.order;
@@ -54,21 +54,21 @@ interface ReorderVars {
   toId: string;
 }
 
-export function useReorderOperationalKanbanColumnsMutation() {
+export function useReorderAdminTasksBoardColumnsMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ fromId, toId }: ReorderVars) => {
       const current =
-        queryClient.getQueryData<OperationalKanbanColumn[]>(
-          operationalKanbanKeys.lists(),
+        queryClient.getQueryData<AdminTasksBoardColumn[]>(
+          adminTasksBoardKeys.lists(),
         ) ?? [];
       const withOrders = reorder(current, fromId, toId);
       const changed = diffOrders(current, withOrders);
 
       const results = await Promise.allSettled(
         changed.map((c) =>
-          OperationalKanbanService.saveColumn({
+          AdminTasksBoardService.saveColumn({
             columnId: c.columnId,
             name: c.name,
             color: c.color,
@@ -87,14 +87,14 @@ export function useReorderOperationalKanbanColumnsMutation() {
     },
     onMutate: async ({ fromId, toId }: ReorderVars) => {
       await queryClient.cancelQueries({
-        queryKey: operationalKanbanKeys.lists(),
+        queryKey: adminTasksBoardKeys.lists(),
       });
-      const previous = queryClient.getQueryData<OperationalKanbanColumn[]>(
-        operationalKanbanKeys.lists(),
+      const previous = queryClient.getQueryData<AdminTasksBoardColumn[]>(
+        adminTasksBoardKeys.lists(),
       );
       if (previous) {
         queryClient.setQueryData(
-          operationalKanbanKeys.lists(),
+          adminTasksBoardKeys.lists(),
           reorder(previous, fromId, toId),
         );
       }
@@ -106,8 +106,8 @@ export function useReorderOperationalKanbanColumnsMutation() {
       }
       toast.error('Algumas colunas não foram salvas. A ordem foi corrigida.');
       const fallback = context?.previous;
-      queryClient.setQueryData<OperationalKanbanColumn[]>(
-        operationalKanbanKeys.lists(),
+      queryClient.setQueryData<AdminTasksBoardColumn[]>(
+        adminTasksBoardKeys.lists(),
         () =>
           withOrders.map((c) =>
             failedIds.has(c.columnId)
@@ -119,37 +119,37 @@ export function useReorderOperationalKanbanColumnsMutation() {
     onError: (_err, _vars, context) => {
       if (context?.previous) {
         queryClient.setQueryData(
-          operationalKanbanKeys.lists(),
+          adminTasksBoardKeys.lists(),
           context.previous,
         );
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: operationalKanbanKeys.all });
+      queryClient.invalidateQueries({ queryKey: adminTasksBoardKeys.all });
     },
   });
 }
 
-export function useAddOperationalKanbanColumnMutation() {
+export function useAddAdminTasksBoardColumnMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: SaveOperationalKanbanColumnDTO) =>
-      OperationalKanbanService.saveColumn(data),
+    mutationFn: (data: SaveAdminTasksBoardColumnDTO) =>
+      AdminTasksBoardService.saveColumn(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: operationalKanbanKeys.all });
+      queryClient.invalidateQueries({ queryKey: adminTasksBoardKeys.all });
     },
   });
 }
 
-export function useRemoveOperationalKanbanColumnMutation() {
+export function useRemoveAdminTasksBoardColumnMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (columnId: string) =>
-      OperationalKanbanService.deleteColumn(columnId),
+      AdminTasksBoardService.deleteColumn(columnId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: operationalKanbanKeys.all });
+      queryClient.invalidateQueries({ queryKey: adminTasksBoardKeys.all });
     },
   });
 }

@@ -1,5 +1,5 @@
-export interface PersonalTaskDTO {
-  personalTaskId: string;
+export interface CompanyInternalTaskDTO {
+  companyInternalTaskId: string;
   companyId: string;
   createdBy: string;
   title: string;
@@ -10,8 +10,8 @@ export interface PersonalTaskDTO {
   updatedAt: number;
 }
 
-export interface SavePersonalTaskDTO {
-  personalTaskId?: string;
+export interface SaveCompanyInternalTaskDTO {
+  companyInternalTaskId?: string;
   companyId?: string;
   title: string;
   description?: string;

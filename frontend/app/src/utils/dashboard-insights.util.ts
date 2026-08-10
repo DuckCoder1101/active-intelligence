@@ -1,5 +1,5 @@
 import type { CrmColumn, Lead } from '@/models/lead.model';
-import { APPROVED_COLUMN_ID } from '@/models/operational-kanban.model';
+import { APPROVED_COLUMN_ID } from '@/models/admin-tasks-board.model';
 import type { Task } from '@/models/task.model';
 
 const DAY_MS = 24 * 60 * 60 * 1000;

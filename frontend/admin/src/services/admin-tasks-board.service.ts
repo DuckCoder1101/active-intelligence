@@ -1,35 +1,35 @@
 import { httpsCallable } from 'firebase/functions';
 
 import type {
-  OperationalKanbanColumn,
-  SaveOperationalKanbanColumnDTO,
-} from '@/models/operational-kanban.model';
+  AdminTasksBoardColumn,
+  SaveAdminTasksBoardColumnDTO,
+} from '@/models/admin-tasks-board.model';
 import { functions } from '@/utils/firebase.util';
 
-export default class OperationalKanbanService {
-  private static listCallable = httpsCallable<void, OperationalKanbanColumn[]>(
+export default class AdminTasksBoardService {
+  private static listCallable = httpsCallable<void, AdminTasksBoardColumn[]>(
     functions,
-    'listOperationalKanbanColumnsHandler',
+    'listAdminTasksBoardColumnsHandler',
   );
 
   private static saveCallable = httpsCallable<
-    SaveOperationalKanbanColumnDTO,
-    OperationalKanbanColumn
-  >(functions, 'saveOperationalKanbanColumnHandler');
+    SaveAdminTasksBoardColumnDTO,
+    AdminTasksBoardColumn
+  >(functions, 'saveAdminTasksBoardColumnHandler');
 
   private static deleteCallable = httpsCallable<
     { columnId: string },
     { movedTo: string | null }
-  >(functions, 'deleteOperationalKanbanColumnHandler');
+  >(functions, 'deleteAdminTasksBoardColumnHandler');
 
-  static async listColumns(): Promise<OperationalKanbanColumn[]> {
+  static async listColumns(): Promise<AdminTasksBoardColumn[]> {
     const r = await this.listCallable();
     return r.data;
   }
 
   static async saveColumn(
-    data: SaveOperationalKanbanColumnDTO,
-  ): Promise<OperationalKanbanColumn> {
+    data: SaveAdminTasksBoardColumnDTO,
+  ): Promise<AdminTasksBoardColumn> {
     const r = await this.saveCallable(data);
     return r.data;
   }

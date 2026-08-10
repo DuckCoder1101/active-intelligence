@@ -9,7 +9,6 @@ export interface GuideDTO {
   socialUrl?: string;
   intentTags: string[];
   platformTags: string[];
-  formatTags: string[];
   scriptPrompt: string;
   scriptGuide: ScriptGuideBlock[];
   assignedCompanyIds: string[];
@@ -27,7 +26,6 @@ export interface GuideContentDTO {
   socialUrl?: string;
   intentTags: string[];
   platformTags: string[];
-  formatTags: string[];
   scriptGuide: ScriptGuideBlock[];
 }
 
@@ -41,7 +39,6 @@ export interface SaveGuideDTO {
   socialUrl?: string;
   intentTags?: string[];
   platformTags?: string[];
-  formatTags?: string[];
   scriptPrompt?: string;
   scriptGuide?: ScriptGuideBlock[];
   assignedCompanyIds?: string[];

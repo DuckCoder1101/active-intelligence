@@ -13,16 +13,16 @@ import { TaskCard } from '@/components/workspace/schedule/task-card.component';
 import { TaskModal } from '@/components/workspace/schedule/task-modal.component';
 import { useAuth } from '@/contexts/auth.context';
 import { useWorkspaceFilter } from '@/hooks/use-workspace-filter.hook';
-import { COLUMN_COLOR_PRESETS } from '@/models/operational-kanban.model';
+import { COLUMN_COLOR_PRESETS } from '@/models/admin-tasks-board.model';
 import type { Task } from '@/models/task.model';
 import { adminsQueryOptions } from '@/queries/admin.queries';
 import { companiesQueryOptions } from '@/queries/company.queries';
 import {
-  operationalKanbanColumnsQueryOptions,
-  useAddOperationalKanbanColumnMutation,
-  useRemoveOperationalKanbanColumnMutation,
-  useReorderOperationalKanbanColumnsMutation,
-} from '@/queries/operational-kanban.queries';
+  adminTasksBoardColumnsQueryOptions,
+  useAddAdminTasksBoardColumnMutation,
+  useRemoveAdminTasksBoardColumnMutation,
+  useReorderAdminTasksBoardColumnsMutation,
+} from '@/queries/admin-tasks-board.queries';
 import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
 import {
   taskKeys,
@@ -43,7 +43,7 @@ export const Route = createFileRoute('/_private/workspace/schedule')({
     Promise.all([
       context.queryClient.ensureQueryData(tasksQueryOptions()),
       context.queryClient.ensureQueryData(
-        operationalKanbanColumnsQueryOptions(),
+        adminTasksBoardColumnsQueryOptions(),
       ),
       context.queryClient.ensureQueryData(companiesQueryOptions()),
       context.queryClient.ensureQueryData(adminsQueryOptions()),
@@ -66,16 +66,16 @@ function WorkspaceSchedule() {
 
   const { data: tasks } = useSuspenseQuery(tasksQueryOptions());
   const { data: columns } = useSuspenseQuery(
-    operationalKanbanColumnsQueryOptions(),
+    adminTasksBoardColumnsQueryOptions(),
   );
   const { data: companies } = useSuspenseQuery(companiesQueryOptions());
   const { data: admins } = useSuspenseQuery(adminsQueryOptions());
   const { data: categories } = useSuspenseQuery(taskCategoriesQueryOptions());
 
   const updateStatus = useUpdateTaskStatusMutation();
-  const reorderColumns = useReorderOperationalKanbanColumnsMutation();
-  const addColumn = useAddOperationalKanbanColumnMutation();
-  const removeColumn = useRemoveOperationalKanbanColumnMutation();
+  const reorderColumns = useReorderAdminTasksBoardColumnsMutation();
+  const addColumn = useAddAdminTasksBoardColumnMutation();
+  const removeColumn = useRemoveAdminTasksBoardColumnMutation();
 
   const categoryMap = Object.fromEntries(
     categories.map((c) => [c.categoryId, c]),

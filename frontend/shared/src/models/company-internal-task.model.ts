@@ -1,6 +1,6 @@
-export const DEFAULT_PERSONAL_TASK_COLOR = '#ff6a00';
+export const DEFAULT_COMPANY_INTERNAL_TASK_COLOR = '#ff6a00';
 
-export const PERSONAL_TASK_COLOR_PRESETS = [
+export const COMPANY_INTERNAL_TASK_COLOR_PRESETS = [
   { label: 'Laranja', value: '#ff6a00' },
   { label: 'Azul', value: '#3b82f6' },
   { label: 'Violeta', value: '#8b5cf6' },
@@ -12,8 +12,8 @@ export const PERSONAL_TASK_COLOR_PRESETS = [
   { label: 'Cinza', value: '#94a3b8' },
 ] as const;
 
-export interface PersonalTask {
-  personalTaskId: string;
+export interface CompanyInternalTask {
+  companyInternalTaskId: string;
   companyId: string;
   createdBy: string;
   title: string;
@@ -24,8 +24,8 @@ export interface PersonalTask {
   updatedAt: number;
 }
 
-export interface SavePersonalTaskDTO {
-  personalTaskId?: string;
+export interface SaveCompanyInternalTaskDTO {
+  companyInternalTaskId?: string;
   title: string;
   description?: string;
   color?: string;

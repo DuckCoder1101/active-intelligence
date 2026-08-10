@@ -17,8 +17,8 @@ import { MultiSelect } from '@/components/ui/multi-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import type { AdminProfile } from '@/models/admin.model';
 import type { CompanyResume } from '@/models/company.model';
-import { COLUMN_COLOR_PRESETS } from '@/models/operational-kanban.model';
-import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
+import { COLUMN_COLOR_PRESETS } from '@/models/admin-tasks-board.model';
+import type { AdminTasksBoardColumn } from '@/models/admin-tasks-board.model';
 import type { Task, TaskCategory, SaveTaskDTO } from '@/models/task.model';
 import {
   taskTagsQueryOptions,
@@ -31,7 +31,7 @@ interface TaskModalProps {
   defaultDueDate?: Date;
   companies: CompanyResume[];
   admins: AdminProfile[];
-  columns: OperationalKanbanColumn[];
+  columns: AdminTasksBoardColumn[];
   categories: TaskCategory[];
   isOwner: boolean;
   currentUid: string;

@@ -8,6 +8,7 @@ import {
 import { CompanyDocument } from "./company.document";
 import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
+import { stripMask } from "../../validations/mask.util";
 
 /** Firestore: `companies` (top-level). Also owns the monthly task-usage counter embedded on each company doc. */
 export class CompanyRepository {
@@ -26,7 +27,9 @@ export class CompanyRepository {
     companyId,
     ...companyData
   }: RegisterCompanyDTO): Promise<void> {
-    const cnpjIndex = companyData.legalInformation.documentNumber;
+    // Índice de unicidade derivado independentemente (só dígitos), já que
+    // `documentNumber` agora é salvo formatado (com máscara).
+    const cnpjIndex = stripMask(companyData.legalInformation.documentNumber);
 
     const ref = companyId
       ? this.companiesCollection.doc(companyId)
@@ -77,8 +80,8 @@ export class CompanyRepository {
     await Promise.all([
       this.deleteCompanyUsers(companyId),
       this.deleteQueryInBatches(ref.collection("audits")),
-      this.deleteQueryInBatches(ref.collection("personal_tasks")),
-      this.deleteQueryInBatches(ref.collection("real_estate")),
+      this.deleteQueryInBatches(ref.collection("company_internal_tasks")),
+      this.deleteQueryInBatches(ref.collection("real_estates")),
       this.deleteQueryInBatches(ref.collection("counters")),
       this.deleteQueryInBatches(ref.collection("crm_origins")),
       this.deleteQueryInBatches(ref.collection("crm_tags")),
@@ -98,7 +101,7 @@ export class CompanyRepository {
           .where("companyId", "==", companyId),
       ),
       database
-        .collection("company_operational")
+        .collection("company_operationals")
         .doc(companyId)
         .delete()
         .catch(() => undefined),

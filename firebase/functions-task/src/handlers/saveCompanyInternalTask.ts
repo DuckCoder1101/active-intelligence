@@ -2,20 +2,19 @@ import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions";
 
 import { onCallHandler, getAuthenticatedUser } from "functions-shared";
-import PersonalTaskSchema from "../data/personal-task.schema";
-import { PersonalTaskRepository } from "../repositories/personal-task.repository";
+import CompanyInternalTaskSchema from "../data/company-internal-task.schema";
+import { CompanyInternalTaskRepository } from "../repositories/company-internal-task.repository";
 
 /**
- * Creates/updates a personal task.
+ * Creates/updates a company-internal task.
  * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
- * Schema: `../data/personal-task.schema` → `PersonalTaskSchema.saveSchema`.
+ * Schema: `../data/company-internal-task.schema` → `CompanyInternalTaskSchema.saveSchema`.
  */
-export const savePersonalTaskHandler = onCallHandler(async (req) => {
+export const saveCompanyInternalTaskHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
 
-  const { success, data, error } = PersonalTaskSchema.saveSchema.safeParse(
-    req.data,
-  );
+  const { success, data, error } =
+    CompanyInternalTaskSchema.saveSchema.safeParse(req.data);
   if (!success) {
     throw new HttpsError(
       "invalid-argument",
@@ -45,11 +44,11 @@ export const savePersonalTaskHandler = onCallHandler(async (req) => {
     throw new HttpsError("permission-denied", "Acesso negado.");
   }
 
-  logger.info("savePersonalTask", {
+  logger.info("saveCompanyInternalTask", {
     companyId,
-    action: data.personalTaskId ? "update" : "create",
-    personalTaskId: data.personalTaskId,
+    action: data.companyInternalTaskId ? "update" : "create",
+    companyInternalTaskId: data.companyInternalTaskId,
   });
 
-  return PersonalTaskRepository.save(companyId, user.uid, data);
+  return CompanyInternalTaskRepository.save(companyId, user.uid, data);
 });
