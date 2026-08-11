@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import { MdAdd, MdSearch } from 'react-icons/md';
 
+import { ImportExportMenu } from '@/components/company/real-estate/import-export-menu.component';
 import { RealEstateList } from '@/components/company/real-estate/list.component';
 import { realEstateQueryOptions } from '@/queries/real-estate.queries';
 
@@ -32,7 +33,7 @@ function CompanyRealEstate() {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        <div className="mb-6 flex items-center justify-between gap-3">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-black tracking-tight text-text">
               Imóveis
@@ -41,14 +42,17 @@ function CompanyRealEstate() {
               Cadastro de imóveis administrados pela imobiliária.
             </p>
           </div>
-          <Link
-            to="/company/$companyId/real-estate/new"
-            params={{ companyId }}
-            className="btn-primary"
-          >
-            <MdAdd size={16} />
-            Novo imóvel
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <ImportExportMenu companyId={companyId} />
+            <Link
+              to="/company/$companyId/real-estate/new"
+              params={{ companyId }}
+              className="btn-primary"
+            >
+              <MdAdd size={16} />
+              Novo imóvel
+            </Link>
+          </div>
         </div>
 
         <div className="relative mb-4 max-w-xs">

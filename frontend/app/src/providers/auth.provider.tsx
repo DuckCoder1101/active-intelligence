@@ -1,7 +1,7 @@
 import { AuthContext } from '@contexts/auth.context';
 import type { AuthContextState } from '@contexts/auth.context';
 import UserService from '@services/user.service';
-import { useQueryClient } from '@tanstack/react-query';
+import { CancelledError, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { FirebaseError } from 'firebase/app';
 import { onIdTokenChanged } from 'firebase/auth';
@@ -52,7 +52,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (err) {
       if (err instanceof FirebaseError && err.code === 'functions/not-found') {
         await navigate({ to: '/auth/complete-account' });
-      } else {
+      } else if (!(err instanceof CancelledError)) {
+        // Query was cancelled by a concurrent removeQueries/refetch (e.g. sign-out
+        // racing an in-flight fetch) — not an actual error, nothing to report.
         toast.error(mapFirebaseError(err));
       }
     } finally {

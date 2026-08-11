@@ -161,6 +161,21 @@ export class RealEstateRepository {
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as RealEstateDocument));
   }
 
+  static async findByCode(
+    companyId: string,
+    code: string,
+  ): Promise<RealEstateDTO | undefined> {
+    const snap = await this.col(companyId)
+      .where("code", "==", code)
+      .limit(1)
+      .get();
+    if (snap.empty) {
+      return undefined;
+    }
+    const doc = snap.docs[0];
+    return toDTO(doc.id, doc.data() as RealEstateDocument);
+  }
+
   static async updateStatus(
     companyId: string,
     realEstateId: string,

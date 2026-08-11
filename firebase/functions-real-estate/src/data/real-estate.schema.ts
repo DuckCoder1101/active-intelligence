@@ -236,4 +236,20 @@ export default class RealEstateSchema {
     realEstateId: z.string().min(1, "realEstateId obrigatório"),
     status: z.enum(REAL_ESTATE_STATUSES, { message: "Status inválido" }),
   });
+
+  /**
+   * Uma linha de planilha de importação: mesmos campos/regras do
+   * `saveSchema` (sem `companyId`/`realEstateId`, resolvidos pelo handler),
+   * mais um `code` opcional usado para casar com um imóvel já existente.
+   */
+  static importRowSchema = RealEstateSchema.saveSchema
+    .omit({ companyId: true, realEstateId: true })
+    .extend({
+      code: z
+        .string()
+        .trim()
+        .nullish()
+        .transform((v) => (v ? v : undefined)),
+      rowNumber: z.number(),
+    });
 }

@@ -9,6 +9,7 @@ import type {
   SaveRealEstateDTO,
 } from '@/models/real-estate.model';
 import RealEstateService from '@/services/real-estate.service';
+import type { ImportRealEstateRow } from '@/utils/real-estate-spreadsheet';
 
 export const realEstateKeys = {
   all: ['real-estate'] as const,
@@ -47,6 +48,26 @@ export function useDeleteRealEstateMutation(companyId: string) {
         queryKey: realEstateKeys.list(companyId),
       });
     },
+  });
+}
+
+export function useImportRealEstateMutation(companyId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (rows: ImportRealEstateRow[]) =>
+      RealEstateService.importRealEstate(companyId, rows),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: realEstateKeys.list(companyId),
+      });
+    },
+  });
+}
+
+export function useExportRealEstateMutation(companyId: string) {
+  return useMutation({
+    mutationFn: () => RealEstateService.exportRealEstate(companyId),
   });
 }
 

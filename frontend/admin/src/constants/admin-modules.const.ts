@@ -47,7 +47,6 @@ export const ADMIN_MODULES: Section[] = [
         label: 'Propostas',
         description: 'Combos e propostas em PDF.',
         to: 'https://activeops.lovable.app/pre-projeto/propostas',
-        soon: true,
         permission: 'manage-proposals',
       },
       {
@@ -55,7 +54,6 @@ export const ADMIN_MODULES: Section[] = [
         label: 'Contratos',
         description: 'Contratos gerados com IA.',
         to: 'https://activeops.lovable.app/pre-projeto/contratos',
-        soon: true,
         permission: 'manage-contracts',
       },
       {
@@ -63,7 +61,6 @@ export const ADMIN_MODULES: Section[] = [
         label: 'Diagnósticos',
         description: 'Briefings com análise por IA.',
         to: 'https://activeops.lovable.app/pre-projeto/diagnosticos',
-        soon: true,
         permission: 'manage-diagnostics',
       },
     ],
