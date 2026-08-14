@@ -15,7 +15,6 @@ function toDTO(id: string, data: GuideDocument): GuideDTO {
     socialUrl: data.socialUrl,
     intentTags: data.intentTags ?? [],
     platformTags: data.platformTags ?? [],
-    formatTags: data.formatTags ?? [],
     scriptPrompt: data.scriptPrompt ?? "",
     scriptGuide: data.scriptGuide ?? [],
     assignedCompanyIds: data.assignedCompanyIds ?? [],
@@ -32,7 +31,6 @@ function toContentDTO(id: string, data: GuideDocument): GuideContentDTO {
     socialUrl: data.socialUrl,
     intentTags: data.intentTags ?? [],
     platformTags: data.platformTags ?? [],
-    formatTags: data.formatTags ?? [],
     scriptGuide: data.scriptGuide ?? [],
   };
 }
@@ -123,7 +121,6 @@ export class GuideRepository {
       label: trimmedLabel ?? FieldValue.delete(),
       intentTags: rest.intentTags ?? [],
       platformTags: rest.platformTags ?? [],
-      formatTags: rest.formatTags ?? [],
       scriptPrompt: rest.scriptPrompt ?? "",
       scriptGuide: rest.scriptGuide ?? [],
       assignedCompanyIds: rest.assignedCompanyIds ?? [],

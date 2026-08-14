@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 
 import { CreateGuideModal } from '@/components/library/create-modal.component';
@@ -21,7 +21,7 @@ function LibraryGuides() {
   const [search, setSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const filtered = useMemo(() => {
+  const filtered = (() => {
     if (!search.trim()) {
       return guides;
     }
@@ -31,11 +31,11 @@ function LibraryGuides() {
     return guides.filter(
       (g) =>
         g.name.toLowerCase().includes(q) ||
-        [...g.intentTags, ...g.platformTags, ...g.formatTags].some((tag) =>
+        [...g.intentTags, ...g.platformTags].some((tag) =>
           tag.toLowerCase().includes(q),
         ),
     );
-  }, [guides, search]);
+  })();
 
   return (
     <AdminPageContainer>

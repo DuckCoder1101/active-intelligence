@@ -1,6 +1,5 @@
 import {
   FINANCE_CATEGORY_TYPES,
-  type FinanceAccount,
   type FinanceCategoryType,
   type FinanceSubcategory,
 } from '@/models/finance.model';
@@ -16,12 +15,6 @@ export type DraftSubcategoriesByCategory = Record<
   DraftSubcategory[]
 >;
 
-export interface DraftAccount {
-  accountId?: string;
-  key: string;
-  name: string;
-}
-
 export function newKey(): string {
   return `new-${crypto.randomUUID()}`;
 }
@@ -36,6 +29,9 @@ export function toDraftSubcategoriesByCategory(
   [...subcategories]
     .sort((a, b) => a.order - b.order)
     .forEach((s) => {
+      if (!grouped[s.categoryType]) {
+        return;
+      }
       grouped[s.categoryType].push({
         subcategoryId: s.subcategoryId,
         key: s.subcategoryId,
@@ -44,12 +40,6 @@ export function toDraftSubcategoriesByCategory(
     });
 
   return grouped;
-}
-
-export function toDraftAccounts(accounts: FinanceAccount[]): DraftAccount[] {
-  return [...accounts]
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((a) => ({ accountId: a.accountId, key: a.accountId, name: a.name }));
 }
 
 export function isSubcategoriesDirty(
@@ -77,26 +67,6 @@ export function isSubcategoriesDirty(
       if (originalGroup[origIndex].name !== sub.name || origIndex !== i) {
         return true;
       }
-    }
-  }
-  return false;
-}
-
-export function isAccountsDirty(
-  draft: DraftAccount[],
-  original: DraftAccount[],
-  removedIds: string[],
-): boolean {
-  if (removedIds.length > 0 || draft.length !== original.length) {
-    return true;
-  }
-  for (const acc of draft) {
-    const orig = original.find((o) => o.accountId === acc.accountId);
-    if (!acc.accountId || !orig) {
-      return true;
-    }
-    if (orig.name !== acc.name) {
-      return true;
     }
   }
   return false;

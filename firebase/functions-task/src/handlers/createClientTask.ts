@@ -9,7 +9,7 @@ import {
   AuditAction,
   NotificationRepository,
   NotificationFilterDTO,
-  OperationalKanbanRepository,
+  AdminTasksBoardRepository,
 } from "functions-shared";
 import TaskSchema from "../data/task.schema";
 import { TaskRepository } from "../repositories/task.repository";
@@ -18,7 +18,7 @@ import { TaskRepository } from "../repositories/task.repository";
  * Client or admin creates a client-facing task, with usage-limit check and notification.
  * Auth: `getAuthenticatedUser(req)` + custom role branching (user vs admin/owner).
  * Schema: `../data/task.schema` → `TaskSchema.createClientTaskSchema`.
- * Note: orchestrates multiple repositories (`CompanyRepository`, `OperationalKanbanRepository`, `AuditRepository`, `NotificationRepository`) beyond a single repository call.
+ * Note: orchestrates multiple repositories (`CompanyRepository`, `AdminTasksBoardRepository`, `AuditRepository`, `NotificationRepository`) beyond a single repository call.
  */
 export const createClientTaskHandler = onCallHandler(async (req) => {
   const user = getAuthenticatedUser(req);
@@ -63,7 +63,7 @@ export const createClientTaskHandler = onCallHandler(async (req) => {
 
   await CompanyRepository.checkAndIncrementUsage(companyId);
 
-  const columns = await OperationalKanbanRepository.listAll();
+  const columns = await AdminTasksBoardRepository.listAll();
 
   const task = await TaskRepository.save({
     companyId,

@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { ReviewsTable } from '@/components/reviews/reviews-table.component';
@@ -36,9 +36,8 @@ function ReviewsPage() {
   const [deletingReview, setDeletingReview] = useState<Review | null>(null);
   const deleteReview = useDeleteReviewMutation();
 
-  const thisWeek = useMemo(
-    () => reviews.filter((r) => Date.now() - r.createdAt <= SEVEN_DAYS_MS),
-    [reviews],
+  const thisWeek = reviews.filter(
+    (r) => Date.now() - r.createdAt <= SEVEN_DAYS_MS,
   );
 
   const handleDeleteConfirm = async () => {

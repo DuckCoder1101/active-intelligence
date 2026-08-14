@@ -8,7 +8,7 @@ import {
 
 /** Firestore: `company_operational` (top-level, doc id = companyId — one doc per company, no `col()` nesting needed). */
 export class CompanyOperationalRepository {
-  private static collection = database.collection("company_operational");
+  private static collection = database.collection("company_operationals");
 
   /** Unlike other repositories, a missing doc is not an error — returns empty defaults instead of throwing `not-found`. */
   static async getByCompanyId(

@@ -1,7 +1,7 @@
 import { HttpsError } from "firebase-functions/https";
 import { FieldValue, WriteBatch } from "firebase-admin/firestore";
 
-import { database } from "functions-shared";
+import { assertUniqueField, database } from "functions-shared";
 import {
   DEFAULT_TASK_CATEGORIES,
   TaskCategoryDocument,
@@ -33,7 +33,7 @@ async function commitInChunks(
 
 /**
  * Firestore: `task_categories` (top-level), with sub-collection
- * `task_categories/{categoryId}/subcategories`; also reads `tasks` (top-level) to
+ * `task_categories/{categoryId}/task_subcategories`; also reads `tasks` (top-level) to
  * reassign/unlink tasks on delete.
  */
 export class TaskCategoryRepository {
@@ -41,7 +41,7 @@ export class TaskCategoryRepository {
   private static tasksCol = database.collection("tasks");
 
   private static subcategoriesCol(categoryId: string) {
-    return this.col.doc(categoryId).collection("subcategories");
+    return this.col.doc(categoryId).collection("task_subcategories");
   }
 
   private static async subcategoriesFor(
@@ -105,6 +105,15 @@ export class TaskCategoryRepository {
         throw new HttpsError("not-found", "Categoria não encontrada.");
       }
     }
+
+    await assertUniqueField(this.col, "name", data.name, {
+      excludeId: ref.id,
+      label: "Esse nome de categoria",
+    });
+    await assertUniqueField(this.col, "color", data.color, {
+      excludeId: ref.id,
+      label: "Essa cor",
+    });
 
     await ref.set(
       {
@@ -203,6 +212,11 @@ export class TaskCategoryRepository {
         throw new HttpsError("not-found", "Subcategoria não encontrada.");
       }
     }
+
+    await assertUniqueField(col, "name", data.name, {
+      excludeId: ref.id,
+      label: "Esse nome de subcategoria",
+    });
 
     await ref.set(
       {

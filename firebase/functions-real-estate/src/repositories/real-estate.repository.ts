@@ -79,7 +79,7 @@ function toDTO(id: string, data: RealEstateDocument): RealEstateDTO {
 }
 
 /**
- * Firestore: `companies/{companyId}/real_estate`, plus
+ * Firestore: `companies/{companyId}/real_estates`, plus
  * `companies/{companyId}/counters/real_estate` for atomic sequence allocation.
  */
 export class RealEstateRepository {
@@ -87,7 +87,7 @@ export class RealEstateRepository {
     return database
       .collection("companies")
       .doc(companyId)
-      .collection("real_estate");
+      .collection("real_estates");
   }
 
   private static counterRef(companyId: string) {
@@ -159,6 +159,21 @@ export class RealEstateRepository {
   static async listByCompany(companyId: string): Promise<RealEstateDTO[]> {
     const snap = await this.col(companyId).get();
     return snap.docs.map((doc) => toDTO(doc.id, doc.data() as RealEstateDocument));
+  }
+
+  static async findByCode(
+    companyId: string,
+    code: string,
+  ): Promise<RealEstateDTO | undefined> {
+    const snap = await this.col(companyId)
+      .where("code", "==", code)
+      .limit(1)
+      .get();
+    if (snap.empty) {
+      return undefined;
+    }
+    const doc = snap.docs[0];
+    return toDTO(doc.id, doc.data() as RealEstateDocument);
   }
 
   static async updateStatus(

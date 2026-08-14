@@ -7,6 +7,10 @@ import type {
   SaveRealEstateDTO,
 } from '@/models/real-estate.model';
 import { functions, storage } from '@/utils/firebase.util';
+import type {
+  ImportRealEstateResult,
+  ImportRealEstateRow,
+} from '@/utils/real-estate-spreadsheet';
 
 export default class RealEstateService {
   private static listCallable = httpsCallable<
@@ -28,6 +32,16 @@ export default class RealEstateService {
     { companyId: string; realEstateId: string; status: RealEstateStatus },
     boolean
   >(functions, 'updateRealEstateStatusHandler');
+
+  private static importCallable = httpsCallable<
+    { companyId: string; rows: ImportRealEstateRow[] },
+    ImportRealEstateResult
+  >(functions, 'importRealEstateHandler');
+
+  private static exportCallable = httpsCallable<
+    { companyId: string },
+    RealEstate[]
+  >(functions, 'exportRealEstateHandler');
 
   static async listRealEstate(companyId: string): Promise<RealEstate[]> {
     const r = await this.listCallable({ companyId });
@@ -52,6 +66,19 @@ export default class RealEstateService {
     status: RealEstateStatus,
   ): Promise<void> {
     await this.updateStatusCallable({ companyId, realEstateId, status });
+  }
+
+  static async importRealEstate(
+    companyId: string,
+    rows: ImportRealEstateRow[],
+  ): Promise<ImportRealEstateResult> {
+    const r = await this.importCallable({ companyId, rows });
+    return r.data;
+  }
+
+  static async exportRealEstate(companyId: string): Promise<RealEstate[]> {
+    const r = await this.exportCallable({ companyId });
+    return r.data;
   }
 
   static async uploadImage(

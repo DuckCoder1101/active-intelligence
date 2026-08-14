@@ -21,6 +21,8 @@ import toastifyCss from 'react-toastify/dist/ReactToastify.css?url';
 import type { RouterContext } from '../router';
 import appCss from '../styles.css?url';
 
+const COMPANY_PATH_RE = /^\/company\/([^/]+)/;
+
 import { FcmNotificationsProvider } from '@/providers/fcm-notifications.provider';
 import { NotificationsProvider } from '@/providers/notifications.provider';
 import { ThemeProvider } from '@/providers/theme.provider';
@@ -86,8 +88,13 @@ function RootErrorBoundary({ error }: ErrorComponentProps) {
       // Sessão local ficou com token que o backend não reconhece mais (ex:
       // emulador de auth reiniciado) — sem isso o usuário fica preso nesta
       // tela sem nenhum jeito de deslogar e tentar de novo.
+      const companyMatch = COMPANY_PATH_RE.exec(router.state.location.pathname);
       signOut(auth).finally(() => {
-        router.navigate({ to: '/auth/signin', replace: true });
+        router.navigate({
+          to: '/auth/signin',
+          replace: true,
+          search: companyMatch ? { companyId: companyMatch[1] } : undefined,
+        });
       });
     }
   }, [isPermissionDenied, isUnauthenticated, router]);

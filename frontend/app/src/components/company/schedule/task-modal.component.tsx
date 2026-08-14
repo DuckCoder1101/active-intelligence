@@ -10,8 +10,8 @@ import { FormSelect } from '@/components/ui/form-select.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { useAuth } from '@/contexts/auth.context';
 import { formatDateLong } from '@/formatters/formatDate';
-import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
-import { PENDING_APPROVAL_COLUMN_ID, APPROVED_COLUMN_ID } from '@/models/operational-kanban.model';
+import type { AdminTasksBoardColumn } from '@/models/admin-tasks-board.model';
+import { PENDING_APPROVAL_COLUMN_ID, APPROVED_COLUMN_ID } from '@/models/admin-tasks-board.model';
 import type { Task, CreateClientTaskDTO } from '@/models/task.model';
 import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
 import {
@@ -28,7 +28,7 @@ function toInputDate(d: Date): string {
 interface Props {
   companyId: string;
   task?: Task;
-  columns: OperationalKanbanColumn[];
+  columns: AdminTasksBoardColumn[];
   defaultDate?: Date;
   onClose: () => void;
   onCreated: (task: Task) => void;

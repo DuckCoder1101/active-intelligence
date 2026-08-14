@@ -259,17 +259,19 @@ export function CrmBoard({
                   <span className="shrink-0 rounded-full bg-border px-2 py-0.5 text-[10px] font-bold text-text-muted">
                     {colLeads.length}
                   </span>
-                  <button
-                    type="button"
-                    title="Excluir quadro"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeletingColumnId(col.columnId);
-                    }}
-                    className="shrink-0 text-text-muted/50 transition-colors hover:text-danger"
-                  >
-                    <MdDeleteOutline size={14} />
-                  </button>
+                  {!col.isFixed && (
+                    <button
+                      type="button"
+                      title="Excluir quadro"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeletingColumnId(col.columnId);
+                      }}
+                      className="shrink-0 text-text-muted/50 transition-colors hover:text-danger"
+                    >
+                      <MdDeleteOutline size={14} />
+                    </button>
+                  )}
                 </div>
 
                 <div

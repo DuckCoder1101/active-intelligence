@@ -353,6 +353,7 @@ export interface CrmColumn {
   name: string;
   color: string;
   order: number;
+  isFixed: boolean;
 }
 
 export interface CrmFunnel {

@@ -1,6 +1,6 @@
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 
 import { CreateCompanyModal } from '@/components/companies/modal.component';
@@ -58,7 +58,7 @@ function AdminCompanies() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-  const filtered = useMemo(() => {
+  const filtered = (() => {
     let list = companies.filter((c) =>
       filter === 'inativos'
         ? c.companyStage === 'inactive'
@@ -76,7 +76,7 @@ function AdminCompanies() {
     }
 
     return list;
-  }, [companies, filter, search]);
+  })();
 
   const handleSaved = () => {
     setShowModal(false);

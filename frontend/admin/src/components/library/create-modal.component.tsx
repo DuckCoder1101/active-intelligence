@@ -24,7 +24,11 @@ interface CreateGuideModalProps {
 export function CreateGuideModal({ onClose }: CreateGuideModalProps) {
   const navigate = useNavigate();
   const saveGuide = useSaveGuideMutation();
-  const { register, handleSubmit } = useForm<CreateGuideFormValues>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateGuideFormValues>();
 
   // Reflete o contador real salvo no banco (library/hub.guideSequence),
   // não uma estimativa a partir dos guias já carregados na lista.
@@ -76,7 +80,11 @@ export function CreateGuideModal({ onClose }: CreateGuideModalProps) {
               <span className="text-[13px] text-text-muted">{prefix}</span>
             )
           }
-          {...register('name')}
+          error={errors.name?.message}
+          {...register('name', {
+            minLength: { value: 5, message: 'Nome muito curto' },
+            maxLength: { value: 20, message: 'Máximo 20 caracteres' },
+          })}
         />
       </form>
     </Modal>

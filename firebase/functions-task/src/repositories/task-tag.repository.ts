@@ -1,7 +1,7 @@
 import { HttpsError } from "firebase-functions/https";
 import { FieldValue } from "firebase-admin/firestore";
 
-import { database } from "functions-shared";
+import { assertUniqueField, database } from "functions-shared";
 import { TaskTagDocument } from "../types/task-tag.document";
 import { SaveTaskTagDTO, TaskTagDTO } from "../types/task-tag.dto";
 
@@ -27,6 +27,10 @@ export class TaskTagRepository {
 
   /** Always creates a new tag — no upsert-by-id. */
   static async save(data: SaveTaskTagDTO): Promise<TaskTagDTO> {
+    await assertUniqueField(this.col, "name", data.name, {
+      label: "Essa tag",
+    });
+
     const ref = this.col.doc();
     await ref.set({
       name: data.name,

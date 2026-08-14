@@ -21,12 +21,17 @@ const schema = z.object({
   guideId: optionalString(),
   // Rótulo opcional — o nome final (G-001, G-002-MeuGuia...) é gerado no
   // repositório a partir do número sequencial do guia.
-  name: optionalString(),
+  name: z
+    .string()
+    .min(5, "Nome muito curto")
+    .max(20, "Máximo 20 caracteres")
+    .nullish()
+    .transform((v) => v ?? undefined),
   driveUrl: optionalString(),
   socialUrl: optionalString(),
   intentTags: optionalStringArray(),
+  // Plataforma e formato de gravação, unificados num único campo.
   platformTags: optionalStringArray(),
-  formatTags: optionalStringArray(),
   scriptPrompt: optionalString(),
   scriptGuide: z.array(scriptGuideBlockSchema).optional(),
   assignedCompanyIds: optionalStringArray(),

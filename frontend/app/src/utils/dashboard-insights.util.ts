@@ -1,5 +1,5 @@
 import type { CrmColumn, Lead } from '@/models/lead.model';
-import { APPROVED_COLUMN_ID } from '@/models/operational-kanban.model';
+import { APPROVED_COLUMN_ID } from '@/models/admin-tasks-board.model';
 import type { Task } from '@/models/task.model';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -110,7 +110,10 @@ export function computeFunnel(leads: Lead[], columns: CrmColumn[]): FunnelStage[
   }));
 }
 
-export function getTasksOnDay(tasks: Task[], day: number): Task[] {
+export function getTasksOnDay<T extends { dueDate: number }>(
+  tasks: T[],
+  day: number,
+): T[] {
   const start = startOfDay(day);
   const end = start + DAY_MS;
   return tasks

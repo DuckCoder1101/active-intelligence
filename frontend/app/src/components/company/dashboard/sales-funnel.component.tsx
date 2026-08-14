@@ -10,19 +10,64 @@ interface SalesFunnelProps {
 const STAGE_HEIGHT = 34;
 const STAGE_GAP = 3;
 const SVG_WIDTH = 160;
-/** Fixed shape: each stage is this much narrower than the previous one,
- * regardless of lead counts — only the printed numbers change with data. */
-const STAGE_WIDTH_STEP = 0.16;
+/** Fixed shape: the funnel always tapers linearly from full width down to
+ * this ratio at the last stage, regardless of lead counts or stage count —
+ * only the printed numbers change with data. Keeps the outline a clean V
+ * instead of flattening out when a company has many CRM columns. */
 const MIN_WIDTH_RATIO = 0.32;
+/** Cap so companies with many CRM columns don't blow up the card's height —
+ * the "Ver funil completo" link covers the rest. Keeps the "Fechado(s)"
+ * stage visible even when trimming — it's the funnel's outcome, unlike
+ * "Perdido" which may sort after it in older column setups. */
+const MAX_STAGES = 5;
+
+function isClosedStageName(name: string): boolean {
+  const normalized = name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim()
+    .toLowerCase();
+  return normalized === 'fechado' || normalized === 'fechados';
+}
+
+/** Fixed orange-to-red gradient, independent of each CRM column's configured
+ * color, so the widget always reads as a single funnel visual. */
+const GRADIENT_FROM = [255, 106, 0] as const; // --orange
+const GRADIENT_TO = [183, 20, 47] as const; // deep red
+
+function gradientColor(index: number, total: number): string {
+  const t = total > 1 ? index / (total - 1) : 0;
+  const [r1, g1, b1] = GRADIENT_FROM;
+  const [r2, g2, b2] = GRADIENT_TO;
+  const r = Math.round(r1 + (r2 - r1) * t);
+  const g = Math.round(g1 + (g2 - g1) * t);
+  const b = Math.round(b1 + (b2 - b1) * t);
+  return `rgb(${r}, ${g}, ${b})`;
+}
 
 export function SalesFunnel({ companyId, stages }: SalesFunnelProps) {
+  const visibleStages = (() => {
+    if (stages.length <= MAX_STAGES) {
+      return stages;
+    }
+    const head = stages.slice(0, MAX_STAGES - 1);
+    const closedStage =
+      stages.find((s) => isClosedStageName(s.name)) ?? stages[stages.length - 1];
+    if (head.some((s) => s.columnId === closedStage.columnId)) {
+      return stages.slice(0, MAX_STAGES);
+    }
+    return [...head, closedStage];
+  })();
+
+  const widthStep =
+    visibleStages.length > 1 ? (1 - MIN_WIDTH_RATIO) / (visibleStages.length - 1) : 0;
   const widthFor = (index: number) => {
-    const ratio = Math.max(MIN_WIDTH_RATIO, 1 - index * STAGE_WIDTH_STEP);
+    const ratio = 1 - index * widthStep;
     return SVG_WIDTH * ratio;
   };
 
   const svgHeight =
-    stages.length * STAGE_HEIGHT + Math.max(stages.length - 1, 0) * STAGE_GAP;
+    visibleStages.length * STAGE_HEIGHT + Math.max(visibleStages.length - 1, 0) * STAGE_GAP;
 
   return (
     <div className="dashboard-card flex flex-1 flex-col p-4 sm:p-5">
@@ -41,17 +86,18 @@ export function SalesFunnel({ companyId, stages }: SalesFunnelProps) {
             role="img"
             aria-label="Funil de vendas"
           >
-            {stages.map((stage, i) => {
+            {visibleStages.map((stage, i) => {
               const topW = widthFor(i);
               const bottomW =
-                i < stages.length - 1 ? widthFor(i + 1) : topW * MIN_WIDTH_RATIO;
+                i < visibleStages.length - 1 ? widthFor(i + 1) : topW * MIN_WIDTH_RATIO;
               const y = i * (STAGE_HEIGHT + STAGE_GAP);
               const topX = (SVG_WIDTH - topW) / 2;
               const bottomX = (SVG_WIDTH - bottomW) / 2;
               const points = `${topX},${y} ${topX + topW},${y} ${bottomX + bottomW},${y + STAGE_HEIGHT} ${bottomX},${y + STAGE_HEIGHT}`;
+              const color = gradientColor(i, visibleStages.length);
               return (
                 <g key={stage.columnId}>
-                  <polygon points={points} fill={stage.color} />
+                  <polygon points={points} fill={color} />
                   <text
                     x={SVG_WIDTH / 2}
                     y={y + STAGE_HEIGHT / 2}
@@ -67,8 +113,8 @@ export function SalesFunnel({ companyId, stages }: SalesFunnelProps) {
             })}
           </svg>
 
-          <ul className="min-w-0 flex-1 space-y-2.5 pl-6">
-            {stages.map((stage) => (
+          <ul className="min-w-0 flex-1 pl-3">
+            {visibleStages.map((stage, i) => (
               <li
                 key={stage.columnId}
                 className="flex items-center gap-2 text-[12px]"
@@ -76,7 +122,7 @@ export function SalesFunnel({ companyId, stages }: SalesFunnelProps) {
               >
                 <span
                   className="h-2 w-2 shrink-0 rounded-full"
-                  style={{ backgroundColor: stage.color }}
+                  style={{ backgroundColor: gradientColor(i, visibleStages.length) }}
                 />
                 <span className="min-w-0 flex-1 truncate text-text-sub">
                   {stage.name}

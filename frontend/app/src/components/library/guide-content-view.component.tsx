@@ -11,11 +11,7 @@ interface GuideContentViewProps {
 // Cliente quanto pela página pública (/g/$guideId) — mesmo conteúdo, sem
 // nada de admin (sem prompt de roteiro, sem lista de clientes).
 export function GuideContentView({ guide }: GuideContentViewProps) {
-  const tags = [
-    ...guide.intentTags,
-    ...guide.platformTags,
-    ...guide.formatTags,
-  ];
+  const tags = [...guide.intentTags, ...guide.platformTags];
 
   return (
     <div className="mx-auto w-full max-w-2xl">

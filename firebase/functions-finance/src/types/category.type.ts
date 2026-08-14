@@ -1,7 +1,10 @@
 export const FINANCE_CATEGORY_TYPES = [
-  "receita",
+  "receitaRecorrente",
+  "receitaPontual",
+  "receitaVariavel",
   "custo",
   "despesa",
-  "investimento",
+  "proLabore",
+  "imposto",
 ] as const;
 export type FinanceCategoryType = (typeof FINANCE_CATEGORY_TYPES)[number];

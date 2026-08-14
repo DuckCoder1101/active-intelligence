@@ -32,10 +32,14 @@ export function Modal({
   dismissable = true,
 }: ModalProps) {
   useEffect(() => {
-    if (!dismissable) {return;}
+    if (!dismissable) {
+      return;
+    }
 
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {onClose();}
+      if (e.key === 'Escape') {
+        onClose();
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);

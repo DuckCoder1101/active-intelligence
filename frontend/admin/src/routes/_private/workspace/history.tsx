@@ -8,7 +8,7 @@ import { ActivityTimeline } from '@/components/workspace/history/activity-timeli
 import { DeliveriesList } from '@/components/workspace/history/deliveries-list.component';
 import { useWorkspaceFilter } from '@/hooks/use-workspace-filter.hook';
 import type { AuditAction } from '@/models/audit.model';
-import { APPROVED_COLUMN_ID } from '@/models/operational-kanban.model';
+import { APPROVED_COLUMN_ID } from '@/models/admin-tasks-board.model';
 import {
   companiesQueryOptions,
   workspaceAuditLogsQueryOptions,
@@ -60,9 +60,8 @@ function WorkspaceHistory() {
   const { data: tasks } = useSuspenseQuery(tasksQueryOptions());
   const { data: categories } = useSuspenseQuery(taskCategoriesQueryOptions());
 
-  const categoryMap = useMemo(
-    () => Object.fromEntries(categories.map((c) => [c.categoryId, c])),
-    [categories],
+  const categoryMap = Object.fromEntries(
+    categories.map((c) => [c.categoryId, c]),
   );
 
   const [view, setView] = useState<HistoryView>('activity');
@@ -72,10 +71,7 @@ function WorkspaceHistory() {
     workspaceAuditLogsQueryOptions(selectedCompanyIds),
   );
 
-  const companyMap = useMemo(
-    () => Object.fromEntries(companies.map((c) => [c.companyId, c])),
-    [companies],
-  );
+  const companyMap = Object.fromEntries(companies.map((c) => [c.companyId, c]));
 
   const filteredLogs = useMemo(
     () => logs.filter((log) => matchesKind(log.action, kind)),

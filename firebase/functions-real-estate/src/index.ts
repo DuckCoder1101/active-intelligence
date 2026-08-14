@@ -6,3 +6,5 @@ export * from "./handlers/saveRealEstate";
 export * from "./handlers/listRealEstate";
 export * from "./handlers/updateRealEstateStatus";
 export * from "./handlers/deleteRealEstate";
+export * from "./handlers/importRealEstate";
+export * from "./handlers/exportRealEstate";

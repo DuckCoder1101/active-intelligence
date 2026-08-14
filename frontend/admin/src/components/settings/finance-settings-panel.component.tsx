@@ -1,35 +1,29 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { useBlocker } from '@tanstack/react-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
-import { UnsavedChangesModal } from '@/components/settings/unsaved-changes-modal.component';
+import { BankAccountModal } from '@/components/settings/bank-account-modal.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import {
   FINANCE_CATEGORY_TYPES,
   FINANCE_CATEGORY_TYPE_LABELS,
 } from '@/models/finance.model';
-import type { FinanceCategoryType } from '@/models/finance.model';
+import type { FinanceAccount, FinanceCategoryType } from '@/models/finance.model';
 import {
   financeAccountsQueryOptions,
   financeSubcategoriesQueryOptions,
-  useDeleteFinanceAccountMutation,
   useDeleteFinanceSubcategoryMutation,
-  useSaveFinanceAccountMutation,
   useSaveFinanceSubcategoryMutation,
 } from '@/queries/finance.queries';
 import type {
-  DraftAccount,
   DraftSubcategoriesByCategory,
   DraftSubcategory,
 } from '@/utils/finance-settings-draft.util';
 import {
-  isAccountsDirty,
   isSubcategoriesDirty,
   newKey,
-  toDraftAccounts,
   toDraftSubcategoriesByCategory,
 } from '@/utils/finance-settings-draft.util';
 
@@ -41,19 +35,21 @@ interface RemovingSubcategory {
   name: string;
 }
 
-export function FinanceSettingsPanel() {
+interface Props {
+  onDirtyChange?: (dirty: boolean) => void;
+}
+
+export function FinanceSettingsPanel({ onDirtyChange }: Props) {
   const queryClient = useQueryClient();
   const { data: subcategories } = useSuspenseQuery(financeSubcategoriesQueryOptions());
   const { data: accounts } = useSuspenseQuery(financeAccountsQueryOptions());
 
   const saveSubcategory = useSaveFinanceSubcategoryMutation();
   const deleteSubcategory = useDeleteFinanceSubcategoryMutation();
-  const saveAccount = useSaveFinanceAccountMutation();
-  const deleteAccount = useDeleteFinanceAccountMutation();
 
   const [section, setSection] = useState<Section>('subcategories');
   const [selectedCategoryType, setSelectedCategoryType] =
-    useState<FinanceCategoryType>('receita');
+    useState<FinanceCategoryType>('receitaRecorrente');
 
   const [originalSubs, setOriginalSubs] = useState<DraftSubcategoriesByCategory>(
     () => toDraftSubcategoriesByCategory(subcategories),
@@ -63,14 +59,6 @@ export function FinanceSettingsPanel() {
   );
   const [removedSubcategoryIds, setRemovedSubcategoryIds] = useState<string[]>([]);
 
-  const [originalAccounts, setOriginalAccounts] = useState<DraftAccount[]>(() =>
-    toDraftAccounts(accounts),
-  );
-  const [draftAccounts, setDraftAccounts] = useState<DraftAccount[]>(() =>
-    toDraftAccounts(accounts),
-  );
-  const [removedAccountIds, setRemovedAccountIds] = useState<string[]>([]);
-
   const [draggingKey, setDraggingKey] = useState<string | null>(null);
   const [dragOverKey, setDragOverKey] = useState<string | null>(null);
 
@@ -78,23 +66,20 @@ export function FinanceSettingsPanel() {
   const [newSubName, setNewSubName] = useState('');
   const [removingSub, setRemovingSub] = useState<RemovingSubcategory | null>(null);
 
-  const [showAddAccount, setShowAddAccount] = useState(false);
-  const [newAccountName, setNewAccountName] = useState('');
-  const [removingAccount, setRemovingAccount] = useState<DraftAccount | null>(null);
-
   const newSubInputRef = useRef<HTMLInputElement>(null);
-  const newAccountInputRef = useRef<HTMLInputElement>(null);
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const dirty =
-    isSubcategoriesDirty(draftSubs, originalSubs, removedSubcategoryIds) ||
-    isAccountsDirty(draftAccounts, originalAccounts, removedAccountIds);
+  const [editingAccount, setEditingAccount] = useState<FinanceAccount | undefined>(
+    undefined,
+  );
+  const [showAccountModal, setShowAccountModal] = useState(false);
 
-  const blocker = useBlocker({
-    shouldBlockFn: () => dirty,
-    withResolver: true,
-  });
+  const dirty = isSubcategoriesDirty(draftSubs, originalSubs, removedSubcategoryIds);
+
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+  }, [dirty, onDirtyChange]);
 
   function resetSubcategoriesDraft(source: typeof subcategories) {
     const fresh = toDraftSubcategoriesByCategory(source);
@@ -103,16 +88,8 @@ export function FinanceSettingsPanel() {
     setRemovedSubcategoryIds([]);
   }
 
-  function resetAccountsDraft(source: typeof accounts) {
-    const fresh = toDraftAccounts(source);
-    setOriginalAccounts(fresh);
-    setDraftAccounts(fresh);
-    setRemovedAccountIds([]);
-  }
-
   const handleCancel = () => {
     resetSubcategoriesDraft(subcategories);
-    resetAccountsDraft(accounts);
   };
 
   // --- Subcategorias ---
@@ -189,39 +166,14 @@ export function FinanceSettingsPanel() {
 
   // --- Contas ---
 
-  const handleAddAccount = () => {
-    if (!newAccountName.trim()) {
-      return;
-    }
-    setDraftAccounts((prev) => [
-      ...prev,
-      { key: newKey(), name: newAccountName.trim() },
-    ]);
-    setNewAccountName('');
-    setShowAddAccount(false);
+  const openNewAccount = () => {
+    setEditingAccount(undefined);
+    setShowAccountModal(true);
   };
 
-  const requestRemoveAccount = (account: DraftAccount) => {
-    if (!account.accountId) {
-      setDraftAccounts((prev) => prev.filter((a) => a.key !== account.key));
-      return;
-    }
-    setRemovingAccount(account);
-  };
-
-  const handleConfirmRemoveAccount = () => {
-    if (!removingAccount) {
-      return;
-    }
-    setDraftAccounts((prev) => prev.filter((a) => a.key !== removingAccount.key));
-    if (removingAccount.accountId) {
-      setRemovedAccountIds((prev) => [...prev, removingAccount.accountId!]);
-    }
-    setRemovingAccount(null);
-  };
-
-  const handleRenameAccount = (key: string, name: string) => {
-    setDraftAccounts((prev) => prev.map((a) => (a.key === key ? { ...a, name } : a)));
+  const openAccount = (account: FinanceAccount) => {
+    setEditingAccount(account);
+    setShowAccountModal(true);
   };
 
   // --- Salvar ---
@@ -254,24 +206,9 @@ export function FinanceSettingsPanel() {
         await deleteSubcategory.mutateAsync(subcategoryId);
       }
 
-      for (const acc of draftAccounts) {
-        const orig = originalAccounts.find((o) => o.accountId === acc.accountId);
-        const changed = !acc.accountId || !orig || orig.name !== acc.name;
-        if (changed) {
-          await saveAccount.mutateAsync({ accountId: acc.accountId, name: acc.name });
-        }
-      }
-      for (const accountId of removedAccountIds) {
-        await deleteAccount.mutateAsync(accountId);
-      }
-
       toast.success('Configurações salvas!');
-      const [freshSubs, freshAccounts] = await Promise.all([
-        queryClient.fetchQuery(financeSubcategoriesQueryOptions()),
-        queryClient.fetchQuery(financeAccountsQueryOptions()),
-      ]);
+      const freshSubs = await queryClient.fetchQuery(financeSubcategoriesQueryOptions());
       resetSubcategoriesDraft(freshSubs);
-      resetAccountsDraft(freshAccounts);
     } catch {
       toast.error('Não foi possível salvar. Tente novamente.');
     } finally {
@@ -285,7 +222,7 @@ export function FinanceSettingsPanel() {
         <div>
           <h1 className="text-[18px] font-bold text-text">Financeiro</h1>
           <p className="mt-0.5 text-[12px] text-text-sub">
-            Subcategorias e contas usadas nos lançamentos do módulo Financeiro.
+            Subcategorias e contas bancárias usadas nos lançamentos do módulo Financeiro.
           </p>
         </div>
       </div>
@@ -313,7 +250,7 @@ export function FinanceSettingsPanel() {
       </div>
 
       <div className="flex flex-1 gap-8 overflow-y-auto px-6 py-6">
-        {section === 'subcategories' ? (
+        {section === 'subcategories' && (
           <>
             <div className="flex w-full max-w-sm shrink-0 flex-col gap-2">
               <h2 className="text-[13px] font-bold text-text">Categoria</h2>
@@ -459,114 +396,69 @@ export function FinanceSettingsPanel() {
               )}
             </div>
           </>
-        ) : (
-          <div className="flex w-full max-w-sm flex-col gap-2">
-            <h2 className="text-[13px] font-bold text-text">Contas</h2>
+        )}
 
-            {draftAccounts.length === 0 && !showAddAccount && (
+        {section === 'accounts' && (
+          <div className="flex w-full max-w-sm flex-col gap-2">
+            <h2 className="text-[13px] font-bold text-text">Contas bancárias</h2>
+
+            {accounts.length === 0 && (
               <p className="mb-1 text-[12px] text-text-muted">
                 Nenhuma conta cadastrada.
               </p>
             )}
 
-            {draftAccounts.map((account) => (
-              <div
-                key={account.key}
-                className="group flex items-center gap-2 rounded-xl border border-border bg-card px-3.5 py-2"
+            {accounts.map((account) => (
+              <button
+                key={account.accountId}
+                type="button"
+                onClick={() => openAccount(account)}
+                className="flex flex-col items-start gap-0.5 rounded-xl border border-border bg-card px-3.5 py-2.5 text-left transition-colors hover:border-orange"
               >
-                <input
-                  value={account.name}
-                  onChange={(e) => handleRenameAccount(account.key, e.target.value)}
-                  className="flex-1 bg-transparent text-[13px] text-text outline-none"
-                />
-                {!account.accountId && (
-                  <span className="shrink-0 rounded-full bg-orange/10 px-2 py-0.5 text-[9px] font-bold uppercase text-orange">
-                    Novo
-                  </span>
-                )}
-                <button
-                  type="button"
-                  title="Remover conta"
-                  onClick={() => requestRemoveAccount(account)}
-                  className="shrink-0 text-text-muted/50 opacity-0 transition-opacity hover:text-danger group-hover:opacity-100"
-                >
-                  <MdDeleteOutline size={15} />
-                </button>
-              </div>
+                <span className="text-[13px] font-semibold text-text">
+                  {account.name}
+                </span>
+                <span className="text-[11px] text-text-muted">
+                  {account.bankName
+                    ? `${account.bankName} · Ag. ${account.agency} · Cc. ${account.accountNumber}`
+                    : 'Dados bancários pendentes de preenchimento'}
+                </span>
+              </button>
             ))}
 
-            {showAddAccount ? (
-              <div className="flex items-center gap-2">
-                <input
-                  ref={newAccountInputRef}
-                  type="text"
-                  autoFocus
-                  value={newAccountName}
-                  onChange={(e) => setNewAccountName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleAddAccount();
-                    }
-                    if (e.key === 'Escape') {
-                      setShowAddAccount(false);
-                      setNewAccountName('');
-                    }
-                  }}
-                  placeholder="Nome da conta"
-                  className="flex-1 rounded-md border border-border bg-bg px-3 py-2 text-[13px] text-text outline-none focus:border-orange"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddAccount}
-                  disabled={!newAccountName.trim()}
-                  className="rounded-lg bg-orange px-3 py-2 text-[12px] font-semibold text-white transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Adicionar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddAccount(false);
-                    setNewAccountName('');
-                  }}
-                  className="rounded-lg border border-border px-3 py-2 text-[12px] text-text-sub transition-colors hover:bg-bg"
-                >
-                  Cancelar
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowAddAccount(true)}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border py-3 text-[12px] font-semibold text-text-muted transition-colors hover:border-orange hover:text-orange"
-              >
-                <MdAdd size={15} />
-                Nova conta
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={openNewAccount}
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border py-3 text-[12px] font-semibold text-text-muted transition-colors hover:border-orange hover:text-orange"
+            >
+              <MdAdd size={15} />
+              Nova conta bancária
+            </button>
           </div>
         )}
       </div>
 
-      <div className="flex shrink-0 items-center justify-end gap-3 border-t border-border px-6 py-4">
-        <button
-          type="button"
-          onClick={handleCancel}
-          disabled={!dirty || isSaving}
-          className="btn-ghost-border"
-        >
-          Cancelar
-        </button>
-        <button
-          type="button"
-          onClick={() => void handleSave()}
-          disabled={!dirty || isSaving}
-          className="btn-primary"
-        >
-          {isSaving && <Spinner size={12} />}
-          Salvar
-        </button>
-      </div>
+      {section !== 'accounts' && (
+        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-border px-6 py-4">
+          <button
+            type="button"
+            onClick={handleCancel}
+            disabled={!dirty || isSaving}
+            className="btn-ghost-border"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleSave()}
+            disabled={!dirty || isSaving}
+            className="btn-primary"
+          >
+            {isSaving && <Spinner size={12} />}
+            Salvar
+          </button>
+        </div>
+      )}
 
       {removingSub && (
         <ConfirmDeleteModal
@@ -577,17 +469,13 @@ export function FinanceSettingsPanel() {
         />
       )}
 
-      {removingAccount && (
-        <ConfirmDeleteModal
-          title="Remover conta"
-          description={`Remover "${removingAccount.name}"? Isso só é aplicado quando você salvar.`}
-          onConfirm={handleConfirmRemoveAccount}
-          onCancel={() => setRemovingAccount(null)}
+      {showAccountModal && (
+        <BankAccountModal
+          account={editingAccount}
+          onClose={() => setShowAccountModal(false)}
+          onSaved={() => setShowAccountModal(false)}
+          onDeleted={() => setShowAccountModal(false)}
         />
-      )}
-
-      {blocker.status === 'blocked' && (
-        <UnsavedChangesModal onDiscard={blocker.proceed} onCancel={blocker.reset} />
       )}
     </div>
   );

@@ -56,11 +56,7 @@ export function GuidesTable({ guides, isLoading }: GuidesTableProps) {
         </thead>
         <tbody className="divide-y divide-border bg-card">
           {guides.map((guide) => {
-            const tags = [
-              ...guide.intentTags,
-              ...guide.platformTags,
-              ...guide.formatTags,
-            ];
+            const tags = [...guide.intentTags, ...guide.platformTags];
 
             return (
               <tr

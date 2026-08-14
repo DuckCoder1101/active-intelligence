@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { BrazilianState } from "../../enums/brazilianState.enum";
 import { checkCnpj } from "../../validations/checkCNPJ";
+import { stripMask } from "../../validations/mask.util";
 import { BusinessSector } from "./businessSector.enum";
 import { RevenueRange } from "./revenueRange.enum";
 import { CompanyStage } from "./companyStage.emum";
@@ -121,23 +122,26 @@ export default class CompanySchema {
     legalInformation: z.object({
       legalName: z
         .string()
+        .min(5, "Razão social muito curta!")
+        .max(80, "Razão social muito longa!")
         .nullish()
         .transform((v) => v ?? undefined),
       tradeName: z
         .string()
+        .min(5, "Nome fantasia muito curto!")
+        .max(80, "Nome fantasia muito longo!")
         .nullish()
         .transform((v) => v ?? undefined),
-      documentNumber: z
-        .string()
-        .transform((v) => v.replace(/\D/g, ""))
-        .refine(checkCnpj, "CNPJ inválido!"),
+      // Salvo COM máscara (dígito verificador validado sobre a versão sem máscara).
+      documentNumber: z.string().refine(checkCnpj, "CNPJ inválido!"),
     }),
 
     companyStage: z.enum(CompanyStage).default(CompanyStage.comercial),
 
     contact: z.object({
-      email: z.email("E-mail inválido!"),
-      phone: z.string().transform((v) => v.replace(/\D/g, "")),
+      email: z.email("E-mail inválido!").max(60, "E-mail muito longo!"),
+      // Salvo COM máscara.
+      phone: z.string(),
     }),
 
     business: z
@@ -196,7 +200,7 @@ export default class CompanySchema {
       zipCode: z
         .string()
         .nullish()
-        .transform((v) => (v ? v.replace(/\D/g, "") : undefined))
+        .transform((v) => (v ? stripMask(v) : undefined))
         .refine((v) => v === undefined || v.length === 8, "CEP inválido!"),
     }),
 
@@ -204,6 +208,7 @@ export default class CompanySchema {
       .object({
         websiteUrl: z
           .string()
+          .max(50, "URL muito longa!")
           .nullish()
           .transform((v) => v || undefined)
           .pipe(z.string().url("URL inválida!").optional()),

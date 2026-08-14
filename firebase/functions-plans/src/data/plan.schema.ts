@@ -11,8 +11,8 @@ export default class PlanSchema {
     name: z
       .string()
       .trim()
-      .min(1, "Nome obrigatório")
-      .max(60, "Máximo 60 caracteres"),
+      .min(5, "Nome muito curto")
+      .max(20, "Máximo 20 caracteres"),
     billingType: z.enum(PLAN_BILLING_TYPES, {
       message: "Tipo de cobrança inválido",
     }),

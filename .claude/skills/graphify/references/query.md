@@ -22,7 +22,7 @@ If it fails, stop and tell the user to run `/graphify <path>` first.
 
 ### Step 0 — Constrained query expansion (REQUIRED before traversal)
 
-graphify's `query` CLI matches nodes via case-folded substring + IDF — there is **no stemming, no synonyms, no cross-language match** inside the binary, and the inline fallback below matches the same way. If the user's question uses different language or different domain vocabulary than the graph's labels (user says "обработчик" / graph says "handler"; user says "authentication" / graph says "Guardian"), the literal matcher returns 0 hits and the answer collapses to noise.
+graphify's `query` CLI matches nodes via case-folded subString + IDF — there is **no stemming, no synonyms, no cross-language match** inside the binary, and the inline fallback below matches the same way. If the user's question uses different language or different domain vocabulary than the graph's labels (user says "обработчик" / graph says "handler"; user says "authentication" / graph says "Guardian"), the literal matcher returns 0 hits and the answer collapses to noise.
 
 Fix this **without inventing tokens** by expanding the query against the actual graph vocabulary first:
 
@@ -60,7 +60,7 @@ If the list is empty, say so plainly and stop — do not proceed to traversal.
 
 ### Step 1 — Traversal
 
-Build the **expanded query string** by joining the selected tokens with spaces. Use this string as `QUESTION` below — NOT the original user question. (The original question is preserved only for `save-result` at the end.)
+Build the **expanded query String** by joining the selected tokens with spaces. Use this String as `QUESTION` below — NOT the original user question. (The original question is preserved only for `save-result` at the end.)
 
 Prefer the CLI when it is installed:
 ```bash
@@ -163,7 +163,7 @@ print(output)
 "
 ```
 
-Replace `QUESTION` with the **expanded** query string, `MODE` with `bfs` or `dfs`, and `BUDGET` with the token budget (default `2000`, or whatever `--budget N` specifies). Then answer based on the subgraph output above, using only what the graph contains.
+Replace `QUESTION` with the **expanded** query String, `MODE` with `bfs` or `dfs`, and `BUDGET` with the token budget (default `2000`, or whatever `--budget N` specifies). Then answer based on the subgraph output above, using only what the graph contains.
 
 After writing the answer, save it back into the graph so it improves future queries. Include the expanded tokens inside the `--answer` text (e.g. `"Expanded from original query via vocab: [tokens]. Then traversed..."`) so the next `--update` extracts the expansion history as a graph node:
 

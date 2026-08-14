@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { MdAdd, MdCheck, MdDeleteOutline } from 'react-icons/md';
 
 import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
-import { COLUMN_COLOR_PRESETS } from '@/models/operational-kanban.model';
+import { COLUMN_COLOR_PRESETS } from '@/models/admin-tasks-board.model';
 import type { DraftCategory } from '@/utils/task-category-draft.util';
 
 interface Props {

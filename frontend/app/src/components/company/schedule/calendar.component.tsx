@@ -6,16 +6,17 @@ import {
   MdClose,
   MdOutlinePerson,
   MdOutlineCalendarToday,
+  MdOutlineAccessTime,
   MdOutlineWork,
   MdPersonOutline,
 } from 'react-icons/md';
 
-import { PersonalTaskModal } from './personal-task-modal.component';
+import { CompanyInternalTaskModal } from './company-internal-task-modal.component';
 import { ClientTaskModal } from './task-modal.component';
 
-import { formatDateShort } from '@/formatters/formatDate';
-import type { OperationalKanbanColumn } from '@/models/operational-kanban.model';
-import type { PersonalTask } from '@/models/personal-task.model';
+import { formatDateShort, formatTime } from '@/formatters/formatDate';
+import type { AdminTasksBoardColumn } from '@/models/admin-tasks-board.model';
+import type { CompanyInternalTask } from '@/models/company-internal-task.model';
 import type { Task, TaskCategory } from '@/models/task.model';
 
 const FALLBACK_COLUMN_COLOR = '#94a3b8';
@@ -41,10 +42,12 @@ const MAX_CHIPS = 2;
 
 type CalendarItem =
   | { kind: 'agency'; task: Task }
-  | { kind: 'personal'; task: PersonalTask };
+  | { kind: 'personal'; task: CompanyInternalTask };
 
 function itemId(item: CalendarItem): string {
-  return item.kind === 'agency' ? item.task.taskId : item.task.personalTaskId;
+  return item.kind === 'agency'
+    ? item.task.taskId
+    : item.task.companyInternalTaskId;
 }
 
 function itemDueDate(item: CalendarItem): number {
@@ -53,10 +56,10 @@ function itemDueDate(item: CalendarItem): number {
 
 function itemVisual(
   item: CalendarItem,
-  columns: OperationalKanbanColumn[],
+  columns: AdminTasksBoardColumn[],
 ): { color: string; label: string } {
   if (item.kind === 'personal') {
-    return { color: PERSONAL_COLOR, label: PERSONAL_LABEL };
+    return { color: item.task.color, label: PERSONAL_LABEL };
   }
   const column = columns.find((c) => c.columnId === item.task.status);
   return {
@@ -68,7 +71,7 @@ function itemVisual(
 interface DayModalProps {
   date: Date;
   items: CalendarItem[];
-  columns: OperationalKanbanColumn[];
+  columns: AdminTasksBoardColumn[];
   categories: TaskCategory[];
   onNewTask: () => void;
   onItemClick: (item: CalendarItem) => void;
@@ -211,9 +214,15 @@ function DayModal({
                               </span>
                             )}
                           </div>
-                          <span className="flex shrink-0 items-center gap-1 text-[10px] text-text-muted/70">
-                            <MdOutlineCalendarToday size={10} />
-                            {formatDateShort(task.dueDate)}
+                          <span className="flex shrink-0 items-center gap-2 text-[10px] text-text-muted/70">
+                            <span className="flex items-center gap-1">
+                              <MdOutlineCalendarToday size={10} />
+                              {formatDateShort(task.dueDate)}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MdOutlineAccessTime size={10} />
+                              {formatTime(task.dueDate)}
+                            </span>
                           </span>
                         </div>
                       </div>
@@ -301,8 +310,8 @@ function TaskKindChooser({ onChoose, onClose }: KindChooserProps) {
 interface Props {
   companyId: string;
   tasks: Task[];
-  personalTasks: PersonalTask[];
-  columns: OperationalKanbanColumn[];
+  internalTasks: CompanyInternalTask[];
+  columns: AdminTasksBoardColumn[];
   categories: TaskCategory[];
   year: number;
   month: number;
@@ -323,7 +332,7 @@ type SubModal =
 export function CompanyScheduleCalendar({
   companyId,
   tasks,
-  personalTasks,
+  internalTasks,
   columns,
   categories,
   year,
@@ -350,7 +359,7 @@ export function CompanyScheduleCalendar({
 
   const items: CalendarItem[] = [
     ...tasks.map((task): CalendarItem => ({ kind: 'agency', task })),
-    ...personalTasks.map((task): CalendarItem => ({ kind: 'personal', task })),
+    ...internalTasks.map((task): CalendarItem => ({ kind: 'personal', task })),
   ];
 
   const itemsByDay: Partial<Record<number, CalendarItem[]>> = {};
@@ -556,7 +565,7 @@ export function CompanyScheduleCalendar({
 
       {/* Create personal task modal */}
       {subModal === 'create-personal' && (
-        <PersonalTaskModal
+        <CompanyInternalTaskModal
           companyId={companyId}
           defaultDate={selectedDate ?? undefined}
           onClose={closeSubModal}
@@ -582,9 +591,9 @@ export function CompanyScheduleCalendar({
 
       {subModal === 'view-personal' &&
         viewingItem?.kind === 'personal' && (
-          <PersonalTaskModal
+          <CompanyInternalTaskModal
             companyId={companyId}
-            personalTask={viewingItem.task}
+            internalTask={viewingItem.task}
             onClose={closeSubModal}
             onSaved={closeSubModal}
             onDeleted={closeSubModal}

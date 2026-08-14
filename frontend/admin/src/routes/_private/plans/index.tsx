@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 
 import { PlanModal } from '@/components/plans/plan-modal.component';
@@ -23,13 +23,13 @@ function PlansPage() {
   const [selectedPlan, setSelectedPlan] = useState<Plan | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
 
-  const filtered = useMemo(() => {
+  const filtered = (() => {
     const term = search.trim().toLowerCase();
     if (!term) {
       return plans;
     }
     return plans.filter((p) => p.name.toLowerCase().includes(term));
-  }, [plans, search]);
+  })();
 
   const openNew = () => {
     setSelectedPlan(undefined);

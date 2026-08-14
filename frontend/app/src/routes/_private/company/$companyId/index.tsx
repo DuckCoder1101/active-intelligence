@@ -15,14 +15,15 @@ import { TodayActivitiesCard } from '@/components/company/dashboard/today-activi
 import { UpcomingScheduleCard } from '@/components/company/dashboard/upcoming-schedule-card.component';
 import { WelcomeModal } from '@/components/company/dashboard/welcome-modal.component';
 import { useAuth } from '@/contexts/auth.context';
+import { useTheme } from '@/contexts/theme.context';
 import { useIsFirstTime } from '@/hooks/use-is-first-time.hook';
 import {
   crmColumnsQueryOptions,
   crmFunnelsQueryOptions,
   leadsQueryOptions,
 } from '@/queries/company-crm.queries';
-import { operationalKanbanColumnsQueryOptions } from '@/queries/operational-kanban.queries';
-import { taskCategoriesQueryOptions } from '@/queries/task-category.queries';
+import { adminTasksBoardColumnsQueryOptions } from '@/queries/admin-tasks-board.queries';
+import { companyInternalTasksQueryOptions } from '@/queries/company-internal-task.queries';
 import {
   calendarTasksQueryOptions,
   clientTasksQueryOptions,
@@ -65,11 +66,15 @@ export const Route = createFileRoute('/_private/company/$companyId/')({
       context.queryClient.ensureQueryData(
         calendarTasksQueryOptions(params.companyId, nextYear, nextMonth),
       ),
-      context.queryClient.ensureQueryData(operationalKanbanColumnsQueryOptions()),
+      context.queryClient.ensureQueryData(
+        adminTasksBoardColumnsQueryOptions(),
+      ),
       context.queryClient.ensureQueryData(
         clientTasksQueryOptions(params.companyId),
       ),
-      context.queryClient.ensureQueryData(taskCategoriesQueryOptions()),
+      context.queryClient.ensureQueryData(
+        companyInternalTasksQueryOptions(params.companyId),
+      ),
     ]);
   },
   component: CompanyDashboard,
@@ -79,6 +84,7 @@ export const Route = createFileRoute('/_private/company/$companyId/')({
 function CompanyDashboard() {
   const { companyId } = Route.useParams();
   const { claims, userProfile } = useAuth();
+  const { theme } = useTheme();
   const firstName = userProfile?.name.split(' ')[0] ?? '';
 
   // Boas-vindas é só pra cliente de verdade — admin/owner acessando o
@@ -91,13 +97,11 @@ function CompanyDashboard() {
   const showWelcome = isClientUser && !!userProfile && isFirstTime;
 
   const [now] = useState(() => Date.now());
-  const today = useMemo(() => new Date(now), [now]);
+  const today = new Date(now);
   const { year: nextYear, month: nextMonth } = nextMonthOf(today);
 
   const { data: leads } = useSuspenseQuery(leadsQueryOptions(companyId));
-  const { data: funnels } = useSuspenseQuery(
-    crmFunnelsQueryOptions(companyId),
-  );
+  const { data: funnels } = useSuspenseQuery(crmFunnelsQueryOptions(companyId));
   const primaryFunnelId = funnels[0].funnelId;
   const { data: crmColumns } = useSuspenseQuery(
     crmColumnsQueryOptions(companyId, primaryFunnelId),
@@ -109,11 +113,13 @@ function CompanyDashboard() {
     calendarTasksQueryOptions(companyId, nextYear, nextMonth),
   );
   const { data: operationalColumns = [] } = useQuery(
-    operationalKanbanColumnsQueryOptions(),
+    adminTasksBoardColumnsQueryOptions(),
   );
   const { data: clientData } = useQuery(clientTasksQueryOptions(companyId));
   const usage = clientData?.usage ?? { used: 0, limit: null, yearMonth: '' };
-  const { data: categories } = useSuspenseQuery(taskCategoriesQueryOptions());
+  const { data: internalTasks } = useSuspenseQuery(
+    companyInternalTasksQueryOptions(companyId),
+  );
 
   const tasks = useMemo(
     () => [...thisMonthTasks, ...nextMonthTasks],
@@ -129,7 +135,10 @@ function CompanyDashboard() {
     () => computeFunnel(primaryFunnelLeads, crmColumns),
     [primaryFunnelLeads, crmColumns],
   );
-  const todayTasks = useMemo(() => getTasksOnDay(tasks, now), [tasks, now]);
+  const todayTasks = useMemo(
+    () => getTasksOnDay(internalTasks, now),
+    [internalTasks, now],
+  );
   const upcomingTasks = useMemo(
     () => getUpcomingTasks(tasks, now, 7),
     [tasks, now],
@@ -151,14 +160,18 @@ function CompanyDashboard() {
     <div className="relative flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8">
       {showWelcome && <WelcomeModal onClose={markWelcomeSeen} />}
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-24 right-0 h-80 w-80 rounded-full bg-primary-glow/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-32 right-40 h-64 w-64 rounded-full bg-primary/20 blur-3xl"
-      />
+      {theme === 'dark' && (
+        <>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-24 right-0 h-80 w-80 rounded-full bg-primary-glow/20 blur-3xl"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-32 right-40 h-64 w-64 rounded-full bg-primary/20 blur-3xl"
+          />
+        </>
+      )}
 
       <div className="relative mx-auto w-full max-w-6xl">
         <div className="mb-8 animate-fade-in">
@@ -167,7 +180,8 @@ function CompanyDashboard() {
             {firstName}
           </h1>
           <p className="mt-1.5 text-[13px] text-text-sub">
-            Bem-vindo ao seu portal. Aqui você acompanha tudo sobre a sua empresa.
+            Bem-vindo ao seu portal. Aqui você acompanha tudo sobre a sua
+            empresa.
           </p>
         </div>
 
@@ -195,13 +209,25 @@ function CompanyDashboard() {
         </div>
 
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <div className="flex animate-fade-in" style={{ animationDelay: '60ms' }}>
+          <div
+            className="flex animate-fade-in"
+            style={{ animationDelay: '60ms' }}
+          >
             <SalesFunnel companyId={companyId} stages={funnelStages} />
           </div>
-          <div className="flex animate-fade-in" style={{ animationDelay: '120ms' }}>
-            <TodayActivitiesCard companyId={companyId} tasks={todayTasks} categories={categories} />
+          <div
+            className="flex animate-fade-in"
+            style={{ animationDelay: '120ms' }}
+          >
+            <TodayActivitiesCard
+              companyId={companyId}
+              tasks={todayTasks}
+            />
           </div>
-          <div className="flex animate-fade-in" style={{ animationDelay: '180ms' }}>
+          <div
+            className="flex animate-fade-in"
+            style={{ animationDelay: '180ms' }}
+          >
             <UpcomingScheduleCard
               companyId={companyId}
               tasks={upcomingTasks}
@@ -210,7 +236,10 @@ function CompanyDashboard() {
           </div>
         </div>
 
-        <div className="mt-4 animate-fade-in" style={{ animationDelay: '240ms' }}>
+        <div
+          className="mt-4 animate-fade-in"
+          style={{ animationDelay: '240ms' }}
+        >
           <PerformancePanel series={dailySeries} metrics={weeklyMetrics} />
         </div>
       </div>
