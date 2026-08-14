@@ -14,6 +14,7 @@ import {
   MdOutlineSentimentSatisfied,
   MdOutlineHistory,
   MdOutlinePeople,
+  MdOutlineSettings,
   MdDashboard,
   MdCalendarMonth,
   MdMenu,
@@ -22,6 +23,8 @@ import {
 import type { SidebarNavItem } from '@/components/layout/sidebar.component';
 import { Sidebar } from '@/components/layout/sidebar.component';
 import { ClientFilter } from '@/components/workspace/client-filter.component';
+import { useAuth } from '@/contexts/auth.context';
+import { useSettingsModal } from '@/contexts/settings-modal.context';
 import { companiesQueryOptions } from '@/queries/company.queries';
 import type { RouteAccessLevel } from '@/types/route-access.type';
 import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
@@ -29,6 +32,11 @@ import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 const ROUTE_ACCESS: RouteAccessLevel = {
   minAccessLevel: 'admin',
   permissions: ['manage-projects'],
+};
+
+const SETTINGS_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+  permissions: ['manage-settings'],
 };
 
 interface WorkspaceSearchParams {
@@ -75,6 +83,22 @@ function WorkspaceLayout() {
   const search = useSearch({ strict: false }) as { view?: 'kanban' | 'calendario' };
   const scheduleView = search.view ?? 'kanban';
 
+  const { claims } = useAuth();
+  const { open: openSettings } = useSettingsModal();
+  const canAccessSettings = checkRouteAccess(claims, SETTINGS_ACCESS);
+
+  const sidebarItems: SidebarNavItem[] = canAccessSettings
+    ? [
+        ...TABS,
+        {
+          key: 'settings',
+          icon: MdOutlineSettings,
+          label: 'Configurações',
+          onClick: () => openSettings('task-categories'),
+        },
+      ]
+    : TABS;
+
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1',
   );
@@ -93,7 +117,7 @@ function WorkspaceLayout() {
       {/* Sobe até encostar no topbar, ocupa a coluna esquerda inteira — a
           faixa de título abaixo reserva o respiro com padding-left. */}
       <Sidebar
-        items={TABS}
+        items={sidebarItems}
         collapsed={collapsed}
         onToggleCollapse={toggleCollapsed}
         isOpen={sidebarOpen}

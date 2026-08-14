@@ -10,6 +10,7 @@ import { Breadcrumb } from '@/components/layout/breadcrumb.component';
 import { NotificationBell } from '@/components/layout/notification-bell.component';
 import { UserAvatar } from '@/components/ui/user-avatar.component';
 import { useAuth } from '@/contexts/auth.context';
+import { useSettingsModal } from '@/contexts/settings-modal.context';
 import { useTheme } from '@/contexts/theme.context';
 import { useSignoutMutation } from '@/queries/user.queries';
 import type { RouteAccessLevel } from '@/types/route-access.type';
@@ -24,6 +25,7 @@ export function Topbar() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { userProfile: profile, claims } = useAuth();
+  const { open: openSettings } = useSettingsModal();
   const signout = useSignoutMutation();
   const canAccessSettings = checkRouteAccess(claims, SETTINGS_ACCESS);
 
@@ -54,9 +56,14 @@ export function Topbar() {
         <NotificationBell />
 
         {canAccessSettings && (
-          <Link to="/settings" title="Configurações" className="btn-icon">
+          <button
+            type="button"
+            onClick={() => openSettings()}
+            title="Configurações"
+            className="btn-icon"
+          >
             <MdOutlineSettings size={17} />
-          </Link>
+          </button>
         )}
 
         <button

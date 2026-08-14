@@ -1,6 +1,8 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 import { Topbar } from '@/components/layout/topbar.component';
+import { SettingsModal } from '@/components/settings/settings-modal.component';
+import { SettingsModalProvider } from '@/providers/settings-modal.provider';
 import { getSessionUser } from '@/server/session';
 import type { RouteAccessLevel } from '@/types/route-access.type';
 import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
@@ -44,11 +46,14 @@ export const Route = createFileRoute('/_private')({
 
 function AdminComponent() {
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-bg">
-      <Topbar />
-      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <Outlet />
-      </main>
-    </div>
+    <SettingsModalProvider>
+      <div className="flex h-screen flex-col overflow-hidden bg-bg">
+        <Topbar />
+        <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <Outlet />
+        </main>
+      </div>
+      <SettingsModal />
+    </SettingsModalProvider>
   );
 }

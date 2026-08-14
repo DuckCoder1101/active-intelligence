@@ -317,22 +317,31 @@ Cadastro dividido em 4 partes: Contato, Negócio, Perfil de busca e Qualificaç�
 
 ### Transaction (transação financeira)
 
+Coleção: `finance_transactions`.
+
 | Nome | Tipo | Obrigatório? | Especificações |
 | ---- | ---- | ------------ | --------------- |
 | type (tipo) | lista de opções | Sim | Entrada ou saída. |
-| status | lista de opções | Automático | Previsto ou realizado. A tela também mostra "atrasado" quando a data já passou, mas isso é só calculado na hora, não é salvo. |
+| status | lista de opções | Editável (previsto/realizado) | Editável direto na tela (previsto ou realizado); "atrasado" continua sendo só calculado na hora (data já passou e ainda não foi marcado como pago), nunca salvo. Marcar como "realizado" sem uma `paidDate` preenchida usa a data de hoje; voltar pra "previsto" limpa `paidDate`. |
 | category (categoria) | lista de opções | Sim | Muda conforme o tipo: entrada só tem "receita"; saída tem custo, despesa ou investimento. São categorias fixas, não dá pra criar novas. |
-| subcategoryId | lista de opções | Não | Filtrada pela categoria escolhida. |
-| companyId (cliente) | lista de opções | Não | Pode ficar em branco (sem cliente). |
+| subcategoryId / subcategoryName | lista de opções / String | Não / Automático | Filtrada pela categoria escolhida. Referência a `FinanceSubcategory`; `subcategoryName` é uma cópia do nome no momento do lançamento, pra não depender de join na hora de listar. |
+| companyId / companyName (cliente / projeto) | lista de opções / String | Não | Campo híbrido: digitar o nome exato de um cliente cadastrado vincula `companyId` (e `companyName` vira cópia automática do nome); qualquer outro texto fica salvo livre em `companyName`, sem `companyId`, pra casos sem cliente formal (ex.: projeto interno). |
 | amount (valor) | valor em reais | Sim | Precisa ser maior que zero. |
 | paymentMethod (forma de pagamento) | lista de opções | Sim | Pix, boleto, transferência ou cartão. |
-| accountId (conta) | lista de opções | Sim | Conta cadastrada nas Configurações. |
-| dueDate (data prevista) | data | Sim | Data prevista de recebimento ou pagamento. |
-| paidDate (data de pagamento) | data | Automático | Preenchida só quando a transação é marcada como paga. |
-| description | String | Não | Sem tamanho máximo. |
+| accountId / accountName (conta) | lista de opções / String | Sim / Automático | Conta bancária cadastrada nas Configurações. Referência a `FinanceAccount`. `accountName` é uma cópia do nome no momento do lançamento. |
+| dueDate (data prevista) | data | Sim | Data prevista de recebimento ou pagamento — base do controle de caixa. Não aparece como campo na tela; segue a data de pagamento quando informada, ou a data de criação. |
+| accrualDate (competência) | mês/ano | Sim | Mês/ano ao qual o lançamento pertence financeiramente, independente de quando é efetivamente pago/recebido — base da DRE. Digitado como texto livre (numérico "MM-AAAA" ou escrito, ex. "JAN 2026"). |
+| paidDate (data de pagamento) | data | Automático | Preenchida/limpa automaticamente junto com `status` (ver acima). |
+| description | String | Não | Máximo de 200 caracteres. |
+| groupId | String | Automático | Preenchido só quando o lançamento nasce de um parcelamento — todos os lançamentos da mesma compra parcelada compartilham o mesmo `groupId`. |
+| installmentIndex / installmentTotal (parcela) | número | Automático / Editável | Só preenchidos quando `groupId` existe. Ex.: 2 de 5. `installmentIndex` pode ser corrigido direto na tela (só o índice — `installmentTotal` e `groupId` não mudam por ali). |
+| origin (origem) | lista de opções | Automático | Manual (criado pela tela) ou Asaas (sincronizado da integração). |
+| externalId | String | Automático | Id do lançamento correspondente no Asaas, preenchido só quando `origin` é "asaas". |
 | createdBy / createdAt / updatedAt | String/data | Automático | — |
 
 ### FinanceSubcategory (subcategoria financeira)
+
+Coleção: `finance_subcategories`.
 
 | Nome | Tipo | Obrigatório? | Especificações |
 | ---- | ---- | ------------ | --------------- |
@@ -343,14 +352,37 @@ Cadastro dividido em 4 partes: Contato, Negócio, Perfil de busca e Qualificaç�
 
 Não pode ser excluída se já tiver transações usando ela.
 
-### FinanceAccount (conta financeira)
+### FinanceAccount (conta bancária)
+
+Coleção: `finance_accounts`.
 
 | Nome | Tipo | Obrigatório? | Especificações |
 | ---- | ---- | ------------ | --------------- |
-| name | String | Sim | Até 60 caracteres. Ao criar, o sistema evita nome repetido (reaproveita a conta já existente). Mas ao editar o nome de uma conta já existente, essa checagem não é feita. |
+| name | String | Sim | Até 60 caracteres. Nome de exibição da conta (apelido), não o nome do banco. Ao criar, o sistema evita nome repetido (reaproveita a conta já existente). Mas ao editar o nome de uma conta já existente, essa checagem não é feita. |
+| bankCode / bankName (banco) | String | Sim | Código e nome do banco. Texto livre — não existe lista curada de bancos no sistema. |
+| agency / agencyDigit (agência) | String | Sim / Não | Número da agência e dígito verificador (quando o banco usar). |
+| accountNumber / accountDigit (conta) | String | Sim / Não | Número da conta e dígito verificador. |
+| accountType (tipo de conta) | lista de opções | Sim | Corrente ou poupança. |
+| holderName (titular) | String | Sim | Nome do titular da conta. |
+| holderDocumentType | lista de opções | Sim | CPF ou CNPJ — define a máscara aplicada em `holderDocument`. |
+| holderDocument | String | Sim | CPF ou CNPJ do titular, salvo com formatação (mesma regra do CPF/CNPJ da empresa). |
+| pixKey (chave PIX) | String | Não | Chave PIX da conta, quando existir. Não tem validação de formato — aceita CPF/CNPJ/email/telefone/chave aleatória como texto livre. |
+| asaasWalletId | String | Não | Id da carteira (subconta) Asaas vinculada a esta conta, usado por uma futura integração de repasse/split. A autenticação com a API do Asaas em si (apiKey) não fica aqui — é global, ver `IntegrationSettings`. |
 | createdAt | data | Automático | — |
 
 Não pode ser excluída se já tiver transações usando ela.
+
+### IntegrationSettings (configuração de integração)
+
+Coleção: `integration_settings` — um documento fixo por integração (hoje só `asaas`), não tem lista.
+
+| Nome | Tipo | Obrigatório? | Especificações |
+| ---- | ---- | ------------ | --------------- |
+| apiKey | String | Sim | Chave de API do Asaas. Campo write-only: depois de salva, a tela nunca mostra o valor de volta, só se está configurada ou não. |
+| environment (ambiente) | lista de opções | Sim | Sandbox ou produção. |
+| updatedAt | data | Automático | — |
+
+Tela de cadastro fica em Configurações → Integrações, restrita a administradores com a permissão de gerenciar configurações.
 
 ### Plan (plano)
 
@@ -471,12 +503,6 @@ Subcoleção: `companies/{companyId}/real_estates` (renomeada de `real_estate`).
 | visível no site / destaque | verdadeiro/falso | Não, padrão desmarcado | — |
 | descrição pública | String | Não | Sem tamanho máximo. |
 | portais | lista de Strings | Não | Existe no cadastro para integração futura com portais imobiliários, mas não tem campo na tela hoje. |
-
-**Metadados**
-
-| Nome | Tipo | Obrigatório? | Especificações |
-| ---- | ---- | ------------ | --------------- |
-| createdBy / createdAt / updatedAt | String/data | Automático | — |
 
 ### Entidades sem formulário (só sistema)
 

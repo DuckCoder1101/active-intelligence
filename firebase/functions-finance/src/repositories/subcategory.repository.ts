@@ -84,6 +84,26 @@ export class SubcategoryRepository {
     return toDTO(saved.id, saved.data() as FinanceSubcategoryDocument);
   }
 
+  /** Returns the subcategory named `name` within `categoryType` (case-insensitive), creating it if it doesn't exist yet. */
+  static async findOrCreate(
+    categoryType: FinanceCategoryType,
+    name: string,
+  ): Promise<FinanceSubcategoryDTO> {
+    const nameIndex = name.trim().toLowerCase();
+    const existing = await this.col
+      .where("categoryType", "==", categoryType)
+      .where("nameIndex", "==", nameIndex)
+      .limit(1)
+      .get();
+    if (!existing.empty) {
+      return toDTO(
+        existing.docs[0].id,
+        existing.docs[0].data() as FinanceSubcategoryDocument,
+      );
+    }
+    return this.save({ categoryType, name });
+  }
+
   /** Blocks deletion (`failed-precondition`) if the subcategory is referenced by any transaction. */
   static async delete(subcategoryId: string): Promise<void> {
     const ref = this.col.doc(subcategoryId);

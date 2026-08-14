@@ -20,8 +20,13 @@ function toDTO(id: string, data: TransactionDocument): TransactionDTO {
     accountId: data.accountId,
     accountName: data.accountName,
     dueDate: data.dueDate.toMillis(),
+    // Lançamentos criados antes do campo `accrualDate` existir não o têm salvo — cai pra `dueDate`.
+    accrualDate: (data.accrualDate ?? data.dueDate).toMillis(),
     paidDate: data.paidDate?.toMillis(),
     description: data.description,
+    groupId: data.groupId,
+    installmentIndex: data.installmentIndex,
+    installmentTotal: data.installmentTotal,
     externalId: data.externalId,
     origin: data.origin,
     createdBy: data.createdBy,
@@ -43,17 +48,24 @@ export interface SaveTransactionInput {
   accountId: string;
   accountName: string;
   dueDate: number;
+  accrualDate: number;
   description?: string;
+  groupId?: string;
+  installmentIndex?: number;
+  installmentTotal?: number;
+  isRecurring?: boolean;
   createdBy: string;
+  origin?: TransactionDocument["origin"];
 }
 
 /** Firestore: `finance_transactions` (top-level). */
 export class TransactionRepository {
-  private static col = database.collection("finance_transactions");
+  static col = database.collection("finance_transactions");
 
   /** Upserts a transaction; on create, defaults `status` to `"previsto"` and `origin` to `"manual"`. */
   static async save(data: SaveTransactionInput): Promise<TransactionDTO> {
-    const { transactionId, dueDate, createdBy, ...rest } = data;
+    const { transactionId, dueDate, accrualDate, createdBy, origin, ...rest } =
+      data;
     const ref = transactionId ? this.col.doc(transactionId) : this.col.doc();
     const isNew = !transactionId;
 
@@ -67,12 +79,14 @@ export class TransactionRepository {
     const payload: Record<string, unknown> = {
       ...rest,
       dueDate: Timestamp.fromMillis(dueDate),
+      accrualDate: Timestamp.fromMillis(accrualDate),
       updatedAt: FieldValue.serverTimestamp(),
     };
 
     if (isNew) {
       payload.status = "previsto";
-      payload.origin = "manual";
+      // `origin` é imutável depois de criado — só é considerado no create.
+      payload.origin = origin ?? "manual";
       payload.createdBy = createdBy;
       payload.createdAt = FieldValue.serverTimestamp();
     }
@@ -112,6 +126,24 @@ export class TransactionRepository {
     await ref.update({
       status: "realizado",
       paidDate: Timestamp.fromMillis(paidDate),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    const updated = await ref.get();
+    return toDTO(updated.id, updated.data() as TransactionDocument);
+  }
+
+  /** Sets `status` back to `"previsto"` and clears `paidDate`. */
+  static async unmarkPaid(transactionId: string): Promise<TransactionDTO> {
+    const ref = this.col.doc(transactionId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      throw new HttpsError("not-found", "Lançamento não encontrado.");
+    }
+
+    await ref.update({
+      status: "previsto",
+      paidDate: FieldValue.delete(),
       updatedAt: FieldValue.serverTimestamp(),
     });
 

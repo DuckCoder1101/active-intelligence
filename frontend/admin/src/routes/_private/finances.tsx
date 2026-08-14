@@ -2,15 +2,20 @@ import { FinanceTransactionsTab } from '@components/finances/transactions-tab.co
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
 import {
+  MdCallMade,
+  MdCallReceived,
   MdMenu,
   MdOutlineBarChart,
   MdOutlineDashboard,
   MdOutlineReceiptLong,
+  MdOutlineSettings,
 } from 'react-icons/md';
 
 import type { SidebarNavItem } from '@/components/layout/sidebar.component';
 import { Sidebar } from '@/components/layout/sidebar.component';
 import { AdminPageContainer } from '@/components/ui/page-container.component';
+import { useAuth } from '@/contexts/auth.context';
+import { useSettingsModal } from '@/contexts/settings-modal.context';
 import { companiesQueryOptions } from '@/queries/company.queries';
 import {
   financeAccountsQueryOptions,
@@ -23,6 +28,11 @@ import { checkRouteAccess } from '@/utils/checkRouteAccess.util';
 const ROUTE_ACCESS: RouteAccessLevel = {
   minAccessLevel: 'admin',
   permissions: ['manage-finance'],
+};
+
+const SETTINGS_ACCESS: RouteAccessLevel = {
+  minAccessLevel: 'admin',
+  permissions: ['manage-settings'],
 };
 
 export const Route = createFileRoute('/_private/finances')({
@@ -45,6 +55,8 @@ export const Route = createFileRoute('/_private/finances')({
 const TABS = [
   { id: 'visao-geral', label: 'Visão geral', icon: MdOutlineDashboard },
   { id: 'lancamentos', label: 'Lançamentos', icon: MdOutlineReceiptLong },
+  { id: 'contas-a-receber', label: 'Contas a Receber', icon: MdCallMade },
+  { id: 'contas-a-pagar', label: 'Contas a Pagar', icon: MdCallReceived },
   { id: 'dre', label: 'DRE', icon: MdOutlineBarChart },
 ];
 
@@ -57,6 +69,10 @@ function FinancePage() {
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const { claims } = useAuth();
+  const { open: openSettings } = useSettingsModal();
+  const canAccessSettings = checkRouteAccess(claims, SETTINGS_ACCESS);
+
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
       const next = !prev;
@@ -65,13 +81,25 @@ function FinancePage() {
     });
   };
 
-  const sidebarItems: SidebarNavItem[] = TABS.map((tab) => ({
-    key: tab.id,
-    icon: tab.icon,
-    label: tab.label,
-    onClick: () => setActiveTab(tab.id),
-    active: activeTab === tab.id,
-  }));
+  const sidebarItems: SidebarNavItem[] = [
+    ...TABS.map((tab) => ({
+      key: tab.id,
+      icon: tab.icon,
+      label: tab.label,
+      onClick: () => setActiveTab(tab.id),
+      active: activeTab === tab.id,
+    })),
+    ...(canAccessSettings
+      ? [
+          {
+            key: 'settings',
+            icon: MdOutlineSettings,
+            label: 'Configurações',
+            onClick: () => openSettings('finance'),
+          },
+        ]
+      : []),
+  ];
 
   return (
     <div className="relative flex min-h-0 flex-1 overflow-hidden">
@@ -87,7 +115,7 @@ function FinancePage() {
       <div
         className={`flex min-h-0 flex-1 flex-col overflow-hidden transition-[padding] duration-300 ease-in-out ${collapsed ? 'lg:pl-17.5' : 'lg:pl-56'}`}
       >
-        <AdminPageContainer>
+        <AdminPageContainer wide>
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -108,6 +136,20 @@ function FinancePage() {
               </div>
             )}
             {activeTab === 'lancamentos' && <FinanceTransactionsTab />}
+            {activeTab === 'contas-a-pagar' && (
+              <FinanceTransactionsTab
+                title="Contas a Pagar"
+                presetType="saida"
+                pendingOnly
+              />
+            )}
+            {activeTab === 'contas-a-receber' && (
+              <FinanceTransactionsTab
+                title="Contas a Receber"
+                presetType="entrada"
+                pendingOnly
+              />
+            )}
             {activeTab === 'dre' && (
               <div className="flex flex-col items-center gap-2 py-16 text-text-muted">
                 <p className="text-[13px]">Em breve.</p>

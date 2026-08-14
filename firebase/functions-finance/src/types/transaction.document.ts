@@ -16,7 +16,7 @@ export const PAYMENT_METHODS = [
 ] as const;
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
-export const TRANSACTION_ORIGINS = ["manual", "asaas"] as const;
+export const TRANSACTION_ORIGINS = ["manual", "asaas", "contas"] as const;
 export type TransactionOrigin = (typeof TRANSACTION_ORIGINS)[number];
 
 export interface TransactionDocument {
@@ -32,8 +32,14 @@ export interface TransactionDocument {
   accountId: string;
   accountName: string;
   dueDate: Timestamp;
+  accrualDate: Timestamp;
   paidDate?: Timestamp;
   description?: string;
+  groupId?: string;
+  installmentIndex?: number;
+  installmentTotal?: number;
+  /** Marca um grupo "Recorrente" (horizonte aberto) em oposição a um "Parcelado" (contagem fixa). */
+  isRecurring?: boolean;
   externalId?: string;
   origin: TransactionOrigin;
 

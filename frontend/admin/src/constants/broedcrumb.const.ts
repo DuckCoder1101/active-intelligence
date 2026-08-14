@@ -29,10 +29,6 @@ export const BROADCRUMB_ROUTE_MAP: {
     crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Biblioteca' }],
   },
   {
-    test: (p) => p.startsWith('/settings'),
-    crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Configurações' }],
-  },
-  {
     test: (p) => p.startsWith('/reviews'),
     crumbs: [{ label: 'Dashboard', to: '/' }, { label: 'Avaliações' }],
   },
