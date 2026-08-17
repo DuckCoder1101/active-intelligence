@@ -52,3 +52,32 @@ export type { PropertyFeature } from "./domain/real-estate/propertyFeature.enum"
 // domain: notification (usado por admin e task)
 export { default as NotificationRepository } from "./domain/notification/notification.repository";
 export type { NotificationFilterDTO } from "./domain/notification/notification.dtos";
+
+// domain: lead (usado por company-crm e meta-integration)
+export {
+  BUSINESS_TYPES,
+  DEAL_STATUSES,
+  LEAD_PREFERENCES,
+  LEAD_SOURCES,
+  PAYMENT_METHODS,
+  PURPOSES,
+  TEMPERATURES,
+} from "./domain/lead/lead.document";
+export type {
+  BusinessType,
+  DealStatus,
+  LeadDocument,
+  LeadPreference,
+  LeadSource,
+  PaymentMethod,
+  Purpose,
+  Temperature,
+} from "./domain/lead/lead.document";
+
+// domain: meta-integration (usado por meta-integration)
+export type {
+  FacebookAdsIntegrationDocument,
+  FacebookLeadFormMapping,
+  FacebookPageIntegration,
+  FacebookPageLinkDocument,
+} from "./domain/meta-integration/facebook-ads-integration.document";

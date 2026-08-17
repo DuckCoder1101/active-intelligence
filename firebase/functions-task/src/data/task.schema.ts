@@ -10,10 +10,10 @@ export default class TaskSchema {
     title: z
       .string()
       .min(5, "Título muito curto")
-      .max(30, "Máximo 30 caracteres"),
+      .max(60, "Titúlo com deve ter no máximo 60 caracteres"),
     description: z
       .string()
-      .max(300, "Máximo 300 caracteres")
+      .max(300, "Descrição deve ter no máximo 300 caracteres")
       .nullish()
       .default("")
       .transform((v) => v ?? ""),

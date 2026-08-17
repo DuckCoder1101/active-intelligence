@@ -1,92 +1,24 @@
-import { Timestamp } from "firebase-admin/firestore";
-
-import {
-  PROPERTY_FEATURES,
-  PROPERTY_TYPES,
-  type PropertyFeature,
-  type PropertyType,
-} from "functions-shared";
-
 // Reexportados para não quebrar os imports existentes no módulo — os valores
 // canônicos agora vivem em functions-shared, compartilhados com o cadastro
-// de imóveis (real-estate).
-export { PROPERTY_TYPES };
-export type { PropertyType };
-export const LEAD_PREFERENCES = PROPERTY_FEATURES;
-export type LeadPreference = PropertyFeature;
-
-export const BUSINESS_TYPES = ["compra", "venda", "locacao", "outro"] as const;
-export type BusinessType = (typeof BUSINESS_TYPES)[number];
-
-export const PURPOSES = [
-  "moradia_propria",
-  "investimento",
-  "segunda_residencia",
-  "realocacao",
-] as const;
-export type Purpose = (typeof PURPOSES)[number];
-
-export const PAYMENT_METHODS = [
-  "a_vista",
-  "financiamento",
-  "fgts",
-  "consorcio",
-  "permuta",
-] as const;
-export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
-
-export const TEMPERATURES = ["frio", "morno", "quente"] as const;
-export type Temperature = (typeof TEMPERATURES)[number];
-
-export const DEAL_STATUSES = ["aberto", "vendido", "perdido"] as const;
-export type DealStatus = (typeof DEAL_STATUSES)[number];
-
-export interface LeadDocument {
-  companyId: string;
-  funnelId: string;
-  status: string;
-  dealStatus: DealStatus;
-
-  // Sessão 1 — Contato
-  name: string;
-  phone: string;
-  email?: string;
-  originId: string;
-  referredBy?: string;
-  tagIds: string[];
-  assignedTo: string[];
-  notes?: string;
-
-  // Sessão 2 — Intenção/Negócio
-  businessType: BusinessType;
-  businessTypeOther?: string;
-  propertyType?: PropertyType;
-  propertyTypeOther?: string;
-  purpose?: Purpose;
-
-  // Sessão 3 — Perfil de busca
-  city?: string;
-  state?: string;
-  neighborhoods: string[];
-  acceptsNearbyNeighborhoods: boolean;
-  priceMin: number;
-  priceMax: number;
-  propertySizeM2?: number;
-  bedrooms?: number;
-  suites?: number;
-  parkingSpots?: number;
-  floor?: number;
-  preferences: LeadPreference[];
-
-  // Sessão 4 — Qualificação
-  paymentMethod?: PaymentMethod;
-  hasApprovedOrSimulatedCredit: boolean;
-  decidesAlone: boolean;
-  decidesWith?: string;
-  consultedOtherRealtor: boolean;
-  temperature?: Temperature;
-
-  createdBy: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
+// de imóveis (real-estate) e com a integração de Lead Ads (meta-integration).
+export {
+  BUSINESS_TYPES,
+  DEAL_STATUSES,
+  LEAD_PREFERENCES,
+  LEAD_SOURCES,
+  PAYMENT_METHODS,
+  PROPERTY_TYPES,
+  PURPOSES,
+  TEMPERATURES,
+} from "functions-shared";
+export type {
+  BusinessType,
+  DealStatus,
+  LeadDocument,
+  LeadPreference,
+  LeadSource,
+  PaymentMethod,
+  Purpose,
+  PropertyType,
+  Temperature,
+} from "functions-shared";

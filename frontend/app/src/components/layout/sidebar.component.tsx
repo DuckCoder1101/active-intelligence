@@ -1,3 +1,4 @@
+import { useAuth } from '@/contexts/auth.context';
 import { Link } from '@tanstack/react-router';
 import React from 'react';
 import {
@@ -10,6 +11,7 @@ import {
   MdChevronRight,
   MdClose,
   MdOutlineSupportAgent,
+  MdOutlineCampaign,
 } from 'react-icons/md';
 
 const SUPPORT_PHONE = '5519997834256';
@@ -22,11 +24,12 @@ interface NavItem {
     | '/company/$companyId/crm'
     | '/company/$companyId/real-estate'
     | '/company/$companyId/library'
-    | '/company/$companyId/ad-accounts'
-    | '/company/$companyId/team';
+    | '/company/$companyId/team'
+    | '/company/$companyId/integrations';
   label: string;
   icon: React.ElementType;
   exact: boolean;
+  beta?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -60,12 +63,13 @@ const NAV_ITEMS: NavItem[] = [
     icon: MdOutlineMenuBook,
     exact: false,
   },
-  // {
-  //   to: '/company/$companyId/ad-accounts',
-  //   label: 'Contas de anúncios',
-  //   icon: MdOutlineCampaign,
-  //   exact: false,
-  // },
+  {
+    to: '/company/$companyId/integrations',
+    label: 'Integrações',
+    icon: MdOutlineCampaign,
+    exact: false,
+    beta: true,
+  },
   // {
   //   to: '/company/$companyId/team',
   //   label: 'Equipe',
@@ -89,6 +93,8 @@ export function CompanySidebar({
   collapsed,
   onToggleCollapse,
 }: CompanySidebarProps) {
+  const { claims } = useAuth();
+
   return (
     <aside
       className={[
@@ -165,38 +171,40 @@ export function CompanySidebar({
 
       {/* Navigation */}
       <nav className="flex-1 py-2 justify-center mt-4">
-        {NAV_ITEMS.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            params={{ companyId }}
-            activeOptions={{ exact: item.exact }}
-            onClick={onClose}
-            title={collapsed ? item.label : undefined}
-            className={[
-              'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-transparent py-2.5 text-[12px] font-medium text-white transition-all duration-300 ease-in-out hover:bg-sidebar-hover',
-              collapsed ? 'px-5 lg:justify-center lg:px-0' : 'px-5',
-            ].join(' ')}
-            activeProps={{
-              className: [
-                'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-orange bg-orange/15 py-2.5 text-[12px] font-medium text-white transition-all duration-300 ease-in-out',
-                collapsed ? 'px-5 lg:justify-center lg:px-0' : 'px-5',
-              ].join(' '),
-            }}
-          >
-            <item.icon size={17} style={{ flexShrink: 0 }} />
-            <span
+        {NAV_ITEMS.filter((i) => !i.beta || claims?.accessLevel !== 'user').map(
+          (item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              params={{ companyId }}
+              activeOptions={{ exact: item.exact }}
+              onClick={onClose}
+              title={collapsed ? item.label : undefined}
               className={[
-                'overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out',
-                collapsed
-                  ? 'max-w-40 flex-1 opacity-100 lg:max-w-0 lg:flex-none lg:opacity-0'
-                  : 'max-w-40 flex-1 opacity-100',
+                'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-transparent py-2.5 text-[12px] font-medium text-white transition-all duration-300 ease-in-out hover:bg-sidebar-hover',
+                collapsed ? 'px-5 lg:justify-center lg:px-0' : 'px-5',
               ].join(' ')}
+              activeProps={{
+                className: [
+                  'flex cursor-pointer items-center gap-2.5 border-l-[3px] border-orange bg-orange/15 py-2.5 text-[12px] font-medium text-white transition-all duration-300 ease-in-out',
+                  collapsed ? 'px-5 lg:justify-center lg:px-0' : 'px-5',
+                ].join(' '),
+              }}
             >
-              {item.label}
-            </span>
-          </Link>
-        ))}
+              <item.icon size={17} style={{ flexShrink: 0 }} />
+              <span
+                className={[
+                  'overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out',
+                  collapsed
+                    ? 'max-w-40 flex-1 opacity-100 lg:max-w-0 lg:flex-none lg:opacity-0'
+                    : 'max-w-40 flex-1 opacity-100',
+                ].join(' ')}
+              >
+                {item.label}
+              </span>
+            </Link>
+          ),
+        )}
       </nav>
 
       {/* Footer: support */}

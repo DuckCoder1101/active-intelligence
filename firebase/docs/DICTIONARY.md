@@ -313,6 +313,9 @@ Cadastro dividido em 4 partes: Contato, Negócio, Perfil de busca e Qualificaç�
 | leadId / companyId / funnelId | String | Automático | — |
 | status | String | Automático | Coluna do funil onde o lead está; muda ao arrastar no quadro. |
 | dealStatus (status do negócio) | lista de opções | Automático, valor padrão "aberto" | Aberto, vendido ou perdido. Alterado por um menu separado no topo da tela. |
+| source (origem do lead) | lista de opções | Automático | "Manual" (criado pela tela, valor padrão/ausente) ou "Facebook Ads" (criado pela integração de Lead Ads, ver `FacebookAdsIntegration`). |
+| externalLeadId | String | Automático | Id do lead correspondente no Facebook (`leadgen_id`), preenchido só quando `source` é "Facebook Ads". Usado pra não duplicar o lead se a Meta reenviar a notificação do webhook. |
+| sourcePageId / sourceFormId | String | Automático | Página e formulário do Facebook de onde o lead veio, preenchidos só quando `source` é "Facebook Ads". |
 | createdBy / createdAt / updatedAt | String/data | Automático | — |
 
 ### Transaction (transação financeira)
@@ -383,6 +386,31 @@ Coleção: `integration_settings` — um documento fixo por integração (hoje s
 | updatedAt | data | Automático | — |
 
 Tela de cadastro fica em Configurações → Integrações, restrita a administradores com a permissão de gerenciar configurações.
+
+### FacebookAdsIntegration (integração de Lead Ads do Facebook)
+
+Subcoleção: `companies/{companyId}/integration_settings` — um documento fixo por integração (hoje só `facebookAds`), não tem lista. Mesmo padrão do `IntegrationSettings` global, mas por empresa.
+
+| Nome | Tipo | Obrigatório? | Especificações |
+| ---- | ---- | ------------ | --------------- |
+| connected | verdadeiro/falso | Automático | Se a empresa concluiu o OAuth com o Facebook. |
+| fbUserId / fbUserName | String | Automático | Conta do Facebook que autorizou a integração. |
+| secretRef | String | Automático | Nome do segredo no Google Secret Manager onde ficam os tokens (de usuário e de cada página conectada). O token em si nunca é salvo no Firestore. |
+| pages | lista de objetos | Automático | Uma entrada por página do Facebook conectada: `pageId`, `pageName`, `subscribed` (se já está inscrita no webhook de leads da Meta), e `forms` — lista de formulários mapeados (`formId`, `formName`, `funnelId`, `originId`, `tagIds`, `active`). |
+| connectedBy | String | Automático | uid de quem conectou. |
+| connectedAt / updatedAt | data | Automático | — |
+
+Conexão (OAuth via popup do Facebook JS SDK) implementada em `frontend/app/src/routes/_private/company/$companyId/ad-accounts.tsx`, chamando `connectFacebookAdsHandler`/`getFacebookAdsSettingsHandler` (codebase `functions-meta-integration`). Falta ainda: tela de seleção de páginas/mapeamento de formulários (`pages[].forms`), inscrição no webhook de leads e o endpoint que recebe o webhook em si.
+
+### FacebookPageLink (vínculo de página do Facebook → empresa)
+
+Coleção: `facebook_page_links` (top-level, chave do documento = `pageId` da página do Facebook).
+
+| Nome | Tipo | Obrigatório? | Especificações |
+| ---- | ---- | ------------ | --------------- |
+| companyId | String | Automático | Empresa dona da página. Existe só pra o webhook de leads da Meta (que manda apenas `pageId`, nunca `companyId`) saber em qual empresa gravar o lead recebido — sem esse índice não haveria como descobrir isso sem varrer todas as empresas. |
+
+Nunca aparece em nenhuma tela.
 
 ### Plan (plano)
 
