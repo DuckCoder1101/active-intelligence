@@ -1,4 +1,4 @@
-import { MdCheckCircle, MdClose } from 'react-icons/md';
+import { MdCheckCircle } from 'react-icons/md';
 
 const HIGHLIGHTS = [
   'Acompanhe o andamento das suas tarefas em tempo real',
