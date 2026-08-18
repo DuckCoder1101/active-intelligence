@@ -114,3 +114,23 @@ export { default as CompanySchema } from "../../../functions-shared/src/domain/c
 export type { CompanyAuditDocument } from "../../../functions-shared/src/domain/company/company-audit.document";
 export { default as CompanyOperationalSchema } from "../../../functions-shared/src/domain/company/company-operational.schema";
 export type { NotificationFilterDTO } from "../../../functions-shared/src/domain/notification/notification.dtos";
+
+export {
+  BUSINESS_TYPES,
+  DEAL_STATUSES,
+  LEAD_PREFERENCES,
+  LEAD_SOURCES,
+  PAYMENT_METHODS,
+  PURPOSES,
+  TEMPERATURES,
+} from "../../../functions-shared/src/domain/lead/lead.document";
+export type {
+  BusinessType,
+  DealStatus,
+  LeadDocument,
+  LeadPreference,
+  LeadSource,
+  PaymentMethod,
+  Purpose,
+  Temperature,
+} from "../../../functions-shared/src/domain/lead/lead.document";
