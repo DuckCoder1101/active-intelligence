@@ -5,6 +5,7 @@ import { Spinner } from '@/components/ui/spinner.component';
 interface ConfirmDeleteModalProps {
   title: string;
   description: string;
+  confirmLabel?: string;
   isDeleting?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -13,6 +14,7 @@ interface ConfirmDeleteModalProps {
 export function ConfirmDeleteModal({
   title,
   description,
+  confirmLabel = 'Excluir',
   isDeleting = false,
   onConfirm,
   onCancel,
@@ -44,7 +46,7 @@ export function ConfirmDeleteModal({
             className="btn-delete"
           >
             {isDeleting && <Spinner size={12} />}
-            Excluir
+            {confirmLabel}
           </button>
         </div>
       </div>

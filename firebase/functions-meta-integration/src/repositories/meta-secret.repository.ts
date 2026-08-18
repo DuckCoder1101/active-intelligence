@@ -46,6 +46,10 @@ export class MetaSecretRepository {
     return secretName;
   }
 
+  static async deleteSecret(secretRef: string): Promise<void> {
+    await client.deleteSecret({ name: secretRef });
+  }
+
   static async getToken(secretRef: string): Promise<string> {
     const [version] = await client.accessSecretVersion({
       name: `${secretRef}/versions/latest`,

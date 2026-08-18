@@ -14,6 +14,11 @@ export default class MetaIntegrationService {
     FacebookAdsIntegration | null
   >(functions, 'getFacebookAdsSettingsHandler');
 
+  private static disconnectFacebookAdsCallable = httpsCallable<
+    { companyId: string },
+    void
+  >(functions, 'disconnectFacebookAdsHandler');
+
   static async connectFacebookAds(
     companyId: string,
     accessToken: string,
@@ -27,5 +32,9 @@ export default class MetaIntegrationService {
   ): Promise<FacebookAdsIntegration | null> {
     const r = await this.getFacebookAdsSettingsCallable({ companyId });
     return r.data;
+  }
+
+  static async disconnectFacebookAds(companyId: string): Promise<void> {
+    await this.disconnectFacebookAdsCallable({ companyId });
   }
 }

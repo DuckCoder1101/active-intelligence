@@ -30,3 +30,16 @@ export function useConnectFacebookAdsMutation(companyId: string) {
     },
   });
 }
+
+export function useDisconnectFacebookAdsMutation(companyId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => MetaIntegrationService.disconnectFacebookAds(companyId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: metaIntegrationKeys.facebookAds(companyId),
+      });
+    },
+  });
+}

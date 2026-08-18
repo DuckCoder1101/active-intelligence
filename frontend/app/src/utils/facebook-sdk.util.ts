@@ -44,6 +44,8 @@ declare global {
 let sdkPromise: Promise<void> | null = null;
 let sdkInitialized = false;
 
+const FB_LOGIN_TIMEOUT_MS = 120_000;
+
 function initializeFacebookSdk(): void {
   if (!window.FB) {
     throw new Error(
@@ -124,16 +126,13 @@ function loadFacebookSdk(): Promise<void> {
 
     if (existingScript) {
       /*
-       * O script já existe, provavelmente por HMR ou por outra
-       * chamada anterior.
-       *
-       * Não podemos simplesmente dar `return`, porque isso deixaria
-       * a Promise pendurada para sempre.
-       *
-       * Se o script ainda estiver carregando, o `fbAsyncInit`
-       * acima será chamado pelo SDK.
+       * Se chegamos aqui, window.FB ainda não existe e não há
+       * nenhum carregamento em andamento (sdkPromise é null) — ou
+       * seja, essa tag é órfã de uma tentativa anterior que falhou
+       * (script.onerror). Removemos e recriamos para não deixar
+       * essa Promise pendurada para sempre.
        */
-      return;
+      existingScript.remove();
     }
 
     const script = document.createElement('script');
@@ -168,8 +167,37 @@ export async function connectFacebookAccount(): Promise<string> {
   }
 
   return new Promise<string>((resolve, reject) => {
+    let settled = false;
+
+    /*
+     * O callback do FB.login() depende de um bridge via cookies/postMessage
+     * entre connect.facebook.net e essa página. Com bloqueio de cookies de
+     * terceiros (Safari, Chrome em rollout), o usuário pode concluir o
+     * popup e o callback nunca disparar. Sem esse timeout, a Promise fica
+     * pendurada para sempre, sem erro.
+     */
+    const timeoutId = setTimeout(() => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      reject(
+        new Error(
+          'O Facebook não respondeu ao login. Ative os cookies de terceiros nas configurações do navegador e tente novamente.',
+        ),
+      );
+    }, FB_LOGIN_TIMEOUT_MS);
+
     window.FB!.login(
       (response) => {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+        clearTimeout(timeoutId);
+
         if (response.status === 'connected' && response.authResponse) {
           resolve(response.authResponse.accessToken);
           return;

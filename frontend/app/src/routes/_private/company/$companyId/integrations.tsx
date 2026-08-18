@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { MdOutlineCampaign } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
+import { ConfirmDeleteModal } from '@/components/layout/confirm-delete-modal.component';
 import { Badge } from '@/components/ui/badge.component';
 import { Spinner } from '@/components/ui/spinner.component';
 import { formatDateLong } from '@/formatters/formatDate';
 import {
   facebookAdsSettingsQueryOptions,
   useConnectFacebookAdsMutation,
+  useDisconnectFacebookAdsMutation,
 } from '@/queries/meta-integration.queries';
 import { connectFacebookAccount } from '@/utils/facebook-sdk.util';
 
@@ -41,7 +43,9 @@ function CompanyAdAccounts() {
     facebookAdsSettingsQueryOptions(companyId),
   );
   const connectFacebookAds = useConnectFacebookAdsMutation(companyId);
+  const disconnectFacebookAds = useDisconnectFacebookAdsMutation(companyId);
   const [connecting, setConnecting] = useState(false);
+  const [showDisconnectModal, setShowDisconnectModal] = useState(false);
 
   const handleConnect = async () => {
     setConnecting(true);
@@ -57,6 +61,21 @@ function CompanyAdAccounts() {
       );
     } finally {
       setConnecting(false);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      await disconnectFacebookAds.mutateAsync();
+      toast.success('Conta do Facebook Ads desconectada.');
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : 'Não foi possível desconectar a conta do Facebook.',
+      );
+    } finally {
+      setShowDisconnectModal(false);
     }
   };
 
@@ -102,18 +121,42 @@ function CompanyAdAccounts() {
           </p>
         )}
 
-        <button
-          type="button"
-          onClick={handleConnect}
-          disabled={connecting || connectFacebookAds.isPending}
-          className="btn-primary justify-center"
-        >
-          {(connecting || connectFacebookAds.isPending) && (
-            <Spinner size={12} />
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={handleConnect}
+            disabled={connecting || connectFacebookAds.isPending}
+            className="btn-primary justify-center"
+          >
+            {(connecting || connectFacebookAds.isPending) && (
+              <Spinner size={12} />
+            )}
+            {settings?.connected ? 'Reconectar conta' : 'Conectar Facebook Ads'}
+          </button>
+
+          {settings?.connected && (
+            <button
+              type="button"
+              onClick={() => setShowDisconnectModal(true)}
+              disabled={disconnectFacebookAds.isPending}
+              className="btn-danger justify-center"
+            >
+              Desconectar
+            </button>
           )}
-          {settings?.connected ? 'Reconectar conta' : 'Conectar Facebook Ads'}
-        </button>
+        </div>
       </div>
+
+      {showDisconnectModal && (
+        <ConfirmDeleteModal
+          title="Desconectar Facebook Ads"
+          description="Isso remove o token de acesso e o vínculo das páginas conectadas. Os leads recebidos até agora não são apagados."
+          confirmLabel="Desconectar"
+          isDeleting={disconnectFacebookAds.isPending}
+          onConfirm={handleDisconnect}
+          onCancel={() => setShowDisconnectModal(false)}
+        />
+      )}
     </div>
   );
 }

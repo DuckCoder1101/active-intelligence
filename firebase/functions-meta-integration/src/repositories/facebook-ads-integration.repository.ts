@@ -76,6 +76,19 @@ export class FacebookAdsIntegrationRepository {
     return toDTO(snap.data() as FacebookAdsIntegrationDocument);
   }
 
+  static async disconnect(companyId: string): Promise<string | null> {
+    const ref = this.doc(companyId);
+    const snap = await ref.get();
+    if (!snap.exists) return null;
+
+    const data = snap.data() as FacebookAdsIntegrationDocument;
+
+    await this.unlinkPages(data.pages.map((p) => p.pageId));
+    await ref.delete();
+
+    return data.secretRef;
+  }
+
   private static async linkPages(
     companyId: string,
     pageIds: string[],
@@ -87,6 +100,16 @@ export class FacebookAdsIntegrationRepository {
       batch.set(database.collection("facebook_page_links").doc(pageId), {
         companyId,
       });
+    }
+    await batch.commit();
+  }
+
+  private static async unlinkPages(pageIds: string[]): Promise<void> {
+    if (pageIds.length === 0) return;
+
+    const batch = database.batch();
+    for (const pageId of pageIds) {
+      batch.delete(database.collection("facebook_page_links").doc(pageId));
     }
     await batch.commit();
   }
