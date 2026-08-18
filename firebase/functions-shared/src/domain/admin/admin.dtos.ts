@@ -10,7 +10,6 @@ export interface AdminProfileDTO {
   name: string;
   email: string;
   phone?: string;
-  cpf: string;
   accessLevel: AdminAccessLevel;
   permissions: string[];
   createdAt: number;

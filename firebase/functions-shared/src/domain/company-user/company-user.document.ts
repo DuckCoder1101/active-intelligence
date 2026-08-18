@@ -6,7 +6,6 @@ export interface CompanyUserDocument {
   name: string;
   email: string;
   phone?: string;
-  cpf: string;
 
   createdAt: Timestamp;
   updatedAt: Timestamp;

@@ -3,6 +3,5 @@ export interface UserProfile {
   name: string;
   email: string;
   phone?: string;
-  cpf: string;
   avatarUrl?: string | null;
 }

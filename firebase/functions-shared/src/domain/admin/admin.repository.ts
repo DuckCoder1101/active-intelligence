@@ -20,7 +20,6 @@ export default class AdminRepository {
     await adminRef.set({
       name: data.name,
       email: email,
-      cpf: data.cpf,
       phone: data.phone,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
@@ -69,7 +68,6 @@ export default class AdminRepository {
         name: data.name,
         email: data.email,
         phone: data.phone,
-        cpf: data.cpf,
         accessLevel: (claims["accessLevel"] ?? "admin") as
           AdminProfileDTO["accessLevel"],
         permissions: (claims["permissions"] ?? []) as string[],

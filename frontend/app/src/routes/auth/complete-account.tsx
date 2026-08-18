@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { AuthLayout } from '@/components/auth/auth-layout.component';
-import { CpfInput } from '@/components/ui/cpf-input.component';
 import { FormInput } from '@/components/ui/form-input.component';
 import { PhoneInput } from '@/components/ui/phone-input.component';
 import { Spinner } from '@/components/ui/spinner.component';
@@ -82,15 +81,6 @@ function SignUpPage() {
               message: 'Nome muito curto',
             },
           })}
-        />
-
-        <Controller
-          name="cpf"
-          control={control}
-          rules={{ required: 'CPF obrigatório' }}
-          render={({ field }) => (
-            <CpfInput label="CPF" error={errors.cpf?.message} {...field} />
-          )}
         />
 
         <Controller

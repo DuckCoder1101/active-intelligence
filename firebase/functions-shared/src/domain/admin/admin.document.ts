@@ -5,7 +5,6 @@ export interface AdminDocument {
 
   email: string;
   phone?: string;
-  cpf: string;
 
   createdAt: Timestamp;
   updatedAt: Timestamp;

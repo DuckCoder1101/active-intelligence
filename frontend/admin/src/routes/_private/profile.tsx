@@ -182,24 +182,14 @@ function UserProfile() {
                     )}
                   />
                 </div>
-                <div className="form-grid">
-                  <FormInput
-                    label="E-mail"
-                    value={userProfile.email}
-                    onChange={() => {}}
-                    readOnly
-                    disabled
-                    className="cursor-not-allowed opacity-60"
-                  />
-                  <FormInput
-                    label="CPF"
-                    value={userProfile.cpf}
-                    onChange={() => {}}
-                    readOnly
-                    disabled
-                    className="cursor-not-allowed opacity-60"
-                  />
-                </div>
+                <FormInput
+                  label="E-mail"
+                  value={userProfile.email}
+                  onChange={() => {}}
+                  readOnly
+                  disabled
+                  className="cursor-not-allowed opacity-60"
+                />
                 <div className="flex justify-end pt-1">
                   <button
                     type="submit"

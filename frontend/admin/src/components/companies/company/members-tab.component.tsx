@@ -189,21 +189,13 @@ function EditUserModal({
           {...register('name', { required: 'Nome obrigatório' })}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormInput
-            label="E-mail"
-            type="email"
-            value={user.email}
-            disabled
-            className="cursor-not-allowed opacity-60"
-          />
-          <FormInput
-            label="CPF"
-            value={user.cpf}
-            disabled
-            className="cursor-not-allowed opacity-60"
-          />
-        </div>
+        <FormInput
+          label="E-mail"
+          type="email"
+          value={user.email}
+          disabled
+          className="cursor-not-allowed opacity-60"
+        />
 
         <Controller
           name="phone"

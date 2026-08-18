@@ -24,7 +24,6 @@ export default class CompanyUserRepository {
       companyId,
       name: data.name,
       email,
-      cpf: data.cpf,
       phone: data.phone,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
@@ -45,7 +44,6 @@ export default class CompanyUserRepository {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      cpf: user.cpf,
       createdAt: user.createdAt.toMillis(),
       updatedAt: user.updatedAt.toMillis(),
     };
@@ -117,7 +115,6 @@ export default class CompanyUserRepository {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        cpf: user.cpf,
         createdAt: user.createdAt.toMillis(),
         updatedAt: user.updatedAt.toMillis(),
       };
