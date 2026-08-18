@@ -8,7 +8,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "firebase-admin": "^13.6.0",
@@ -17,7 +19,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "typescript": "^6.0.0"
+    "typescript": "^6.0.0",
+    "vitest": "^4.1.10"
   },
   "overrides": {
     "@firebase/database-compat": "2.1.4"
