@@ -16,6 +16,8 @@ const TARGET_DIR = path.join(
   'vendor',
   'functions-shared',
 );
+const ROOT_ENV = path.join(ROOT, '.env');
+const TARGET_ENV = path.join(path.resolve(codebaseDir), '.env');
 
 console.log(`[vendor-shared] Buildando ${SHARED_DIR}`);
 if (!fs.existsSync(path.join(SHARED_DIR, 'node_modules'))) {
@@ -33,5 +35,14 @@ fs.copyFileSync(
   path.join(SHARED_DIR, 'package.json'),
   path.join(TARGET_DIR, 'package.json'),
 );
+
+if (fs.existsSync(ROOT_ENV)) {
+  console.log(`[vendor-shared] Copiando .env global para ${TARGET_ENV}`);
+  fs.copyFileSync(ROOT_ENV, TARGET_ENV);
+} else {
+  console.warn(
+    `[vendor-shared] Aviso: ${ROOT_ENV} não existe, pulei a cópia de .env.`,
+  );
+}
 
 console.log('[vendor-shared] OK');
