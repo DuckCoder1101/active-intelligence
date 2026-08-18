@@ -52,9 +52,7 @@ function AdminTeam() {
     const q = search.toLowerCase();
     return admins.filter(
       (u) =>
-        u.name.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q) ||
-        u.cpf.includes(q),
+        u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
     );
   })();
 
@@ -108,7 +106,7 @@ function AdminTeam() {
       <div className="mb-4">
         <FormInput
           label=""
-          placeholder="Buscar por nome, e-mail ou CPF..."
+          placeholder="Buscar por nome ou e-mail..."
           value={search}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setSearch(e.target.value)

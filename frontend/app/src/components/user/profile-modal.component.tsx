@@ -247,14 +247,6 @@ export function ProfileModal({ onClose }: ProfileModalProps) {
               disabled
               className="cursor-not-allowed opacity-60"
             />
-            <FormInput
-              label="CPF"
-              value={userProfile.cpf}
-              onChange={() => {}}
-              readOnly
-              disabled
-              className="cursor-not-allowed opacity-60"
-            />
           </form>
         </div>
       )}

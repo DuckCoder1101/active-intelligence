@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build-all.js",
+    "test": "node scripts/test-all.js",
     "lint": "eslint .",
     "emulators": "npm run build && firebase emulators:start --project activeimob-74a7d --import=./emulators-data --export-on-exit=./emulators-data",
     "deploy": "npm run build && node scripts/deploy.js"

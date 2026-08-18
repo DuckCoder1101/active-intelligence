@@ -89,6 +89,13 @@ export const DEAL_STATUS_LABELS: Record<DealStatus, string> = {
   perdido: 'Perdido',
 };
 
+export const LEAD_SOURCES = ['manual', 'facebook_ads'] as const;
+export type LeadSource = (typeof LEAD_SOURCES)[number];
+export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
+  manual: 'Manual',
+  facebook_ads: 'Facebook Ads',
+};
+
 export const LEAD_PREFERENCES = [
   'elevador',
   'portaria_24h_portao_eletronico',
@@ -290,6 +297,11 @@ export interface Lead {
   decidesWith?: string;
   consultedOtherRealtor: boolean;
   temperature?: Temperature;
+
+  source?: LeadSource;
+  externalLeadId?: string;
+  sourcePageId?: string;
+  sourceFormId?: string;
 
   createdBy: string;
   createdAt: number;

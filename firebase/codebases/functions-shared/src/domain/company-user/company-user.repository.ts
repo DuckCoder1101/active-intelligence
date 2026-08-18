@@ -1,0 +1,123 @@
+import { database } from "../../utils/firebase";
+import { HttpsError } from "firebase-functions/https";
+import { CompanyUserListDTO } from "./company-user.dtos";
+import { CompanyUserDocument } from "./company-user.document";
+import {
+  CompleteProfileDTO,
+  UpdateProfileDTO,
+  UserProfileDTO,
+} from "../user/user.dto";
+import { FieldValue } from "firebase-admin/firestore";
+
+/** Firestore: `company_users` (top-level, one doc per uid; `companyId` is a field, not path nesting). */
+export default class CompanyUserRepository {
+  private static usersCollection = database.collection("company_users");
+
+  static async create(
+    uid: string,
+    email: string,
+    companyId: string,
+    data: CompleteProfileDTO,
+  ) {
+    const ref = this.usersCollection.doc(uid);
+    await ref.set({
+      companyId,
+      name: data.name,
+      email,
+      phone: data.phone,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  }
+
+  static async getProfile(uid: string): Promise<UserProfileDTO> {
+    const doc = await this.usersCollection.doc(uid).get();
+
+    if (!doc.exists) {
+      throw new HttpsError("not-found", "Usuário não encontrado!");
+    }
+
+    const user = doc.data() as CompanyUserDocument;
+
+    return {
+      uid: doc.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      createdAt: user.createdAt.toMillis(),
+      updatedAt: user.updatedAt.toMillis(),
+    };
+  }
+
+  /** Unlike its siblings, this does not check existence first — updating a missing uid is a silent no-op. */
+  static async update({ targetId, ...data }: UpdateProfileDTO) {
+    await this.usersCollection.doc(targetId).update({
+      ...data,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  }
+
+  static async delete(uid: string) {
+    const ref = this.usersCollection.doc(uid);
+    const doc = await ref.get();
+
+    if (!doc.exists) {
+      throw new HttpsError("not-found", "Usuário não encontrado!");
+    }
+
+    await ref.delete();
+  }
+
+  static async getResumeByUid(
+    uid: string,
+  ): Promise<{ uid: string; name: string }> {
+    const doc = await this.usersCollection.doc(uid).get();
+    if (!doc.exists) {
+      throw new HttpsError("not-found", "Usuário não encontrado!");
+    }
+    const user = doc.data() as CompanyUserDocument;
+    return { uid, name: user.name };
+  }
+
+  static async listUidsByCompany(companyId: string): Promise<string[]> {
+    const snapshot = await this.usersCollection
+      .where("companyId", "==", companyId)
+      .get();
+
+    return snapshot.docs.map((doc) => doc.id);
+  }
+
+  static async addFcmToken(uid: string, token: string): Promise<void> {
+    await this.usersCollection.doc(uid).update({
+      fcmTokens: FieldValue.arrayUnion(token),
+    });
+  }
+
+  static async removeFcmToken(uid: string, token: string): Promise<void> {
+    await this.usersCollection.doc(uid).update({
+      fcmTokens: FieldValue.arrayRemove(token),
+    });
+  }
+
+  static async listByCompany(companyId: string): Promise<CompanyUserListDTO[]> {
+    const snapshot = await this.usersCollection
+      .where("companyId", "==", companyId)
+      .orderBy("createdAt", "desc")
+      .get();
+
+    if (snapshot.empty) return [];
+
+    return snapshot.docs.map((doc) => {
+      const user = doc.data() as CompanyUserDocument;
+      return {
+        uid: doc.id,
+        companyId: user.companyId,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        createdAt: user.createdAt.toMillis(),
+        updatedAt: user.updatedAt.toMillis(),
+      };
+    });
+  }
+}

@@ -10,7 +10,6 @@ import {
   MdOutlineApps,
   MdOutlineLibraryBooks,
   MdOutlineReviews,
-  MdOutlineSettings,
   MdOutlineGroup,
 } from 'react-icons/md';
 
@@ -129,13 +128,6 @@ export const ADMIN_MODULES: Section[] = [
         description: 'Gestão de administradores e permissões.',
         to: '/team',
         permission: 'manage-team',
-      },
-      {
-        icon: MdOutlineSettings,
-        label: 'Configurações',
-        description: 'Personalização do painel.',
-        to: '/settings',
-        permission: 'manage-settings',
       },
     ],
   },

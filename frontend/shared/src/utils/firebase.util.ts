@@ -1,8 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
-import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getMessaging, type Messaging } from 'firebase/messaging';
+import { getStorage, connectStorageEmulator } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAmG--Jvn34KG2r0utbfKB52Il0NmMU0wU',
@@ -14,8 +14,8 @@ const firebaseConfig = {
   measurementId: 'G-8XRF1FJCFK',
 };
 
-// TODO: gerar em Firebase Console > Project Settings > Cloud Messaging > Web Push certificates
-export const FCM_VAPID_KEY = '<gerar VAPID key no console do Firebase>';
+export const FCM_VAPID_KEY =
+  'BDlw3pV8Hi2xPti6bEt8xZ5p5QUTBgEqyW8mYWJQVfLQawQSD3Hmked__wRBw8GyjzAjgg-K2eNH89Nhp1Z3Oi0';
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
@@ -25,7 +25,7 @@ export const storage = getStorage(app);
 export const functions = getFunctions(app, 'southamerica-east1');
 
 if (import.meta.env.DEV) {
-  connectAuthEmulator(auth, 'http://localhost:9099');
+  // connectAuthEmulator(auth, 'http://localhost:9099');
   connectStorageEmulator(storage, 'localhost', 9199);
   connectFunctionsEmulator(functions, 'localhost', 5001);
 }

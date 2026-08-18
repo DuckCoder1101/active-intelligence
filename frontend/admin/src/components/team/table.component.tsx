@@ -37,7 +37,7 @@ export function AdminsTable({ admins, isLoading, onEdit }: AdminsTableProps) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-border bg-bg/60">
-            {['Nome', 'CPF', 'Contato', 'Nível de acesso'].map((col) => (
+            {['Nome', 'Contato', 'Nível de acesso'].map((col) => (
               <th
                 key={col}
                 className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-text-sub"
@@ -63,9 +63,6 @@ export function AdminsTable({ admins, isLoading, onEdit }: AdminsTableProps) {
                     {admin.email}
                   </span>
                 </div>
-              </td>
-              <td className="px-4 py-3">
-                <span className="text-[13px] text-text-sub">{admin.cpf}</span>
               </td>
               <td className="px-4 py-3">
                 <span className="text-[13px] text-text-sub">
