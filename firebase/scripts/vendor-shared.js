@@ -10,7 +10,7 @@ if (!codebaseDir) {
 }
 
 const ROOT = path.join(__dirname, '..');
-const SHARED_DIR = path.join(ROOT, 'functions-shared');
+const SHARED_DIR = path.join(ROOT, 'codebases', 'functions-shared');
 const TARGET_DIR = path.join(
   path.resolve(codebaseDir),
   'vendor',

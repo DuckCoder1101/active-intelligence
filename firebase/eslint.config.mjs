@@ -13,7 +13,7 @@ export default tseslint.config(
       '**/tests/mocks/**',
       '**/vitest.config.mts',
       'scripts/**',
-      'functions-shared/mock.ts',
+      'codebases/functions-shared/mock.ts',
       '**/*.log',
       'eslint.config.mjs',
       'prettier.config.js',

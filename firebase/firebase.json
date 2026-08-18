@@ -7,7 +7,7 @@
   },
   "functions": [
     {
-      "source": "functions-admin",
+      "source": "codebases/functions-admin",
       "codebase": "admin",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -18,13 +18,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-user",
+      "source": "codebases/functions-user",
       "codebase": "user",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -35,13 +35,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-company",
+      "source": "codebases/functions-company",
       "codebase": "company",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -52,13 +52,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-company-user",
+      "source": "codebases/functions-company-user",
       "codebase": "company-user",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -69,13 +69,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-task",
+      "source": "codebases/functions-task",
       "codebase": "task",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -86,13 +86,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-operational-kanban",
+      "source": "codebases/functions-operational-kanban",
       "codebase": "operational-kanban",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -103,13 +103,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-company-crm",
+      "source": "codebases/functions-company-crm",
       "codebase": "company-crm",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -120,13 +120,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-real-estate",
+      "source": "codebases/functions-real-estate",
       "codebase": "real-estate",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -137,13 +137,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-finance",
+      "source": "codebases/functions-finance",
       "codebase": "finance",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -154,13 +154,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-library",
+      "source": "codebases/functions-library",
       "codebase": "library",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -171,13 +171,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-plans",
+      "source": "codebases/functions-plans",
       "codebase": "plans",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -188,13 +188,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-review",
+      "source": "codebases/functions-review",
       "codebase": "review",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -205,13 +205,13 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     },
     {
-      "source": "functions-meta-integration",
+      "source": "codebases/functions-meta-integration",
       "codebase": "meta-integration",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -222,7 +222,7 @@
         "*.local"
       ],
       "predeploy": [
-        "node \"$RESOURCE_DIR/../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
+        "node \"$RESOURCE_DIR/../../scripts/vendor-shared.js\" \"$RESOURCE_DIR\"",
         "npm --prefix \"$RESOURCE_DIR\" install",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]

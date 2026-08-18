@@ -9,7 +9,7 @@ if (!codebaseDir) {
 }
 
 const ROOT = path.join(__dirname, '..');
-const SOURCE = path.join(ROOT, 'functions-shared', 'mock.ts');
+const SOURCE = path.join(ROOT, 'codebases', 'functions-shared', 'mock.ts');
 const TARGET_DIR = path.join(path.resolve(codebaseDir), 'tests', 'mocks');
 const TARGET = path.join(TARGET_DIR, 'functions-shared.ts');
 
