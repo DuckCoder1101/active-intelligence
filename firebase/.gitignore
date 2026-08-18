@@ -76,4 +76,5 @@ scripts/serviceAccount.json
 # Artefatos de build por codebase
 functions-*/lib/
 functions-*/vendor/
+functions-*/tests/mocks/
 packages/*/lib/

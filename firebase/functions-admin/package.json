@@ -9,7 +9,9 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
+    "pretest": "node ../scripts/vendor-test-mock.js .",
     "test": "vitest run",
+    "pretest:watch": "node ../scripts/vendor-test-mock.js .",
     "test:watch": "vitest"
   },
   "dependencies": {

@@ -4,8 +4,11 @@
  * Handler unit tests never hit the real vendored package (it's a gitignored,
  * build-step-dependent copy — see firebase/scripts/vendor-shared.js). Instead
  * vitest.config.ts aliases the bare specifier "functions-shared" straight to
- * this file, so every `import { onCallHandler, ... } from "functions-shared"`
- * in handler/repository source resolves here.
+ * a per-codebase copy of this file (firebase/scripts/vendor-test-mock.js
+ * copies it into <codebase>/tests/mocks/functions-shared.ts before `npm
+ * test`, rewriting the "./src/..." imports below to the right relative
+ * depth). This file is the single source of truth — never edit the copies
+ * directly, they're regenerated and gitignored.
  *
  * - Cross-cutting utils (onCallHandler/requireAccess/requireCompanyAccess/
  *   getAuthenticatedUser/assertUniqueField) are vi.fn() with a sensible
@@ -93,27 +96,27 @@ export const NotificationRepository = createProxyStub();
 // Plain constants/enums/schemas — real, side-effect-free source re-exports
 // ---------------------------------------------------------------------------
 
-export { PROPERTY_TYPES } from "../../../functions-shared/src/domain/real-estate/propertyType.enum";
-export type { PropertyType } from "../../../functions-shared/src/domain/real-estate/propertyType.enum";
-export { PROPERTY_FEATURES } from "../../../functions-shared/src/domain/real-estate/propertyFeature.enum";
-export type { PropertyFeature } from "../../../functions-shared/src/domain/real-estate/propertyFeature.enum";
+export { PROPERTY_TYPES } from "./src/domain/real-estate/propertyType.enum";
+export type { PropertyType } from "./src/domain/real-estate/propertyType.enum";
+export { PROPERTY_FEATURES } from "./src/domain/real-estate/propertyFeature.enum";
+export type { PropertyFeature } from "./src/domain/real-estate/propertyFeature.enum";
 
-export { ADMIN_PERMISSIONS } from "../../../functions-shared/src/constants/permissions.const";
-export { AdminAccessLevels } from "../../../functions-shared/src/domain/admin/accessLevels.const";
-export { AuditAction } from "../../../functions-shared/src/enums/auditAction.enum";
-export { BrazilianState } from "../../../functions-shared/src/enums/brazilianState.enum";
-export type { UserAccessLevel } from "../../../functions-shared/src/types/accessLevel.type";
+export { ADMIN_PERMISSIONS } from "./src/constants/permissions.const";
+export { AdminAccessLevels } from "./src/domain/admin/accessLevels.const";
+export { AuditAction } from "./src/enums/auditAction.enum";
+export { BrazilianState } from "./src/enums/brazilianState.enum";
+export type { UserAccessLevel } from "./src/types/accessLevel.type";
 
 export {
   PENDING_APPROVAL_COLUMN_ID,
   APPROVED_COLUMN_ID,
-} from "../../../functions-shared/src/domain/admin-tasks-board/admin-tasks-board.document";
+} from "./src/domain/admin-tasks-board/admin-tasks-board.document";
 
-export { default as UserSchema } from "../../../functions-shared/src/domain/user/user.schema";
-export { default as CompanySchema } from "../../../functions-shared/src/domain/company/company.schema";
-export type { CompanyAuditDocument } from "../../../functions-shared/src/domain/company/company-audit.document";
-export { default as CompanyOperationalSchema } from "../../../functions-shared/src/domain/company/company-operational.schema";
-export type { NotificationFilterDTO } from "../../../functions-shared/src/domain/notification/notification.dtos";
+export { default as UserSchema } from "./src/domain/user/user.schema";
+export { default as CompanySchema } from "./src/domain/company/company.schema";
+export type { CompanyAuditDocument } from "./src/domain/company/company-audit.document";
+export { default as CompanyOperationalSchema } from "./src/domain/company/company-operational.schema";
+export type { NotificationFilterDTO } from "./src/domain/notification/notification.dtos";
 
 export {
   BUSINESS_TYPES,
@@ -123,7 +126,7 @@ export {
   PAYMENT_METHODS,
   PURPOSES,
   TEMPERATURES,
-} from "../../../functions-shared/src/domain/lead/lead.document";
+} from "./src/domain/lead/lead.document";
 export type {
   BusinessType,
   DealStatus,
@@ -133,4 +136,4 @@ export type {
   PaymentMethod,
   Purpose,
   Temperature,
-} from "../../../functions-shared/src/domain/lead/lead.document";
+} from "./src/domain/lead/lead.document";
