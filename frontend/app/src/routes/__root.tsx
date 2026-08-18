@@ -132,7 +132,10 @@ function RootErrorBoundary({ error }: ErrorComponentProps) {
           >
             Tentar novamente
           </button>
-          <Link to="/user/mycompany" className="btn-ghost-border w-full justify-center">
+          <Link
+            to="/user/mycompany"
+            className="btn-ghost-border w-full justify-center"
+          >
             Voltar para o painel
           </Link>
         </div>
@@ -168,7 +171,10 @@ function NotFound() {
           O endereço pode estar errado ou a página foi movida.
         </p>
 
-        <Link to="/user/mycompany" className="btn-primary mt-6 w-full justify-center">
+        <Link
+          to="/user/mycompany"
+          className="btn-primary mt-6 w-full justify-center"
+        >
           Voltar para o painel
         </Link>
       </div>

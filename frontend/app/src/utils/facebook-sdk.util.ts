@@ -4,7 +4,6 @@ const GRAPH_API_VERSION = 'v23.0';
 const FB_LOGIN_SCOPES = [
   'pages_show_list',
   'pages_read_engagement',
-  'pages_manage_metadata',
   'leads_retrieval',
   'business_management',
 ].join(',');
@@ -28,75 +27,160 @@ declare global {
         xfbml?: boolean;
         version: string;
       }) => void;
+
       login: (
         callback: (response: FacebookLoginResponse) => void,
-        params?: { scope: string; return_scopes?: boolean },
+        params?: {
+          scope: string;
+          return_scopes?: boolean;
+        },
       ) => void;
     };
+
     fbAsyncInit?: () => void;
   }
 }
 
 let sdkPromise: Promise<void> | null = null;
+let sdkInitialized = false;
+
+function initializeFacebookSdk(): void {
+  if (!window.FB) {
+    throw new Error(
+      'SDK do Facebook carregou, mas window.FB não está disponível.',
+    );
+  }
+
+  if (sdkInitialized) {
+    return;
+  }
+
+  window.FB.init({
+    appId: import.meta.env.VITE_FACEBOOK_APP_ID,
+    cookie: true,
+    xfbml: false,
+    version: GRAPH_API_VERSION,
+  });
+
+  sdkInitialized = true;
+}
 
 function loadFacebookSdk(): Promise<void> {
+  // SDK já carregado e inicializado
+  if (window.FB && sdkInitialized) {
+    return Promise.resolve();
+  }
+
+  // SDK já carregado, mas ainda não inicializado
+  if (window.FB) {
+    initializeFacebookSdk();
+    return Promise.resolve();
+  }
+
+  // Já existe uma tentativa de carregamento em andamento
   if (sdkPromise) {
     return sdkPromise;
   }
 
-  sdkPromise = new Promise((resolve, reject) => {
-    window.fbAsyncInit = () => {
-      window.FB?.init({
-        appId: import.meta.env.VITE_FACEBOOK_APP_ID,
-        cookie: true,
-        xfbml: false,
-        version: GRAPH_API_VERSION,
-      });
-      resolve();
+  sdkPromise = new Promise<void>((resolve, reject) => {
+    let settled = false;
+
+    const resolveOnce = () => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+
+      try {
+        initializeFacebookSdk();
+        resolve();
+      } catch (error) {
+        sdkPromise = null;
+        reject(error);
+      }
     };
 
-    if (document.getElementById('facebook-jssdk')) {
+    const rejectOnce = (error: Error) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      sdkPromise = null;
+      reject(error);
+    };
+
+    // O Facebook chama essa função quando termina de carregar o SDK.
+    window.fbAsyncInit = resolveOnce;
+
+    // Pode ter sido carregado entre as verificações acima.
+    if (window.FB) {
+      resolveOnce();
+      return;
+    }
+
+    const existingScript = document.getElementById('facebook-jssdk');
+
+    if (existingScript) {
+      /*
+       * O script já existe, provavelmente por HMR ou por outra
+       * chamada anterior.
+       *
+       * Não podemos simplesmente dar `return`, porque isso deixaria
+       * a Promise pendurada para sempre.
+       *
+       * Se o script ainda estiver carregando, o `fbAsyncInit`
+       * acima será chamado pelo SDK.
+       */
       return;
     }
 
     const script = document.createElement('script');
+
     script.id = 'facebook-jssdk';
     script.src = FB_SDK_SRC;
     script.async = true;
     script.defer = true;
-    script.onerror = () =>
-      reject(new Error('Falha ao carregar o SDK do Facebook.'));
-    document.body.appendChild(script);
+
+    script.onerror = () => {
+      rejectOnce(new Error('Falha ao carregar o SDK do Facebook.'));
+    };
+
+    document.head.appendChild(script);
   });
 
   return sdkPromise;
 }
 
 /**
- * Abre o popup de login do Facebook (FB.login) e devolve o short-lived user
- * access token, já com os escopos exigidos pela integração de Lead Ads. O
- * backend (connectFacebookAdsHandler) troca esse token por um de longa
- * duração e nunca recebe as credenciais do Facebook diretamente do usuário.
+ * Abre o popup de login do Facebook e devolve o access token
+ * do usuário.
+ *
+ * O backend deve ser responsável por validar/trocar o token
+ * e realizar as operações necessárias na Graph API.
  */
 export async function connectFacebookAccount(): Promise<string> {
   await loadFacebookSdk();
 
   if (!window.FB) {
-    throw new Error(
-      'SDK do Facebook não carregou. Verifique se algum bloqueador de anúncios está ativo.',
-    );
+    throw new Error('SDK do Facebook não está disponível.');
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     window.FB!.login(
       (response) => {
         if (response.status === 'connected' && response.authResponse) {
           resolve(response.authResponse.accessToken);
           return;
         }
+
         reject(new Error('Login com o Facebook cancelado ou não autorizado.'));
       },
-      { scope: FB_LOGIN_SCOPES, return_scopes: true },
+      {
+        scope: FB_LOGIN_SCOPES,
+        return_scopes: true,
+      },
     );
   });
 }
