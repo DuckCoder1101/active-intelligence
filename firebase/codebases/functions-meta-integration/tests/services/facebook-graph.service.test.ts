@@ -128,4 +128,165 @@ describe("FacebookGraphService", () => {
       ).rejects.toThrow(/Graph API \/me\/accounts falhou \(401\)/);
     });
   });
+
+  describe("listAdAccounts", () => {
+    it("segue paging.next até a última página", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [
+              { id: "act_111", name: "Conta A", account_id: "111", currency: "BRL" },
+            ],
+            paging: { next: "https://graph.facebook.com/v23.0/me/adaccounts?after=abc" },
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [
+              { id: "act_222", name: "Conta B", account_id: "222", currency: "USD" },
+            ],
+            paging: {},
+          }),
+        });
+      global.fetch = fetchMock as unknown as typeof fetch;
+
+      const accounts = await FacebookGraphService.listAdAccounts(LONG_LIVED_TOKEN);
+
+      expect(accounts).toEqual([
+        { id: "act_111", name: "Conta A", account_id: "111", currency: "BRL" },
+        { id: "act_222", name: "Conta B", account_id: "222", currency: "USD" },
+      ]);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("lança erro quando a Graph API responde com falha", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 403,
+        text: async () => JSON.stringify({ error: { code: 10, type: "OAuthException" } }),
+      }) as unknown as typeof fetch;
+
+      await expect(
+        FacebookGraphService.listAdAccounts(LONG_LIVED_TOKEN),
+      ).rejects.toThrow(/Graph API \/me\/adaccounts falhou \(403\)/);
+    });
+  });
+
+  describe("getAdAccountSummary", () => {
+    it("converte balance/amount_spent/spend_cap de centavos pra unidade cheia", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          balance: "150000",
+          amount_spent: "980000",
+          currency: "BRL",
+          spend_cap: "500000",
+        }),
+      }) as unknown as typeof fetch;
+
+      const summary = await FacebookGraphService.getAdAccountSummary(
+        "act_123456789",
+        LONG_LIVED_TOKEN,
+      );
+
+      expect(summary).toEqual({
+        balance: 1500,
+        amountSpent: 9800,
+        currency: "BRL",
+        spendCap: 5000,
+      });
+    });
+
+    it("devolve null quando a Graph API não manda o campo", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ currency: "BRL" }),
+      }) as unknown as typeof fetch;
+
+      const summary = await FacebookGraphService.getAdAccountSummary(
+        "act_123456789",
+        LONG_LIVED_TOKEN,
+      );
+
+      expect(summary).toEqual({
+        balance: null,
+        amountSpent: null,
+        currency: "BRL",
+        spendCap: null,
+      });
+    });
+  });
+
+  describe("listCampaigns", () => {
+    it("filtra campanhas DELETED/ARCHIVED direto na Graph API", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          data: [
+            {
+              id: "23851",
+              name: "Campanha Lançamento",
+              status: "ACTIVE",
+              effective_status: "ACTIVE",
+              objective: "OUTCOME_LEADS",
+            },
+          ],
+          paging: {},
+        }),
+      });
+      global.fetch = fetchMock as unknown as typeof fetch;
+
+      const campaigns = await FacebookGraphService.listCampaigns(
+        "act_123456789",
+        LONG_LIVED_TOKEN,
+      );
+
+      expect(campaigns).toHaveLength(1);
+      const calledUrl = new URL(fetchMock.mock.calls[0][0] as string);
+      const filtering = JSON.parse(calledUrl.searchParams.get("filtering") ?? "[]");
+      expect(filtering).toEqual([
+        { field: "effective_status", operator: "NOT_IN", value: ["DELETED", "ARCHIVED"] },
+      ]);
+    });
+  });
+
+  describe("getDailyInsights", () => {
+    it("chama /insights com level=campaign e time_range/time_increment corretos", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          data: [
+            {
+              campaign_id: "23851",
+              campaign_name: "Campanha Lançamento",
+              spend: "123.45",
+              actions: [{ action_type: "lead", value: "3" }],
+              date_start: "2026-08-01",
+            },
+          ],
+          paging: {},
+        }),
+      });
+      global.fetch = fetchMock as unknown as typeof fetch;
+
+      const rows = await FacebookGraphService.getDailyInsights(
+        "act_123456789",
+        LONG_LIVED_TOKEN,
+        "2026-08-01",
+        "2026-08-19",
+      );
+
+      expect(rows).toHaveLength(1);
+      const calledUrl = new URL(fetchMock.mock.calls[0][0] as string);
+      expect(calledUrl.searchParams.get("level")).toBe("campaign");
+      expect(calledUrl.searchParams.get("time_increment")).toBe("1");
+      expect(JSON.parse(calledUrl.searchParams.get("time_range") ?? "{}")).toEqual({
+        since: "2026-08-01",
+        until: "2026-08-19",
+      });
+    });
+  });
 });

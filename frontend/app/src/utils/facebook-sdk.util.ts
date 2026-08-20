@@ -6,6 +6,7 @@ const FB_LOGIN_SCOPES = [
   'pages_read_engagement',
   'leads_retrieval',
   'business_management',
+  'ads_read',
 ].join(',');
 
 interface FacebookAuthResponse {

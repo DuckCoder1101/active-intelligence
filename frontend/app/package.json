@@ -4,17 +4,17 @@
   "type": "module",
   "version": "1.17.0",
   "scripts": {
-    "predev": "test -f ../shared/sync.js && node ../shared/sync.js . || true",
+    "predev": "node -e \"try{require('fs').accessSync('../shared/sync.js');require('child_process').execSync('node ../shared/sync.js .',{stdio:'inherit'})}catch(e){}\"",
     "dev": "vite dev --port 3000",
     "generate-routes": "tsr generate",
-    "prebuild": "test -f ../shared/sync.js && node ../shared/sync.js . || true",
+    "prebuild": "node -e \"try{require('fs').accessSync('../shared/sync.js');require('child_process').execSync('node ../shared/sync.js .',{stdio:'inherit'})}catch(e){}\"",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check .",
-    "predeploy": "test -f ../shared/sync.js && node ../shared/sync.js . || true",
+    "predeploy": "node -e \"try{require('fs').accessSync('../shared/sync.js');require('child_process').execSync('node ../shared/sync.js .',{stdio:'inherit'})}catch(e){}\"",
     "deploy": "vercel deploy"
   },
   "dependencies": {

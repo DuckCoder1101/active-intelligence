@@ -4,3 +4,6 @@ emulators-data/
 graphify-out/
 *.gen.ts
 changelog/
+run.bat
+.claude/settings.json
+.claude/settings.json.graphify-bak

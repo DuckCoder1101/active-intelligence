@@ -76,8 +76,15 @@ export type {
 
 // domain: meta-integration (usado por meta-integration)
 export type {
+  FacebookAdAccount,
   FacebookAdsIntegrationDocument,
   FacebookLeadFormMapping,
   FacebookPageIntegration,
   FacebookPageLinkDocument,
 } from "./domain/meta-integration/facebook-ads-integration.document";
+export type {
+  FacebookAdsDailyInsightDocument,
+  FacebookAdsInsightsSnapshotDocument,
+  FacebookAdsSyncErrorCode,
+  FacebookCampaignInsight,
+} from "./domain/meta-integration/facebook-ads-insights.document";

@@ -8,10 +8,18 @@ interface StatCardProps {
   label: string;
   value: string;
   trend?: number | null;
+  trendLabel?: string;
   sparklineValues?: number[];
 }
 
-export function StatCard({ icon, label, value, trend, sparklineValues }: StatCardProps) {
+export function StatCard({
+  icon,
+  label,
+  value,
+  trend,
+  trendLabel = 'vs mês anterior',
+  sparklineValues,
+}: StatCardProps) {
   return (
     <div className="dashboard-card flex flex-col gap-4 p-4 sm:p-5">
       <div className="flex items-center gap-3">
@@ -32,7 +40,7 @@ export function StatCard({ icon, label, value, trend, sparklineValues }: StatCar
             }`}
           >
             {trend >= 0 ? <MdArrowUpward size={12} /> : <MdArrowDownward size={12} />}
-            {Math.abs(trend)}% vs mês anterior
+            {Math.abs(trend)}% {trendLabel}
           </p>
         )}
       </div>

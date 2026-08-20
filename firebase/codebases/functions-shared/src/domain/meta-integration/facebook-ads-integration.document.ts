@@ -16,6 +16,12 @@ export interface FacebookPageIntegration {
   forms: FacebookLeadFormMapping[];
 }
 
+export interface FacebookAdAccount {
+  adAccountId: string;
+  adAccountName: string;
+  currency: string;
+}
+
 /** Firestore: `companies/{companyId}/integration_settings/facebookAds` — documento fixo, não tem lista. */
 export interface FacebookAdsIntegrationDocument {
   companyId: string;
@@ -25,6 +31,12 @@ export interface FacebookAdsIntegrationDocument {
   /** Nome do segredo no Secret Manager onde ficam os tokens. O token nunca é salvo no Firestore. */
   secretRef: string;
   pages: FacebookPageIntegration[];
+  /** Contas de anúncios encontradas na última conexão (requer o escopo `ads_read`). */
+  adAccounts?: FacebookAdAccount[];
+  /** Conta de anúncios selecionada para alimentar o dashboard de marketing. */
+  selectedAdAccountId?: string | null;
+  /** true = a última tentativa de listar contas de anúncios falhou (provavelmente falta o escopo ads_read) — distingue de "conectado, mas com 0 contas de anúncios de fato". */
+  adAccountsFetchFailed?: boolean;
   connectedBy: string;
   connectedAt: Timestamp;
   updatedAt: Timestamp;

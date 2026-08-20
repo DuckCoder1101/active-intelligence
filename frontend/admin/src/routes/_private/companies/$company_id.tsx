@@ -94,7 +94,7 @@ function ClientDetailPage() {
   const canViewFinancial = checkRouteAccess(claims, FINANCIAL_TAB_ACCESS);
   const TABS = canViewFinancial ? [...BASE_TABS, FINANCIAL_TAB] : BASE_TABS;
 
-  const APP_URL = import.meta.env.VITE_APP_URL ?? 'http://localhost:3001/';
+  const APP_URL = import.meta.env.VITE_APP_URL ?? 'http://localhost:3001';
 
   const handleDeleteConfirm = () => {
     deleteCompany.mutate(company.companyId, {

@@ -2,6 +2,7 @@ import { FieldValue } from "firebase-admin/firestore";
 
 import { database } from "functions-shared";
 import type {
+  FacebookAdAccount,
   FacebookAdsIntegrationDocument,
   FacebookPageIntegration,
 } from "functions-shared";
@@ -15,6 +16,9 @@ function toDTO(
     fbUserId: data.fbUserId,
     fbUserName: data.fbUserName,
     pages: data.pages,
+    adAccounts: data.adAccounts ?? [],
+    selectedAdAccountId: data.selectedAdAccountId ?? null,
+    adAccountsFetchFailed: data.adAccountsFetchFailed ?? false,
     connectedBy: data.connectedBy,
     connectedAt: data.connectedAt?.toMillis() ?? 0,
     updatedAt: data.updatedAt?.toMillis() ?? 0,
@@ -39,6 +43,15 @@ export class FacebookAdsIntegrationRepository {
     return toDTO(snap.data() as FacebookAdsIntegrationDocument);
   }
 
+  /** Documento cru, com `secretRef` — uso interno (sync service/scheduler). Nunca expor via DTO/callable. */
+  static async getRaw(
+    companyId: string,
+  ): Promise<FacebookAdsIntegrationDocument | null> {
+    const snap = await this.doc(companyId).get();
+    if (!snap.exists) return null;
+    return snap.data() as FacebookAdsIntegrationDocument;
+  }
+
   static async save(
     companyId: string,
     uid: string,
@@ -47,6 +60,9 @@ export class FacebookAdsIntegrationRepository {
       fbUserName: string;
       secretRef: string;
       pages: FacebookPageIntegration[];
+      adAccounts?: FacebookAdAccount[];
+      selectedAdAccountId?: string | null;
+      adAccountsFetchFailed?: boolean;
     },
   ): Promise<FacebookAdsIntegrationDTO> {
     const ref = this.doc(companyId);
@@ -60,6 +76,9 @@ export class FacebookAdsIntegrationRepository {
         fbUserName: data.fbUserName,
         secretRef: data.secretRef,
         pages: data.pages,
+        adAccounts: data.adAccounts ?? [],
+        selectedAdAccountId: data.selectedAdAccountId ?? null,
+        adAccountsFetchFailed: data.adAccountsFetchFailed ?? false,
         connectedBy: uid,
         connectedAt: now,
         updatedAt: now,
@@ -72,6 +91,19 @@ export class FacebookAdsIntegrationRepository {
       data.pages.map((p) => p.pageId),
     );
 
+    const snap = await ref.get();
+    return toDTO(snap.data() as FacebookAdsIntegrationDocument);
+  }
+
+  static async selectAdAccount(
+    companyId: string,
+    adAccountId: string,
+  ): Promise<FacebookAdsIntegrationDTO> {
+    const ref = this.doc(companyId);
+    await ref.set(
+      { selectedAdAccountId: adAccountId, updatedAt: FieldValue.serverTimestamp() },
+      { merge: true },
+    );
     const snap = await ref.get();
     return toDTO(snap.data() as FacebookAdsIntegrationDocument);
   }

@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 import { getMessaging, type Messaging } from 'firebase/messaging';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
@@ -25,7 +25,7 @@ export const storage = getStorage(app);
 export const functions = getFunctions(app, 'southamerica-east1');
 
 if (import.meta.env.DEV) {
-  // connectAuthEmulator(auth, 'http://localhost:9099');
+  connectAuthEmulator(auth, 'http://localhost:9099');
   connectStorageEmulator(storage, 'localhost', 9199);
   connectFunctionsEmulator(functions, 'localhost', 5001);
 }

@@ -12,13 +12,21 @@ vi.mock("functions-shared", () => ({
 const mockExchangeForLongLivedToken = vi.fn();
 const mockGetProfile = vi.fn();
 const mockListPages = vi.fn();
+const mockListAdAccounts = vi.fn();
 
 vi.mock("../../src/services/facebook-graph.service", () => ({
   FacebookGraphService: {
     exchangeForLongLivedToken: mockExchangeForLongLivedToken,
     getProfile: mockGetProfile,
     listPages: mockListPages,
+    listAdAccounts: mockListAdAccounts,
   },
+}));
+
+const mockSyncCompany = vi.fn();
+
+vi.mock("../../src/services/facebook-ads-sync.service", () => ({
+  FacebookAdsSyncService: { syncCompany: mockSyncCompany },
 }));
 
 const mockSaveToken = vi.fn();
@@ -86,6 +94,7 @@ describe("connectFacebookAdsHandler", () => {
     mockListPages.mockResolvedValueOnce([
       { id: "102934857612345", name: "Imobiliária Vista Alegre" },
     ]);
+    mockListAdAccounts.mockResolvedValueOnce([]);
     mockSaveToken.mockResolvedValueOnce(
       `projects/activeimob-74a7d/secrets/facebook-ads-token-${COMPANY_ID}`,
     );
@@ -101,6 +110,9 @@ describe("connectFacebookAdsHandler", () => {
           forms: [],
         },
       ],
+      adAccounts: [],
+      selectedAdAccountId: null,
+      adAccountsFetchFailed: false,
       connectedBy: UID,
       connectedAt: 1755043200000,
       updatedAt: 1755043200000,
@@ -117,6 +129,7 @@ describe("connectFacebookAdsHandler", () => {
     );
     expect(mockGetProfile).toHaveBeenCalledWith(LONG_LIVED_TOKEN);
     expect(mockListPages).toHaveBeenCalledWith(LONG_LIVED_TOKEN);
+    expect(mockListAdAccounts).toHaveBeenCalledWith(LONG_LIVED_TOKEN);
     expect(mockSaveToken).toHaveBeenCalledWith(COMPANY_ID, LONG_LIVED_TOKEN);
     expect(mockSave).toHaveBeenCalledWith(COMPANY_ID, UID, {
       fbUserId: "10159876543210987",
@@ -130,7 +143,111 @@ describe("connectFacebookAdsHandler", () => {
           forms: [],
         },
       ],
+      adAccounts: [],
+      selectedAdAccountId: undefined,
+      adAccountsFetchFailed: false,
     });
+    expect(mockSyncCompany).not.toHaveBeenCalled();
+  });
+
+  it("seleciona automaticamente a conta de anúncios quando só existe uma, e dispara o backfill", async () => {
+    mockExchangeForLongLivedToken.mockResolvedValueOnce(LONG_LIVED_TOKEN);
+    mockGetProfile.mockResolvedValueOnce({
+      id: "10159876543210987",
+      name: "Ana Paula Ferreira",
+    });
+    mockListPages.mockResolvedValueOnce([]);
+    mockListAdAccounts.mockResolvedValueOnce([
+      {
+        id: "act_123456789",
+        name: "Conta de Anúncios Vista Alegre",
+        account_id: "123456789",
+        currency: "BRL",
+      },
+    ]);
+    mockSaveToken.mockResolvedValueOnce(
+      `projects/activeimob-74a7d/secrets/facebook-ads-token-${COMPANY_ID}`,
+    );
+    mockSave.mockResolvedValueOnce({
+      connected: true,
+      fbUserId: "10159876543210987",
+      fbUserName: "Ana Paula Ferreira",
+      pages: [],
+      adAccounts: [
+        {
+          adAccountId: "act_123456789",
+          adAccountName: "Conta de Anúncios Vista Alegre",
+          currency: "BRL",
+        },
+      ],
+      selectedAdAccountId: "act_123456789",
+      adAccountsFetchFailed: false,
+      connectedBy: UID,
+      connectedAt: 1755043200000,
+      updatedAt: 1755043200000,
+    });
+
+    await connectFacebookAdsHandler(
+      buildRequest({ companyId: COMPANY_ID, accessToken: SHORT_LIVED_TOKEN }),
+    );
+
+    expect(mockSave).toHaveBeenCalledWith(
+      COMPANY_ID,
+      UID,
+      expect.objectContaining({
+        adAccounts: [
+          {
+            adAccountId: "act_123456789",
+            adAccountName: "Conta de Anúncios Vista Alegre",
+            currency: "BRL",
+          },
+        ],
+        selectedAdAccountId: "act_123456789",
+        adAccountsFetchFailed: false,
+      }),
+    );
+    expect(mockSyncCompany).toHaveBeenCalledWith(COMPANY_ID, 90);
+  });
+
+  it("não falha a conexão quando listAdAccounts lança erro (ex: falta o escopo ads_read)", async () => {
+    mockExchangeForLongLivedToken.mockResolvedValueOnce(LONG_LIVED_TOKEN);
+    mockGetProfile.mockResolvedValueOnce({
+      id: "10159876543210987",
+      name: "Ana Paula Ferreira",
+    });
+    mockListPages.mockResolvedValueOnce([]);
+    mockListAdAccounts.mockRejectedValueOnce(new Error("(#10) Permission denied"));
+    mockSaveToken.mockResolvedValueOnce(
+      `projects/activeimob-74a7d/secrets/facebook-ads-token-${COMPANY_ID}`,
+    );
+    mockSave.mockResolvedValueOnce({
+      connected: true,
+      fbUserId: "10159876543210987",
+      fbUserName: "Ana Paula Ferreira",
+      pages: [],
+      adAccounts: [],
+      selectedAdAccountId: null,
+      adAccountsFetchFailed: true,
+      connectedBy: UID,
+      connectedAt: 1755043200000,
+      updatedAt: 1755043200000,
+    });
+
+    const result = await connectFacebookAdsHandler(
+      buildRequest({ companyId: COMPANY_ID, accessToken: SHORT_LIVED_TOKEN }),
+    );
+
+    expect(result).toBeDefined();
+    expect(mockSave).toHaveBeenCalledWith(
+      COMPANY_ID,
+      UID,
+      expect.objectContaining({
+        adAccounts: [],
+        selectedAdAccountId: undefined,
+        adAccountsFetchFailed: true,
+      }),
+    );
+    expect(mockSyncCompany).not.toHaveBeenCalled();
   });
 
   it("converte falha da Graph API em failed-precondition sem guardar nenhum secret", async () => {

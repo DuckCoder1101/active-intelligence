@@ -3,10 +3,15 @@ import { HttpsError } from "firebase-functions/https";
 import { z } from "zod";
 
 import { onCallHandler, requireCompanyAccess } from "functions-shared";
+import type { FacebookAdAccount } from "functions-shared";
 import { FacebookGraphService } from "../services/facebook-graph.service";
+import { FacebookAdsSyncService } from "../services/facebook-ads-sync.service";
 import { MetaSecretRepository } from "../repositories/meta-secret.repository";
 import { FacebookAdsIntegrationRepository } from "../repositories/facebook-ads-integration.repository";
 import type { FacebookAdsIntegrationDTO } from "../types/facebook-ads-integration.dto";
+
+/** Backfill inicial ao conectar/selecionar conta de anúncios — o sync periódico só refaz uma janela de 30 dias. */
+const INITIAL_BACKFILL_WINDOW_DAYS = 90;
 
 const schema = z.object({
   companyId: z.string().min(1),
@@ -59,10 +64,33 @@ export const connectFacebookAdsHandler = onCallHandler(async (req) => {
     longLivedToken,
   );
 
+  // Requer o escopo ads_read, que pode não ter sido concedido (ex: usuário
+  // logando de novo antes de o app pedir o escopo, ou negou na hora). Isolado
+  // do Promise.all acima pra nunca derrubar a conexão base de Páginas/Leads.
+  let adAccounts: FacebookAdAccount[] = [];
+  let adAccountsFetchFailed = false;
+  try {
+    const rawAdAccounts = await FacebookGraphService.listAdAccounts(longLivedToken);
+    adAccounts = rawAdAccounts.map((a) => ({
+      adAccountId: a.id,
+      adAccountName: a.name,
+      currency: a.currency,
+    }));
+  } catch (err) {
+    adAccountsFetchFailed = true;
+    logger.warn("connectFacebookAds: não foi possível listar contas de anúncios", err, {
+      companyId,
+    });
+  }
+  const selectedAdAccountId =
+    adAccounts.length === 1 ? adAccounts[0].adAccountId : undefined;
+
   logger.info("connectFacebookAds", {
     companyId,
     fbUserId: profile.id,
     pages: pages.length,
+    adAccounts: adAccounts.length,
+    adAccountsFetchFailed,
   });
 
   const result: FacebookAdsIntegrationDTO =
@@ -76,7 +104,14 @@ export const connectFacebookAdsHandler = onCallHandler(async (req) => {
         subscribed: false,
         forms: [],
       })),
+      adAccounts,
+      selectedAdAccountId,
+      adAccountsFetchFailed,
     });
+
+  if (selectedAdAccountId) {
+    await FacebookAdsSyncService.syncCompany(companyId, INITIAL_BACKFILL_WINDOW_DAYS);
+  }
 
   return result;
 });

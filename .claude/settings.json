@@ -15,11 +15,11 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|Grep",
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/cristianfava/.local/bin/graphify hook-guard search"
+            "command": "C:/Users/gagab/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0/LocalCache/local-packages/Python312/Scripts/graphify.EXE hook-guard search"
           }
         ]
       },
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/cristianfava/.local/bin/graphify hook-guard read"
+            "command": "C:/Users/gagab/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0/LocalCache/local-packages/Python312/Scripts/graphify.EXE hook-guard read"
           }
         ]
       }

@@ -12,6 +12,7 @@ import {
   MdClose,
   MdOutlineSupportAgent,
   MdOutlineCampaign,
+  MdOutlineTrendingUp,
 } from 'react-icons/md';
 
 const SUPPORT_PHONE = '5519997834256';
@@ -22,6 +23,7 @@ interface NavItem {
     | '/company/$companyId'
     | '/company/$companyId/schedule'
     | '/company/$companyId/crm'
+    | '/company/$companyId/marketing'
     | '/company/$companyId/real-estate'
     | '/company/$companyId/library'
     | '/company/$companyId/team'
@@ -49,6 +51,12 @@ const NAV_ITEMS: NavItem[] = [
     to: '/company/$companyId/crm',
     label: 'CRM',
     icon: MdOutlineAccountTree,
+    exact: false,
+  },
+  {
+    to: '/company/$companyId/marketing',
+    label: 'Marketing',
+    icon: MdOutlineTrendingUp,
     exact: false,
   },
   {
